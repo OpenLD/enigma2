@@ -399,7 +399,6 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 data/fonts/Makefile
-data/countries/Makefile
 data/extensions/Makefile
 data/keymaps/Makefile
 data/displaytext/Makefile
@@ -442,11 +441,6 @@ data/rc_models/vu/Makefile
 data/rc_models/vu2/Makefile
 data/rc_models/vu3/Makefile
 data/rc_models/xp1000/Makefile
-data/skin_default/Makefile
-data/skin_default/menu/Makefile
-data/skin_default/icons/Makefile
-data/skin_default/buttons/Makefile
-data/skin_default/spinner/Makefile
 include/Makefile
 lib/Makefile
 lib/base/eenv.cpp
