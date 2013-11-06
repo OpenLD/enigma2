@@ -265,7 +265,7 @@ class SecondInfoBar(Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if config.usage.show_second_infobar.getValue() == "3" and config.skin.primary_skin.getValue() == "DMConcinnity-HD/skin.xml":
+		if config.usage.show_second_infobar.getValue() == "3" and config.skin.primary_skin.getValue() == "ru_infinity_hd/skin.xml":
 			self.skinName = "SecondInfoBarECM"
 		else:
 			self.skinName = "SecondInfoBar"
