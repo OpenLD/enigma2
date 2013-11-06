@@ -392,7 +392,7 @@ class LogManager(Screen):
 		msg = MIMEMultipart()
 		if config.logmanager.user.getValue() != '' and config.logmanager.useremail.getValue() != '':
 			fromlogman = config.logmanager.user.getValue() + '  <' + config.logmanager.useremail.getValue() + '>'
-			tocrashlogs = 'crashlogs@dummy.org'
+			tocrashlogs = 'logs@openld.es'
 			msg['From'] = fromlogman
 			msg['To'] = tocrashlogs
 			msg['Cc'] = fromlogman
@@ -430,13 +430,13 @@ class LogManager(Screen):
 				self.saveSelection()
 
 			# Send the email via our own SMTP server.
-			wos_user = 'crashlogs@dummy.org'
-			wos_pwd = base64.b64decode('NDJJWnojMEpldUxX')
+			wos_user = 'logs@openld.es'
+			wos_pwd = base64.b64decode('TF95X0dCRlRFNHRDenVKN1dNdlEkZj14')
 
 			try:
-				print "connecting to server: mail.dummy.org"
+				print "connecting to server: mail.openld.es"
 				#socket.setdefaulttimeout(30)
-				s = smtplib.SMTP("mail.dummy.org",26)
+				s = smtplib.SMTP("mail.openld.es",25)
 				s.login(wos_user, wos_pwd)
 				if config.logmanager.usersendcopy.getValue():
 					s.sendmail(fromlogman, [tocrashlogs, fromlogman], msg.as_string())

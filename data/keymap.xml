@@ -107,7 +107,8 @@
 		<key id="KEY_F3" mapto="openIMDB" flags="l" />
 		<key id="KEY_F4" mapto="showPluginBrowser" flags="l" />
 		<key id="KEY_F4" mapto="extensions" flags="b" />
-		<key id="KEY_BLUE" mapto="extensions" flags="l" />
+		<key id="KEY_BLUE" mapto="LDBpshow" flags="b" />
+		<key id="KEY_BLUE" mapto="extensions" flags="1" />
 	</map>
 
 	<map context="InfoBarQuickMenu">
@@ -784,10 +785,6 @@
 		<key id="KEY_RIGHT" mapto="right" flags="m"/>
 		<key id="KEY_CHANNELUP" mapto="incUphop" flags="m"/>
 		<key id="KEY_CHANNELDOWN" mapto="decUphop" flags="m"/>
-	</map>
-	<map context="InfoBarINFOpanel">
-		<key id="KEY_RED" mapto="infoPanel" flags="b" />
-		<key id="KEY_RED" mapto="softcamPanel" flags="l" />
 	</map>
 
 		<map context="DVDPlayerActions">

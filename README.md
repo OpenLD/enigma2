@@ -1,4 +1,4 @@
 enigma2
 =======
 
-openatv-gui
+OpenLD-gui
