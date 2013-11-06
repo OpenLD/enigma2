@@ -258,8 +258,8 @@ class EPGSelection(Screen, HelpableScreen):
 
 			self['bouquetcursoractions'] = HelpableActionMap(self, 'DirectionActions', 
 				{
-					'left': (self.leftPressed, _('Goto previous event')),
-					'right': (self.rightPressed, _('Goto next event')),
+					'left': (self.moveBouquetPageUp, _('Goto previous event')),
+					'right': (self.moveBouquetPageDown, _('Goto next event')),
 					'up': (self.moveBouquetUp, _('Goto previous channel')),
 					'down': (self.moveBouquetDown, _('Goto next channel'))
 				}, -1)
@@ -329,8 +329,8 @@ class EPGSelection(Screen, HelpableScreen):
 
 			self['bouquetcursoractions'] = HelpableActionMap(self, 'DirectionActions', 
 				{
-					'left': (self.leftPressed, _('Goto previous event')),
-					'right': (self.rightPressed, _('Goto next event')),
+					'left': (self.moveBouquetPageUp, _('Goto previous event')),
+					'right': (self.moveBouquetPageDown, _('Goto next event')),
 					'up': (self.moveBouquetUp, _('Goto previous channel')),
 					'down': (self.moveBouquetDown, _('Goto next channel'))
 				}, -1)
@@ -603,6 +603,14 @@ class EPGSelection(Screen, HelpableScreen):
 	def moveBouquetDown(self):
 		self['bouquetlist'].moveTo(self['bouquetlist'].instance.moveDown)
 		self['bouquetlist'].fillBouquetList(self.bouquets)
+
+        def moveBouquetPageUp(self):
+                self['bouquetlist'].moveTo(self['bouquetlist'].instance.pageUp)
+                self['bouquetlist'].fillBouquetList(self.bouquets)
+
+        def moveBouquetPageDown(self):
+                self['bouquetlist'].moveTo(self['bouquetlist'].instance.pageDown)
+                self['bouquetlist'].fillBouquetList(self.bouquets)
 
 	def nextBouquet(self):
 		if self.type == EPG_TYPE_MULTI or self.type == EPG_TYPE_GRAPH or self.type == EPG_TYPE_INFOBARGRAPH:
