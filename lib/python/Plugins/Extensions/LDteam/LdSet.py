@@ -193,8 +193,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		name = "Reiniciar RED"
 		idx = 15
 		res = (name, png, idx)
-
 		self.list.append(res)
+
 		mypixmap = mypath + "cccam.png"
 		png = LoadPixmap(mypixmap)
 		name = "CCcamInfo"
