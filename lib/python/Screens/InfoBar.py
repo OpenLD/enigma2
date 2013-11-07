@@ -49,7 +49,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if config.usage.show_infobar_lite.getValue() and config.skin.primary_skin.getValue() == "om-black/skin.xml":
+		if config.usage.show_infobar_lite.getValue() and config.skin.primary_skin.getValue() == "DMConcinnity-HD/skin.xml":
 			self.skinName = "InfoBarLite"
 		
 		self["actions"] = HelpableActionMap(self, "InfobarActions",
