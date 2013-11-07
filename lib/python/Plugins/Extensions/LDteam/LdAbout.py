@@ -83,7 +83,7 @@ class LdsysInfo(Screen):
 		f = open("/etc/ldversion",'r')
 		text += "Firmware: \t" + f.readline() + "\n"
 		f.close()
-		text += "Enigma2: \t" +  about.getEnigmaVersionString() + "\n"
+		text += "Build: \t" +  getBuildVersionString() + "\n"
 		text += "Kernel: \t" +  about.getKernelVersionString() + "\n"
 		
 		self["lab1"].setText(text)
