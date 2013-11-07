@@ -89,6 +89,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		elif self.sel == 14:
 			from Plugins.Extensions.LDteam.LdCrondManager import CronManager
 			self.session.open(CronManager)
+		elif self.sel == 15:
+			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
+			self.session.open(RestartNetwork)
 		else:
 			self.noYet()
 			
@@ -185,6 +188,13 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
+		mypixmap = mypath + "ajustes_http.png"
+		png = LoadPixmap(mypixmap)
+		name = "Reiniciar RED"
+		idx = 15
+		res = (name, png, idx)
+
+		self.list.append(res)
 		mypixmap = mypath + "cccam.png"
 		png = LoadPixmap(mypixmap)
 		name = "CCcamInfo"
