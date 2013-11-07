@@ -93,20 +93,12 @@
 
 	<map context="InfobarExtensions">
 		<key id="KEY_RED" mapto="RedPressed" flags="b" />
-		<!--key id="KEY_RED" mapto="showEventInfo" flags="l" />
+		<key id="KEY_RED" mapto="showEventInfo" flags="l" />
 		<key id="KEY_GREEN" mapto="openTimerList" flags="b" />
 		<key id="KEY_GREEN" mapto="openAutoTimerList" flags="l" />
 		<key id="KEY_YELLOW" mapto="openEPGSearch" flags="b" />
 		<key id="KEY_YELLOW" mapto="openIMDB" flags="l" />
-		<key id="KEY_BLUE" mapto="showPluginBrowser" flags="l" /-->
-		<key id="KEY_F1" mapto="RedPressed" flags="b" />
-		<key id="KEY_F1" mapto="showEventInfo" flags="l" />
-		<key id="KEY_F2" mapto="openTimerList" flags="b" />
-		<key id="KEY_F2" mapto="openAutoTimerList" flags="l" />
-		<key id="KEY_F3" mapto="openEPGSearch" flags="b" />
-		<key id="KEY_F3" mapto="openIMDB" flags="l" />
-		<key id="KEY_F4" mapto="showPluginBrowser" flags="l" />
-		<key id="KEY_F4" mapto="extensions" flags="b" />
+		<key id="KEY_BLUE" mapto="showPluginBrowser" flags="l" />
 		<key id="KEY_BLUE" mapto="extensions" flags="l" />
 	</map>
 
@@ -785,7 +777,9 @@
 		<key id="KEY_CHANNELUP" mapto="incUphop" flags="m"/>
 		<key id="KEY_CHANNELDOWN" mapto="decUphop" flags="m"/>
 	</map>
-
+		<map context="LDBluePanel">
+			<key id="KEY_BLUE" mapto="ldteam" flags="b" />
+		</map>
 		<map context="DVDPlayerActions">
 			<key id="KEY_MENU" mapto="dvdMenu" flags="m" />
 			<key id="KEY_INFO" mapto="toggleInfo" flags="m" />
@@ -812,3 +806,4 @@
 			</device-->
 		</map>
 </keymap>
+
