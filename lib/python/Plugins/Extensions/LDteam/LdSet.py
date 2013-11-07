@@ -74,8 +74,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		elif self.sel == 8:
 			self.session.open(LdSetupRecord)
 		elif self.sel == 9:
-			from Screens.RecordPaths import RecordPathsSettings
-			self.session.open(RecordPathsSettings)
+			from Screens.Recordings import RecordingSettings
+			self.session.open(RecordingSettings)
 		elif self.sel == 10:
 			self.session.open(LdSetupAutolanguage)
 		elif self.sel == 11:
