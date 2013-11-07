@@ -63,6 +63,12 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 			self.session.open(SwapManager)
 		elif self.sel == 4:
 			self.session.open(LdSetupOSD3)
+		elif self.sel == 5:
+			from Screens.CCcamInfo import CCcamInfoMain
+			self.session.open(CCcamInfoMain)
+		elif self.sel == 6:
+			from Screens.OScamInfo import OscamInfoMenu
+			self.session.open(OscamInfoMenu)
 		elif self.sel == 7:
 			self.session.open(LdSetupIntEpg)
 		elif self.sel == 8:
@@ -176,6 +182,20 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes Http stream"
 		idx = 11
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "cccam.png"
+		png = LoadPixmap(mypixmap)
+		name = "CCcamInfo"
+		idx = 5
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "cccam.png"
+		png = LoadPixmap(mypixmap)
+		name = "OScamInfo"
+		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
 		

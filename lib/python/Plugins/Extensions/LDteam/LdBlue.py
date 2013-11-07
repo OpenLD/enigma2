@@ -33,7 +33,7 @@ class LDBluePanel(Screen):
 <eLabel text="Settings" position="595,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <widget name="lab1" position="220,43" size="230,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="lab2" position="220,73" size="190,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="list" position="60,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/button320x25.png" transparent="1" />
+<widget name="list" position="60,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1"/>
 <widget name="lab3" position="60,149" size="120,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <eLabel text="CAM Activa:" position="60,149" size="245,25" font="Regular;20" halign="left" zPosition="2" foregroundColor="white" backgroundColor="transpBlack" transparent="1"/>
 <widget name="activecam" position="191,149" size="245,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
