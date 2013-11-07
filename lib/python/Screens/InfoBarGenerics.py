@@ -2464,14 +2464,14 @@ class InfoBarExtensions:
 	def quickmenuStart(self):
 		try:
 			if not self.session.pipshown:
-				from Plugins.Extensions.Infopanel.QuickMenu import QuickMenu
-				self.session.open(QuickMenu)
+				from Plugins.Extensions.LDteam.LdBlue import LDBluePanel
+				self.session.open(LDBluePanel)
 			else:
 				self.showExtensionSelection()
 		except:
-			print "[INFOBARGENERICS] QuickMenu: error pipshow, starting Quick Menu"
-			from Plugins.Extensions.Infopanel.QuickMenu import QuickMenu
-			self.session.open(QuickMenu)
+			print "[INFOBARGENERICS] LDBluePanel: error pipshow, starting Quick Menu"
+			from Plugins.Extensions.LDteam.LdBlue import LDBluePanel
+			self.session.open(LDBluePanel)
 
 	def SelectopenEventView(self):
 		try:
@@ -2949,14 +2949,14 @@ class InfoBarQuickMenu:
 	def quickmenuStart(self):
 		try:
 			if not self.session.pipshown:
-				from Plugins.Extensions.Infopanel.QuickMenu import QuickMenu
-				self.session.open(QuickMenu)
+				from Plugins.Extensions.LDteam.LdBlue import LDBluePanel
+				self.session.open(LDBluePanel
 			else:
 				self.showExtensionSelection()
 		except:
-			print "[INFOBARGENERICS] QuickMenu: error pipshow, starting Quick Menu"
-			from Plugins.Extensions.Infopanel.QuickMenu import QuickMenu
-			self.session.open(QuickMenu)
+			print "[INFOBARGENERICS] LDBluePanel: error pipshow, starting Quick Menu"
+			from Plugins.Extensions.LDteam.LdBlue import LDBluePanel
+			self.session.open(LDBluePanel)
 
 class InfoBarInstantRecord:
 	"""Instant Record - handles the instantRecord action in order to
