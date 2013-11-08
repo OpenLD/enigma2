@@ -57,7 +57,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 			from Plugins.Extensions.LDteam.LdHddSetup import HddSetup
 			self.session.open(HddSetup)
 		elif self.sel == 1:
-			self.session.open(LdNetBrowser)
+			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
+			self.session.open(SundtekControlCenter)
 		elif self.sel == 3:
 			from Plugins.Extensions.LDteam.LdSwapManager import SwapManager
 			self.session.open(SwapManager)
@@ -132,9 +133,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "mountwizard.png"
+		mypixmap = mypath + "usb.png"
 		png = LoadPixmap(mypixmap)
-		name = "Red y Puntos de Montaje"
+		name = "Soundtek Center"
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
@@ -188,7 +189,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "ajustes_http.png"
+		mypixmap = mypath + "mountwizard.png"
 		png = LoadPixmap(mypixmap)
 		name = "Reiniciar RED"
 		idx = 15
