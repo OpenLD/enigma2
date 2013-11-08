@@ -27,10 +27,6 @@ if [ -x @bindir@/showiframe ]; then
 	fi
 fi
 
-# OpenLD - chmod 755 for scripts Blue Panel
-cd /usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts
-chmod 755 *.sh
-
 # hook to execute scripts always before enigma2 start
 if [ -x @bindir@/enigma2_pre_start.sh ]; then
 	@bindir@/enigma2_pre_start.sh
