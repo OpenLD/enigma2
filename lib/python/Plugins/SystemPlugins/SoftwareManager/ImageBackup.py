@@ -17,7 +17,7 @@ from os import path, system, makedirs, listdir, walk, statvfs
 import commands
 import datetime
 
-VERSION = "Version 2.0 openATV"
+VERSION = "Version 1.0 OpenLD"
 
 def Freespace(dev):
 	statdev = statvfs(dev)
@@ -730,8 +730,8 @@ class ImageBackup(Screen):
 
 	def imageInfo(self):
 		AboutText = _("Full Image Backup ")
-		AboutText += _("By openATV Image Team") + "\n"
-		AboutText += _("Support at") + " www.opena.tv\n\n"
+		AboutText += _("Desarrollado por Javilonas") + "\n"
+		AboutText += _("Support at") + " www.lonasdigital.comn\n"
 		AboutText += _("[Image Info]\n")
 		AboutText += _("Model: %s %s\n") % (getMachineBrand(), getMachineName())
 		AboutText += _("Backup Date: %s\n") % strftime("%Y-%m-%d", localtime(self.START))
