@@ -1422,260 +1422,260 @@ class PluginDetails(Screen, PackageInfoHandler):
 
 
 class UpdatePlugin(Screen):
-	skin = """
-		<screen name="UpdatePlugin" position="center,center" size="550,300" >
-			<widget name="activityslider" position="0,0" size="550,5"  />
-			<widget name="slider" position="0,150" size="550,30"  />
-			<widget source="package" render="Label" position="10,30" size="540,20" font="Regular;18" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
-			<widget source="status" render="Label" position="10,180" size="540,100" font="Regular;20" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
-		</screen>"""
+        skin = """
+                <screen name="UpdatePlugin" position="center,center" size="550,300" >
+                        <widget name="activityslider" position="0,0" size="550,5"  />
+                        <widget name="slider" position="0,150" size="550,30"  />
+                        <widget source="package" render="Label" position="10,30" size="540,20" font="Regular;18" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
+                        <widget source="status" render="Label" position="10,180" size="540,100" font="Regular;20" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
+                </screen>"""
 
-	def __init__(self, session, *args):
-		Screen.__init__(self, session)
-		Screen.setTitle(self, _("Software update"))
-		
-		self.sliderPackages = { "dreambox-dvb-modules": 1, "enigma2": 2, "tuxbox-image-info": 3 }
+        def __init__(self, session, *args):
+                Screen.__init__(self, session)
+                Screen.setTitle(self, _("Software update"))
+                
+                self.sliderPackages = { "dreambox-dvb-modules": 1, "enigma2": 2, "tuxbox-image-info": 3 }
 
-		self.slider = Slider(0, 4)
-		self["slider"] = self.slider
-		self.activityslider = Slider(0, 100)
-		self["activityslider"] = self.activityslider
-		self.status = StaticText(_("Please wait..."))
-		self["status"] = self.status
-		self.package = StaticText(_("Package list update"))
-		self["package"] = self.package
-		self.oktext = _("Press OK on your remote control to continue.")
+                self.slider = Slider(0, 4)
+                self["slider"] = self.slider
+                self.activityslider = Slider(0, 100)
+                self["activityslider"] = self.activityslider
+                self.status = StaticText(_("Please wait..."))
+                self["status"] = self.status
+                self.package = StaticText(_("Package list update"))
+                self["package"] = self.package
+                self.oktext = _("Press OK on your remote control to continue.")
 
-		self.packages = 0
-		self.error = 0
-		self.processed_packages = []
-		self.total_packages = None
-		self.skin_path = plugin_path
-		self.TraficCheck = False
-		self.TraficResult = False
-		self.CheckDateDone = False
+                self.packages = 0
+                self.error = 0
+                self.processed_packages = []
+                self.total_packages = None
+                self.skin_path = plugin_path
+                self.TraficCheck = False
+                self.TraficResult = False
+                self.CheckDateDone = False
 
-		self.activity = 0
-		self.activityTimer = eTimer()
-		self.activityTimer.callback.append(self.doActivityTimer)
+                self.activity = 0
+                self.activityTimer = eTimer()
+                self.activityTimer.callback.append(self.doActivityTimer)
 
-		self.ipkg = IpkgComponent()
-		self.ipkg.addCallback(self.ipkgCallback)
+                self.ipkg = IpkgComponent()
+                self.ipkg.addCallback(self.ipkgCallback)
 
-		self.updating = False
+                self.updating = False
 
-		self["actions"] = ActionMap(["WizardActions"],
-		{
-			"ok": self.exit,
-			"back": self.exit
-		}, -1)
+                self["actions"] = ActionMap(["WizardActions"],
+                {
+                        "ok": self.exit,
+                        "back": self.exit
+                }, -1)
 
-		self.activityTimer.start(100, False)
+                self.activityTimer.start(100, False)
 
-	def CheckDate(self):
-		# Check if image is not to old for update (max 30days)
-		self.CheckDateDone = True
-		tmpdate = getEnigmaVersionString()
-		imageDate = date(int(tmpdate[0:4]), int(tmpdate[5:7]), int(tmpdate[8:10]))
-		datedelay = imageDate +  timedelta(days=30)
-		message = _("Your image is out of date!\n\n"
-				"After such a long time, there is a risk that your %s %s will not\n"
-				"boot after online-update, or will show disfunction in running Image.\n\n"
-				"A new flash will increase the stability\n\n"
-				"An online update is done at your own risk !!\n\n\n"
-				"Do you still want to update?") % (getMachineBrand(), getMachineName())
+        def CheckDate(self):
+                # Check if image is not to old for update (max 30days)
+                self.CheckDateDone = True
+                tmpdate = getEnigmaVersionString()
+                imageDate = date(int(tmpdate[0:4]), int(tmpdate[5:7]), int(tmpdate[8:10]))
+                datedelay = imageDate +  timedelta(days=30)
+                message = _("Your image is out of date!\n\n"
+                                                "After such a long time, there is a risk that your Receiver will not\n"
+                                                "boot after online-update, or will show disfunction in running Image.\n\n"
+                                                "A new flash will increase the stability\n\n"
+                                                "An online update is done at your own risk !!\n\n\n"
+                                                "Do you still want to update?")
 
-		if datedelay > date.today():
-			self.updating = True
-			self.activityTimer.start(100, False)
-			self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
-		else:
-			print"[SOFTWAREMANAGER] Your image is to old (%s), you need to flash new !!" %getEnigmaVersionString()
-			self.session.openWithCallback(self.checkDateCallback, MessageBox, message, default = False)
-			return
+                if datedelay > date.today():
+                        self.updating = True
+                        self.activityTimer.start(100, False)
+                        self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
+                else:
+                        print"[SOFTWAREMANAGER] Your image is to old (%s), you need to flash new !!" %getEnigmaVersionString()
+                        self.session.openWithCallback(self.checkDateCallback, MessageBox, message, default = False)
+                        return
 
-	def checkDateCallback(self, ret):
-		print ret
-		if ret:
-			self.activityTimer.start(100, False)
-			self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
-		else:
-			self.close()
-			return
+        def checkDateCallback(self, ret):
+                print ret
+                if ret:
+                        self.activityTimer.start(100, False)
+                        self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
+                else:
+                        self.close()
+                        return
 
-	def checkTraficLight(self):
-		from urllib import urlopen
-		import socket
-		currentTimeoutDefault = socket.getdefaulttimeout()
-		socket.setdefaulttimeout(3)
-		message = ""
-		picon = None
-		default = True
-		doUpdate = True
-		# TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
-		# run in parallel to the package update.
-		try:
-			urlopenATV = "http://ampel.mynonpublic.com/Ampel/index.php"
-			d = urlopen(urlopenATV)
-			tmpStatus = d.read()
-			if (os.path.exists("/etc/.beta") and 'rot.png' in tmpStatus) or 'gelb.png' in tmpStatus:
-				message = _("Caution update not yet tested !!") + "\n" + _("Update at your own risk") + "\n\n" + _("For more information see http://www.opena.tv") + "\n\n"# + _("Last Status Date") + ": "  + statusDate + "\n\n"
-				picon = MessageBox.TYPE_ERROR
-				default = False
-			elif 'rot.png' in tmpStatus:
-				message = _("Update is reported as faulty !!") + "\n" + _("Aborting updateprogress") + "\n\n" + _("For more information see http://www.opena.tv")# + "\n\n" + _("Last Status Date") + ": " + statusDate
-				picon = MessageBox.TYPE_ERROR
-				default = False
-				doUpdate = False
-		except:
-			message = _("The status of the current update could not be checked because http://www.opena.tv could not be reached for some reason") + "\n"
-			picon = MessageBox.TYPE_ERROR
-			default = False
-		socket.setdefaulttimeout(currentTimeoutDefault)
+        #def checkTraficLight(self):
+        #        from urllib import urlopen
+        #        import socket
+        #        currentTimeoutDefault = socket.getdefaulttimeout()
+        #        socket.setdefaulttimeout(3)
+        #        message = ""
+        #        picon = None
+        #        default = True
+        #        doUpdate = True
+                # TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
+                # run in parallel to the package update.
+        #        try:
+        #                urlopenSTATUS = "http://status.openmips.com/index.php"
+        #                d = urlopen(urlopenSTATUS)
+        #                tmpStatus = d.read()
+        #                if config.softwareupdate.updatebeta.getValue() and 'gelb.png' in tmpStatus:
+        #                        message = _("Caution update not tested yet !!") + "\n" + _("Update at your own risk") + "\n\n" + _("For more information see http://www.openmips.com") + "\n\n"# + _("Last Status Date") + ": "  + statusDate + "\n\n"
+        #                        picon = MessageBox.TYPE_ERROR
+        #                        default = False
+        #                elif 'rot.png' in tmpStatus:
+        #                        if config.softwareupdate.updateisunstable.getValue():
+        #                                message = _("Update is reported as faulty !!") + "\n" + _("But you have activated \"Install unstable updates\"") + "\n" + _("Update anyway?")# + "\n\n" + _("Last Status Date") + ": " + statusDate
+        #                                picon = MessageBox.TYPE_ERROR
+        #                                default = False
+        #                        else:
+        #                                message = _("Update is reported as faulty !!") + "\n" + _("Aborting updateprogress") + "\n\n" + _("For more information see http://www.openmips.com")# + "\n\n" + _("Last Status Date") + ": " + statusDate
+        #                                picon = MessageBox.TYPE_ERROR
+        #                                default = False
+        #                                doUpdate = False
+        #        except:
+        #                message = _("The status of the current update could not be checked because http://www.openmips.com could not be reached for some reason") + "\n"
+        #                picon = MessageBox.TYPE_ERROR
+        #                default = False
+        #        socket.setdefaulttimeout(currentTimeoutDefault)
 
-		if default:
-		        # We'll ask later
-		        self.runUpgrade(True)
-		else:
-			if doUpdate:
-				# Ask for Update, 
-				message += _("Do you want to update your box?")+"\n"+_("After pressing OK, please wait!")
-				self.session.openWithCallback(self.runUpgrade, MessageBox, message, default = default, picon = picon)
-			else:
-				# Don't Update RED LIGHT !!
-				self.session.open(MessageBox, message, picon, timeout = 20)
-				self.runUpgrade(False)
+        #        if default:
+                        # We'll ask later
+        #                self.runUpgrade(True)
+        #        else:
+        #                if doUpdate:
+                                # Ask for Update, 
+        #                        message += _("Do you want to update your Receiver?")+"\n"+_("After pressing OK, please wait!")
+        #                        self.session.openWithCallback(self.runUpgrade, MessageBox, message, default = default, picon = picon)
+        #                else:
+                                # Don't Update RED LIGHT !!
+        #                        self.session.open(MessageBox, message, picon, timeout = 20)
+        #                        self.runUpgrade(False)
 
-	def runUpgrade(self, result):
-		self.TraficResult = result
-		if result:
-			self.TraficCheck = True
-			self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
-		else:
-			self.TraficCheck = False
-			self.activityTimer.stop()
-			self.activityslider.setValue(0)
-			self.exit()
+        def runUpgrade(self, result):
+                self.TraficResult = result
+                if result:
+                        self.TraficCheck = True
+                        self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
+                else:
+                        self.TraficCheck = False
+                        self.activityTimer.stop()
+                        self.activityslider.setValue(0)
+                        self.exit()
 
-	def doActivityTimer(self):
-		if not self.CheckDateDone:
-			self.activityTimer.stop()
-			self.CheckDate()
-			return
-		self.activity += 1
-		if self.activity == 100:
-			self.activity = 0
-		self.activityslider.setValue(self.activity)
+        def doActivityTimer(self):
+                if not self.CheckDateDone:
+                        self.activityTimer.stop()
+                        self.CheckDate()
+                        return
+                self.activity += 1
+                if self.activity == 100:
+                        self.activity = 0
+                self.activityslider.setValue(self.activity)
 
-	def ipkgCallback(self, event, param):
-		if event == IpkgComponent.EVENT_DOWNLOAD:
-			self.status.setText(_("Downloading"))
-		elif event == IpkgComponent.EVENT_UPGRADE:
-			if self.sliderPackages.has_key(param):
-				self.slider.setValue(self.sliderPackages[param])
-			self.package.setText(param)
-			self.status.setText(_("Upgrading") + ": %s/%s" % (self.packages, self.total_packages))
-			if not param in self.processed_packages:
-				self.processed_packages.append(param)
-				self.packages += 1
-		elif event == IpkgComponent.EVENT_INSTALL:
-			self.package.setText(param)
-			self.status.setText(_("Installing"))
-			if not param in self.processed_packages:
-				self.processed_packages.append(param)
-				self.packages += 1
-		elif event == IpkgComponent.EVENT_REMOVE:
-			self.package.setText(param)
-			self.status.setText(_("Removing"))
-			if not param in self.processed_packages:
-				self.processed_packages.append(param)
-				self.packages += 1
-		elif event == IpkgComponent.EVENT_CONFIGURING:
-			self.package.setText(param)
-			self.status.setText(_("Configuring"))
+        def ipkgCallback(self, event, param):
+                if event == IpkgComponent.EVENT_DOWNLOAD:
+                        self.status.setText(_("Downloading"))
+                elif event == IpkgComponent.EVENT_UPGRADE:
+                        if self.sliderPackages.has_key(param):
+                                self.slider.setValue(self.sliderPackages[param])
+                        self.package.setText(param)
+                        self.status.setText(_("Upgrading") + ": %s/%s" % (self.packages, self.total_packages))
+                        if not param in self.processed_packages:
+                                self.processed_packages.append(param)
+                                self.packages += 1
+                elif event == IpkgComponent.EVENT_INSTALL:
+                        self.package.setText(param)
+                        self.status.setText(_("Installing"))
+                        if not param in self.processed_packages:
+                                self.processed_packages.append(param)
+                                self.packages += 1
+                elif event == IpkgComponent.EVENT_REMOVE:
+                        self.package.setText(param)
+                        self.status.setText(_("Removing"))
+                        if not param in self.processed_packages:
+                                self.processed_packages.append(param)
+                                self.packages += 1
+                elif event == IpkgComponent.EVENT_CONFIGURING:
+                        self.package.setText(param)
+                        self.status.setText(_("Configuring"))
 
-		elif event == IpkgComponent.EVENT_MODIFIED:
-			if config.plugins.softwaremanager.overwriteConfigFiles.getValue() in ("N", "Y"):
-				self.ipkg.write(True and config.plugins.softwaremanager.overwriteConfigFiles.getValue())
-			else:
-				self.session.openWithCallback(
-					self.modificationCallback,
-					MessageBox,
-					_("A configuration file (%s) was modified since Installation.\nDo you want to keep your version?") % (param)
-				)
-		elif event == IpkgComponent.EVENT_ERROR:
-			self.error += 1
-		elif event == IpkgComponent.EVENT_DONE:
-			if self.updating:
-				self.updating = False
-				self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
-			elif self.ipkg.currentCommand == IpkgComponent.CMD_UPGRADE_LIST:
-				self.total_packages = len(self.ipkg.getFetchedList())
-				if self.total_packages and not self.TraficCheck:
-					self.checkTraficLight()
-					return
-				if self.total_packages and self.TraficCheck and self.TraficResult:
-					#message = _("Do you want to update your %s %s?") % (getMachineBrand(), getMachineName()) + "                 \n(%s " % self.total_packages + _("Packages") + ")"
-					try:
-						if config.plugins.softwaremanager.updatetype.getValue() == "cold":
-							self.startActualUpgrade("cold")
-						#	choices = [(_("Show new Packages"), "show"), (_("Unattended upgrade without GUI and reboot system"), "cold"), (_("Cancel"), "")]
-						else:
-							self.startActualUpgrade("hot")
-					except:
-						self.startActualUpgrade("hot")
-					#	choices = [(_("Show new Packages"), "show"), (_("Upgrade and ask to reboot"), "hot"), (_("Cancel"), "")]
-					#self.session.openWithCallback(self.startActualUpgrade, ChoiceBox, title=message, list=choices)
-				else:
-					self.session.openWithCallback(self.close, MessageBox, _("Nothing to upgrade"), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-			elif self.error == 0:
-				self.slider.setValue(4)
-				self.activityTimer.stop()
-				self.activityslider.setValue(0)
-				self.package.setText(_("Done - Installed or upgraded %d packages") % self.packages)
-				self.status.setText(self.oktext)
-			else:
-				self.activityTimer.stop()
-				self.activityslider.setValue(0)
-				error = _("your %s %s might be unusable now. Please consult the manual for further assistance before rebooting your %s %s.") % (getMachineBrand(), getMachineName())
-				if self.packages == 0:
-					error = _("No packages were upgraded yet. So you can check your network and try again.")
-				if self.updating:
-					error = _("Your %s %s isn't connected to the internet properly. Please check it and try again.") % (getMachineBrand(), getMachineName())
-				self.status.setText(_("Error") +  " - " + error)
-		#print event, "-", param
-		pass
+                elif event == IpkgComponent.EVENT_MODIFIED:
+                        if config.plugins.softwaremanager.overwriteConfigFiles.getValue() in ("N", "Y"):
+                                self.ipkg.write(True and config.plugins.softwaremanager.overwriteConfigFiles.getValue())
+                        else:
+                                self.session.openWithCallback(
+                                        self.modificationCallback,
+                                        MessageBox,
+                                        _("A configuration file (%s) was modified since Installation.\nDo you want to keep your version?") % (param)
+                                )
+                elif event == IpkgComponent.EVENT_ERROR:
+                        self.error += 1
+                elif event == IpkgComponent.EVENT_DONE:
+                        if self.updating:
+                                self.updating = False
+                                self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE_LIST)
+                        elif self.ipkg.currentCommand == IpkgComponent.CMD_UPGRADE_LIST:
+                                self.total_packages = len(self.ipkg.getFetchedList())
+                                #if self.total_packages and not self.TraficCheck:
+                                #        self.checkTraficLight()
+                                #        return
+                                if self.total_packages and self.TraficCheck and self.TraficResult:
+                                        message = _("Do you want to update your Receiver?") + "                 \n(%s " % self.total_packages + _("Packages") + ")"
+                                        if config.plugins.softwaremanager.updatetype.getValue() == "cold":
+                                                choices = [(_("Show new Packages"), "show"), (_("Unattended upgrade without GUI and reboot system"), "cold"), (_("Cancel"), "")]
+                                        else:
+                                                choices = [(_("Show new Packages"), "show"), (_("Upgrade and ask to reboot"), "hot"), (_("Cancel"), "")]
+                                        self.session.openWithCallback(self.startActualUpgrade, ChoiceBox, title=message, list=choices)
+                                else:
+                                        self.session.openWithCallback(self.close, MessageBox, _("Nothing to upgrade"), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+                        elif self.error == 0:
+                                self.slider.setValue(4)
+                                self.activityTimer.stop()
+                                self.activityslider.setValue(0)
+                                self.package.setText(_("Done - Installed or upgraded %d packages") % self.packages)
+                                self.status.setText(self.oktext)
+                        else:
+                                self.activityTimer.stop()
+                                self.activityslider.setValue(0)
+                                error = _("your Receiver might be unusable now. Please consult the manual for further assistance before rebooting your Receiver.")
+                                if self.packages == 0:
+                                        error = _("No packages were upgraded yet. So you can check your network and try again.")
+                                if self.updating:
+                                        error = _("Your Receiver isn't connected to the internet properly. Please check it and try again.")
+                                self.status.setText(_("Error") +  " - " + error)
+                #print event, "-", param
+                pass
 
-	def startActualUpgrade(self, answer):
-		if not answer or not answer[1]:
-			self.close()
-			return
-		if answer[1] == "cold":
-			self.session.open(TryQuitMainloop,retvalue=42)
-			self.close()
-		elif answer[1] == "show":
-			global plugin_path
-			self.session.openWithCallback(self.ipkgCallback(IpkgComponent.EVENT_DONE, None), ShowUpdatePackages, plugin_path)
-		else:
-			self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE, args = {'test_only': False})
+        def startActualUpgrade(self, answer):
+                if not answer or not answer[1]:
+                        self.close()
+                        return
+                if answer[1] == "cold":
+                        self.session.open(TryQuitMainloop,retvalue=42)
+                        self.close()
+                elif answer[1] == "show":
+                        global plugin_path
+                        self.session.openWithCallback(self.ipkgCallback(IpkgComponent.EVENT_DONE, None), ShowUpdatePackages, plugin_path)
+                else:
+                        self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE, args = {'test_only': False})
 
-	def modificationCallback(self, res):
-		self.ipkg.write(res and "N" or "Y")
+        def modificationCallback(self, res):
+                self.ipkg.write(res and "N" or "Y")
 
-	def exit(self):
-		if not self.ipkg.isRunning():
-			if self.packages != 0 and self.error == 0:
-				self.session.openWithCallback(self.exitAnswer, MessageBox, _("Upgrade finished.") +" "+_("Do you want to reboot your %s %s?") % (getMachineBrand(), getMachineName()))
-			else:
-				self.close()
-		else:
-			if not self.updating:
-				self.close()
+        def exit(self):
+                if not self.ipkg.isRunning():
+                        if self.packages != 0 and self.error == 0:
+                                self.session.openWithCallback(self.exitAnswer, MessageBox, _("Upgrade finished.") +" "+_("Do you want to reboot your Receiver?"))
+                        else:
+                                self.close()
+                else:
+                        if not self.updating:
+                                self.close()
 
-	def exitAnswer(self, result):
-		if result is not None and result:
-			self.session.open(TryQuitMainloop,retvalue=2)
-		self.close()
+        def exitAnswer(self, result):
+                if result is not None and result:
+                        self.session.open(TryQuitMainloop,retvalue=2)
+                self.close()
 
 
 
