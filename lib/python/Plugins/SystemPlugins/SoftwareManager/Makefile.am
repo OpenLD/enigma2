@@ -8,8 +8,7 @@ install_PYTHON =	\
 	BackupRestore.py \
 	ImageWizard.py \
 	SoftwareTools.py \
-	ImageBackup.py \
-	Flash_online.py
+	ImageBackup.py
 
 dist_install_DATA = \
 	imagewizard.xml \
