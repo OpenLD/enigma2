@@ -109,7 +109,7 @@ class DeviceManager(Screen):
 <widget name="key_green" position="235,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <widget name="key_yellow" position="415,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <widget name="key_blue" position="595,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/div-h.png" position="10,0" size="780,2" alphatest="on" />
+			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/div-h.png" position="10,0" size="780,2" alphatest="on" />
 			<widget source="menu" render="Listbox" position="10,10" size="780,510" scrollbarMode="showOnDemand" backgroundColor="transpBlack" transparent="1">
 				<convert type="TemplatedMultiContent">
 				{"templates":
