@@ -23,7 +23,7 @@ def InitSetupDevices():
 		language.activateLanguage(configElement.getValue())
 
 	config.osd = ConfigSubsection();
-	config.osd.language = ConfigText(default = "de_DE");
+	config.osd.language = ConfigText(default = "es_ES");
 	config.osd.language.addNotifier(languageNotifier)
 
 	config.parental = ConfigSubsection();
