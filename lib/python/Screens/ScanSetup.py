@@ -576,7 +576,6 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
                 if frontendData is not None and len(nim_list) > 0:
                         self.scan_nims.setValue(str(frontendData.get("tuner_number", nim_list[0][0])))
 
-
 		# status
 		self.scan_snr = ConfigSlider()
 		self.scan_snr.enabled = False
