@@ -498,7 +498,7 @@ class ChannelSelectionEPG:
 		self.epgcache = eEPGCache.getInstance()
 		test = [ 'ITBDSECX', (refstr, 1, -1, 60) ] # search next 24 hours
 		self.list = [] if self.epgcache is None else self.epgcache.lookupEvent(test)
-		if self.list is None:
+		if len(self.list) < 2:
 			return
 		eventid = self.list[0][0]
 		eventidnext = self.list[1][0]
@@ -2094,6 +2094,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
                                 self.setCurrentSelection(current_ref)
                 selected_ref = self.getCurrentSelection()
 		if selected_ref and current_ref and selected_ref.getChannelNum() != current_ref.getChannelNum():
+                        oldref = self.session.nav.currentlyPlayingServiceReference
                         if oldref and selected_ref == oldref or (oldref != current_ref and selected_ref == current_ref):
                                 self.session.nav.currentlyPlayingServiceOrGroup = selected_ref
                                 from Components.Renderer.ChannelNumber import doRenumber
