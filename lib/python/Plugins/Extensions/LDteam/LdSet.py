@@ -111,18 +111,18 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
+
+		mypixmap = mypath + "hdd.png"
+		png = LoadPixmap(mypixmap)
+		name = "Admin Dispositivos"
+		idx = 0
+		res = (name, png, idx)
+		self.list.append(res)
 		
 		mypixmap = mypath + "usb.png"
 		png = LoadPixmap(mypixmap)
 		name = "Formatear USB"
 		idx = 2
-		res = (name, png, idx)
-		self.list.append(res)
-		
-		mypixmap = mypath + "hdd.png"
-		png = LoadPixmap(mypixmap)
-		name = "Formatear HDD"
-		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 		
