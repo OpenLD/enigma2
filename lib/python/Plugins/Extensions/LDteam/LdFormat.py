@@ -43,7 +43,7 @@ Pulse el boton rojo para continuar cuando crea estar listo y su USB se encuentre
 	
 	
 	def stepOne(self):
-		msg = """Conecte el USB al GigaBlue
+		msg = """Conecte el USB al Receptor
 Pulse el boton rojo para continuar cuando se encuentre listo.
 """
 		self.devices = self.get_Devicelist()
@@ -130,7 +130,7 @@ Pulse el boton rojo para continuar.
 	
 	
 	def succesS(self):
-		self.wizClose("USB formateado.\nAhora puede utilizar el LD Team Devices Manager para (Mapear) asignar el punto de montaje preferido.")
+		self.wizClose("USB formateado.\nAhora puede utilizar el Admin de Dispositivos para (Mapear) asignar el punto de montaje que desea (media/hdd media/usb).")
 
 	def wizClose(self, msg):
 		self.session.openWithCallback(self.close, MessageBox, msg, MessageBox.TYPE_INFO)
