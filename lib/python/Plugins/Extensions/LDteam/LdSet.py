@@ -54,14 +54,17 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		self.sel = self.sel[2]
 		
 		if self.sel == 0:
-			from Plugins.Extensions.LDteam.LdHddSetup import HddSetup
-			self.session.open(HddSetup)
+			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
+			self.session.open(DeviceManager)
 		elif self.sel == 1:
 			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
 			self.session.open(SundtekControlCenter)
+		elif self.sel == 2:
+			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
+			self.session.open(LD_UsbFormat)
 		elif self.sel == 3:
-			from Plugins.Extensions.LDteam.LdSwapManager import SwapManager
-			self.session.open(SwapManager)
+			from Plugins.Extensions.LDteam.LdDevice import LDSwap
+			self.session.open(LDSwap)
 		elif self.sel == 4:
 			self.session.open(LdSetupOSD3)
 		elif self.sel == 5:
@@ -81,9 +84,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 			self.session.open(LdSetupAutolanguage)
 		elif self.sel == 11:
 			self.session.open(LdSetupHttpStream)
-		elif self.sel == 12:
-			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
-			self.session.open(DeviceManager)
 		elif self.sel == 13:
 			from Plugins.Extensions.LDteam.LdPlugin import LDPluginPanel
 			self.session.open(LDPluginPanel)
@@ -112,17 +112,17 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "admin_dispositivos.png"
+		mypixmap = mypath + "usb.png"
 		png = LoadPixmap(mypixmap)
-		name = "Admin Dispositivos"
-		idx = 0
+		name = "Formatear USB"
+		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 		
 		mypixmap = mypath + "hdd.png"
 		png = LoadPixmap(mypixmap)
 		name = "Formatear HDD"
-		idx = 12
+		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 		
