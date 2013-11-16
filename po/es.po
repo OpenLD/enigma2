@@ -1349,7 +1349,7 @@ msgid "Black screen till locked"
 msgstr "Pantalla negra hasta el bloqueo"
 
 msgid "Blind scan"
-msgstr "Búsqueda Ciega"
+msgstr ""
 
 #
 msgid "Block noise reduction"
@@ -11583,12 +11583,4 @@ msgstr "Sistema Extendido"
 #
 msgid "Channel selection settings"
 msgstr "Configuración de selección de canal"
-
-#
-msgid "Storage devices"
-msgstr "Dispositivos de Almacenamiento"
-
-#
-msgid "Special Features"
-msgstr "Características especiales"
 
