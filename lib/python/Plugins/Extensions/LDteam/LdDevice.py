@@ -245,7 +245,7 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 class LDSwap(Screen):
 	skin = """
 	<screen position="339,160" size="602,410" title="OpenLD - Swap File Manager">
-<widget name="lab1" position="50,10" size="260,30" font="Regular;20" transparent="1"/>
+<widget name="lab1" position="50,10" size="260,130" font="Regular;20" transparent="1"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="45,360" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="225,360" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="405,360" size="150,30" alphatest="on"/>
