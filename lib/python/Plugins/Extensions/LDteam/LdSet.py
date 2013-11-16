@@ -63,8 +63,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
 			self.session.open(LD_UsbFormat)
 		elif self.sel == 3:
-			from Plugins.Extensions.LDteam.LdDevice import LDSwap
-			self.session.open(LDSwap)
+			from Plugins.Extensions.LDteam.LdSwapManager import Swap
+			self.session.open(Swap)
 		elif self.sel == 4:
 			self.session.open(LdSetupOSD3)
 		elif self.sel == 5:
