@@ -277,7 +277,7 @@ class Swap(Screen):
         def doCSplace(self, name):
                 if name:
                         self.new_place = name[1]
-                        myoptions = [[_("8 MB"), '8192'], [_("16 MB"), '16384'], [_("32 MB"), '32768'], [_("64 MB"), '65536'], [_("96 MB"), '98304'], [_("128 MB"), '131072'], [_("256 MB"), '262144'], [_("512 MB"), '524288'], [_("1024 MB"), '1048576']]
+                        myoptions = [[_("8 MB"), '8192'], [_("16 MB"), '16384'], [_("32 MB"), '32768'], [_("64 MB"), '65536'], [_("96 MB"), '98304'], [_("128 MB"), '131072'], [_("256 MB"), '262144'], [_("512 MB"), '524288'], [_("1024 MB"), '1048576'], [_("1256MB"), '1286144'], [_("1512MB"), '1548288']]
                         self.session.openWithCallback(self.doCSsize, ChoiceBox, title=_("Select the Swap File Size:"), list=myoptions)
 
         def doCSsize(self, swapsize):
