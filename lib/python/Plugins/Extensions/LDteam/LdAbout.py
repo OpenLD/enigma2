@@ -37,9 +37,6 @@ class LdsysInfo(Screen):
 		rc = system("df -h > /tmp/syinfo.tmp")
 		text = "BOX\n"
 		f = open("/proc/stb/info/model",'r')
- 		text += "Marca:\t" + f.readline()
- 		f.close()
-		f = open("/proc/stb/info/gbmodel",'r')
  		text += "Model:\t" + f.readline()
  		f.close()
 		f = open("/proc/stb/info/chipset",'r')
