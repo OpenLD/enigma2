@@ -744,7 +744,7 @@ class EPGSelection(Screen, HelpableScreen):
 		self.closeEventViewDialog()
 		self.close(True)
 
-	def infoKeyPressed(self, eventviewopen=False):
+	def infoKeyPressed(self, eventviewopen = False):
 		cur = self['list'].getCurrent()
 		event = cur[0]
 		service = cur[1]
