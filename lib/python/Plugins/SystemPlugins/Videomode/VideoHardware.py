@@ -98,7 +98,7 @@ class VideoHardware:
 		modes["DVI"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
 		widescreen_modes = set(["720p", "1080i"])
 
-	if getBoxType().startswith('vu') or getBoxType() == 'dm500hd' or getBoxType() == 'dm800':
+	if getBoxType().startswith('vu') or (getBoxType() in ('dm500hd', 'dm800')):
 		if about.getChipSetString().find('7358') != -1 or about.getChipSetString().find('7356') != -1 or about.getChipSetString().find('7424') != -1:
 			modes["Scart-YPbPr"] = ["720p", "1080i", "1080p", "576p", "480p", "576i", "480i"]
 		else:
