@@ -562,7 +562,7 @@ class EPGSelection(Screen, HelpableScreen):
 		self["bouquetcursoractions"].setEnabled(True)
 		self.bouquetlist_active = True
 
-	def BouquetlistHide(self, cancel=True):
+	def BouquetlistHide(self, cancel = True):
 		self["bouquetokactions"].setEnabled(False)
 		self["bouquetcursoractions"].setEnabled(False)
 		self['bouquetlist'].hide()
@@ -963,11 +963,11 @@ class EPGSelection(Screen, HelpableScreen):
 			if timer.eit == eventid and timer.service_ref.ref.toString() == refstr:
 				cb_func = lambda ret: self.removeTimer(timer)
 				menu = [(_("Yes"), 'CALLFUNC', cb_func), (_("No"), 'CALLFUNC', self.ChoiceBoxCB)]
-				self.ChoiceBoxDialog = self.session.instantiateDialog(MessageBox, text=_('Do you really want to remove the timer for %s?') % event.getEventName(), list=menu, skin_name="RemoveTimerQuestion", picon=False)
+				self.ChoiceBoxDialog = self.session.instantiateDialog(MessageBox, text=_('Do you really want to remove the timer for %s?') % event.getEventName(), list=menu, skin_name="RemoveTimerQuestion", picon = False)
 				self.showChoiceBoxDialog()
 				break
 		else:
-			newEntry = RecordTimerEntry(serviceref, checkOldTimers=True, dirname=preferredTimerPath(), *parseEvent(event))
+			newEntry = RecordTimerEntry(serviceref, checkOldTimers = True, dirname=preferredTimerPath(), *parseEvent(event))
 			self.session.openWithCallback(self.finishedAdd, TimerEntry, newEntry)
 
 	def finishedAdd(self, answer):
@@ -1011,7 +1011,7 @@ class EPGSelection(Screen, HelpableScreen):
 			if timer.eit == eventid and timer.service_ref.ref.toString() == refstr:
 				cb_func = lambda ret: self.removeTimer(timer)
 				menu = [(_("Yes"), 'CALLFUNC', cb_func), (_("No"), 'CALLFUNC', self.ChoiceBoxCB)]
-				self.ChoiceBoxDialog = self.session.instantiateDialog(MessageBox, text=_('Do you really want to remove the timer for %s?') % event.getEventName(), list=menu, skin_name="RemoveTimerQuestion", picon=False)
+				self.ChoiceBoxDialog = self.session.instantiateDialog(MessageBox, text=_('Do you really want to remove the timer for %s?') % event.getEventName(), list=menu, skin_name="RemoveTimerQuestion", picon = False)
 				self.showChoiceBoxDialog()
 				break
 		else:
@@ -1081,7 +1081,7 @@ class EPGSelection(Screen, HelpableScreen):
 			return
 		eventid = event.getEventId()
 		refstr = serviceref.ref.toString()
-		newEntry = RecordTimerEntry(serviceref, checkOldTimers=True, *parseEvent(event))
+		newEntry = RecordTimerEntry(serviceref, checkOldTimers = True, *parseEvent(event))
 		self.InstantRecordDialog = self.session.instantiateDialog(InstantRecordTimerEntry, newEntry, zap)
 		retval = [True, self.InstantRecordDialog.retval()]
 		self.session.deleteDialogWithCallback(self.finishedAdd, self.InstantRecordDialog, retval)
@@ -1240,7 +1240,7 @@ class EPGSelection(Screen, HelpableScreen):
 			self.closeEventViewDialog()
 			self.close()
 
-	def zapSelectedService(self, prev=False):
+	def zapSelectedService(self, prev = False):
 		if self.session.pipshown:
 			self.prevch = self.session.pip.getCurrentService() and str(self.session.pip.getCurrentService().toString()) or None
 		else:
