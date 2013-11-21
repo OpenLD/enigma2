@@ -56,9 +56,9 @@ def InitUsageConfig():
 	config.usage.show_infobar_on_zap = ConfigYesNo(default = True)
 	config.usage.show_infobar_on_skip = ConfigYesNo(default = True)
 	config.usage.show_infobar_on_event_change = ConfigYesNo(default = False)
-	config.usage.show_infobar_channel_number = ConfigYesNo(default = False)	
+	config.usage.show_infobar_channel_number = ConfigYesNo(default = True)	
 	config.usage.show_infobar_lite = ConfigYesNo(default = False)
-	config.usage.show_infobar_channel_number = ConfigYesNo(default = False)
+	config.usage.show_infobar_channel_number = ConfigYesNo(default = True)
 	config.usage.show_second_infobar = ConfigSelection(default = "3", choices = [("0", _("Off")), ("1", _("Event Info")), ("2", _("2nd Infobar INFO")), ("3", _("2nd Infobar ECM"))])
 	config.usage.second_infobar_timeout = ConfigSelection(default = "6", choices = [("0", _("No timeout"))] + choicelist)
 	def showsecondinfobarChanged(configElement):
