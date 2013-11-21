@@ -671,14 +671,14 @@ def InitUsageConfig():
 					("coolsingleguide", _("Show CoolSingleGuide")),
 					("coolinfoguide", _("Show CoolInfoGuide"))])
 	else:
-		config.plisettings.PLIEPG_mode = ConfigSelection(default="cooltvguide", choices = [
+		config.plisettings.PLIEPG_mode = ConfigSelection(default="pliepg", choices = [
 					("pliepg", _("Show Graphical EPG")),
 					("single", _("Show Single EPG")),
 					("multi", _("Show Multi EPG")),
 					("eventview", _("Show Eventview")),
 					("merlinepgcenter", _("Show Merlin EPG Center")),
 					("cooltvguide", _("Show CoolTVGuide"))])
-		config.plisettings.PLIINFO_mode = ConfigSelection(default="coolinfoguide", choices = [
+		config.plisettings.PLIINFO_mode = ConfigSelection(default="eventview", choices = [
 					("eventview", _("Show Eventview")),
 					("epgpress", _("Show EPG")),
 					("single", _("Show Single EPG")),
