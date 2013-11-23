@@ -18,7 +18,7 @@ config.plugins.ldteam.swapautostart = ConfigYesNo(default = False)
 
 startswap = None
 
-def SwapAutostart(reason, session=None, **kwargs):
+def SwapAutostart(reason, session = None, **kwargs):
         global startswap
         if reason == 0:
                 if config.plugins.ldteam.swapautostart.getValue():
@@ -278,7 +278,7 @@ class Swap(Screen):
                 if name:
                         self.new_place = name[1]
                         myoptions = [[_("64 MB"), '65536'], [_("96 MB"), '98304'], [_("128 MB"), '131072'], [_("256 MB"), '262144'], [_("512 MB"), '524288'], [_("1024 MB"), '1048576'], [_("1256MB"), '1286144'], [_("1512MB"), '1548288']]
-                        self.session.openWithCallback(self.doCSsize, ChoiceBox, title=_("Select the Swap File Size:"), list=myoptions)
+                        self.session.openWithCallback(self.doCSsize, ChoiceBox, title=_("Select the Swap File Size:"), list = myoptions)
 
         def doCSsize(self, swapsize):
                 if swapsize:
@@ -291,7 +291,7 @@ class Swap(Screen):
                         self.commands = []
                         self.commands.append('dd if=/dev/zero of=' + myfile + ' bs=1024 count=' + swapsize + ' 2>/dev/null')
                         self.commands.append('mkswap ' + myfile)
-                        self.Console.eBatch(self.commands, self.updateSwap, debug=True)
+                        self.Console.eBatch(self.commands, self.updateSwap, debug = True)
                 
         def autoSsWap(self):
                 if self.swap_place:
