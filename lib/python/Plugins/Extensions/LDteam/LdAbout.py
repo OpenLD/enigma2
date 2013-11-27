@@ -36,9 +36,6 @@ class LdsysInfo(Screen):
 	def updateInfo(self):
 		rc = system("df -h > /tmp/syinfo.tmp")
 		text = "BOX\n"
-		f = open("/proc/stb/info/model",'r')
- 		text += "Model:\t" + f.readline()
- 		f.close()
 		f = open("/proc/stb/info/chipset",'r')
  		text += "Chipset:\t" + f.readline() +"\n"
  		f.close()		
