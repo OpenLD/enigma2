@@ -10,7 +10,11 @@ if DREAMBOX
 SUBDIRS = dmm0 dmm1 dmm2
 endif
 
-if EBOX5000
+if E3HD
+SUBDIRS = e3hd
+endif
+
+if EBOX
 SUBDIRS = ebox5000
 endif
 
@@ -63,7 +67,7 @@ SUBDIRS = tm
 endif
 
 if VENTON
-SUBDIRS = ini3000 ini5000 ini5000r ini7000
+SUBDIRS = ini0 ini1 ini2 ini3 ini4
 endif
 
 if INI
@@ -91,7 +95,7 @@ SUBDIRS = vu2
 endif
 
 if VUDUO2
-SUBDIRS = vu
+SUBDIRS = vu3
 endif
 
 if XP1000
