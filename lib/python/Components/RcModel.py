@@ -144,14 +144,13 @@ class RcModel:
 					self.currentRcType = self.RCTYPE_IXUSSZERO
                         elif model == 'sogno-8800hd':
                                 self.currentRcType = self.RCTYPE_SOGN
-		elif os.path.exists('/proc/stb/info/vumodel'):
-			model = self.readFile('/proc/stb/info/vumodel')
-			if model == 'ultimo':
-				self.currentRcType = self.RCTYPE_VU2
-			elif model == 'duo2':
+		elif getBoxType().startswith('vu'):
+  			if getBoxType() == 'vuultimo':
+  				self.currentRcType = self.RCTYPE_VU2
+			elif getBoxType() == 'vuduo2':
 				self.currentRcType = self.RCTYPE_VU3
-			else:
-				self.currentRcType = self.RCTYPE_VU
+  			else:
+  				self.currentRcType = self.RCTYPE_VU
 		
 	def getRcLocation(self):
 		if self.currentRcType == self.RCTYPE_AZBOXHD:
