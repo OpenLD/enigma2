@@ -323,7 +323,10 @@ class PliExtraInfo(Poll, Converter, object):
 	def createFrequency(self, feraw):
 		frequency = feraw.get("frequency")
 		if frequency:
-			return str(frequency)
+			if "DVB-T" in feraw.get("tuner_type"):
+				return str(int(frequency / 1000000 + 0.5))
+			else:
+				return str(int(frequency / 1000 + 0.5))
 		return ""
 
 	def createSymbolRate(self, fedata, feraw):
@@ -334,7 +337,7 @@ class PliExtraInfo(Poll, Converter, object):
 		else:
 			symbolrate = fedata.get("symbol_rate")
 			if symbolrate:
-				return str(symbolrate)
+				return str(symbolrate / 1000)
 		return ""
 
 	def createPolarization(self, fedata):
