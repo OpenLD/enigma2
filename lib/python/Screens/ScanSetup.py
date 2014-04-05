@@ -10,6 +10,7 @@ from Tools.HardwareInfo import HardwareInfo
 from Screens.InfoBar import InfoBar
 from Screens.MessageBox import MessageBox
 from enigma import eTimer, eDVBFrontendParametersSatellite, eComponentScan, eDVBFrontendParametersTerrestrial, eDVBFrontendParametersCable, eConsoleAppContainer, eDVBResourceManager
+from Components.Converter.ChannelNumbers import channelnumbers
 
 def buildTerTransponder(frequency,
 		inversion=2, bandwidth = 7000000, fechigh = 6, feclow = 6,
@@ -320,6 +321,8 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 			self.feinfo = self.service.frontendInfo()
 			frontendData = self.feinfo and self.feinfo.getAll(True)
 
+		self.ter_channel_input = False
+		self.ter_tnumber = None
 		self.createConfig(frontendData)
 
 		del self.feinfo
@@ -378,6 +381,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 			return
 
 		self.typeOfScanEntry = None
+		self.typeOfInputEntry = None
 		self.systemEntry = None
 		self.modulationEntry = None
 		self.preDefSatList = None
@@ -390,7 +394,10 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 			self.list.append(self.typeOfScanEntry)
 		elif nim.isCompatible("DVB-T"):
 			self.typeOfScanEntry = getConfigListEntry(_("Type of scan"), self.scan_typeterrestrial)
+			self.typeOfInputEntry = getConfigListEntry(_("Use frequence or channel"), self.scan_input_as)
 			self.list.append(self.typeOfScanEntry)
+			if self.ter_channel_input:
+				self.list.append(self.typeOfInputEntry)
 
 		self.scan_networkScan.value = False
 		if nim.isCompatible("DVB-S"):
@@ -455,7 +462,10 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 					self.list.append(self.systemEntry)
 				else:
 					self.scan_ter.system.value = eDVBFrontendParametersTerrestrial.System_DVB_T
-				self.list.append(getConfigListEntry(_("Frequency"), self.scan_ter.frequency))
+				if self.ter_channel_input and self.scan_input_as.value == "channel":
+					self.list.append(getConfigListEntry(_("Channel"), self.scan_ter.channel))
+				else:
+					self.list.append(getConfigListEntry(_("Frequency"), self.scan_ter.frequency))
 				self.list.append(getConfigListEntry(_("Inversion"), self.scan_ter.inversion))
 				self.list.append(getConfigListEntry(_("Bandwidth"), self.scan_ter.bandwidth))
 				self.list.append(getConfigListEntry(_("Code rate HP"), self.scan_ter.fechigh))
@@ -482,6 +492,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 		cur = self["config"].getCurrent()
 		print "cur is", cur
 		if cur == self.typeOfScanEntry or \
+			cur == self.typeOfInputEntry or \
 			cur == self.tunerEntry or \
 			cur == self.systemEntry or \
 			cur == self.preDefSatList or \
@@ -527,12 +538,12 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 				defaultSat["inversion"] = frontendData.get("inversion", eDVBFrontendParametersSatellite.Inversion_Unknown)
 				defaultSat["symbolrate"] = frontendData.get("symbol_rate", 0) / 1000
 				defaultSat["polarization"] = frontendData.get("polarization", eDVBFrontendParametersSatellite.Polarisation_Horizontal)
-				if defaultSat["system"] == eDVBFrontendParametersSatellite.System_DVB_S2:
-					defaultSat["fec_s2"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
-					defaultSat["rolloff"] = frontendData.get("rolloff", eDVBFrontendParametersSatellite.RollOff_alpha_0_35)
-					defaultSat["pilot"] = frontendData.get("pilot", eDVBFrontendParametersSatellite.Pilot_Unknown)
-				else:
-					defaultSat["fec"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
+			if defaultSat["system"] == eDVBFrontendParametersSatellite.System_DVB_S2:
+				defaultSat["fec_s2"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
+				defaultSat["rolloff"] = frontendData.get("rolloff", eDVBFrontendParametersSatellite.RollOff_alpha_0_35)
+				defaultSat["pilot"] = frontendData.get("pilot", eDVBFrontendParametersSatellite.Pilot_Unknown)
+			else:
+				defaultSat["fec"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
 				defaultSat["modulation"] = frontendData.get("modulation", eDVBFrontendParametersSatellite.Modulation_QPSK)
 				defaultSat["orbpos"] = frontendData.get("orbital_position", 0)
 			elif ttype == "DVB-C":
@@ -543,6 +554,8 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 				defaultCab["modulation"] = frontendData.get("modulation", eDVBFrontendParametersCable.Modulation_QAM16)
 				defaultTer["system"] = frontendData.get("system", eDVBFrontendParametersCable.System_DVB_C_ANNEX_A)
 			elif ttype == "DVB-T":
+				self.ter_tnumber = frontendData.get("tuner_number", "UNKNOWN")
+				self.ter_channel_input = channelnumbers.supportedChannels(self.ter_tnumber)
 				defaultTer["frequency"] = frontendData.get("frequency", 0)
 				defaultTer["inversion"] = frontendData.get("inversion", eDVBFrontendParametersTerrestrial.Inversion_Unknown)
 				defaultTer["bandwidth"] = frontendData.get("bandwidth", 8000000)
@@ -658,6 +671,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 
 		# terrestial
 		self.scan_ter.frequency = ConfigInteger(default = 474000, limits = (50000, 999000))
+		self.scan_ter.channel = ConfigInteger(default = 21, limits = (1, 99))
 		self.scan_ter.inversion = ConfigSelection(default = defaultTer["inversion"], choices = [
 			(eDVBFrontendParametersTerrestrial.Inversion_Off, _("Off")),
 			(eDVBFrontendParametersTerrestrial.Inversion_On, _("On")),
@@ -878,8 +892,12 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport):
 
 		elif nim.isCompatible("DVB-T"):
 			if self.scan_typeterrestrial.getValue() == "single_transponder":
+				if self.scan_input_as.value == "channel":
+					frequency = channelnumbers.channel2frequency(self.scan_ter.channel.value, self.ter_tnumber)
+				else:
+					frequency = self.scan_ter.frequency.value * 1000
 				self.addTerTransponder(tlist,
-						self.scan_ter.frequency.getValue() * 1000,
+						frequency,
 						inversion = self.scan_ter.inversion.getValue(),
 						bandwidth = self.scan_ter.bandwidth.getValue(),
 						fechigh = self.scan_ter.fechigh.getValue(),
