@@ -48,7 +48,10 @@ class HardwareInfo:
 		return HardwareInfo.device_version
 
 	def has_hdmi(self):
-		return not (HardwareInfo.device_name == 'dm800' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version == None))
+		return (getBoxType().startswith('gb') or getBoxType().startswith('vu') or getBoxType() == 'dm7020hd' or getBoxType() == 'dm800se' or getBoxType() == 'dm500hd' or (getBoxType() == 'dm8000' and HardwareInfo.device_version != None))
+
+	def has_deepstandby(self):
+		return getBoxType() != 'dm800'
 
 	def linux_kernel(self):
 		try:
