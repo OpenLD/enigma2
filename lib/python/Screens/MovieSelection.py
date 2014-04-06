@@ -464,11 +464,11 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
 			"description": config.movielist.description.getValue(),
 			"movieoff": config.usage.on_movie_eof.getValue()
 		}
-		self.loadLocalSettings()
-
 		self.movieOff = self.settings["movieoff"]
 
 		self["list"] = MovieList(None, sort_type=self.settings["moviesort"], descr_state=self.settings["description"])
+
+		self.loadLocalSettings()
 
 		self.list = self["list"]
 		self.selectedmovie = selectedmovie
