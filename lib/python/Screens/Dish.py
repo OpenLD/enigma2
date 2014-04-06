@@ -136,6 +136,9 @@ class Dish(Screen):
 			self.__toHide()
 			print "[Dish] tuning failed"
 
+	def dishState(self):
+		return self.__state
+
 	def configChanged(self, configElement):
 		self.showdish = configElement.getValue()
 		if configElement.getValue() == "off":
