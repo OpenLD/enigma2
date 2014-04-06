@@ -548,8 +548,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, \
         def up(self):
                 slist = self.servicelist
                 if slist and slist.dopipzap:
-			if "keep" not in config.usage.servicelist_cursor_behavior.value:
-				slist.moveUp()
+                        slist.moveUp()
                         self.session.execDialog(slist)
                 else:
                         self.showMovies()
@@ -557,8 +556,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, \
         def down(self):
                 slist = self.servicelist
                 if slist and slist.dopipzap:
-			if "keep" not in config.usage.servicelist_cursor_behavior.value:
-				slist.moveDown()
+                        slist.moveDown()
                         self.session.execDialog(slist)
                 else:
                         self.showMovies()
