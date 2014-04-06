@@ -2614,7 +2614,8 @@ class InfoBarPiP:
 			slist = self.servicelist
 			if slist and slist.dopipzap:
 				slist.togglePipzap()
-			del self.session.pip
+			if self.session.pipshown:
+				del self.session.pip
 			if SystemInfo["LcdDisplay"]:
 				if config.lcd.modepip.value >= "1":
 					f = open("/proc/stb/lcd/mode", "w")
