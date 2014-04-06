@@ -84,7 +84,7 @@ wasRecTimerWakeup = False
 
 # please do not translate log messages
 class RecordTimerEntry(timer.TimerEntry, object):
-	def __init__(self, serviceref, begin, end, name, description, eit, disabled = False, justplay = False, afterEvent = AFTEREVENT.AUTO, checkOldTimers = False, dirname = None, tags = None, descramble = 'notset', record_ecm = 'notset', isAutoTimer = False, always_zap = False, MountPath = None):
+	def __init__(self, serviceref, begin, end, name, description, eit, disabled = False, justplay = False, afterEvent = AFTEREVENT.AUTO, checkOldTimers = False, dirname = None, tags = None, descramble = 'notset', record_ecm = 'notset', isAutoTimer = False, always_zap = False):
 		timer.TimerEntry.__init__(self, int(begin), int(end))
 		if checkOldTimers == True:
 			if self.begin < time() - 1209600:
@@ -115,7 +115,6 @@ class RecordTimerEntry(timer.TimerEntry, object):
 		self.autoincrease = False
 		self.autoincreasetime = 3600 * 24 # 1 day
 		self.tags = tags or []
-		self.MountPath = None
 
 		if descramble == 'notset' and record_ecm == 'notset':
 			if config.recording.ecm_data.getValue() == 'descrambled+ecm':
@@ -420,7 +419,7 @@ class RecordTimerEntry(timer.TimerEntry, object):
 				self.keypress() #this unbinds the keypress detection
 				if not Screens.Standby.inStandby: # not already in standby
 					Notifications.AddNotificationWithCallback(self.sendStandbyNotification, MessageBox, _("A finished record timer wants to set your\n%s %s to standby. Do that now?") % (getMachineBrand(), getMachineName()), timeout = 180)
-			elif self.afterEvent == AFTEREVENT.DEEPSTANDBY:
+			elif self.afterEvent == AFTEREVENT.DEEPSTANDBY or (wasRecTimerWakeup and self.afterEvent == AFTEREVENT.AUTO):
 				if (abs(NavigationInstance.instance.RecordTimer.getNextRecordingTime() - time()) <= 900 or abs(NavigationInstance.instance.RecordTimer.getNextZapTime() - time()) <= 900) or NavigationInstance.instance.RecordTimer.getStillRecording():
 					print '[Timer] Recording or Recording due is next 15 mins, not return to deepstandby'
 					return True
@@ -428,15 +427,7 @@ class RecordTimerEntry(timer.TimerEntry, object):
 					if Screens.Standby.inStandby: # in standby
 						quitMainloop(1)
 					else:
-						Notifications.AddNotificationWithCallback(self.sendTryQuitMainloopNotification, MessageBox, _("A finished record timer wants to shut down\nyour %s %s. Shutdown now?") % (getMachineBrand(), getMachineName()), default = True, timeout = 180)
-			elif wasRecTimerWakeup and self.afterEvent == AFTEREVENT.AUTO:
-				if (abs(NavigationInstance.instance.RecordTimer.getNextRecordingTime() - time()) <= 900 or abs(NavigationInstance.instance.RecordTimer.getNextZapTime() - time()) <= 900) or NavigationInstance.instance.RecordTimer.getStillRecording():
-					print '[Timer] Recording or Recording due is next 15 mins, not return to deepstandby'
-					return True
-				if not Screens.Standby.inTryQuitMainloop: # not a shutdown messagebox is open
-					if Screens.Standby.inStandby: # in standby
-						quitMainloop(1)
-
+						Notifications.AddNotificationWithCallback(self.sendTryQuitMainloopNotification, MessageBox, _("A finished record timer wants to shut down\nyour %s %s. Shutdown now?") % (getMachineBrand(), getMachineName()), timeout = 180)
 			return True
 
 	def keypress(self, key=None, flag=1):
@@ -784,15 +775,14 @@ class RecordTimer(timer.Timer):
 		return -1
 
 	def getStillRecording(self):
-		now = time()
 		isStillRecording = False
+		now = time()
 		for timer in self.timer_list:
 			if timer.isStillRecording:
 				isStillRecording = True
 				break
-			if (abs(timer.begin - now) <= 10):
+			elif (abs(timer.begin - now) <= 10):
 				isStillRecording = True
-				print "[Timer] new recording just started"
 				break
 		return isStillRecording
 
@@ -851,6 +841,7 @@ class RecordTimer(timer.Timer):
 
 		isAutoTimer = False
 		bt = None
+		check_offset_time = not config.recording.margin_before.getValue() and not config.recording.margin_after.getValue()
 		end = begin + duration
 		refstr = str(service)
 		for x in self.timer_list:
@@ -887,57 +878,81 @@ class RecordTimer(timer.Timer):
 							break
 			if check:
 				timer_end = x.end
-				if x.justplay and (timer_end - x.begin) <= 1:
-					timer_end += 60
+				timer_begin = x.begin
+				type_offset = 0
+				if not x.repeated and check_offset_time:
+					if 0 < end - timer_end <= 59:
+						timer_end = end
+					elif 0 < timer_begin - begin <= 59:
+						timer_begin = begin
+				if x.justplay:
+					type_offset = 5
+					if (timer_end - x.begin) <= 1:
+						timer_end += 60
+				if x.always_zap:
+					type_offset = 10
+
 				if x.repeated != 0:
 					if bt is None:
 						bt = localtime(begin)
-						et = localtime(end)
-						bday = bt.tm_wday
-						begin2 = bday * 1440 + bt.tm_hour * 60 + bt.tm_min
-						end2   = et.tm_wday * 1440 + et.tm_hour * 60 + et.tm_min
+						bday = bt.tm_wday;
+						begin2 = 1440 + bt.tm_hour * 60 + bt.tm_min
+						end2 = begin2 + duration / 60
 					if x.repeated & (1 << bday):
 						xbt = localtime(x.begin)
 						xet = localtime(timer_end)
-						xbegin = bday * 1440 + xbt.tm_hour * 60 + xbt.tm_min
-						xend   = bday * 1440 + xet.tm_hour * 60 + xet.tm_min
+						xbegin = 1440 + xbt.tm_hour * 60 + xbt.tm_min
+						xend = xbegin + ((timer_end - x.begin) / 60)
 						if xend < xbegin:
 							xend += 1440
 						if begin2 < xbegin <= end2:
 							if xend < end2: # recording within event
 								time_match = (xend - xbegin) * 60
-								type = 3
+								type = type_offset + 3
 							else:           # recording last part of event
 								time_match = (end2 - xbegin) * 60
-								type = 1
+								type = type_offset + 1
 						elif xbegin <= begin2 <= xend:
 							if xend < end2: # recording first part of event
 								time_match = (xend - begin2) * 60
-								type = 4
+								type = type_offset + 4
 							else:           # recording whole event
 								time_match = (end2 - begin2) * 60
-								type = 2
+								type = type_offset + 2
+						elif xbt.tm_yday < xet.tm_yday:
+							xbegin -= 1440
+							xend -= 1440
+							if begin2 < xbegin <= end2:
+								if xend < end2: # recording within event
+									time_match = (xend - xbegin) * 60
+									type = type_offset + 3
+								else:           # recording last part of event
+									time_match = (end2 - xbegin) * 60
+									type = type_offset + 1
+							elif xbegin <= begin2 <= xend:
+								if xend < end2: # recording first part of event
+									time_match = (xend - begin2) * 60
+									type = type_offset + 4
+								else:           # recording whole event
+									time_match = (end2 - begin2) * 60
+									type = type_offset + 2
 				else:
-					if begin < x.begin <= end:
+					if begin < timer_begin <= end:
 						if timer_end < end: # recording within event
-							time_match = timer_end - x.begin
-							type = 3
+							time_match = timer_end - timer_begin
+							type = type_offset + 3
 						else:           # recording last part of event
-							time_match = end - x.begin
-							type = 1
-					elif x.begin <= begin <= timer_end:
+							time_match = end - timer_begin
+							type = type_offset + 1
+					elif timer_begin <= begin <= timer_end:
 						if timer_end < end: # recording first part of event
 							time_match = timer_end - begin
-							type = 4
+							type = type_offset + 4
 							if x.justplay:
-								type = 2
+								type = type_offset + 2
 						else: # recording whole event
 							time_match = end - begin
-							type = 2
-				if x.justplay:
-					type += 5
-				elif x.always_zap:
-					type += 10
+							type = type_offset + 2
 
 				if time_match:
 					returnValue = (time_match, type, isAutoTimer)
