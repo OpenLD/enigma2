@@ -959,10 +959,9 @@ class RecordTimer(timer.Timer):
 							time_match = timer_end - begin
 							type = type_offset + 4
 							if x.justplay:
-								type = 2
+								type = type_offset + 2
 						else: # recording whole event
 							time_match = end - begin
-							type = 2
 							type = type_offset + 2
 
 				if time_match:
