@@ -15,7 +15,7 @@ from ServiceReference import ServiceReference
 from Screens.TimerEntry import TimerEntry, TimerLog
 from Tools.BoundFunction import boundFunction
 from Tools.FuzzyDate import FuzzyTime
-from Tools.Directories import resolveFilename, SCOPE_HDD
+from Tools.Directories import resolveFilename, SCOPE_HDD, fileExists
 from time import time, localtime
 from timer import TimerEntry as RealTimerEntry
 from enigma import eServiceCenter
@@ -188,7 +188,7 @@ class TimerEditList(Screen):
 		if timer:
 			try:
 				name = str(timer.name)
-				time = ("%s %s ... %s") % (FuzzyTime(timer.begin)[0], FuzzyTime(timer.begin)[1], FuzzyTime(timer.end)[1])
+				time = "%s %s ... %s" % (FuzzyTime(timer.begin)[0], FuzzyTime(timer.begin)[1], FuzzyTime(timer.end)[1])
 				duration = ("(%d " + _("mins") + ")") % ((timer.end - timer.begin) / 60)
 				service = str(timer.service_ref.getServiceName())
 
@@ -226,7 +226,6 @@ class TimerEditList(Screen):
 			return cmp(x[0].begin, y[0].begin)
 
 		list = self.list
-		print list
 		del list[:]
 		list.extend([(timer, False) for timer in self.session.nav.RecordTimer.timer_list])
 		list.extend([(timer, True) for timer in self.session.nav.RecordTimer.processed_timers])
@@ -269,7 +268,10 @@ class TimerEditList(Screen):
 		onhdd = False
 		self.moviename = f
 		path = resolveFilename(SCOPE_HDD)
-		files = os.listdir(path)
+		try:
+			files = os.listdir(path)
+		except:
+			files = ""
 		for file in files:
 			if file.startswith(f):
 				onhdd = True
@@ -293,10 +295,11 @@ class TimerEditList(Screen):
 		elif answer[1] == 'yes':
 			self.removeTimer(True)
 		elif answer[1] == 'yesremove':
-			if config.EMC.movie_trashcan_enable.getValue():
-				trashpath = config.EMC.movie_trashcan_path.getValue()
-				self.MoveToTrash(trashpath)
-			elif config.usage.movielist_trashcan.getValue():
+			if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/EnhancedMovieCenter/plugin.pyo"):
+				if config.EMC.movie_trashcan_enable.value:
+					trashpath = config.EMC.movie_trashcan_path.value
+					self.MoveToTrash(trashpath)
+			elif config.usage.movielist_trashcan.value:
 				trashpath = resolveFilename(SCOPE_HDD) + '.Trash'
 				self.MoveToTrash(trashpath)
 			else:

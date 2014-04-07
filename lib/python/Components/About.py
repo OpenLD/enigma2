@@ -1,12 +1,12 @@
-from enigma import getImageVersionString
+from boxbranding import getImageVersion
 from sys import modules
 import socket, fcntl, struct
 
 def getVersionString():
-	return getImageVersionString()
+	return getImageVersion()
 
 def getEnigmaVersionString():
-	return getImageVersionString()
+	return getImageVersion()
 	
 def getKernelVersionString():
 	try:
@@ -16,15 +16,15 @@ def getKernelVersionString():
 		return kernelversion
 	except:
 		return _("unknown")
-
-def getModelString():        
-        try:
-                file = open("/proc/stb/info/boxtype", "r")
-                model = file.readline().strip()
-                file.close()
-                return model
-        except IOError:
-                return "unknown" 
+	
+def getModelString():	
+	try:
+		file = open("/proc/stb/info/boxtype", "r")
+		model = file.readline().strip()
+		file.close()
+		return model
+	except IOError:
+		return "unknown"		
 
 def getChipSetString():
 	try:
@@ -48,7 +48,7 @@ def getCPUString():
 				elif splitted[0].startswith("Processor"):
 					system = splitted[1].split(' ')[0]
 		file.close()
-		return system 
+		return system
 	except IOError:
 		return "unavailable"
 
@@ -102,7 +102,7 @@ def getIfTransferredData(ifname):
 			data = line.split('%s:' % ifname)[1].split()
 			rx_bytes, tx_bytes = (data[0], data[8])
 			f.close()
-			return (rx_bytes, tx_bytes)
+			return rx_bytes, tx_bytes
 
 # For modules that do "from About import about"
 about = modules[__name__]

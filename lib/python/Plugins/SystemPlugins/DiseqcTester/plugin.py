@@ -1,14 +1,13 @@
+import random
+
 from Screens.Satconfig import NimSelection
 from Screens.Screen import Screen
 from Screens.TextBox import TextBox
 from Screens.MessageBox import MessageBox
-
 from Plugins.Plugin import PluginDescriptor
-
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.NimManager import nimmanager
 from Components.ResourceManager import resourcemanager
-from Components.Sources.FrontendStatus import FrontendStatus
 from Components.TuneTest import TuneTest
 from Components.Sources.List import List
 from Components.Sources.Progress import Progress
@@ -17,7 +16,6 @@ from Components.ConfigList import ConfigListScreen
 from Components.config import getConfigListEntry, ConfigSelection, ConfigYesNo
 from Components.Harddisk import harddiskmanager
 
-import random
 
 # always use:
 # setResultType(type)
@@ -246,7 +244,7 @@ class DiseqcTester(Screen, TuneTest, ResultParser):
 		self.onLayoutFinish.append(self.go)
 
 	def getProgressListComponent(self, index, status):
-		return (index, self.getTextualIndexRepresentation(index), status)
+		return index, self.getTextualIndexRepresentation(index), status
 
 	def clearProgressList(self):
 		self.list = []
@@ -430,9 +428,9 @@ class DiseqcTester(Screen, TuneTest, ResultParser):
 	# the algorithm checks, if we should continue scanning
 	def getContinueScanning(self):
 		if self.test_type == self.TEST_TYPE_QUICK or self.test_type == self.TEST_TYPE_RANDOM:
-			return (self.myindex < len(self.indexlist.keys()))
+			return self.myindex < len(self.indexlist.keys())
 		elif self.test_type == self.TEST_TYPE_COMPLETE:
-			return (self.myindex < len(self.keylist))
+			return self.myindex < len(self.keylist)
 
 	def addResult(self, index, status, failedTune, successfullyTune):
 		self.results[index] = self.results.get(index, {"failed": [], "successful": [], "status": None, "internalstatus": None})
@@ -611,15 +609,15 @@ class DiseqcTesterTestTypeSelection(Screen, ConfigListScreen):
 		self["config"].l.setList(self.list)
 
 	def keyOK(self):
-		print self.testtype.getValue()
+		print self.testtype.value
 		testtype = DiseqcTester.TEST_TYPE_QUICK
-		if self.testtype.getValue() == "quick":
+		if self.testtype.value == "quick":
 			testtype = DiseqcTester.TEST_TYPE_QUICK
-		elif self.testtype.getValue() == "random":
+		elif self.testtype.value == "random":
 			testtype = DiseqcTester.TEST_TYPE_RANDOM
-		elif self.testtype.getValue() == "complete":
+		elif self.testtype.value == "complete":
 			testtype = DiseqcTester.TEST_TYPE_COMPLETE
-		self.session.open(DiseqcTester, feid = self.feid, test_type = testtype, loopsfailed = int(self.loopsfailed.getValue()), loopssuccessful = int(self.loopssuccessful.getValue()), log = self.log.getValue())
+		self.session.open(DiseqcTester, feid = self.feid, test_type = testtype, loopsfailed = int(self.loopsfailed.value), loopssuccessful = int(self.loopssuccessful.value), log = self.log.value)
 
 	def keyCancel(self):
 		self.close()
@@ -665,10 +663,10 @@ class DiseqcTesterNimSelection(NimSelection):
 	def showNim(self, nim):
 		nimConfig = nimmanager.getNimConfig(nim.slot)
 		if nim.isCompatible("DVB-S"):
-			if nimConfig.configMode.getValue() in ("loopthrough", "equal", "satposdepends", "nothing"):
+			if nimConfig.configMode.value in ("loopthrough", "equal", "satposdepends", "nothing"):
 				return False
-			if nimConfig.configMode.getValue() == "simple":
-				if nimConfig.diseqcMode.getValue() == "positioner":
+			if nimConfig.configMode.value == "simple":
+				if nimConfig.diseqcMode.value == "positioner":
 					return True
 			return True
 		return False

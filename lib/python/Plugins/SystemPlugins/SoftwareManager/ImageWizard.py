@@ -10,26 +10,28 @@ from Plugins.Plugin import PluginDescriptor
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
 from Components.Pixmap import Pixmap, MovingPixmap, MultiPixmap
 from os import popen, path, makedirs, listdir, access, stat, rename, remove, W_OK, R_OK
-from enigma import eEnv, getBoxType
+from enigma import eEnv
+from boxbranding import getBoxType
 
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigLocations, ConfigBoolean
 from Components.Harddisk import harddiskmanager
 
+boxtype = getBoxType()
+
 config.misc.firstrun = ConfigBoolean(default = True)
 config.plugins.configurationbackup = ConfigSubsection()
-if getBoxType() == "odinm9" or getBoxType() == "odinm7" or getBoxType() == "odinm6":
+if boxtype in ('maram9', 'classm', 'axodin', 'axodinc', 'starsatlx', 'genius', 'evo'):
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/backup/', visible_width = 50, fixed_size = False)
 else:
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/hdd/', visible_width = 50, fixed_size = False)
-config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/etc/network/interfaces', '/etc/wpa_supplicant.conf', '/etc/wpa_supplicant.ath0.conf', '/etc/wpa_supplicant.wlan0.conf', '/etc/resolv.conf', '/etc/default_gw', '/etc/hostname'])
+config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/usr/keys/', '/etc/network/interfaces', '/etc/wpa_supplicant.conf', '/etc/wpa_supplicant.ath0.conf', '/etc/wpa_supplicant.wlan0.conf', '/etc/resolv.conf', '/etc/default_gw', '/etc/hostname', eEnv.resolve("${datadir}/enigma2/keymap.usr")])
 
 
 backupfile = "enigma2settingsbackup.tar.gz"
-box = getBoxType()
 
 def checkConfigBackup():
 	parts = [ (r.description, r.mountpoint) for r in harddiskmanager.getMountedPartitions(onlyhotplug = False)]
-	if box == "odinm9" or box == "odinm7" or box == "odinm6":
+	if boxtype in ('maram9', 'classm', 'axodin', 'axodinc', 'starsatlx', 'genius', 'evo'):
 		parts.append(('mtd backup','/media/backup'))
 	for x in parts:
 		if x[1] == '/':
@@ -37,7 +39,7 @@ def checkConfigBackup():
 	if len(parts):
 		for x in parts:
 			if x[1].endswith('/'):
-				fullbackupfile =  x[1] + 'backup_' + box + '/' + backupfile
+				fullbackupfile =  x[1] + 'backup_' + boxtype + '/' + backupfile
 				if fileExists(fullbackupfile):
 					config.plugins.configurationbackup.backuplocation.setValue(str(x[1]))
 					config.plugins.configurationbackup.backuplocation.save()
@@ -50,7 +52,7 @@ def checkConfigBackup():
 					config.plugins.configurationbackup.save()
 					return x
 			else:
-				fullbackupfile =  x[1] + '/backup_' + box + '/' + backupfile
+				fullbackupfile =  x[1] + '/backup_' + boxtype + '/' + backupfile
 				if fileExists(fullbackupfile):
 					config.plugins.configurationbackup.backuplocation.setValue(str(x[1]))
 					config.plugins.configurationbackup.backuplocation.save()
@@ -65,9 +67,9 @@ def checkConfigBackup():
 		return None		
 
 def checkBackupFile():
-	backuplocation = config.plugins.configurationbackup.backuplocation.getValue()
+	backuplocation = config.plugins.configurationbackup.backuplocation.value
 	if backuplocation.endswith('/'):
-		fullbackupfile =  backuplocation + 'backup_' + box + '/' + backupfile
+		fullbackupfile =  backuplocation + 'backup_' + boxtype + '/' + backupfile
 		if fileExists(fullbackupfile):
 			return True
 		else:
@@ -77,7 +79,7 @@ def checkBackupFile():
 			else:
 				return False
 	else:
-		fullbackupfile =  backuplocation + '/backup_' + box + '/' + backupfile
+		fullbackupfile =  backuplocation + '/backup_' + boxtype + '/' + backupfile
 		if fileExists(fullbackupfile):
 			return True
 		else:
@@ -145,6 +147,6 @@ class ImageWizard(WizardLanguage, Rc):
 		config.plugins.configurationbackup.save()
 
 	
-if config.misc.firstrun.getValue():
+if config.misc.firstrun.value:
 	wizardManager.registerWizard(ImageWizard, backupAvailable, priority = 10)
 

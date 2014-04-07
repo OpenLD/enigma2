@@ -1,3 +1,5 @@
+from enigma import eServiceReference
+
 from Screens.Screen import Screen
 from Components.ServiceScan import ServiceScan as CScan
 from Components.ProgressBar import ProgressBar
@@ -6,7 +8,7 @@ from Components.ActionMap import ActionMap
 from Components.FIFOList import FIFOList
 from Components.Sources.FrontendInfo import FrontendInfo
 from Components.config import config
-from enigma import eServiceCenter, eServiceReference
+
 
 class ServiceScanSummary(Screen):
 	skin = """
@@ -33,9 +35,9 @@ class ServiceScan(Screen):
 
 	def ok(self):
 		if self["scan"].isDone():
-                        if self.currentInfobar.__class__.__name__ == "InfoBar":
-                                selectedService = self["servicelist"].getCurrentSelection()
-                                if selectedService and self.currentServiceList is not None:
+			if self.currentInfobar.__class__.__name__ == "InfoBar":
+				selectedService = self["servicelist"].getCurrentSelection()
+				if selectedService and self.currentServiceList is not None:
 					self.currentServiceList.setTvMode()
 					bouquets = self.currentServiceList.getBouquetList()
 					last_scanned_bouquet = bouquets and next((x[1] for x in bouquets if x[0] == "Last Scanned"), None)
@@ -43,7 +45,7 @@ class ServiceScan(Screen):
 						self.currentServiceList.enterUserbouquet(last_scanned_bouquet)
 						self.currentServiceList.setCurrentSelection(eServiceReference(selectedService[1]))
 						service = self.currentServiceList.getCurrentSelection()
-                                                if not self.session.postScanService or service != self.session.postScanService:
+						if not self.session.postScanService or service != self.session.postScanService:
 							self.session.postScanService = service
 							self.currentServiceList.addToHistory(service)
 						config.servicelist.lastmode.save()
@@ -52,13 +54,13 @@ class ServiceScan(Screen):
 			self.cancel()
 
 	def cancel(self):
-                self.exit(False)
+		self.exit(False)
 
 	def doCloseRecursive(self):
 		self.exit(True)
 
 	def exit(self, returnValue):
-                if self.currentInfobar.__class__.__name__ == "InfoBar":
+		if self.currentInfobar.__class__.__name__ == "InfoBar":
 			self.close(returnValue)
 		self.close()
 
@@ -75,7 +77,8 @@ class ServiceScan(Screen):
 				if self.session.pipshown and self.currentServiceList:
 					if self.currentServiceList.dopipzap:
 						self.currentServiceList.togglePipzap()
-					del self.session.pip
+					if hasattr(self.session, 'pip'):
+						del self.session.pip
 					self.session.pipshown = False
 		else:
 			self.currentInfobar = None

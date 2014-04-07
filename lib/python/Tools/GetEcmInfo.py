@@ -11,6 +11,9 @@ ecm = ''
 data = EMPTY_ECM_INFO
 
 class GetEcmInfo:
+	def __init__(self):
+		pass
+
 	def pollEcmData(self):
 		global data
 		global old_ecm_time
@@ -26,9 +29,7 @@ class GetEcmInfo:
 		if ecm_time != old_ecm_time:
 			oecmi1 = info.get('ecminterval1','')
 			oecmi0 = info.get('ecminterval0','')
-			info = {}
-			info['ecminterval2'] = oecmi1
-			info['ecminterval1'] = oecmi0
+			info = {'ecminterval2': oecmi1, 'ecminterval1': oecmi0}
 			old_ecm_time = ecm_time
 			try:
 				file = open(ECM_INFO, 'rb')
@@ -93,9 +94,9 @@ class GetEcmInfo:
 		using = info.get('using', '')
 		protocol = info.get('protocol', '')
 		if using or protocol:
-			if config.usage.show_cryptoinfo.getValue() == '0':
+			if config.usage.show_cryptoinfo.value == '0':
 				self.textvalue = ' '
-			elif config.usage.show_cryptoinfo.getValue() == '1':
+			elif config.usage.show_cryptoinfo.value == '1':
 				# CCcam
 				if using == 'fta':
 					self.textvalue = _("Free To Air")
@@ -114,7 +115,7 @@ class GetEcmInfo:
 					else:
 						hops = ''
 					self.textvalue = address + hops + " (%ss)" % info.get('ecm time', '?')
-			elif config.usage.show_cryptoinfo.getValue() == '2':
+			elif config.usage.show_cryptoinfo.value == '2':
 				# CCcam
 				if using == 'fta':
 					self.textvalue = _("Free To Air")
@@ -158,7 +159,7 @@ class GetEcmInfo:
 				else:
 					self.textvalue = decode
 				if 'response' in info:
-					self.textvalue = self.textvalue + " (0.%ss)" % info['response']
+					self.textvalue += " (0.%ss)" % info['response']
 			else:
 				source = info.get('source', None)
 				if source:

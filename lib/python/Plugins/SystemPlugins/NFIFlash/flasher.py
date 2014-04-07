@@ -1,23 +1,23 @@
+from boxbranding import getImageVersion
+
+from enigma import eConsoleAppContainer, eEnv
+
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
-from Screens.ChoiceBox import ChoiceBox
-from Screens.Standby import TryQuitMainloop
 from Screens.Console import Console
 from Components.ActionMap import ActionMap
 from Components.Sources.StaticText import StaticText
-from Components.Sources.Progress import Progress
-from Components.Sources.Boolean import Boolean
-from Components.Label import Label
 from Components.FileList import FileList
 from Components.Task import Task, Job, job_manager, Condition
 from Screens.TaskView import JobView
 from Tools.Directories import fileExists
 from Tools.HardwareInfo import HardwareInfo
-from os import system
-from enigma import eConsoleAppContainer, quitMainloop, eEnv, getImageVersionString
-from Components.About import about
+
 
 class md5Postcondition(Condition):
+	def __init__(self):
+		pass
+
 	def check(self, task):
 		print "md5Postcondition::check", task.returncode
 		return task.returncode == 0
@@ -50,7 +50,7 @@ class md5verify(Task):
 
 class writeNAND(Task):
 	def __init__(self, job, param, box):
-		Task.__init__(self,job, ("Writing image file to NAND Flash"))
+		Task.__init__(self,job, "Writing image file to NAND Flash")
 		self.setTool(eEnv.resolve("${libdir}/enigma2/python/Plugins/SystemPlugins/NFIFlash/writenfi-mipsel-2.6.18-r1"))
 		if box == "dm7025":
 			self.end = 256
@@ -100,7 +100,7 @@ class NFIFlash(Screen):
 		self["filelist"] = self.filelist
 		self["infolabel"] = StaticText()
 
-		self["status"] = StaticText(_("Please select an NFI file and press green key to flash!") + '\n' + _("currently installed image: %s") % (getImageVersionString()))
+		self["status"] = StaticText(_("Please select an NFI file and press green key to flash!") + '\n' + _("currently installed image: %s") % (getImageVersion()))
 		self.job = None
 
 		self["shortcuts"] = ActionMap(["OkCancelActions", "ColorActions", "ShortcutActions", "DirectionActions"],
@@ -181,7 +181,7 @@ class NFIFlash(Screen):
 				self.md5sum = ""
 
 	def queryCB(self, answer):
-		if answer == True:
+		if answer:
 			self.createJob()
 
 	def createJob(self):
@@ -224,6 +224,6 @@ class NFIFlash(Screen):
 
 	def reboot(self, ret=None):
 		if self.job.status == self.job.FINISHED:
-			self["status"].text = ("rebooting...")
+			self["status"].text = "rebooting..."
 			from os import system
 			system(eEnv.resolve("${libdir}/enigma2/python/Plugins/SystemPlugins/NFIFlash/kill_e2_reboot.sh"))

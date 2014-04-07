@@ -33,8 +33,10 @@ defaultInhibitDirs = ["/bin", "/boot", "/dev", "/etc", "/lib", "/proc", "/sbin",
 
 class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 	"""Simple Class similar to MessageBox / ChoiceBox but used to choose a folder/pathname combination"""
-	def __init__(self, session, text = "", filename = "", currDir = None, bookmarks = None, userMode = False, windowTitle = _("Select location"), minFree = None, autoAdd = False, editDir = False, inhibitDirs = [], inhibitMounts = []):
+	def __init__(self, session, text="", filename="", currDir=None, bookmarks=None, userMode=False, windowTitle=_("Select location"), minFree=None, autoAdd=False, editDir=False, inhibitDirs=None, inhibitMounts=None):
 		# Init parents
+		if not inhibitDirs: inhibitDirs = []
+		if not inhibitMounts: inhibitMounts = []
 		Screen.__init__(self, session)
 		NumericalTextInput.__init__(self, handleTimeout = False)
 		HelpableScreen.__init__(self)
@@ -60,7 +62,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		self.filename = filename
 		self.minFree = minFree
 		self.realBookmarks = bookmarks
-		self.bookmarks = bookmarks and bookmarks.getValue()[:] or []
+		self.bookmarks = bookmarks and bookmarks.value[:] or []
 		self.userMode = userMode
 		self.autoAdd = autoAdd
 		self.editDir = editDir
@@ -92,7 +94,8 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 
 		# Custom Action Handler
 		class LocationBoxActionMap(HelpableActionMap):
-			def __init__(self, parent, context, actions = { }, prio=0):
+			def __init__(self, parent, context, actions=None, prio=0):
+				if not actions: actions = {}
 				HelpableActionMap.__init__(self, parent, context, actions, prio)
 				self.box = parent
 
@@ -164,13 +167,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		self.onClose.append(self.disableTimer)
 
 	def switchToFileListOnStart(self):
-		if self.realBookmarks and self.realBookmarks.getValue():
-			self.currList = "booklist"
-			currDir = self["filelist"].current_directory
-			if currDir in self.bookmarks:
-				self["booklist"].moveToIndex(self.bookmarks.index(currDir))
-		else:
-			self.switchToFileList()
+		self.switchToFileList()
 
 	def disableTimer(self):
 		self.qs_timer.callback.remove(self.timeout)
@@ -210,7 +207,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 				self.session.openWithCallback(
 					boundFunction(self.removeBookmark, name),
 					MessageBox,
-					_("Do you really want to remove your bookmark of %s?") % (name),
+					_("Do you really want to remove your bookmark of %s?") % name,
 				)
 
 	def removeBookmark(self, name, ret):
@@ -221,7 +218,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 			self["booklist"].setList(self.bookmarks)
 
 	def createDir(self):
-		if self["filelist"].current_directory != None:
+		if self["filelist"].current_directory is not None:
 			self.session.openWithCallback(
 				self.createDirCallback,
 				InputBox,
@@ -236,7 +233,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 				if not createDir(path):
 					self.session.open(
 						MessageBox,
-						_("Creating directory %s failed.") % (path),
+						_("Creating directory %s failed.") % path,
 						type = MessageBox.TYPE_ERROR,
 						timeout = 5
 					)
@@ -244,7 +241,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 			else:
 				self.session.open(
 					MessageBox,
-					_("The path %s already exists.") % (path),
+					_("The path %s already exists.") % path,
 					type = MessageBox.TYPE_ERROR,
 					timeout = 5
 				)
@@ -271,17 +268,17 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 			if not removeDir(name):
 				self.session.open(
 					MessageBox,
-					_("Removing directory %s failed. (Maybe not empty.)") % (name),
+					_("Removing directory %s failed. (Maybe not empty.)") % name,
 					type = MessageBox.TYPE_ERROR,
 					timeout = 5
 				)
 			else:
 				self["filelist"].refresh()
 				self.removeBookmark(name, True)
-				val = self.realBookmarks and self.realBookmarks.getValue()
+				val = self.realBookmarks and self.realBookmarks.value
 				if val and name in val:
 					val.remove(name)
-					self.realBookmarks.setValue(val)
+					self.realBookmarks.value = val
 					self.realBookmarks.save()
 
 	def up(self):
@@ -326,8 +323,8 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 					self.bookmarks.append(self.getPreferredFolder())
 					self.bookmarks.sort()
 
-				if self.bookmarks != self.realBookmarks.getValue():
-					self.realBookmarks.setValue(self.bookmarks)
+				if self.bookmarks != self.realBookmarks.value:
+					self.realBookmarks.value = self.bookmarks
 					self.realBookmarks.save()
 			self.close(ret)
 
@@ -350,7 +347,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 				self.session.openWithCallback(
 					self.selectConfirmed,
 					MessageBox,
-					_("There might not be enough Space on the selected Partition.\nDo you really want to continue?"),
+					_("There might not be enough space on the selected partition..\nDo you really want to continue?"),
 					type = MessageBox.TYPE_YESNO
 				)
 			# No minimum free Space means we can safely close
@@ -505,7 +502,7 @@ class TimeshiftLocationBox(LocationBox):
 				self,
 				session,
 				text = _("Where to save temporary timeshift recordings?"),
-				currDir = config.usage.timeshift_path.getValue(),
+				currDir = config.usage.timeshift_path.value,
 				bookmarks = config.usage.allowed_timeshift_paths,
 				autoAdd = True,
 				editDir = True,
@@ -520,7 +517,31 @@ class TimeshiftLocationBox(LocationBox):
 
 	def selectConfirmed(self, ret):
 		if ret:
-			config.usage.timeshift_path.setValue(self.getPreferredFolder())
+			config.usage.timeshift_path.value = self.getPreferredFolder()
 			config.usage.timeshift_path.save()
 			LocationBox.selectConfirmed(self, ret)
 
+class AutorecordLocationBox(LocationBox):
+	def __init__(self, session):
+		LocationBox.__init__(
+				self,
+				session,
+				text = _("Where to save temporary timeshift recordings?"),
+				currDir = config.usage.autorecord_path.value,
+				bookmarks = config.usage.allowed_autorecord_paths,
+				autoAdd = True,
+				editDir = True,
+				inhibitDirs = defaultInhibitDirs,
+				minFree = 1024 # the same requirement is hardcoded in servicedvb.cpp
+		)
+		self.skinName = "LocationBox"
+
+	def cancel(self):
+		config.usage.autorecord_path.cancel()
+		LocationBox.cancel(self)
+
+	def selectConfirmed(self, ret):
+		if ret:
+			config.usage.autorecord_path.setValue(self.getPreferredFolder())
+			config.usage.autorecord_path.save()
+			LocationBox.selectConfirmed(self, ret)

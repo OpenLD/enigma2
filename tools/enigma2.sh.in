@@ -1,9 +1,5 @@
 #!/bin/sh
 
-if [ `cat /etc/model | cut -c 1-2`=="gb" ]; then
-	cat /etc/model > /proc/stb/info/gbmodel
-fi
-
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 datarootdir=@datarootdir@
@@ -36,6 +32,17 @@ if [ -x @bindir@/enigma2_pre_start.sh ]; then
 	@bindir@/enigma2_pre_start.sh
 fi
 
+if [ -e /proc/stb/info/hwmodel ]; then
+	stbcheck=`cat /proc/stb/info/hwmodel| cut -c1-8`
+	if [ $stbcheck == "optimuss" ]; then
+		string=`mount | grep 'sda1' | cut -c21-23` 
+		if [ -e /media/$string/sat-soft/settings.sh ]; then
+			chmod 755 /media/$string/sat-soft/settings.sh
+			/media/$string/sat-soft/settings.sh
+		fi
+	fi
+fi	
+
 if [ -d /home/root ]; then
 	cd /home/root
 fi
@@ -62,11 +69,17 @@ if [ ! -e /etc/enigma2/settings ]; then
 fi
 
 sync
+
 if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.enabledebug=true" ]; then
+	RANDOMIZE1970=''
+	time=`date +%Y` ;
+	if [ "$time" = 1970 ]; then
+		RANDOMIZE1970="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 5 | tr -d '\n')"
+	fi
 	if [ "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" != "" -a -d "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" ]; then
-		LD_PRELOAD=$LIBS @bindir@/enigma2 &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-$(date +%d-%m-%Y_%H-%M-%S).log
+		LD_PRELOAD=$LIBS @bindir@/enigma2 &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
 	else
-		LD_PRELOAD=$LIBS @bindir@/enigma2 &> /home/root/logs/Enigma2-$(date +%d-%m-%Y_%H-%M-%S).log
+		LD_PRELOAD=$LIBS @bindir@/enigma2 &> /home/root/logs/Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
 	fi
 else
 	LD_PRELOAD=$LIBS @bindir@/enigma2
@@ -108,12 +121,18 @@ case $ret in
 		;;		
 	44)
 		# little hack but it will be fixed soon in drivers
-		/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /dev/dbox/oled0 && sleep 3 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
-                ;;
-        45)
-                echo "    " > /dev/lcd0
-                /usr/bin/gigablue_wol
-                ;;
+		if [ "$(cat /proc/stb/info/boxtype)" == 'ini-9000de' ]; then
+			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /proc/vfd && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
+		elif [ "$(cat /proc/stb/info/boxtype)" == 'ini-9000ru' ]; then
+			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /proc/vfd && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
+		else
+			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /dev/dbox/oled0 && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
+		fi
+		;;
+	45)
+		echo "    " > /dev/lcd0
+		/usr/bin/gigablue_wol
+		;;		
 	*)
 		rm -f /tmp/.listen.camd.socket.ignore
 		;;

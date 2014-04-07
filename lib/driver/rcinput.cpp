@@ -111,7 +111,16 @@ void eRCDeviceInputDev::handleCode(long rccode)
 		ev->code = KEY_F6;
 		
 	}
-#endif		
+#endif
+
+#if KEY_F3_TO_KEY_LIST
+	if (ev->code == KEY_F3)
+	{
+		/* Xtrend New Remote rc has a KEY_F3 key, which sends KEY_LIST events. Correct this, so we do not have to place hacks in the keymaps. */
+		ev->code = KEY_LIST;
+		
+	}
+#endif
 
 #if KEY_TV_TO_KEY_MODE
 	if (ev->code == KEY_TV)
@@ -163,6 +172,24 @@ void eRCDeviceInputDev::handleCode(long rccode)
 	{
 		/* AZBOX rc has no radio/tv/pvr key, we use KEY_HOME which sends KEY_OPEN events. Correct this, so we do not have to place hacks in the keymaps. */
 		ev->code = KEY_OPEN;
+		
+	}
+#endif
+
+#if KEY_HOME_TO_KEY_HOMEPAGE
+	if (ev->code == KEY_HOME)
+	{
+		/* DAGS map HOME Key to show Mediaportal */
+		ev->code = KEY_HOMEPAGE;
+		
+	}
+#endif
+
+#if KEY_MEDIA_TO_KEY_KEY_F2
+	if (ev->code == KEY_MEDIA)
+	{
+		/* DAGS map Media to F2 to show MediaCenter */
+		ev->code = KEY_F2;
 		
 	}
 #endif
@@ -254,6 +281,15 @@ void eRCDeviceInputDev::handleCode(long rccode)
 	{
 		/* GB800 rc has a KEY_GUIDE key, which sends KEY_HELP events. Correct this, so we do not have to place hacks in the keymaps. */
 		ev->code = KEY_EPG;
+		
+	}
+#endif
+
+#if KEY_PLAY_IS_KEY_PLAYPAUSE
+	if (ev->code == KEY_PLAY)
+	{
+		/* sogno rc has a KEY_PLAYPAUSE  key, which sends KEY_PLAY events. Correct this, so we do not have to place hacks in the keymaps. */
+		ev->code = KEY_PLAYPAUSE;
 		
 	}
 #endif

@@ -1,6 +1,7 @@
 from Screen import Screen
 from Components.Language import language
 from enigma import eConsoleAppContainer, eDVBDB
+from boxbranding import getImageVersion
 
 from Components.ActionMap import ActionMap
 from Components.PluginComponent import plugins
@@ -10,11 +11,12 @@ from Components.Pixmap import Pixmap
 from Components.Harddisk import harddiskmanager
 from Components.Sources.StaticText import StaticText
 from Components import Ipkg
-from Components.config import config, ConfigSubsection, ConfigYesNo, getConfigListEntry, configfile
+from Components.config import config, ConfigSubsection, ConfigYesNo, getConfigListEntry, configfile, ConfigText
 from Components.ConfigList import ConfigListScreen
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.Console import Console
+from Screens.VirtualKeyBoard import VirtualKeyBoard
 from Plugins.Plugin import PluginDescriptor
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
@@ -37,10 +39,27 @@ config.pluginfilter.softcams = ConfigYesNo(default = True)
 config.pluginfilter.systemplugins = ConfigYesNo(default = True)
 config.pluginfilter.vix = ConfigYesNo(default = False)
 config.pluginfilter.weblinks = ConfigYesNo(default = True)
+config.pluginfilter.userfeed = ConfigText(default = 'http://', fixed_size=False)
 
 def languageChanged():
 	plugins.clearPluginList()
 	plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
+
+def Check_Softcam():
+	found = False
+	for x in os.listdir('/etc'):
+		if x.find('.emu') > -1:
+			found = True
+			break;
+	return found
+
+def CreateFeedConfig():
+	fileconf = "/etc/opkg/user-feed.conf"
+	feedurl = "src/gz user-feeds %s\n" % config.pluginfilter.userfeed.value
+	f = open(fileconf, "w")
+	f.write(feedurl)
+	f.close()
+	os.system("ipkg update")
 
 class PluginBrowserSummary(Screen):
 	def __init__(self, session, parent):
@@ -74,7 +93,7 @@ class PluginBrowser(Screen):
 
 		self.list = []
 		self["list"] = PluginList(self.list)
-		if config.usage.sort_pluginlist.getValue():
+		if config.usage.sort_pluginlist.value:
 			self["list"].list.sort()
 
 		self["actions"] = ActionMap(["SetupActions","WizardActions"],
@@ -94,6 +113,9 @@ class PluginBrowser(Screen):
 		self.onChangedEntry = []
 		self["list"].onSelectionChanged.append(self.selectionChanged)
 		self.onLayoutFinish.append(self.saveListsize)
+		if config.pluginfilter.userfeed.value != "http://":
+				if not os.path.exists("/etc/opkg/user-feed.conf"):
+					CreateFeedConfig()
 
 	def menu(self):
 		self.session.openWithCallback(self.PluginDownloadBrowserClosed, PluginFilter)
@@ -217,33 +239,33 @@ class PluginDownloadBrowser(Screen):
 	def createPluginFilter(self):
 		#Create Plugin Filter
 		self.PLUGIN_PREFIX2 = []
-		if config.pluginfilter.drivers.getValue():
+		if config.pluginfilter.drivers.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'drivers')
-		if config.pluginfilter.extensions.getValue():
+		if config.pluginfilter.extensions.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'extensions')
-		if config.pluginfilter.m2k.getValue():
+		if config.pluginfilter.m2k.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'm2k')
-		if config.pluginfilter.picons.getValue():
+		if config.pluginfilter.picons.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'picons')
-		if config.pluginfilter.pli.getValue():
+		if config.pluginfilter.pli.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'pli')
-		if config.pluginfilter.security.getValue():
+		if config.pluginfilter.security.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'security')
-		if config.pluginfilter.settings.getValue():
+		if config.pluginfilter.settings.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'settings')
-		if config.pluginfilter.skins.getValue():
+		if config.pluginfilter.skins.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'skins')
-		if config.pluginfilter.display.getValue():
+		if config.pluginfilter.display.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'display')
-		if config.pluginfilter.softcams.getValue():
+		if config.pluginfilter.softcams.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'softcams')
-		if config.pluginfilter.systemplugins.getValue():
+		if config.pluginfilter.systemplugins.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'systemplugins')
-		if config.pluginfilter.vix.getValue():
+		if config.pluginfilter.vix.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'vix')
-		if config.pluginfilter.weblinks.getValue():
+		if config.pluginfilter.weblinks.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'weblinks')
-		if config.pluginfilter.kernel.getValue():
+		if config.pluginfilter.kernel.value:
 			self.PLUGIN_PREFIX2.append('kernel-module-')
 
 	def go(self):
@@ -517,7 +539,7 @@ class PluginDownloadBrowser(Screen):
 				self.plugins[split[0]].append((PluginDescriptor(name = x[3], description = x[2], icon = verticallineIcon), split[1], x[1]))
 
 		temp = self.plugins.keys()
-		if config.usage.sort_pluginlist.getValue():
+		if config.usage.sort_pluginlist.value:
 			temp.sort()
 		for x in temp:
 			if x in self.expanded:
@@ -544,13 +566,14 @@ class PluginFilter(ConfigListScreen, Screen):
 		ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
 		self.createSetup()
 
-		self["actions"] = ActionMap(["SetupActions", 'ColorActions'],
+		self["actions"] = ActionMap(["SetupActions", 'ColorActions', 'VirtualKeyboardActions'],
 		{
 			"ok": self.keySave,
 			"cancel": self.keyCancel,
 			"red": self.keyCancel,
 			"green": self.keySave,
 			"menu": self.keyCancel,
+			"showVirtualKeyboard": self.KeyText
 		}, -2)
 
 		self["key_red"] = StaticText(_("Cancel"))
@@ -565,7 +588,8 @@ class PluginFilter(ConfigListScreen, Screen):
 		self.list.append(getConfigListEntry(_("drivers"), config.pluginfilter.drivers, _("This allows you to show drivers modules in downloads")))
 		self.list.append(getConfigListEntry(_("extensions"), config.pluginfilter.extensions, _("This allows you to show extensions modules in downloads")))
 		self.list.append(getConfigListEntry(_("systemplugins"), config.pluginfilter.systemplugins, _("This allows you to show systemplugins modules in downloads")))
-		self.list.append(getConfigListEntry(_("softcams"), config.pluginfilter.softcams, _("This allows you to show softcams modules in downloads")))
+		if Check_Softcam():
+			self.list.append(getConfigListEntry(_("softcams"), config.pluginfilter.softcams, _("This allows you to show softcams modules in downloads")))
 		self.list.append(getConfigListEntry(_("skins"), config.pluginfilter.skins, _("This allows you to show skins modules in downloads")))
 		self.list.append(getConfigListEntry(_("display"), config.pluginfilter.skins, _("This allows you to show lcd skins in downloads")))
 		self.list.append(getConfigListEntry(_("picons"), config.pluginfilter.picons, _("This allows you to show picons modules in downloads")))
@@ -576,10 +600,11 @@ class PluginFilter(ConfigListScreen, Screen):
 		self.list.append(getConfigListEntry(_("vix"), config.pluginfilter.vix, _("This allows you to show vix modules in downloads")))
 		self.list.append(getConfigListEntry(_("security"), config.pluginfilter.security, _("This allows you to show security modules in downloads")))
 		self.list.append(getConfigListEntry(_("kernel modules"), config.pluginfilter.kernel, _("This allows you to show kernel modules in downloads")))
+		self.list.append(getConfigListEntry(_("user feed url"), config.pluginfilter.userfeed, _("Please enter the your personal feed URL")))
 		
 		self["config"].list = self.list
 		self["config"].setList(self.list)
-		if config.usage.sort_settings.getValue():
+		if config.usage.sort_settings.value:
 			self["config"].list.sort()
 
 	def selectionChanged(self):
@@ -600,6 +625,8 @@ class PluginFilter(ConfigListScreen, Screen):
 		for x in self["config"].list:
 			x[1].save()
 		configfile.save()
+		if config.pluginfilter.userfeed.value != "http://":
+			CreateFeedConfig()
 
 	def keySave(self):
 		self.saveAll()
@@ -617,5 +644,15 @@ class PluginFilter(ConfigListScreen, Screen):
 			self.session.openWithCallback(self.cancelConfirm, MessageBox, _("Really close without saving settings?"))
 		else:
 			self.close()
+
+	def KeyText(self):
+		sel = self['config'].getCurrent()
+		if sel:
+			self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
+
+	def VirtualKeyBoardCallback(self, callback = None):
+		if callback is not None and len(callback):
+			self["config"].getCurrent()[1].value = callback
+			self["config"].invalidate(self["config"].getCurrent())
 
 language.addCallback(languageChanged)

@@ -28,6 +28,9 @@ else:
 	HDSKIN = False
 
 class OscamInfo:
+	def __init__(self):
+		pass
+
 	TYPE = 0
 	NAME = 1
 	PROT = 2
@@ -35,7 +38,6 @@ class OscamInfo:
 	SRVNAME = 4
 	ECMTIME = 5
 	IP_PORT = 6
-	ECMTIME = 7
 	HEAD = { NAME: _("Label"), PROT: _("Protocol"),
 		CAID_SRVID: "CAID:SrvID", SRVNAME: _("Serv.Name"),
 		ECMTIME: _("ECM-Time"), IP_PORT: _("IP address") }
@@ -87,12 +89,12 @@ class OscamInfo:
 			if err != "":
 				return err
 			else:
-				return (user, pwd, port)
+				return user, pwd, port
 		else:
 			return _("file oscam.conf could not be found")
 
 	def openWebIF(self, part = None, reader = None):
-		if config.oscaminfo.userdatafromconf.getValue():
+		if config.oscaminfo.userdatafromconf.value:
 			self.ip = "127.0.0.1"
 			udata = self.getUserData()
 			if isinstance(udata, str):
@@ -101,16 +103,16 @@ class OscamInfo:
 				elif "httppwd" in udata:
 					self.password = ""
 				else:
-					return (False, udata)
+					return False, udata
 			else:
 				self.port = udata[2]
 				self.username = udata[0]
 				self.password = udata[1]
 		else:
-			self.ip = ".".join("%d" % d for d in config.oscaminfo.ip.getValue())
-			self.port = config.oscaminfo.port.getValue()
-			self.username = config.oscaminfo.username.getValue()
-			self.password = config.oscaminfo.password.getValue()
+			self.ip = ".".join("%d" % d for d in config.oscaminfo.ip.value)
+			self.port = config.oscaminfo.port.value
+			self.username = config.oscaminfo.username.value
+			self.password = config.oscaminfo.password.value
 		if part is None:
 			self.url = "http://%s:%s/oscamapi.html?part=status" % ( self.ip, self.port )
 		else:
@@ -136,9 +138,9 @@ class OscamInfo:
 				err = str(e.code)
 		if err is not False:
 			print "[openWebIF] Fehler: %s" % err
-			return (False, err)
+			return False, err
 		else:
-			return (True, data)
+			return True, data
 
 	def readXML(self, typ):
 		if typ == "l":
@@ -401,7 +403,7 @@ class OscamInfoMenu(Screen):
 			else:
 				pass
 		elif entry == 1:
-			if config.oscaminfo.userdatafromconf.getValue():
+			if config.oscaminfo.userdatafromconf.value:
 				if self.osc.confPath() is None:
 					config.oscaminfo.userdatafromconf.setValue(False)
 					config.oscaminfo.userdatafromconf.save()
@@ -411,7 +413,7 @@ class OscamInfoMenu(Screen):
 			else:
 				self.session.open(oscInfo, "c")
 		elif entry == 2:
-			if config.oscaminfo.userdatafromconf.getValue():
+			if config.oscaminfo.userdatafromconf.value:
 				if self.osc.confPath() is None:
 					config.oscaminfo.userdatafromconf.setValue(False)
 					config.oscaminfo.userdatafromconf.save()
@@ -421,7 +423,7 @@ class OscamInfoMenu(Screen):
 			else:
 				self.session.open(oscInfo, "s")
 		elif entry == 3:
-			if config.oscaminfo.userdatafromconf.getValue():
+			if config.oscaminfo.userdatafromconf.value:
 				if self.osc.confPath() is None:
 					config.oscaminfo.userdatafromconf.setValue(False)
 					config.oscaminfo.userdatafromconf.save()
@@ -499,10 +501,10 @@ class oscECMInfo(Screen, OscamInfo):
 		Screen.__init__(self, session)
 		self.ecminfo = "/tmp/ecm.info"
 		self["output"] = oscMenuList([])
-		if config.oscaminfo.autoupdate.getValue():
+		if config.oscaminfo.autoupdate.value:
 			self.loop = eTimer()
 			self.loop.callback.append(self.showData)
-			timeout = config.oscaminfo.intervall.getValue() * 1000
+			timeout = config.oscaminfo.intervall.value * 1000
 			self.loop.start(timeout, False)
 		self["actions"] = ActionMap(["OkCancelActions"],
 					{
@@ -512,7 +514,7 @@ class oscECMInfo(Screen, OscamInfo):
 		self.onLayoutFinish.append(self.showData)
 
 	def exit(self):
-		if config.oscaminfo.autoupdate.getValue():
+		if config.oscaminfo.autoupdate.value:
 			self.loop.stop()
 		self.close()
 	def buildListEntry(self, listentry):
@@ -577,10 +579,10 @@ class oscInfo(Screen, OscamInfo):
 			self["key_blue"] = StaticText("Log")
 		self.fieldSizes = []
 		self.fs2 = {}
-		if config.oscaminfo.autoupdate.getValue():
+		if config.oscaminfo.autoupdate.value:
 			self.loop = eTimer()
 			self.loop.callback.append(self.showData)
-			timeout = config.oscaminfo.intervall.getValue() * 1000
+			timeout = config.oscaminfo.intervall.value * 1000
 			self.loop.start(timeout, False)
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
 					{
@@ -615,7 +617,7 @@ class oscInfo(Screen, OscamInfo):
 			self.showData()
 
 	def exit(self):
-		if config.oscaminfo.autoupdate.getValue():
+		if config.oscaminfo.autoupdate.value:
 			self.loop.stop()
 		self.close()
 
@@ -717,8 +719,7 @@ class oscInfo(Screen, OscamInfo):
 			if self.what != "l":
 				heading = ( self.HEAD[self.NAME], self.HEAD[self.PROT], self.HEAD[self.CAID_SRVID],
 						self.HEAD[self.SRVNAME], self.HEAD[self.ECMTIME], self.HEAD[self.IP_PORT], "")
-				outlist = [ ]
-				outlist.append( heading )
+				outlist = [heading]
 				for i in data:
 					outlist.append( i )
 				self.fieldsize = self.calcSizes(outlist)
@@ -745,7 +746,7 @@ class oscInfo(Screen, OscamInfo):
 			self["output"].selectionEnabled(False)
 		else:
 			self.errmsg = (data,)
-			if config.oscaminfo.autoupdate.getValue():
+			if config.oscaminfo.autoupdate.value:
 				self.loop.stop()
 			out = []
 			self.fieldsize = self.calcSizes( [(data,)] )
@@ -1097,13 +1098,13 @@ class OscamInfoConfigScreen(Screen, ConfigListScreen):
 	def createSetup(self):
 		self.oscamconfig = []
 		self.oscamconfig.append(getConfigListEntry(_("Read Userdata from oscam.conf"), config.oscaminfo.userdatafromconf))
-		if not config.oscaminfo.userdatafromconf.getValue():
+		if not config.oscaminfo.userdatafromconf.value:
 			self.oscamconfig.append(getConfigListEntry(_("Username (httpuser)"), config.oscaminfo.username))
 			self.oscamconfig.append(getConfigListEntry(_("Password (httpwd)"), config.oscaminfo.password))
 			self.oscamconfig.append(getConfigListEntry(_("IP address"), config.oscaminfo.ip))
 			self.oscamconfig.append(getConfigListEntry("Port", config.oscaminfo.port))
 		self.oscamconfig.append(getConfigListEntry(_("Automatically update Client/Server View?"), config.oscaminfo.autoupdate))
-		if config.oscaminfo.autoupdate.getValue():
+		if config.oscaminfo.autoupdate.value:
 			self.oscamconfig.append(getConfigListEntry(_("Update interval (in seconds)"), config.oscaminfo.intervall))
 
 	def save(self):

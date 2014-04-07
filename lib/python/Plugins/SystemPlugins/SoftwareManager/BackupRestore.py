@@ -16,32 +16,34 @@ from Components.ConfigList import ConfigList,ConfigListScreen
 from Components.FileList import MultiFileSelectList
 from Components.Network import iNetwork
 from Plugins.Plugin import PluginDescriptor
-from enigma import eTimer, eEnv, eConsoleAppContainer, getBoxType
+from enigma import eTimer, eEnv, eConsoleAppContainer
 from Tools.Directories import *
 from os import system, popen, path, makedirs, listdir, access, stat, rename, remove, W_OK, R_OK
 from time import gmtime, strftime, localtime, sleep
 from datetime import date
+from boxbranding import getBoxType
+
+boxtype = getBoxType()
 
 config.plugins.configurationbackup = ConfigSubsection()
-if getBoxType() == "odinm9" or getBoxType() == "odinm7" or getBoxType() == "odinm6":
+if boxtype in ('maram9', 'classm', 'axodin', 'axodinc', 'starsatlx', 'genius', 'evo'):
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/backup/', visible_width = 50, fixed_size = False)
 else:	
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/hdd/', visible_width = 50, fixed_size = False)
-config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/usr/keys/CCcam.cfg',
+config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/usr/keys/',
 																		 '/etc/network/interfaces', '/etc/wpa_supplicant.conf', '/etc/wpa_supplicant.ath0.conf',
 																		 '/etc/wpa_supplicant.wlan0.conf', '/etc/resolv.conf', '/etc/default_gw', '/etc/hostname',
-																		 eEnv.resolve("${datadir}/enigma2/keymap.usr"), eEnv.resolve("${datadir}/enigma2/keymap.ntr")])
+																		 eEnv.resolve("${datadir}/enigma2/keymap.usr")])
 
 def getBackupPath():
-	backuppath = config.plugins.configurationbackup.backuplocation.getValue()
-	box = getBoxType()
+	backuppath = config.plugins.configurationbackup.backuplocation.value
 	if backuppath.endswith('/'):
-		return backuppath + 'backup_' + box
+		return backuppath + 'backup_' + boxtype
 	else:
-		return backuppath + '/backup_' + box
+		return backuppath + '/backup_' + boxtype
 
 def getOldBackupPath():
-	backuppath = config.plugins.configurationbackup.backuplocation.getValue()
+	backuppath = config.plugins.configurationbackup.backuplocation.value
 	if backuppath.endswith('/'):
 		return backuppath + 'backup'
 	else:
@@ -93,9 +95,9 @@ class BackupScreen(Screen, ConfigListScreen):
 	def doBackup(self):
 		configfile.save()
 		try:
-			if (path.exists(self.backuppath) == False):
+			if path.exists(self.backuppath) == False:
 				makedirs(self.backuppath)
-			self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.getValue() )
+			self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.value )
 			if not "/tmp/installed-list.txt" in self.backupdirs:
 				self.backupdirs = self.backupdirs + " /tmp/installed-list.txt"
 			if not "/tmp/changed-configfiles.txt" in self.backupdirs:
@@ -150,7 +152,7 @@ class BackupSelection(Screen):
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText()
 
-		self.selectedFiles = config.plugins.configurationbackup.backupdirs.getValue()
+		self.selectedFiles = config.plugins.configurationbackup.backupdirs.value
 		defaultDir = '/'
 		inhibitDirs = ["/bin", "/boot", "/dev", "/autofs", "/lib", "/proc", "/sbin", "/sys", "/hdd", "/tmp", "/mnt", "/media"]
 		self.filelist = MultiFileSelectList(self.selectedFiles, defaultDir, inhibitDirs = inhibitDirs )
@@ -274,11 +276,11 @@ class RestoreMenu(Screen):
 	def fill_list(self):
 		self.flist = []
 		self.path = getBackupPath()
-		if (path.exists(self.path) == False):
+		if path.exists(self.path) == False:
 			makedirs(self.path)
 		for file in listdir(self.path):
-			if (file.endswith(".tar.gz")):
-				self.flist.append((file))
+			if file.endswith(".tar.gz"):
+				self.flist.append(file)
 				self.entry = True
 		self.flist.sort(reverse=True)
 		self["filelist"].l.setList(self.flist)
@@ -288,13 +290,13 @@ class RestoreMenu(Screen):
 			self.sel = self["filelist"].getCurrent()
 			if self.sel:
 				self.val = self.path + "/" + self.sel
-				self.session.openWithCallback(self.startRestore, MessageBox, _("Are you sure you want to restore\nthe following backup:\n%s\nYour receiver will restart after the backup has been restored!") % (self.sel))
+				self.session.openWithCallback(self.startRestore, MessageBox, _("Are you sure you want to restore\nthe following backup:\n%s\nYour receiver will restart after the backup has been restored!") % self.sel)
 
 	def keyCancel(self):
 		self.close()
 
 	def startRestore(self, ret = False):
-		if (ret == True):
+		if ret == True:
 			self.exe = True
 			self.session.open(Console, title = _("Restoring..."), cmdlist = ["tar -xzvf " + self.path + "/" + self.sel + " -C /", "killall -9 enigma2"])
 
@@ -306,10 +308,10 @@ class RestoreMenu(Screen):
 				self.session.openWithCallback(self.startDelete, MessageBox, _("Are you sure you want to delete\nthe following backup:\n") + self.sel)
 
 	def startDelete(self, ret = False):
-		if (ret == True):
+		if ret == True:
 			self.exe = True
 			print "removing:",self.val
-			if (path.exists(self.val) == True):
+			if path.exists(self.val) == True:
 				remove(self.val)
 			self.exe = False
 			self.fill_list()

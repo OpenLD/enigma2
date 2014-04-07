@@ -2,12 +2,10 @@ from Screens.Screen import Screen
 from Screens.HelpMenu import HelpableScreen
 from Components.FileList import FileList
 from Components.Sources.StaticText import StaticText
-from Components.MediaPlayer import PlayList
-from Components.config import config, getConfigListEntry, ConfigSubsection, configfile, ConfigText, ConfigYesNo, ConfigDirectory
+from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigYesNo, ConfigDirectory
 from Components.ConfigList import ConfigListScreen
 from Components.ActionMap import ActionMap
-from Components.Pixmap import Pixmap,MultiPixmap
-from Screens.VirtualKeyBoard import VirtualKeyBoard
+from Components.Pixmap import Pixmap
 from Components.Sources.Boolean import Boolean
 
 config.mediaplayer = ConfigSubsection()
@@ -101,7 +99,7 @@ class MediaPlayerSettings(Screen,ConfigListScreen):
 			self.list.append(getConfigListEntry(_("repeat playlist"), config.mediaplayer.repeat))
 			self.list.append(getConfigListEntry(_("save playlist on exit"), config.mediaplayer.savePlaylistOnExit))
 			self.list.append(getConfigListEntry(_("save last directory on exit"), config.mediaplayer.saveDirOnExit))
-			if not config.mediaplayer.saveDirOnExit.getValue():
+			if not config.mediaplayer.saveDirOnExit.value:
 				self.list.append(getConfigListEntry(_("start directory"), config.mediaplayer.defaultDir))
 			self.list.append(getConfigListEntry(_("sorting of playlists"), config.mediaplayer.sortPlaylists))
 			self.list.append(getConfigListEntry(_("Always hide infobar"), config.mediaplayer.alwaysHideInfoBar))
@@ -119,7 +117,7 @@ class MediaPlayerSettings(Screen,ConfigListScreen):
 
 	def DirectoryBrowserClosed(self, path):
 		print "PathBrowserClosed:" + str(path)
-		if path != False:
+		if path:
 			config.mediaplayer.defaultDir.setValue(path)
 
 	def save(self):

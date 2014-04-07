@@ -1,17 +1,14 @@
 from enigma import eDVBResourceManager,\
-	eDVBFrontendParametersSatellite, eDVBFrontendParameters
+	eDVBFrontendParametersSatellite
 
-from Screens.Screen import Screen
 from Screens.ScanSetup import ScanSetup
 from Screens.ServiceScan import ServiceScan
 from Screens.MessageBox import MessageBox
 from Plugins.Plugin import PluginDescriptor
 
-from Components.Label import Label
 from Components.Sources.FrontendStatus import FrontendStatus
 from Components.ActionMap import ActionMap
 from Components.NimManager import nimmanager, getConfigSatlist
-from Components.MenuList import MenuList
 from Components.config import ConfigSelection, getConfigListEntry
 from Components.TuneTest import Tuner
 
@@ -58,8 +55,12 @@ class Satfinder(ScanSetup, ServiceScan):
 			self.session.nav.stopService()
 			if not self.openFrontend():
 				if self.session.pipshown: # try to disable pip
+					if hasattr(self.session, 'infobar'):
+						if self.session.infobar.servicelist.dopipzap:
+							self.session.infobar.servicelist.togglePipzap()
+					if hasattr(self.session, 'pip'):
+						del self.session.pip
 					self.session.pipshown = False
-					del self.session.pip
 					if not self.openFrontend():
 						self.frontend = None # in normal case this should not happen
 		self.tuner = Tuner(self.frontend)
@@ -119,8 +120,8 @@ class Satfinder(ScanSetup, ServiceScan):
 
 	def retune(self, configElement):
 		returnvalue = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-                if not self.tuning_sat.value:
-                        return
+		if not self.tuning_sat.value:
+			return
 		satpos = int(self.tuning_sat.value)
 		if self.tuning_type.value == "manual_transponder":
 			if self.scan_sat.system.value == eDVBFrontendParametersSatellite.System_DVB_S2:
@@ -188,21 +189,21 @@ class Satfinder(ScanSetup, ServiceScan):
 		index    = 0
 		none_cnt = 0
 		for n in self.satList:
-			if self.satList[index] == None:
-				none_cnt = none_cnt + 1
+			if self.satList[index] is None:
+				none_cnt += 1
 			if index == int(v):
-				return (index-none_cnt)
-			index = index + 1
+				return index-none_cnt
+			index += 1
 		return -1
 
 	def updatePreDefTransponders(self):
 		ScanSetup.predefinedTranspondersList(self, self.tuning_sat.orbital_position)
-                if self.preDefTransponders:
-                        self.preDefTransponders.addNotifier(self.retune, initial_call=False)
+		if self.preDefTransponders:
+			self.preDefTransponders.addNotifier(self.retune, initial_call=False)
 
-        def keyGoScan(self):
-                self.frontend = None
-                del self.raw_channel
+	def keyGoScan(self):
+		self.frontend = None
+		del self.raw_channel
 		tlist = []
 		self.addSatTransponder(tlist,
 			self.transponder[0], # frequency
@@ -223,7 +224,7 @@ class Satfinder(ScanSetup, ServiceScan):
 		networkid = 0
 		self.session.openWithCallback(self.startScanCallback, ServiceScan, [{"transponders": tlist, "feid": feid, "flags": flags, "networkid": networkid}])
 
-	def startScanCallback(self, answer):
+	def startScanCallback(self, answer=None):
 		if answer:
 			self.doCloseRecursive()
 
@@ -271,7 +272,7 @@ def SatfinderStart(menuid, **kwargs):
 		return []
 
 def Plugins(**kwargs):
-	if (nimmanager.hasNimType("DVB-S")):
+	if nimmanager.hasNimType("DVB-S"):
 		return PluginDescriptor(name=_("Satfinder"), description=_("Helps setting up your dish"), where = PluginDescriptor.WHERE_MENU, needsRestart = False, fnc=SatfinderStart)
 	else:
 		return []

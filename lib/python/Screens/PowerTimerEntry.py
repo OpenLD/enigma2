@@ -73,9 +73,9 @@ class TimerEntry(Screen, ConfigListScreen):
 			day.append(0)
 		if self.timer.repeated: # repeated
 			type = "repeated"
-			if (self.timer.repeated == 31): # Mon-Fri
+			if self.timer.repeated == 31: # Mon-Fri
 				repeated = "weekdays"
-			elif (self.timer.repeated == 127): # daily
+			elif self.timer.repeated == 127: # daily
 				repeated = "daily"
 			else:
 				flags = self.timer.repeated
@@ -90,7 +90,7 @@ class TimerEntry(Screen, ConfigListScreen):
 						count += 1
 					else:
 						day[x] = 0
-					flags = flags >> 1
+					flags >>= 1
 				if count == 1:
 					repeated = "weekly"
 		else: # once
@@ -135,33 +135,33 @@ class TimerEntry(Screen, ConfigListScreen):
 		self.list.append(self.timerType)
 
 
-		if self.timerentry_timertype.getValue() == "autostandby" or self.timerentry_timertype.getValue() == "autodeepstandby":
-			if self.timerentry_timertype.getValue() == "autodeepstandby":
+		if self.timerentry_timertype.value == "autostandby" or self.timerentry_timertype.value == "autodeepstandby":
+			if self.timerentry_timertype.value == "autodeepstandby":
 				self.list.append(getConfigListEntry(_("Only active when in standby"), self.timerrntry_autosleepinstandbyonly))
 			self.list.append(getConfigListEntry(_("Sleep delay"), self.timerrntry_autosleepdelay))
 			self.list.append(getConfigListEntry(_("Repeat type"), self.timerentry_autosleeprepeat))
 			self.timerTypeEntry = getConfigListEntry(_("Repeat type"), self.timerentry_type)
-			self.entryShowEndTime = getConfigListEntry(_("Set end Time"), self.timerentry_showendtime)
+			self.entryShowEndTime = getConfigListEntry(_("Set end time"), self.timerentry_showendtime)
 			self.frequencyEntry = getConfigListEntry(_("Repeats"), self.timerentry_repeated)
 		else:
 			self.timerTypeEntry = getConfigListEntry(_("Repeat type"), self.timerentry_type)
 			self.list.append(self.timerTypeEntry)
 
-			if self.timerentry_type.getValue() == "once":
+			if self.timerentry_type.value == "once":
 				self.frequencyEntry = None
 			else: # repeated
 				self.frequencyEntry = getConfigListEntry(_("Repeats"), self.timerentry_repeated)
 				self.list.append(self.frequencyEntry)
 				self.repeatedbegindateEntry = getConfigListEntry(_("Starting on"), self.timerentry_repeatedbegindate)
 				self.list.append(self.repeatedbegindateEntry)
-				if self.timerentry_repeated.getValue() == "daily":
+				if self.timerentry_repeated.value == "daily":
 					pass
-				if self.timerentry_repeated.getValue() == "weekdays":
+				if self.timerentry_repeated.value == "weekdays":
 					pass
-				if self.timerentry_repeated.getValue() == "weekly":
+				if self.timerentry_repeated.value == "weekly":
 					self.list.append(getConfigListEntry(_("Weekday"), self.timerentry_weekday))
 
-				if self.timerentry_repeated.getValue() == "user":
+				if self.timerentry_repeated.value == "user":
 					self.list.append(getConfigListEntry(_("Monday"), self.timerentry_day[0]))
 					self.list.append(getConfigListEntry(_("Tuesday"), self.timerentry_day[1]))
 					self.list.append(getConfigListEntry(_("Wednesday"), self.timerentry_day[2]))
@@ -171,7 +171,7 @@ class TimerEntry(Screen, ConfigListScreen):
 					self.list.append(getConfigListEntry(_("Sunday"), self.timerentry_day[6]))
 
 			self.entryDate = getConfigListEntry(_("Date"), self.timerentry_date)
-			if self.timerentry_type.getValue() == "once":
+			if self.timerentry_type.value == "once":
 				self.list.append(self.entryDate)
 
 			self.entryStartTime = getConfigListEntry(_("Start time"), self.timerentry_starttime)
@@ -180,7 +180,7 @@ class TimerEntry(Screen, ConfigListScreen):
 			self.entryShowEndTime = getConfigListEntry(_("Set end time"), self.timerentry_showendtime)
 			self.list.append(self.entryShowEndTime)
 			self.entryEndTime = getConfigListEntry(_("End time"), self.timerentry_endtime)
-			if self.timerentry_showendtime.getValue():
+			if self.timerentry_showendtime.value:
 				self.list.append(self.entryEndTime)
 
 			self.list.append(getConfigListEntry(_("After event"), self.timerentry_afterevent))
@@ -210,9 +210,9 @@ class TimerEntry(Screen, ConfigListScreen):
 		return int(mktime(dt.timetuple()))
 
 	def getBeginEnd(self):
-		date = self.timerentry_date.getValue()
-		endtime = self.timerentry_endtime.getValue()
-		starttime = self.timerentry_starttime.getValue()
+		date = self.timerentry_date.value
+		endtime = self.timerentry_endtime.value
+		starttime = self.timerentry_starttime.value
 
 		begin = self.getTimestamp(date, starttime)
 		end = self.getTimestamp(date, endtime)
@@ -224,8 +224,8 @@ class TimerEntry(Screen, ConfigListScreen):
 		return begin, end
 
 	def keyGo(self, result = None):
-		if not self.timerentry_showendtime.getValue():
-			self.timerentry_endtime.value = self.timerentry_starttime.getValue()
+		if not self.timerentry_showendtime.value:
+			self.timerentry_endtime.value = self.timerentry_starttime.value
 
 		self.timer.resetRepeated()
 		self.timer.timerType = {
@@ -245,39 +245,39 @@ class TimerEntry(Screen, ConfigListScreen):
 			"deepstandby": AFTEREVENT.DEEPSTANDBY
 			}[self.timerentry_afterevent.value]
 
-		if self.timerentry_type.getValue() == "once":
+		if self.timerentry_type.value == "once":
 			self.timer.begin, self.timer.end = self.getBeginEnd()
 
-		if self.timerentry_timertype.getValue() == "autostandby" or self.timerentry_timertype.getValue() == "autodeepstandby":
+		if self.timerentry_timertype.value == "autostandby" or self.timerentry_timertype.value == "autodeepstandby":
 			self.timer.begin = int(time()) + 10
 			self.timer.end = self.timer.begin
-			self.timer.autosleepinstandbyonly = self.timerrntry_autosleepinstandbyonly.getValue()
-			self.timer.autosleepdelay = self.timerrntry_autosleepdelay.getValue()
-			self.timer.autosleeprepeat = self.timerentry_autosleeprepeat.getValue()
-		if self.timerentry_type.getValue() == "repeated":
-			if self.timerentry_repeated.getValue() == "daily":
+			self.timer.autosleepinstandbyonly = self.timerrntry_autosleepinstandbyonly.value
+			self.timer.autosleepdelay = self.timerrntry_autosleepdelay.value
+			self.timer.autosleeprepeat = self.timerentry_autosleeprepeat.value
+		if self.timerentry_type.value == "repeated":
+			if self.timerentry_repeated.value == "daily":
 				for x in (0, 1, 2, 3, 4, 5, 6):
 					self.timer.setRepeated(x)
 
-			if self.timerentry_repeated.getValue() == "weekly":
+			if self.timerentry_repeated.value == "weekly":
 				self.timer.setRepeated(self.timerentry_weekday.index)
 
-			if self.timerentry_repeated.getValue() == "weekdays":
+			if self.timerentry_repeated.value == "weekdays":
 				for x in (0, 1, 2, 3, 4):
 					self.timer.setRepeated(x)
 
-			if self.timerentry_repeated.getValue() == "user":
+			if self.timerentry_repeated.value == "user":
 				for x in (0, 1, 2, 3, 4, 5, 6):
-					if self.timerentry_day[x].getValue():
+					if self.timerentry_day[x].value:
 						self.timer.setRepeated(x)
 
-			self.timer.repeatedbegindate = self.getTimestamp(self.timerentry_repeatedbegindate.getValue(), self.timerentry_starttime.getValue())
+			self.timer.repeatedbegindate = self.getTimestamp(self.timerentry_repeatedbegindate.value, self.timerentry_starttime.value)
 			if self.timer.repeated:
-				self.timer.begin = self.getTimestamp(self.timerentry_repeatedbegindate.getValue(), self.timerentry_starttime.getValue())
-				self.timer.end = self.getTimestamp(self.timerentry_repeatedbegindate.getValue(), self.timerentry_endtime.getValue())
+				self.timer.begin = self.getTimestamp(self.timerentry_repeatedbegindate.value, self.timerentry_starttime.value)
+				self.timer.end = self.getTimestamp(self.timerentry_repeatedbegindate.value, self.timerentry_endtime.value)
 			else:
-				self.timer.begin = self.getTimestamp(time.time(), self.timerentry_starttime.getValue())
-				self.timer.end = self.getTimestamp(time.time(), self.timerentry_endtime.getValue())
+				self.timer.begin = self.getTimestamp(time.time(), self.timerentry_starttime.value)
+				self.timer.end = self.getTimestamp(time.time(), self.timerentry_endtime.value)
 
 			# when a timer end is set before the start, add 1 day
 			if self.timer.end < self.timer.begin:
@@ -290,14 +290,14 @@ class TimerEntry(Screen, ConfigListScreen):
 		self.timerentry_starttime.increment()
 		self["config"].invalidate(self.entryStartTime)
 		if self.timerentry_type.value == "once" and self.timerentry_starttime.value == [0, 0]:
-			self.timerentry_date.value = self.timerentry_date.value + 86400
+			self.timerentry_date.value += 86400
 			self["config"].invalidate(self.entryDate)
 
 	def decrementStart(self):
 		self.timerentry_starttime.decrement()
 		self["config"].invalidate(self.entryStartTime)
 		if self.timerentry_type.value == "once" and self.timerentry_starttime.value == [23, 59]:
-			self.timerentry_date.value = self.timerentry_date.value - 86400
+			self.timerentry_date.value -= 86400
 			self["config"].invalidate(self.entryDate)
 
 	def incrementEnd(self):
@@ -320,7 +320,7 @@ class TimerLog(Screen):
 	def __init__(self, session, timer):
 		Screen.__init__(self, session)
 		self.skinName = "TimerLog"
-		self.timer = timer;
+		self.timer = timer
 		self.log_entries = self.timer.log_entries[:]
 
 		self.fillLogList()

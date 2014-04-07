@@ -34,7 +34,7 @@ def ServiceInfoListEntry(a, b, valueType=TYPE_TEXT, param=4):
 			if b > 1800:
 				b = 3600 - b
 				direction = 'W'
-			b = ("%d.%d%s") % (b // 10, b % 10, direction)
+			b = "%d.%d%s" % (b // 10, b % 10, direction)
 		else:
 			b = str(b)
 
@@ -112,22 +112,22 @@ class ServiceInfo(Screen):
 			else:
 				name = _("N/A")
 				refstr = _("N/A")
-                        aspect = "-"
-                        videocodec = "-"
-                        resolution = "-"
-                        if self.info:
-                                videocodec =  ("MPEG2", "MPEG4", "MPEG1", "MPEG4-II", "VC1", "VC1-SM", "-" )[self.info and self.info.getInfo(iServiceInformation.sVideoType)]
-                                width = self.info.getInfo(iServiceInformation.sVideoWidth)
-                                height = self.info.getInfo(iServiceInformation.sVideoHeight)
-                                if width > 0 and height > 0:
-                                        resolution = "%dx%d" % (width,height)
-                                        resolution += ("i", "p", "")[self.info.getInfo(iServiceInformation.sProgressive)]
-                                        resolution += str((self.info.getInfo(iServiceInformation.sFrameRate) + 500) / 1000)
-                                        aspect = self.getServiceInfoValue(iServiceInformation.sAspect)
-                                        if aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ):
-                                                aspect = "4:3"
-                                        else:
-                                                aspect = "16:9"
+			aspect = "-"
+			videocodec = "-"
+			resolution = "-"
+			if self.info:
+				videocodec =  ("MPEG2", "MPEG4", "MPEG1", "MPEG4-II", "VC1", "VC1-SM", "-" )[self.info and self.info.getInfo(iServiceInformation.sVideoType)]
+				width = self.info.getInfo(iServiceInformation.sVideoWidth)
+				height = self.info.getInfo(iServiceInformation.sVideoHeight)
+				if width > 0 and height > 0:
+					resolution = "%dx%d" % (width,height)
+					resolution += ("i", "p", "")[self.info.getInfo(iServiceInformation.sProgressive)]
+					resolution += str((self.info.getInfo(iServiceInformation.sFrameRate) + 500) / 1000)
+					aspect = self.getServiceInfoValue(iServiceInformation.sAspect)
+					if aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ):
+						aspect = "4:3"
+					else:
+						aspect = "16:9"
 
 			Labels = ( (_("Name"), name, TYPE_TEXT),
 					(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
@@ -232,7 +232,7 @@ class ServiceInfo(Screen):
 
 		for item in Labels:
 			if item[1] is None:
-				continue;
+				continue
 			value = item[1]
 			if len(item) < 4:
 				tlist.append(ServiceInfoListEntry(item[0]+":", value, item[2]))

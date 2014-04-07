@@ -90,9 +90,9 @@ bool eListboxServiceContent::setCurrent(const eServiceReference &ref)
 		{
 			m_cursor = i;
 			m_cursor_number = index;
-	if (m_listbox)
-		m_listbox->moveSelectionTo(cursorResolve(index));
-		return true;
+			if (m_listbox)
+				m_listbox->moveSelectionTo(cursorResolve(index));
+				return true;
 			break;
 		}
 	return false;

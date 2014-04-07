@@ -1,20 +1,14 @@
-from Screens.Screen import Screen
-from Screens.ChoiceBox import ChoiceBox
-from Screens.InputBox import InputBox
-from Screens.MessageBox import MessageBox
-from Screens.HelpMenu import HelpableScreen
-from Components.ActionMap import HelpableActionMap, ActionMap
-from Components.Sources.List import List
-from Components.Sources.StaticText import StaticText
-from Components.Sources.Progress import Progress
-from Components.FileList import FileList
-from Components.Pixmap import Pixmap
 from enigma import ePicLoad
-from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_FONTS, SCOPE_HDD
-from Components.config import config, getConfigListEntry, ConfigInteger, ConfigSubsection, ConfigSelection
+
+from Screens.Screen import Screen
+from Components.ActionMap import ActionMap
+from Components.Sources.StaticText import StaticText
+from Components.Pixmap import Pixmap
+from Components.config import config, getConfigListEntry, ConfigInteger
 from Components.ConfigList import ConfigListScreen
 from Components.AVSwitch import AVSwitch
 import DVDTitle
+
 
 class TitleProperties(Screen,ConfigListScreen):
 	skin = """
@@ -81,13 +75,13 @@ class TitleProperties(Screen,ConfigListScreen):
 			self.list.append(getConfigListEntry("DVD " + _("Description"), self.properties.menusubtitle))
 			if config.usage.setup_level.index >= 2: # expert+
 				for audiotrack in self.properties.audiotracks:
-					DVB_aud = audiotrack.DVB_lang.getValue() or audiotrack.pid.getValue()
+					DVB_aud = audiotrack.DVB_lang.value or audiotrack.pid.value
 					self.list.append(getConfigListEntry(_("Burn audio track (%s)") % DVB_aud, audiotrack.active))
-					if audiotrack.active.getValue():
+					if audiotrack.active.value:
 						self.list.append(getConfigListEntry(_("Audio track (%s) format") % DVB_aud, audiotrack.format))
 						self.list.append(getConfigListEntry(_("Audio track (%s) language") % DVB_aud, audiotrack.language))
 				self.list.append(getConfigListEntry("DVD " + _("Aspect ratio"), self.properties.aspect))
-				if self.properties.aspect.getValue() == "16:9":
+				if self.properties.aspect.value == "16:9":
 					self.list.append(getConfigListEntry("DVD " + "widescreen", self.properties.widescreen))
 				else:
 					self.list.append(getConfigListEntry("DVD " + "widescreen", self.properties.crop))
@@ -120,7 +114,7 @@ class TitleProperties(Screen,ConfigListScreen):
 
 	def paintThumbPixmapCB(self, picInfo=None):
 		ptr = self.picload.getData()
-		if ptr != None:
+		if ptr is not None:
 			self["thumbnail"].instance.setPixmap(ptr.__deref__())
 
 	def changedConfigList(self):
@@ -134,7 +128,7 @@ class TitleProperties(Screen,ConfigListScreen):
 		for x in self["config"].list:
 			x[1].save()
 		current_pos = self.title_idx+1
-		new_pos = self.properties.position.getValue()
+		new_pos = self.properties.position.value
 		if new_pos != current_pos:
 			print "title got repositioned from ", current_pos, "to", new_pos
 			swaptitle = self.project.titles.pop(current_pos-1)
@@ -164,7 +158,7 @@ class LanguageChoices():
 				self.langdict[key] = val
 				self.choices.append((key, val))
 		self.choices.sort()
-		self.choices.insert(0,("nolang", ("unspecified")))
+		self.choices.insert(0,("nolang", "unspecified"))
 		self.choices.insert(1,(syslang, self.langdict[syslang]))
 		if syslang != "en":
 			self.choices.insert(2,("en", self.langdict["en"]))

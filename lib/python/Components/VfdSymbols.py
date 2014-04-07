@@ -1,17 +1,18 @@
 from twisted.internet import threads
 from config import config
-from enigma import eDBoxLCD, eTimer, iPlayableService, getBoxType
+from enigma import eDBoxLCD, eTimer, iPlayableService
 import NavigationInstance
 from Tools.Directories import fileExists
 from Components.ParentalControl import parentalControl
 from Components.ServiceEventTracker import ServiceEventTracker
 from Components.SystemInfo import SystemInfo
+from boxbranding import getBoxType
 
 POLLTIME = 5 # seconds
 
 def SymbolsCheck(session, **kwargs):
 		global symbolspoller, POLLTIME
-		if getBoxType() == 'ixussone' or getBoxType() == 'ixusszero':
+		if getBoxType() in ('ixussone', 'ixusszero'):
 			POLLTIME = 1
 		symbolspoller = SymbolsCheckPoller(session)
 		symbolspoller.start()
@@ -63,13 +64,13 @@ class SymbolsCheckPoller:
 				open("/proc/stb/lcd/symbol_circle", "w").write("3")
 			else:
 				open("/proc/stb/lcd/symbol_circle", "w").write("0")
-		elif getBoxType() == 'ebox5000':
+		elif getBoxType() in ('mixosf5', 'mixoslumi', 'mixosf7', 'gi9196m'):
 			recordings = len(NavigationInstance.instance.getRecordings())
 			if recordings > 0:
 				open("/proc/stb/lcd/symbol_recording", "w").write("1")
 			else:
 				open("/proc/stb/lcd/symbol_recording", "w").write("0")
-		elif getBoxType() == 'ixussone' or getBoxType() == 'ixusszero':
+		elif getBoxType() in ('ixussone', 'ixusszero'):
 			recordings = len(NavigationInstance.instance.getRecordings())
 			self.blink = not self.blink
 			if recordings > 0 and self.blink:

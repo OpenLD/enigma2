@@ -9,7 +9,8 @@ from Components.Sources.StaticText import StaticText
 from Components.Label import Label
 from Components.Sources.Boolean import Boolean
 
-from enigma import eEnv, getMachineBrand, getMachineName
+from enigma import eEnv
+from boxbranding import getMachineBrand, getMachineName
 
 import xml.etree.cElementTree
 
@@ -49,20 +50,20 @@ class SetupSummary(Screen):
 			self.onHide.append(self.removeWatcher)
 
 	def addWatcher(self):
-		self.parent.onChangedEntry.append(self.selectionChanged)
-		self.parent["config"].onSelectionChanged.append(self.selectionChanged)
-		self.selectionChanged()
+		if hasattr(self.parent,"onChangedEntry"):
+			self.parent.onChangedEntry.append(self.selectionChanged)
+			self.parent["config"].onSelectionChanged.append(self.selectionChanged)
+			self.selectionChanged()
 
 	def removeWatcher(self):
-		self.parent.onChangedEntry.remove(self.selectionChanged)
-		self.parent["config"].onSelectionChanged.remove(self.selectionChanged)
+		if hasattr(self.parent,"onChangedEntry"):
+			self.parent.onChangedEntry.remove(self.selectionChanged)
+			self.parent["config"].onSelectionChanged.remove(self.selectionChanged)
 
 	def selectionChanged(self):
-		if hasattr(self.parent,"getCurrentEntry"):
-			self["SetupEntry"].text = self.parent.getCurrentEntry()
-		if hasattr(self.parent,"getCurrentValue"):
-			self["SetupValue"].text = self.parent.getCurrentValue()
-		if hasattr(self.parent,"getCurrentDescription"):
+		self["SetupEntry"].text = self.parent.getCurrentEntry()
+		self["SetupValue"].text = self.parent.getCurrentValue()
+		if hasattr(self.parent,"getCurrentDescription") and self.parent.has_key("description"):
 			self.parent["description"].text = self.parent.getCurrentDescription()
 
 class Setup(ConfigListScreen, Screen):
@@ -82,7 +83,7 @@ class Setup(ConfigListScreen, Screen):
 		for x in xmldata.findall("setup"):
 			if x.get("key") != self.setup:
 				continue
-			self.addItems(list, x);
+			self.addItems(list, x)
 			self.setup_title = x.get("title", "").encode("UTF-8")
 			self.seperation = int(x.get('separation', '0'))
 
@@ -134,7 +135,7 @@ class Setup(ConfigListScreen, Screen):
 		list = []
 		self.refill(list)
 		self["config"].setList(list)
-		if config.usage.sort_settings.getValue():
+		if config.usage.sort_settings.value:
 			self["config"].list.sort()
 		self.moveToItem(self.item)
 
@@ -190,7 +191,7 @@ class Setup(ConfigListScreen, Screen):
 			if self["config"].getCurrent()[1].help_window.instance is not None:
 				self["config"].getCurrent()[1].help_window.hide()
 		from Screens.VirtualKeyBoard import VirtualKeyBoard
-		self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].getValue())
+		self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
 
 	def VirtualKeyBoardCallback(self, callback = None):
 		if callback is not None and len(callback):
@@ -203,25 +204,11 @@ class Setup(ConfigListScreen, Screen):
 	# for summary:
 	def changedEntry(self):
 		self.item = self["config"].getCurrent()
-		for x in self.onChangedEntry:
-			x()
 		try:
 			if isinstance(self["config"].getCurrent()[1], ConfigYesNo) or isinstance(self["config"].getCurrent()[1], ConfigSelection):
 				self.createSetup()
 		except:
 			pass
-
-	def getCurrentEntry(self):
-		return self["config"].getCurrent() and self["config"].getCurrent()[0] or ""
-
-	def getCurrentValue(self):
-		return self["config"].getCurrent() and str(self["config"].getCurrent()[1].getText()) or ""
-
-	def getCurrentDescription(self):
-		return self["config"].getCurrent() and len(self["config"].getCurrent()) > 2 and self["config"].getCurrent()[2] or ""
-
-	def createSummary(self):
-		return SetupSummary
 
 	def addItems(self, list, parentNode):
 		for x in parentNode:
@@ -240,7 +227,7 @@ class Setup(ConfigListScreen, Screen):
 				requires = x.get("requires")
 				if requires and requires.startswith('config.'):
 					item = eval(requires or "")
-					if item.getValue() and not item.getValue() == "0":
+					if item.value and not item.value == "0":
 						SystemInfo[requires] = True
 					else:
 						SystemInfo[requires] = False

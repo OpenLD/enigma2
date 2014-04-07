@@ -1,12 +1,11 @@
-from enigma import getBoxType, getMachineName
+from boxbranding import getBoxType, getMachineName
 from Screens.Wizard import WizardSummary
 from Screens.WizardLanguage import WizardLanguage
 from Screens.Rc import Rc
 from Components.AVSwitch import iAVSwitch
 from Screens.Screen import Screen
 
-from Components.About import about
-from Components.Pixmap import Pixmap, MovingPixmap, MultiPixmap
+from Components.Pixmap import Pixmap
 from Components.config import config, ConfigBoolean, configfile
 
 from Tools.Directories import resolveFilename, SCOPE_SKIN, SCOPE_ACTIVE_SKIN
@@ -14,19 +13,13 @@ from Tools.HardwareInfo import HardwareInfo
 
 config.misc.showtestcard = ConfigBoolean(default = False)
 
-try:
-	file = open("/proc/stb/info/boxtype", "r")
-	model = file.readline().strip()
-	file.close()
-except:
-	model = "unknown"	
+boxtype = getBoxType()
 
 has_rca = False
 has_dvi = False
-hw_type = HardwareInfo().get_device_name()
-if getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus' or getBoxType() == 'et5x00' or model == 'et6000' or getBoxType() == 'e3hd' or getBoxType() == 'odinm6' or getMachineName() == 'AX-Odin' or getBoxType() == 'ebox7358' or getBoxType() == 'tmnano' or hw_type == 'ultra' or hw_type == "me" or hw_type == "minime" or getBoxType() == 'optimussos1' or getBoxType() == 'optimussos2' or getBoxType() == 'gb800seplus' or getBoxType() == 'gb800ueplus' or model == 'ini-1000ru' or model == 'ini-1000sv' or getBoxType() == 'ixussone' or getBoxType() == 'ixusszero':	
+if boxtype in ('gbquad', 'gbquadplus', 'et5x00', 'et6000', 'classm', 'axodin', 'axodinc', 'genius', 'evo', 'geniuse3hd', 'evoe3hd', 'axase3', 'axase3c', 'starsatlx', 'mixosf7', 'mixoslumi', 'tmnano', 'azboxme',  'azboxminime', 'optimussos1',  'optimussos2', 'gb800seplus', 'gb800ueplus', 'sezam1000hd', 'ixussone', 'ixusszero', 'enfinity', 'force1'):	
 	has_rca = True
-if getBoxType() == 'dm8000' or getBoxType() == 'dm800':
+if boxtype == 'dm8000' or boxtype == 'dm800':
 	has_dvi = True
 
 class VideoWizardSummary(WizardSummary):
@@ -97,7 +90,6 @@ class VideoWizard(WizardLanguage, Rc):
 		self.rate = None
 
 	def createSummary(self):
-		from Screens.Wizard import WizardSummary
 		return VideoWizardSummary
 
 	def markDone(self):
@@ -147,7 +139,7 @@ class VideoWizard(WizardLanguage, Rc):
 		modeList = self.hw.getModeList(self.selection)
 		print "modeList:", modeList
 		self.port = port
-		if (len(modeList) > 0):
+		if len(modeList) > 0:
 			ratesList = self.listRates(modeList[0][0])
 			self.hw.setMode(port = port, mode = modeList[0][0], rate = ratesList[0][0])
 

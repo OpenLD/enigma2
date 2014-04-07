@@ -1,11 +1,13 @@
+from boxbranding import getMachineBrand, getMachineName
+from os import path
+
 from Screens.Screen import Screen
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry
 from Components.Sources.StaticText import StaticText
-from Components.SystemInfo import SystemInfo
-from enigma import getMachineBrand, getMachineName
+
 from Tools.Directories import fileExists
-from os import path
+
 if path.exists("/dev/hdmi_cec") or path.exists("/dev/misc/hdmi_cec0"):
 	import Components.HdmiCec
 
@@ -30,7 +32,6 @@ class HdmiCECSetupScreen(Screen, ConfigListScreen):
 		Screen.setTitle(self, _("HDMI CEC Setup"))
 
 		from Components.ActionMap import ActionMap
-		from Components.Button import Button
 
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("OK"))
@@ -59,7 +60,7 @@ class HdmiCECSetupScreen(Screen, ConfigListScreen):
 	def createSetup(self):
 		self.list = []
 		self.list.append(getConfigListEntry(_("Enabled"), config.hdmicec.enabled))
-		if config.hdmicec.enabled.getValue():
+		if config.hdmicec.enabled.value:
 			self.list.append(getConfigListEntry(_("Put TV in standby"), config.hdmicec.control_tv_standby))
 			self.list.append(getConfigListEntry(_("Wakeup TV from standby"), config.hdmicec.control_tv_wakeup))
 			self.list.append(getConfigListEntry(_("Regard deep standby as standby"), config.hdmicec.handle_deepstandby_events))
@@ -113,10 +114,10 @@ class HdmiCECSetupScreen(Screen, ConfigListScreen):
 
 	def updateAddress(self):
 		self["current_address"].setText(_("Current CEC address") + ": " + Components.HdmiCec.hdmi_cec.getPhysicalAddress())
-		if config.hdmicec.fixed_physical_address.getValue() == "0.0.0.0":
+		if config.hdmicec.fixed_physical_address.value == "0.0.0.0":
 			fixedaddresslabel = ""
 		else:
-			fixedaddresslabel = _("Using fixed address") + ": " + config.hdmicec.fixed_physical_address.getValue()
+			fixedaddresslabel = _("Using fixed address") + ": " + config.hdmicec.fixed_physical_address.value
 		self["fixed_address"].setText(fixedaddresslabel)
 
 def Plugins(**kwargs):

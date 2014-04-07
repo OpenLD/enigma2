@@ -40,8 +40,8 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_ESC" mapto="cancel" flags="m" />
-		<key id="KEY_RED" mapto="cancel" flags="m" />
-		<key id="KEY_GREEN" mapto="save" flags="m" />
+		<key id="KEY_RED" mapto="cancel" flags="b" />
+		<key id="KEY_GREEN" mapto="save" flags="b" />
 		<key id="KEY_LEFT" mapto="left" flags="mr" />
 		<key id="KEY_RIGHT" mapto="right" flags="mr" />
 		<key id="KEY_MUTE" mapto="deleteForward" flags="mr" />
@@ -468,7 +468,27 @@
 	<map context="InfobarTeletextActions">
 		<key id="KEY_TEXT" mapto="startTeletext" flags="m" />
 	</map>
-
+	
+	<map context="TeletextActions">
+		<key id="KEY_RIGHT" mapto="nextSubPage" flags="m" />
+		<key id="KEY_LEFT" mapto="prevSubPage" flags="m" />
+		<key id="KEY_UP" mapto="nextPage" flags="m" />
+		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
+		<key id="KEY_OK" mapto="ok" flags="m" />
+		<key id="KEY_FILE" mapto="transparent" flags="m" />
+		<key id="KEY_GREEN" mapto="green" flags="m" />
+		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
+		<key id="KEY_RED" mapto="red" flags="m" />
+		<key id="KEY_BLUE" mapto="blue" flags="m" />
+		<key id="KEY_CHANNELUP" mapto="zoomMode" flags="m" />
+		<key id="KEY_CHANNELDOWN" mapto="screenMode" flags="m" />
+		<key id="KEY_HELP" mapto="hint" flags="m" />
+		<key id="KEY_MENU" mapto="menu" flags="m" />
+		<key id="KEY_TEXT" mapto="exit" flags="m" />
+		<key id="KEY_EXIT" mapto="exit" flags="m" />
+		<key id="KEY_POWER" mapto="exit" flags="m" />
+	</map>
+	
 	<map context="InfobarRdsActions">
 		<key id="KEY_TEXT" mapto="startRassInteractive" flags="m" />
 	</map>
@@ -718,6 +738,7 @@
 		<map context="LDBluePanel">
 			<key id="KEY_BLUE" mapto="ldteam" flags="b" />
 		</map>
+
 		<map context="DVDPlayerActions">
 			<key id="KEY_MENU" mapto="dvdMenu" flags="m" />
 			<key id="KEY_INFO" mapto="toggleInfo" flags="m" />
@@ -744,4 +765,3 @@
 			</device-->
 		</map>
 </keymap>
-

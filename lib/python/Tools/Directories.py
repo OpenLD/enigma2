@@ -34,6 +34,7 @@ SCOPE_TIMESHIFT = 18
 SCOPE_ACTIVE_SKIN = 19
 SCOPE_LCDSKIN = 20
 SCOPE_ACTIVE_LCDSKIN = 21
+SCOPE_AUTORECORD = 22
 
 PATH_CREATE = 0
 PATH_DONTCREATE = 1
@@ -52,6 +53,7 @@ defaultPaths = {
 		SCOPE_SKIN_IMAGE: (eEnv.resolve("${datadir}/enigma2/"), PATH_DONTCREATE),
 		SCOPE_HDD: ("/media/hdd/movie/", PATH_DONTCREATE),
 		SCOPE_TIMESHIFT: ("/media/hdd/timeshift/", PATH_DONTCREATE),
+		SCOPE_AUTORECORD: ("/media/hdd/movie/", PATH_DONTCREATE),
 		SCOPE_MEDIA: ("/media/", PATH_DONTCREATE),
 		SCOPE_PLAYLIST: (eEnv.resolve("${sysconfdir}/enigma2/playlist/"), PATH_CREATE),
 
@@ -67,8 +69,9 @@ PATH_MOVE = 3 # move the fallback dir to the basedir (can be used for changes in
 fallbackPaths = {
 		SCOPE_CONFIG: [("/home/root/", FILE_MOVE),
 					   (eEnv.resolve("${datadir}/enigma2/defaults/"), FILE_COPY)],
-		SCOPE_HDD: [("/media/hdd/movies", PATH_MOVE)],
-		SCOPE_TIMESHIFT: [("/media/hdd/timeshift", PATH_MOVE)]
+		SCOPE_HDD: [("/media/hdd/movie", PATH_MOVE)],
+		SCOPE_TIMESHIFT: [("/media/hdd/timeshift", PATH_MOVE)],
+		SCOPE_AUTORECORD: [("/media/hdd/movie", PATH_MOVE)]
 	}
 
 def resolveFilename(scope, base = "", path_prefix = None):
@@ -140,11 +143,11 @@ def resolveFilename(scope, base = "", path_prefix = None):
 			path = defaultPaths[SCOPE_SKIN][0]
 		else:
 			tmp = defaultPaths[SCOPE_LCDSKIN][0]
-			pos = config.skin.display_skin.getValue().rfind('/')
+			pos = config.skin.display_skin.value.rfind('/')
 			if pos != -1:
-				tmpfile = tmp+config.skin.display_skin.getValue()[:pos+1] + base
+				tmpfile = tmp+config.skin.display_skin.value[:pos+1] + base
 				if pathExists(tmpfile):
-					path = tmp+config.skin.display_skin.getValue()[:pos+1]
+					path = tmp+config.skin.display_skin.value[:pos+1]
 				else:
 					if 'skin_default' not in tmp:
 						path = tmp + 'skin_default/'
@@ -241,7 +244,7 @@ def defaultRecordingLocation(candidate=None):
 				stat = os.statvfs(candidate[1])
 				# Free space counts double
 				size = (stat.f_blocks + stat.f_bavail) * stat.f_bsize
-				if (islocal and not havelocal) or ((islocal or not havelocal) and (size > biggest)):
+				if (islocal and not havelocal) or (islocal or not havelocal and size > biggest):
 					path = candidate[1]
 					havelocal = islocal
 					biggest = size

@@ -1,8 +1,10 @@
+from time import time
+from os import path
 from enigma import eServiceCenter, eServiceReference, eTimer, pNavigation, getBestPlayableServiceReference, iPlayableService
 from Components.ParentalControl import parentalControl
 from Components.config import config
 from Tools.BoundFunction import boundFunction
-from Tools.StbHardware import setFPWakeuptime, getFPWakeuptime, getFPWasTimerWakeup
+from Tools.StbHardware import getFPWasTimerWakeup
 from time import time
 import RecordTimer
 import PowerTimer
@@ -10,8 +12,7 @@ import Screens.Standby
 import NavigationInstance
 import ServiceReference
 from Screens.InfoBar import InfoBar, MoviePlayer
-from os import path
-from enigma import getBoxType
+from boxbranding import getBoxType, getBrandOEM
 
 # TODO: remove pNavgation, eNavigation and rewrite this stuff in python.
 class Navigation:
@@ -44,7 +45,7 @@ class Navigation:
 
 		wasTimerWakeup = getFPWasTimerWakeup()
 		thisBox = getBoxType()
-		if thisBox == 'gbquad' or thisBox == 'xp1000' or thisBox == 'ixussone' or thisBox == 'ventonhdx' or thisBox.startswith("tm") or thisBox.startswith("iqon") or thisBox.startswith("opti") or thisBox.startswith("azbox") or thisBox.startswith("ebox"):
+		if thisBox in ('gbquad', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin') or getBrandOEM() in ('dags', 'ebox', 'azbox', 'xp'):
 			config.workaround.deeprecord.setValue(True)
 			config.workaround.deeprecord.save()
 			config.save()
@@ -178,7 +179,7 @@ class Navigation:
 			print "ignore request to play already running service(1)"
 			return 0
 		print "playing", ref and ref.toString()
-		if path.exists("/proc/stb/lcd/symbol_signal") and config.lcd.mode.getValue() == '1':
+		if path.exists("/proc/stb/lcd/symbol_signal") and config.lcd.mode.value == '1':
 			try:
 				if '0:0:0:0:0:0:0:0:0' not in ref.toString():
 					signal = 1
@@ -191,7 +192,7 @@ class Navigation:
 				f = open("/proc/stb/lcd/symbol_signal", "w")
 				f.write("0")
 				f.close()
-		elif path.exists("/proc/stb/lcd/symbol_signal") and config.lcd.mode.getValue() == '0':
+		elif path.exists("/proc/stb/lcd/symbol_signal") and config.lcd.mode.value == '0':
 			f = open("/proc/stb/lcd/symbol_signal", "w")
 			f.write("0")
 			f.close()

@@ -1,7 +1,7 @@
 from Screens.ChoiceBox import ChoiceBox
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
-from Screens.Standby import TryQuitMainloop 
+from Screens.Standby import TryQuitMainloop
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Ipkg import IpkgComponent
 from Components.Sources.StaticText import StaticText

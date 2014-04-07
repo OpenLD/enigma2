@@ -10,7 +10,7 @@ from Screens.MessageBox import MessageBox
 from Tools.Directories import fileExists
 from os import system, listdir, rename, path, mkdir
 from time import sleep
-from enigma import getMachineBrand, getMachineName
+from boxbranding import getMachineBrand, getMachineName
 
 class CronTimers(Screen):
 	def __init__(self, session):
@@ -88,7 +88,7 @@ class CronTimers(Screen):
 		self.updateList()
 
 	def UninstallCheck(self):
-		if self.my_crond_run == False:
+		if not self.my_crond_run:
 			self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
 		else:
 			self.close()
@@ -131,9 +131,9 @@ class CronTimers(Screen):
 			cb(name, desc)
 
 	def CrondStart(self):
-		if self.my_crond_run == False:
+		if not self.my_crond_run:
 			self.Console.ePopen('/etc/init.d/busybox-cron start', self.StartStopCallback)
-		elif self.my_crond_run == True:
+		elif self.my_crond_run:
 			self.Console.ePopen('/etc/init.d/busybox-cron stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -170,7 +170,7 @@ class CronTimers(Screen):
 			self['labdisabled'].show()
 		if crond_process:
 			self.my_crond_run = True
-		if self.my_crond_run == True:
+		if self.my_crond_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_yellow'].setText(_("Stop"))
@@ -325,11 +325,11 @@ class CronTimersConfig(Screen, ConfigListScreen):
 
 	def createSetup(self):
 		predefinedlist = []
-		f = listdir('/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts')
+		f = listdir('/usr/scripts')
 		if f:
 			for line in f:
 				parts = line.split()
-				path = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts/"
+				path = "/usr/scripts/"
 				pkg = parts[0]
 				description = path + parts[0]
 				if pkg.find('.sh') >= 0:
@@ -345,7 +345,7 @@ class CronTimersConfig(Screen, ConfigListScreen):
 		if config.crontimers.runwhen.value == 'Weekly':
 			self.list.append(getConfigListEntry(_("What Day of week ?"), config.crontimers.dayofweek))
 		if config.crontimers.runwhen.value == 'Monthly':
-			self.list.append(getConfigListEntry(_("What Day of month ?"), config.crontimers.dayofmonth))
+			self.list.append(getConfigListEntry(_("What date of month ?"), config.crontimers.dayofmonth))
 		self.list.append(getConfigListEntry(_("Command type"), config.crontimers.commandtype))
 		if config.crontimers.commandtype.value == 'custom':
 			self.list.append(getConfigListEntry(_("Command To Run"), config.crontimers.user_command))
@@ -370,7 +370,7 @@ class CronTimersConfig(Screen, ConfigListScreen):
 			self.vkvar = sel[0]
 			if self.vkvar == _("Command To Run"):
 				from Screens.VirtualKeyBoard import VirtualKeyBoard
-				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].getValue())
+				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
 
 	def VirtualKeyBoardCallback(self, callback = None):
 		if callback is not None and len(callback):

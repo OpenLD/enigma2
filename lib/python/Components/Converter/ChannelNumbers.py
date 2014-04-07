@@ -2,6 +2,9 @@ from Components.NimManager import nimmanager
 
 class ChannelNumbers:
 
+	def __init__(self):
+		pass
+
 	def getChannelNumber(self, frequency, region):
 
 		f = self.getMHz(frequency)
@@ -29,9 +32,11 @@ class ChannelNumbers:
 				d = (f - 1) % 7
 				return str(int(f - 526)/7 + 28) + (d < 3 and "-" or d > 4 and "+" or "")
 
-		return ""
+		return None
 
 	def getMHz(self, frequency):
+		if str(frequency).endswith('Mhz'):
+			return frequency.split()[0]
 		return (frequency+50000)/100000/10.
 
 	def getTunerDescription(self, region):

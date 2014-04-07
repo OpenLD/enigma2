@@ -1912,10 +1912,16 @@ int eDVBServicePlay::getInfo(int w)
 	case sAudioPID:
 		if (m_dvb_service)
 		{
-			int apid = m_dvb_service->getCacheEntry(eDVBService::cAPID);
+			int apid = m_dvb_service->getCacheEntry(eDVBService::cMPEGAPID);
 			if (apid != -1)
 				return apid;
 			apid = m_dvb_service->getCacheEntry(eDVBService::cAC3PID);
+			if (apid != -1)
+				return apid;
+			apid = m_dvb_service->getCacheEntry(eDVBService::cDDPPID);
+			if (apid != -1)
+				return apid;
+			apid = m_dvb_service->getCacheEntry(eDVBService::cAACHEAPID);
 			if (apid != -1)
 				return apid;
 		}
@@ -2142,22 +2148,45 @@ int eDVBServicePlay::selectAudioStream(int i)
 				    the cache contains the correct audio pid and type)
 			*/
 	if (m_dvb_service && ((i != -1) || (program.audioStreams.size() == 1)
-		|| ((m_dvb_service->getCacheEntry(eDVBService::cAPID) == -1) && (m_dvb_service->getCacheEntry(eDVBService::cAC3PID)==-1))))
+		|| ((m_dvb_service->getCacheEntry(eDVBService::cMPEGAPID) == -1)
+		&& (m_dvb_service->getCacheEntry(eDVBService::cAC3PID)== -1)
+		&& (m_dvb_service->getCacheEntry(eDVBService::cDDPPID)== -1)
+		&& (m_dvb_service->getCacheEntry(eDVBService::cAACHEAPID) == -1))))
 	{
 		if (apidtype == eDVBAudio::aMPEG)
 		{
-			m_dvb_service->setCacheEntry(eDVBService::cAPID, apid);
+			m_dvb_service->setCacheEntry(eDVBService::cMPEGAPID, apid);
 			m_dvb_service->setCacheEntry(eDVBService::cAC3PID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cDDPPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAACHEAPID, -1);
 		}
 		else if (apidtype == eDVBAudio::aAC3)
 		{
-			m_dvb_service->setCacheEntry(eDVBService::cAPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cMPEGAPID, -1);
 			m_dvb_service->setCacheEntry(eDVBService::cAC3PID, apid);
+			m_dvb_service->setCacheEntry(eDVBService::cDDPPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAACHEAPID, -1);
+		}
+		else if (apidtype == eDVBAudio::aDDP)
+		{
+			m_dvb_service->setCacheEntry(eDVBService::cMPEGAPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAC3PID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cDDPPID, apid);
+			m_dvb_service->setCacheEntry(eDVBService::cAACHEAPID, -1);
+		}
+		else if (apidtype == eDVBAudio::aAACHE)
+		{
+			m_dvb_service->setCacheEntry(eDVBService::cMPEGAPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAC3PID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cDDPPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAACHEAPID, apid);
 		}
 		else
 		{
-			m_dvb_service->setCacheEntry(eDVBService::cAPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cMPEGAPID, -1);
 			m_dvb_service->setCacheEntry(eDVBService::cAC3PID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cDDPPID, -1);
+			m_dvb_service->setCacheEntry(eDVBService::cAACHEAPID, -1);
 		}
 	}
 
@@ -2862,7 +2891,7 @@ void eDVBServicePlay::updateDecoder(bool sendSeekableStateChanged)
 					if (track.type == 0) // dvb
 						m_subtitle_parser->start(track.pid, track.page_number, track.magazine_number);
 					else if (track.type == 1) // ttx
-						m_teletext_parser->setPageAndMagazine(track.page_number, track.magazine_number);
+						m_teletext_parser->setPageAndMagazine(track.page_number, track.magazine_number, track.language_code.c_str());
 				}
 			}
 			m_teletext_parser->start(program.textPid);
@@ -3034,6 +3063,7 @@ RESULT eDVBServicePlay::enableSubtitles(iSubtitleUser *user, SubtitleTrack &trac
 	if (track.type == 1)  // teletext subtitles
 	{
 		int page, magazine, pid;
+		std::string lang;
 
 		if (!m_teletext_parser)
 		{
@@ -3044,11 +3074,23 @@ RESULT eDVBServicePlay::enableSubtitles(iSubtitleUser *user, SubtitleTrack &trac
 		pid = track.pid;
 		page = track.page_number;
 		magazine = track.magazine_number;
+		lang = track.language_code;
 
 		m_subtitle_widget = user;
-		m_teletext_parser->setPageAndMagazine(page, magazine);
+		m_teletext_parser->setPageAndMagazine(page, magazine, lang.c_str());
 		if (m_dvb_service)
-			m_dvb_service->setCacheEntry(eDVBService::cSUBTITLE,((pid&0xFFFF)<<16)|((page&0xFF)<<8)|(magazine&0xFF));
+		{
+			int i, sub = 0;
+			for (i=0; i < m_teletext_parser->max_id; i++)
+			{
+				if (!memcmp(m_teletext_parser->my_country_codes[i], lang.c_str(), 3))
+				{
+					sub = i;
+					break;
+				}
+			}
+			m_dvb_service->setCacheEntry(eDVBService::cSUBTITLE,((pid&0xFFFF)<<16)|((page&0xFF)<<8)|((sub&0x1F)<<3)|(magazine&0x7));
+		}
 	}
 	else if (track.type == 0)
 	{
@@ -3089,7 +3131,7 @@ RESULT eDVBServicePlay::disableSubtitles()
 	}
 	if (m_teletext_parser)
 	{
-		m_teletext_parser->setPageAndMagazine(-1, -1);
+		m_teletext_parser->setPageAndMagazine(-1, -1, "und");
 		m_subtitle_pages.clear();
 	}
 	if (m_dvb_service)
@@ -3121,7 +3163,9 @@ RESULT eDVBServicePlay::getCachedSubtitle(struct SubtitleTrack &track)
 						track.type = 0; // type dvb
 					track.pid = pid; // pid
 					track.page_number = (data >> 8) & 0xff; // composition_page / page
-					track.magazine_number = data & 0xff; // ancillary_page / magazine
+					int k = (data >> 3) & 0x1f;
+					track.magazine_number = data & 0x7; // ancillary_page / magazine
+					track.language_code = m_teletext_parser->my_country_codes[k];
 					return 0;
 				}
 			}
@@ -3133,6 +3177,7 @@ RESULT eDVBServicePlay::getCachedSubtitle(struct SubtitleTrack &track)
 					track.pid = program.subtitleStreams[stream].pid;
 					track.page_number = program.subtitleStreams[stream].teletext_page_number & 0xff;
 					track.magazine_number = program.subtitleStreams[stream].teletext_magazine_number & 0x07;
+					track.language_code = program.subtitleStreams[stream].language_code;
 					return 0;
 				}
 				else
@@ -3141,6 +3186,7 @@ RESULT eDVBServicePlay::getCachedSubtitle(struct SubtitleTrack &track)
 					track.pid = program.subtitleStreams[stream].pid;
 					track.page_number = program.subtitleStreams[stream].composition_page_id;
 					track.magazine_number = program.subtitleStreams[stream].ancillary_page_id;
+					track.language_code = program.subtitleStreams[stream].language_code;
 					return 0;
 				}
 			}
@@ -3234,9 +3280,11 @@ void eDVBServicePlay::newSubtitlePage(const eDVBTeletextSubtitlePage &page)
 	if (m_subtitle_widget)
 	{
 		int subtitledelay = 0;
-		if (!page.m_have_pts && (m_is_pvr || m_timeshift_enabled))
+		pts_t pts;
+		m_decoder->getPTS(0, pts);
+		if (m_is_pvr || m_timeshift_enabled)
 		{
-			eDebug("Subtitle without PTS and recording");
+			eDebug("Subtitle in recording/timeshift");
 			subtitledelay = eConfigManager::getConfigIntValue("config.subtitles.subtitle_noPTSrecordingdelay", 315000);
 		}
 		else
@@ -3245,23 +3293,16 @@ void eDVBServicePlay::newSubtitlePage(const eDVBTeletextSubtitlePage &page)
 			subtitledelay = eConfigManager::getConfigIntValue("config.subtitles.subtitle_bad_timing_delay", 0);
 		}
 
-		if (!page.m_have_pts || subtitledelay)
-		{
-			/* we need to modify the page timing */
-			eDVBTeletextSubtitlePage tmppage = page;
-			if (!page.m_have_pts && m_decoder)
-			{
-				m_decoder->getPTS(0, tmppage.m_pts);
-				tmppage.m_have_pts = true;
-			}
-			tmppage.m_pts += subtitledelay;
-			m_subtitle_pages.push_back(tmppage);
-		}
-		else
-		{
-			/* use the unmodified page */
-			m_subtitle_pages.push_back(page);
-		}
+		// eDebug("Subtitle get  TTX have_pts=%d pvr=%d timeshift=%d page.pts=%lld pts=%lld delay=%d", page.m_have_pts, m_is_pvr, m_timeshift_enabled, page.m_pts, pts, subtitledelay);
+		eDVBTeletextSubtitlePage tmppage = page;
+		tmppage.m_have_pts = true;
+
+		if (abs(tmppage.m_pts - pts) > 20*90000)
+			tmppage.m_pts = pts; // fix abnormal pts diffs
+
+		tmppage.m_pts += subtitledelay;
+		m_subtitle_pages.push_back(tmppage);
+
 		checkSubtitleTiming();
 	}
 }
@@ -3302,10 +3343,10 @@ void eDVBServicePlay::checkSubtitleTiming()
 		else
 			return;
 
-//		eDebug("%lld %lld", pos, show_time);
 		int diff = show_time - pos;
+//		eDebug("Subtitle show %d page.pts=%lld pts=%lld diff=%d", type, show_time, pos, diff);
 
-		if ((diff / 90) < 20 || diff > 1800000)
+		if (diff < 20*90 || diff > 1800000)
 		{
 			if (type == TELETEXT)
 			{

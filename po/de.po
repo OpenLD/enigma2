@@ -5,15 +5,15 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2013-12-01 12:55+0100\n"
-"Last-Translator: husky <husky@mail.to>\n"
+"PO-Revision-Date: 2014-03-28 23:04+0100\n"
+"Last-Translator: mike99 <mike99@gmx.net>\n"
 "Language-Team: openLD\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
 
 #
@@ -1615,10 +1615,11 @@ msgstr "Kanalauswahl"
 msgid "Channel selection"
 msgstr "Kanalliste"
 
-# kann raus
-# msgid "Channel selection configuration"
-# msgstr "Kanallisten Einstellungen"
+#
 msgid "Channel selection settings"
+msgstr "Kanallisten Einstellungen"
+
+msgid "Setup ChannelSelection"
 msgstr "Kanallisten Einstellungen"
 
 msgid "Channel list context menu"
@@ -3694,8 +3695,8 @@ msgstr "SingleEPG Einstellungen"
 msgid "InfobarEPG settings"
 msgstr "InfobarEPG Einstellungen"
 
-msgid "GraphicalEPG settings"
-msgstr "GrafischerEPG Einstellungen"
+msgid "Setup GraphicalEPG"
+msgstr "Grafischer-EPG Einstellungen"
 
 msgid "Graphical EPG"
 msgstr "Grafischer EPG"
@@ -4230,6 +4231,9 @@ msgstr "Nur skalieren"
 msgid "Just change channels"
 msgstr "Nur Kanäle wechseln"
 
+msgid "Just change Bouquet"
+msgstr "Nur Bouguet wechseln"
+
 msgid "Keep"
 msgstr "Behalten"
 
@@ -4251,7 +4255,7 @@ msgid "Keyboard map"
 msgstr "Tastaturlayout"
 
 #
-msgid "Keyboard setup"
+msgid "Setup Keyboard"
 msgstr "Tastatur-Einstellungen"
 
 #
@@ -5905,6 +5909,9 @@ msgstr "Standard-Untertitel des Programms bevorzugen"
 msgid "Preferred tuner"
 msgstr "Bevorzugter Tuner "
 
+msgid "Preferred tuner for recordings"
+msgstr "Bevorzugter Tuner bei Aufnahmen"
+
 msgid "Prepare another USB stick for image flashing"
 msgstr "Weiteren USB-Stick zum Image-Flashen vorbereiten"
 
@@ -6853,7 +6860,7 @@ msgstr ""
 "Wählen Sie ob die Image Farbtasten benutzt werden sollen\n"
 "('Nein' wenn Sie (Multi-)QuickButton benutzen möchten)."
 
-msgid "Select input device"
+msgid "Select InputDevice"
 msgstr "Eingabegerät auswählen."
 
 msgid "Select input device."
@@ -8255,6 +8262,10 @@ msgid "There are at least "
 msgstr "Es sind mindestens "
 
 #
+msgid "updates available."
+msgstr "Updates verfügbar."
+
+#
 msgid "There are currently no outstanding actions."
 msgstr "Es sind keine Aktivitäten geplant."
 
@@ -8682,13 +8693,37 @@ msgstr "PowerTimer Liste"
 msgid "PowerTimer Overview"
 msgstr "PowerTimer Übersicht"
 
-#
+# /usr/lib/enigma2/python/PowerTimer.py
+msgid ""
+"A finished powertimer wants to set your\n"
+"%s %s to standby. Do that now?"
+msgstr ""
+"Ein Powertimer will Ihren Receiver ausschalten.\n"
+"Ihre %s %s jetzt ausschalten?"
+
+# /usr/lib/enigma2/python/PowerTimer.py
 msgid ""
 "A finished powertimer wants to shutdown your %s %s.\n"
 "Do that now?"
 msgstr ""
-"Ein Powertimer will die %s %s ausschalten.\n"
-"Jetzt ausschalten?"
+"Ein Powertimer will Ihren Receiver ausschalten.\n"
+"Ihre %s %s jetzt ausschalten?"
+
+# /usr/lib/enigma2/python/PowerTimer.py
+msgid ""
+"A finished powertimer wants to reboot your %s %s.\n"
+"Do that now?"
+msgstr ""
+"Ein Powertimer will Ihren Receiver neu starten.\n"
+"Ihre %s %s jetzt neu starten?"
+
+# /usr/lib/enigma2/python/PowerTimer.py
+msgid ""
+"A finished powertimer wants to restart the user interface.\n"
+"Do that now?"
+msgstr ""
+"Ein Powertimer will die GUI Neustarten.\n"
+"Jetzt neu starten?"
 
 #
 msgid "Timer type"
@@ -9214,6 +9249,10 @@ msgstr "Nutzername"
 #
 msgid "User defined"
 msgstr "Benutzerdefiniert"
+
+#
+msgid "Use WOL"
+msgstr "WOL benutzen"
 
 #
 msgid "Username"
@@ -10904,7 +10943,7 @@ msgid "move"
 msgstr "Verschieben"
 
 #
-msgid "move PiP to main picture"
+msgid "Move PiP to main picture"
 msgstr "PiP tauschen und beenden"
 
 #
@@ -11446,7 +11485,7 @@ msgid "stop timeshift"
 msgstr "Timeshift beenden"
 
 #
-msgid "swap PiP and main picture"
+msgid "Swap PiP and main picture"
 msgstr "Tausche PiP mit Hauptbild"
 
 msgid "switch Fan On/Off"
@@ -11842,7 +11881,7 @@ msgid "Bouquet -= scan for IPTV server addresses"
 msgstr "Bouquet -= IPTV Server Adressen scannen"
 
 #
-msgid "Remote setup"
+msgid "Setup Remote"
 msgstr "Fernbedienung Einstellungen"
 
 #
@@ -12300,8 +12339,8 @@ msgid ""
 "Changes need a system restart to take effect.\n"
 "Restart your %s %s now?"
 msgstr ""
-"Geräteänderungen benötigen einen Neustart\n"
-"Box jetzt neu starten?"
+"Geräteänderungen benötigen einen Neustart.\n"
+"Ihre %s %s jetzt neu starten?"
 
 msgid "Updating mount locations."
 msgstr "Aktualisieren Mount-Einstellungen."
@@ -12394,8 +12433,8 @@ msgstr "Sortierung ändern"
 msgid "Channel list service mode*"
 msgstr "Kanalliste Service Mode*"
 
-msgid "Jump first press in channel selection*"
-msgstr "Springe zuerst in Programmauswahl*"
+msgid "Jump first press in channel selection"
+msgstr "Springe zuerst in Programmauswahl"
 
 msgid "Show infobar lite *"
 msgstr "Zeige einfache Infoleiste *"
@@ -14835,7 +14874,7 @@ msgstr ""
 "Wählen Sie was geschehen soll, wenn die %s %s gestartet wird.\n"
 "Normal Starten oder in den Standby gehen?"
 
-msgid "Show picons in servicelist"
+msgid "show picons in service list"
 msgstr "Zeige Picons in der Kanalliste"
 
 msgid "Configure if service picons will be shown in the servicelist."
@@ -14969,7 +15008,7 @@ msgid "Show MiniTV in the Front Display"
 msgstr "Zeige MiniTV im Display"
 
 msgid "You can Display MiniTV with or without OSD Menu"
-msgstr "Zeige im Display MiniTV mit oder ohne OSD Menu"
+msgstr "Zeige im Display MiniTV mit oder ohne OSD Menü"
 
 #
 msgid "Set Framerate for MiniTV"
@@ -15226,3 +15265,71 @@ msgstr "schnell"
 
 msgid "slow"
 msgstr "langsam"
+
+# python\Screens\LanguageSelection.py
+msgid "Do you want to delete all other languages?"
+msgstr "Wollen Sie alle anderen Sprachen löschen?"
+
+# python\Screens\LanguageSelection.py
+msgid "Do you want to delete %s language?"
+msgstr "Wollen Sie %s wirklich löschen?"
+
+# Components/Language.py
+msgid "Default Language can not be deleted !!"
+msgstr "Standardsprache kann nicht gelöscht werden!"
+
+msgid "Enable Autorecord"
+msgstr "Aktiviert automatische Aufnahme"
+
+msgid ""
+"If set to 'yes', enable autorecord for automatically background timeshift"
+msgstr "Aktiviert die Automatischeaufnahme für Timeshift im Hintergrund."
+
+msgid "Autorecord location"
+msgstr "Verzeichnis für automatische Aufnahme"
+
+msgid ""
+"Set the default location for your autorecord-files. Press 'OK' to add new "
+"locations, select left/right to select an existing location."
+msgstr ""
+"Wähle das Standardverzeichnis für die Automatischeaufnahme. Drücke 'OK' um "
+"ein neues Verzeichnis zu wählen. Benutze Kreuz links/rechts um bestehende "
+"Verzeichnisse zu wählen."
+
+# GraphMultiEpg.py
+msgid "Delete timer"
+msgstr "Timer löschen"
+
+# GraphMultiEpg.py
+msgid "Edit timer"
+msgstr "Timer bearbeiten"
+
+# GraphMultiEpg.py
+msgid "Change timer"
+msgstr "Timer ändern"
+
+# MovieSelection.py
+msgid "Device mounts"
+msgstr "Partition mounten"
+
+# MovieSelection.py
+msgid "Network mounts"
+msgstr "Netzwerk mounten"
+
+# MovieSelection.py
+msgid "Add bookmark"
+msgstr "Lesezeichen hinzufügen"
+
+# MovieSelection.py
+msgid "Create directory"
+msgstr "Verzeichnis anlegen"
+
+# MovieSelection.py
+msgid "Start offline decode"
+msgstr "Starte offline decodieren"
+
+msgid "Unicable User defined"
+msgstr "Unicable Benutzerkonfiguration"
+
+msgid "Info icon width"
+msgstr "Info-Icon anzeigen Breite"

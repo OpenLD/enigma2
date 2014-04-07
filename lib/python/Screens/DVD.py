@@ -4,7 +4,7 @@ from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.HelpMenu import HelpableScreen
-from Screens.InfoBarGenerics import InfoBarSeek, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarShowHide, InfoBarNotifications, InfoBarAudioSelection, InfoBarSubtitleSupport
+from Screens.InfoBarGenerics import InfoBarSeek, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarShowHide, InfoBarNotifications, InfoBarAudioSelection, InfoBarSubtitleSupport, InfoBarLongKeyDetection
 from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -55,7 +55,7 @@ class ChapterZap(Screen):
 
 	def keyNumberGlobal(self, number):
 		self.Timer.start(3000, True)		#reset timer
-		self.field = self.field + str(number)
+		self.field += str(number)
 		self["number"].setText(self.field)
 		if len(self.field) >= 4:
 			self.keyOK()
@@ -88,17 +88,17 @@ class ChapterZap(Screen):
 		self.Timer.callback.append(self.keyOK)
 		self.Timer.start(3000, True)
 
-class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarPVRState, InfoBarShowHide, HelpableScreen, InfoBarCueSheetSupport, InfoBarAudioSelection, InfoBarSubtitleSupport):
+class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarPVRState, InfoBarShowHide, HelpableScreen, InfoBarCueSheetSupport, InfoBarAudioSelection, InfoBarSubtitleSupport, InfoBarLongKeyDetection):
 	ALLOW_SUSPEND = Screen.SUSPEND_PAUSES
 	ENABLE_RESUME_SUPPORT = True
 
 	def save_infobar_seek_config(self):
-		self.saved_config_speeds_forward = config.seek.speeds_forward.getValue()
-		self.saved_config_speeds_backward = config.seek.speeds_backward.getValue()
-		self.saved_config_enter_forward = config.seek.enter_forward.getValue()
-		self.saved_config_enter_backward = config.seek.enter_backward.getValue()
-		self.saved_config_seek_on_pause = config.seek.on_pause.getValue()
-		self.saved_config_seek_speeds_slowmotion = config.seek.speeds_slowmotion.getValue()
+		self.saved_config_speeds_forward = config.seek.speeds_forward.value
+		self.saved_config_speeds_backward = config.seek.speeds_backward.value
+		self.saved_config_enter_forward = config.seek.enter_forward.value
+		self.saved_config_enter_backward = config.seek.enter_backward.value
+		self.saved_config_seek_on_pause = config.seek.on_pause.value
+		self.saved_config_seek_speeds_slowmotion = config.seek.speeds_slowmotion.value
 
 	def change_infobar_seek_config(self):
 		config.seek.speeds_forward.value = [2, 4, 6, 8, 16, 32, 64]
@@ -116,7 +116,8 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 		config.seek.enter_backward.value = self.saved_config_enter_backward
 		config.seek.on_pause.value = self.saved_config_seek_on_pause
 
-	def __init__(self, session, dvd_device = None, dvd_filelist = [ ], args = None):
+	def __init__(self, session, dvd_device=None, dvd_filelist=None, args=None):
+		if not dvd_filelist: dvd_filelist = []
 		Screen.__init__(self, session)
 		InfoBarBase.__init__(self)
 		InfoBarNotifications.__init__(self)
@@ -129,6 +130,7 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 		self.change_infobar_seek_config()
 		InfoBarSeek.__init__(self)
 		InfoBarPVRState.__init__(self)
+		InfoBarLongKeyDetection.__init__(self)
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 		self.session.nav.stopService()
@@ -475,7 +477,7 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 			self.session.openWithCallback(self.playPhysicalCB, MessageBox, text=_("Do you want to play DVD in drive?"), timeout=5 )
 
 	def playPhysicalCB(self, answer):
-		if answer == True:
+		if answer:
 			harddiskmanager.setDVDSpeed(harddiskmanager.getCD(), 1)
 			self.FileBrowserClosed(harddiskmanager.getAutofsMountpoint(harddiskmanager.getCD()))
 
@@ -545,7 +547,7 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 			if video_attr_high != 0:
 				status = True
 			video_attr_low = ord(ifofile.read(1))
-			print "[DVD] %s: video_attr_high = %x" % ( name, video_attr_high ), "video_attr_low = %x" % ( video_attr_low )
+			print "[DVD] %s: video_attr_high = %x" % ( name, video_attr_high ), "video_attr_low = %x" % video_attr_low
 			isNTSC = (video_attr_high & 0x10 == 0)
 			isLowResolution = (video_attr_low & 0x18 == 0x18)
 		except:
@@ -555,7 +557,7 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 		finally:
 			if ifofile is not None:
 				ifofile.close()
-		return ( status, isNTSC, isLowResolution )
+		return status, isNTSC, isLowResolution
 
 	def exitCB(self, answer):
 		if answer is not None:
@@ -582,7 +584,7 @@ class DVDPlayer(Screen, InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarP
 	def playLastCB(self, answer): # overwrite infobar cuesheet function
 		print "playLastCB", answer, self.resume_point
 		if self.service:
-			if answer == True:
+			if answer:
 				seekable = self.getSeek()
 				if seekable:
 					seekable.seekTo(self.resume_point)

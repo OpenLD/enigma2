@@ -1,6 +1,7 @@
 from Components.Converter.Converter import Converter
 from Components.Element import cached
 from Components.config import config
+from Components.NimManager import nimmanager
 
 class FrontendInfo(Converter, object):
 	BER = 0
@@ -10,6 +11,7 @@ class FrontendInfo(Converter, object):
 	SNRdB = 4
 	SLOT_NUMBER = 5
 	TUNER_TYPE = 6
+	STRING = 7
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -25,6 +27,8 @@ class FrontendInfo(Converter, object):
 			self.type = self.SLOT_NUMBER
 		elif type == "TYPE":
 			self.type = self.TUNER_TYPE
+		elif type == "STRING":
+			self.type = self.STRING
 		else:
 			self.type = self.LOCK
 
@@ -32,7 +36,7 @@ class FrontendInfo(Converter, object):
 	def getText(self):
 		assert self.type not in (self.LOCK, self.SLOT_NUMBER), "the text output of FrontendInfo cannot be used for lock info"
 		percent = None
-		swapsnr = config.usage.swap_snr_on_osd.getValue()
+		swapsnr = config.usage.swap_snr_on_osd.value
 		if self.type == self.BER: # as count
 			count = self.source.ber
 			if count is not None:
@@ -50,6 +54,18 @@ class FrontendInfo(Converter, object):
 				percent = self.source.snr
 		elif self.type == self.TUNER_TYPE:
 			return self.source.frontend_type and self.frontend_type or "Unknown"
+		elif self.type == self.STRING:
+			string = ""
+			for n in nimmanager.nim_slots:
+				if n.type:
+					if n.slot == self.source.slot_number:
+						string += "\c0000??00"
+					elif self.source.tuner_mask & 1 << n.slot:
+						string += "\c00????00"
+					else:
+						string += "\c007?7?7?"
+					string += chr(ord("A")+n.slot) + " "
+			return string
 		if percent is None:
 			return "N/A"
 		return "%d %%" % (percent * 100 / 65536)

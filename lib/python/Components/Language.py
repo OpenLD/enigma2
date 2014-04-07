@@ -85,7 +85,8 @@ class Language:
 			self.catalog.install(names=("ngettext", "pgettext"))
 			self.activeLanguage = index
 			for x in self.callbacks:
-				x()
+				if x:
+					x()
 		except:
 			print "Selected language does not exist!"
 		# NOTE: we do not use LC_ALL, because LC_ALL will not set any of the categories, when one of the categories fails.
@@ -130,9 +131,9 @@ class Language:
 		self.callbacks.append(callback)
 
 	def delLanguage(self, delLang = None):
-		from Components.config import config
+		from Components.config import config, configfile
 		from shutil import rmtree
-		lang = config.osd.language.getValue()
+		lang = config.osd.language.value
 		if delLang:
 			print"DELETE", delLang
 			if delLang == "en_US":
@@ -157,7 +158,7 @@ class Language:
 					elif x == "pt":
 						if x != lang:
 							rmtree(LPATH + x)
-			config.osd.language.removelang.setValue(True)
+			os.system("touch /etc/enigma2/.removelang")
 
 		self.InitLang()
 

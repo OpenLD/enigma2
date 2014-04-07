@@ -19,6 +19,7 @@ from Screens.TimerEntry import TimerEntry
 from Screens.EpgSelection import EPGSelection
 from Screens.TimerEdit import TimerSanityConflict
 from Screens.MessageBox import MessageBox
+from Screens.ChoiceBox import ChoiceBox
 from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN
 from RecordTimer import RecordTimerEntry, parseEvent, AFTEREVENT
 from ServiceReference import ServiceReference, isPlayableForCur
@@ -300,15 +301,15 @@ class EPGList(HTMLComponent, GUIComponent):
 		global listscreen
 		if self.listHeight > 0:
 			if listscreen:
-				itemHeight = self.listHeight / config.misc.graph_mepg.items_per_page_listscreen.getValue()
+				itemHeight = self.listHeight / config.misc.graph_mepg.items_per_page_listscreen.value
 			else:
-				itemHeight = self.listHeight / config.misc.graph_mepg.items_per_page.getValue()
+				itemHeight = self.listHeight / config.misc.graph_mepg.items_per_page.value
 		else:
 			itemHeight = 54 # some default (270/5)
 		if listscreen:
-			self.instance.resize(eSize(self.listWidth, itemHeight * config.misc.graph_mepg.items_per_page_listscreen.getValue()))
+			self.instance.resize(eSize(self.listWidth, itemHeight * config.misc.graph_mepg.items_per_page_listscreen.value))
 		else:
-			self.instance.resize(eSize(self.listWidth, itemHeight * config.misc.graph_mepg.items_per_page.getValue()))
+			self.instance.resize(eSize(self.listWidth, itemHeight * config.misc.graph_mepg.items_per_page.value))
 		self.l.setItemHeight(itemHeight)
 
 		self.nowEvPix = loadPNG(resolveFilename(SCOPE_CURRENT_SKIN, 'epg/CurrentEvent.png'))
@@ -318,7 +319,7 @@ class EPGList(HTMLComponent, GUIComponent):
 		self.curSerPix = loadPNG(resolveFilename(SCOPE_CURRENT_SKIN, 'epg/CurrentService.png'))
 
 	def setEventFontsize(self):
-		self.l.setFont(1, gFont(self.entryFontName, self.entryFontSize + config.misc.graph_mepg.ev_fontsize.getValue()))
+		self.l.setFont(1, gFont(self.entryFontName, self.entryFontSize + config.misc.graph_mepg.ev_fontsize.value))
 
 	def postWidgetCreate(self, instance):
 		instance.setWrapAround(True)
@@ -749,8 +750,8 @@ class GraphMultiEPG(Screen, HelpableScreen):
 	def __init__(self, session, services, zapFunc=None, bouquetChangeCB=None, bouquetname=""):
 		Screen.__init__(self, session)
 		self.bouquetChangeCB = bouquetChangeCB
-		now = time() - config.epg.histminutes.getValue() * 60
-		self.ask_time = now - now % int(config.misc.graph_mepg.roundTo.getValue())
+		now = time() - config.epg.histminutes.value * 60
+		self.ask_time = now - now % int(config.misc.graph_mepg.roundTo.value)
 		self["key_red"] = Button("")
 		self["key_green"] = Button("")
 
@@ -793,7 +794,7 @@ class GraphMultiEPG(Screen, HelpableScreen):
 		self["okactions"].csel = self
 		self["epgactions"] = HelpableActionMap(self, "EPGSelectActions",
 			{
-				"timerAdd":    (self.timerAdd,       _("Add/remove timer for current event")),
+				"timerAdd":    (self.timerAdd,       _("Add/remove change timer for current event")),
 				"info":        (self.infoKeyPressed, _("Show detailed event info")),
 				"red":         (self.zapTo,          _("Zap to selected channel")),
 				"yellow":      (self.swapMode,       _("Switch between normal mode and list mode")),	
@@ -906,9 +907,9 @@ class GraphMultiEPG(Screen, HelpableScreen):
 	def onDateTimeInputClosed(self, ret):
 		if len(ret) > 1:
 			if ret[0]:
-				now = time() - config.epg.histminutes.getValue() * 60
+				now = time() - config.epg.histminutes.value * 60
 				self.ask_time = ret[1] if ret[1] >= now else now
-				self.ask_time = self.ask_time - self.ask_time % int(config.misc.graph_mepg.roundTo.getValue())
+				self.ask_time = self.ask_time - self.ask_time % int(config.misc.graph_mepg.roundTo.value)
 				l = self["list"]
 				l.resetOffset()
 				l.fillMultiEPG(None, self.ask_time)
@@ -924,8 +925,8 @@ class GraphMultiEPG(Screen, HelpableScreen):
 		l.setEpoch(config.misc.graph_mepg.prev_time_period.value)
 		l.setOverjump_Empty(config.misc.graph_mepg.overjump.value)
 		l.setShowServiceMode(config.misc.graph_mepg.servicetitle_mode.value)
-		now = time() - config.epg.histminutes.getValue() * 60
-		self.ask_time = now - now % int(config.misc.graph_mepg.roundTo.getValue())
+		now = time() - config.epg.histminutes.value * 60
+		self.ask_time = now - now % int(config.misc.graph_mepg.roundTo.value)
 		self["timeline_text"].setDateFormat(config.misc.graph_mepg.servicetitle_mode.value)
 		l.fillMultiEPG(None, self.ask_time)
 		self.moveTimeLines(True)
@@ -1029,11 +1030,18 @@ class GraphMultiEPG(Screen, HelpableScreen):
 			return
 		eventid = event.getEventId()
 		serviceref = cur[1]
-		refstr = serviceref.ref.toString()
+		refstr = ':'.join(serviceref.ref.toString().split(':')[:11])
 		for timer in self.session.nav.RecordTimer.timer_list:
-			if timer.eit == eventid and timer.service_ref.ref.toString() == refstr:
-				cb_func = lambda ret : not ret or self.removeTimer(timer)
-				self.session.openWithCallback(cb_func, MessageBox, _("Do you really want to delete %s?") % event.getEventName())
+			if timer.eit == eventid and ':'.join(timer.service_ref.ref.toString().split(':')[:11]) == refstr:
+				menu = [(_("Delete timer"), "delete"),(_("Edit timer"), "edit")]
+				buttons = ["red", "green"]
+				def timerAction(choice):
+					if choice is not None:
+						if choice[1] == "delete":
+							self.removeTimer(timer)
+						elif choice[1] == "edit":
+							self.session.open(TimerEntry, timer)
+				self.session.openWithCallback(timerAction, ChoiceBox, title=_("Select action for timer %s:") % event.getEventName(), list=menu, keys=buttons)
 				break
 		else:
 			newEntry = RecordTimerEntry(serviceref, checkOldTimers = True, *parseEvent(event))
@@ -1050,7 +1058,7 @@ class GraphMultiEPG(Screen, HelpableScreen):
 						self.session.nav.RecordTimer.timeChanged(x)
 				simulTimerList = self.session.nav.RecordTimer.record(entry)
 				if simulTimerList is not None:
-					if not entry.repeated and not config.recording.margin_before.getValue() and not config.recording.margin_after.getValue() and len(simulTimerList) > 1:
+					if not entry.repeated and not config.recording.margin_before.value and not config.recording.margin_after.value and len(simulTimerList) > 1:
 						change_time = False
 						conflict_begin = simulTimerList[1].begin
 						conflict_end = simulTimerList[1].end
@@ -1064,7 +1072,7 @@ class GraphMultiEPG(Screen, HelpableScreen):
 							simulTimerList = self.session.nav.RecordTimer.record(entry)
 					if simulTimerList is not None:
 						self.session.openWithCallback(self.finishSanityCorrection, TimerSanityConflict, simulTimerList)
-			self["key_green"].setText(_("Remove timer"))
+			self["key_green"].setText(_("Change timer"))
 			self.key_green_choice = self.REMOVE_TIMER
 		else:
 			self["key_green"].setText(_("Add timer"))
@@ -1102,14 +1110,14 @@ class GraphMultiEPG(Screen, HelpableScreen):
 			return
 		
 		eventid = event.getEventId()
-		refstr = servicerefref.toString()
+		refstr = ':'.join(servicerefref.toString().split(':')[:11])
 		isRecordEvent = False
 		for timer in self.session.nav.RecordTimer.timer_list:
-			if timer.eit == eventid and timer.service_ref.ref.toString() == refstr:
+			if timer.eit == eventid and ':'.join(timer.service_ref.ref.toString().split(':')[:11]) == refstr:
 				isRecordEvent = True
 				break
 		if isRecordEvent and self.key_green_choice != self.REMOVE_TIMER:
-			self["key_green"].setText(_("Remove timer"))
+			self["key_green"].setText(_("Change timer"))
 			self.key_green_choice = self.REMOVE_TIMER
 		elif not isRecordEvent and self.key_green_choice != self.ADD_TIMER:
 			self["key_green"].setText(_("Add timer"))

@@ -4,7 +4,8 @@ from Components.config import config, ConfigSubList, ConfigSubsection, ConfigSli
 from Tools.BoundFunction import boundFunction
 
 import NavigationInstance
-from enigma import iRecordableService, getBoxType
+from enigma import iRecordableService
+from boxbranding import getBoxType
 
 class FanControl:
 	# ATM there's only support for one fan
@@ -19,16 +20,16 @@ class FanControl:
 	def setVoltage_PWM(self):
 		for fanid in range(self.getFanCount()):
 			cfg = self.getConfig(fanid)
-			self.setVoltage(fanid, cfg.vlt.getValue())
-			self.setPWM(fanid, cfg.pwm.getValue())
-			print "[FanControl]: setting fan values: fanid = %d, voltage = %d, pwm = %d" % (fanid, cfg.vlt.getValue(), cfg.pwm.getValue())
+			self.setVoltage(fanid, cfg.vlt.value)
+			self.setPWM(fanid, cfg.pwm.value)
+			print "[FanControl]: setting fan values: fanid = %d, voltage = %d, pwm = %d" % (fanid, cfg.vlt.value, cfg.pwm.value)
 
 	def setVoltage_PWM_Standby(self):
 		for fanid in range(self.getFanCount()):
 			cfg = self.getConfig(fanid)
-			self.setVoltage(fanid, cfg.vlt_standby.getValue())
-			self.setPWM(fanid, cfg.pwm_standby.getValue())
-			print "[FanControl]: setting fan values (standby mode): fanid = %d, voltage = %d, pwm = %d" % (fanid, cfg.vlt_standby.getValue(), cfg.pwm_standby.getValue())
+			self.setVoltage(fanid, cfg.vlt_standby.value)
+			self.setPWM(fanid, cfg.pwm_standby.value)
+			print "[FanControl]: setting fan values (standby mode): fanid = %d, voltage = %d, pwm = %d" % (fanid, cfg.vlt_standby.value, cfg.pwm_standby.value)
 
 	def getRecordEvent(self, recservice, event):
 		recordings = len(NavigationInstance.instance.getRecordings())
@@ -55,9 +56,9 @@ class FanControl:
 
 	def createConfig(self):
 		def setVlt(fancontrol, fanid, configElement):
-			fancontrol.setVoltage(fanid, configElement.getValue())
+			fancontrol.setVoltage(fanid, configElement.value)
 		def setPWM(fancontrol, fanid, configElement):
-			fancontrol.setPWM(fanid, configElement.getValue())
+			fancontrol.setPWM(fanid, configElement.value)
 
 		config.fans = ConfigSubList()
 		for fanid in range(self.getFanCount()):

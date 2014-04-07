@@ -1,25 +1,16 @@
+from os import system, path as os_path
+from string import maketrans, strip
+
 from Components.config import config, ConfigYesNo, NoSave, ConfigSubsection, ConfigText, ConfigSelection, ConfigPassword
 from Components.Console import Console
 from Components.Network import iNetwork
-
-from os import system, path as os_path
-from string import maketrans, strip
-import sys
-import types
-from re import compile as re_compile, search as re_search, escape as re_escape
 from pythonwifi.iwlibs import getNICnames, Wireless, Iwfreq, getWNICnames
 from pythonwifi import flags as wififlags
 
-list = []
-list.append("Unencrypted")
-list.append("WEP")
-list.append("WPA")
-list.append("WPA/WPA2")
-list.append("WPA2")
 
-weplist = []
-weplist.append("ASCII")
-weplist.append("HEX")
+list = ["Unencrypted", "WEP", "WPA", "WPA/WPA2", "WPA2"]
+
+weplist = ["ASCII", "HEX"]
 
 config.plugins.wlan = ConfigSubsection()
 config.plugins.wlan.essid = NoSave(ConfigText(default = "", fixed_size = False))
@@ -39,11 +30,11 @@ class Wlan:
 
 		a = ''; b = ''
 		for i in range(0, 255):
-			a = a + chr(i)
+			a += chr(i)
 			if i < 32 or i > 127:
-				b = b + ' '
+				b += ' '
 			else:
-				b = b + chr(i)
+				b += chr(i)
 
 		self.asciitrans = maketrans(a, b)
 
@@ -101,6 +92,7 @@ class Wlan:
 					if 'LinkQuality' in element:
 						quality = element[element.index('LinkQuality')+12:len(element)]
 
+				# noinspection PyProtectedMember
 				aps[bssid] = {
 					'active' : True,
 					'bssid': result.bssid,
@@ -115,7 +107,7 @@ class Wlan:
 					'custom' : extra,
 				}
 
-				index = index + 1
+				index += 1
 		return aps
 
 	def stopGetNetworkList(self):
@@ -133,11 +125,11 @@ class wpaSupplicant:
 		pass
 
 	def writeConfig(self, iface):
-		essid = config.plugins.wlan.essid.getValue()
-		hiddenessid = config.plugins.wlan.hiddenessid.getValue()
-		encryption = config.plugins.wlan.encryption.getValue()
-		wepkeytype = config.plugins.wlan.wepkeytype.getValue()
-		psk = config.plugins.wlan.psk.getValue()
+		essid = config.plugins.wlan.essid.value
+		hiddenessid = config.plugins.wlan.hiddenessid.value
+		encryption = config.plugins.wlan.encryption.value
+		wepkeytype = config.plugins.wlan.wepkeytype.value
+		psk = config.plugins.wlan.psk.value
 		fp = file(getWlanConfigName(iface), 'w')
 		fp.write('#WPA Supplicant Configuration by enigma2\n')
 		fp.write('ctrl_interface=/var/run/wpa_supplicant\n')
@@ -229,11 +221,11 @@ class wpaSupplicant:
 			config.plugins.wlan.encryption.setValue(encryption)
 
 			wsconfig = {
-					'hiddenessid': config.plugins.wlan.hiddenessid.getValue(),
-					'ssid': config.plugins.wlan.essid.getValue(),
-					'encryption': config.plugins.wlan.encryption.getValue(),
-					'wepkeytype': config.plugins.wlan.wepkeytype.getValue(),
-					'key': config.plugins.wlan.psk.getValue(),
+					'hiddenessid': config.plugins.wlan.hiddenessid.value,
+					'ssid': config.plugins.wlan.essid.value,
+					'encryption': config.plugins.wlan.encryption.value,
+					'wepkeytype': config.plugins.wlan.wepkeytype.value,
+					'key': config.plugins.wlan.psk.value,
 				}
 
 			for (key, item) in wsconfig.items():

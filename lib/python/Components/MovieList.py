@@ -1,18 +1,19 @@
-from GUIComponent import GUIComponent
-from Tools.FuzzyDate import FuzzyTime
-from ServiceReference import ServiceReference
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, MultiContentEntryProgress
-from Components.config import config
 import os
 import struct
 import random
+
+from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformation, eSize, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER, eServiceReference, eServiceCenter, eTimer
+
+from GUIComponent import GUIComponent
+from Tools.FuzzyDate import FuzzyTime
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, MultiContentEntryProgress
+from Components.config import config
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import SCOPE_ACTIVE_SKIN, resolveFilename
 from Screens.LocationBox import defaultInhibitDirs
 import NavigationInstance
 import skin
 
-from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformation, eSize, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER, eServiceReference, eServiceCenter, eTimer
 
 AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".3gp", ".3g2", ".asf", ".wma"))
 DVD_EXTENSIONS = ('.iso', '.img')
@@ -23,10 +24,14 @@ KNOWN_EXTENSIONS = MOVIE_EXTENSIONS.union(IMAGE_EXTENSIONS, DVD_EXTENSIONS, AUDI
 cutsParser = struct.Struct('>QI') # big-endian, 64-bit PTS and 32-bit type
 
 class MovieListData:
-	pass
+	def __init__(self):
+		pass
 
 # iStaticServiceInformation
 class StubInfo:
+	def __init__(self):
+		pass
+
 	def getName(self, serviceref):
 		return os.path.split(serviceref.getPath())[1]
 	def getLength(self, serviceref):
@@ -55,7 +60,7 @@ def lastPlayPosFromCache(ref):
 	return resumePointCache.get(ref.toString(), None)
 
 def moviePlayState(cutsFileName, ref, length):
-	'''Returns None, 0..100 for percentage'''
+	"""Returns None, 0..100 for percentage"""
 	try:
 		# read the cuts file first
 		f = open(cutsFileName, 'rb')
@@ -200,8 +205,16 @@ class MovieList(GUIComponent):
 		return self._playInBackground
 
 	def set_playInBackground(self, value):
-		self._playInBackground = value
-		self.reload(filter_tags=config.movielist.last_selected_tags.getValue())
+		if self._playInBackground is not value:
+			index = self.findService(self._playInBackground)
+			if index is not None:
+				self.invalidateItem(index)
+				self.l.invalidateEntry(index)
+			index = self.findService(value)
+			if index is not None:
+				self.invalidateItem(index)
+				self.l.invalidateEntry(index)
+			self._playInBackground = value
 
 	playInBackground = property(get_playInBackground, set_playInBackground)
 
@@ -255,7 +268,7 @@ class MovieList(GUIComponent):
 
 	def setItemsPerPage(self):
 		if self.listHeight > 0:
-			itemHeight = self.listHeight / config.movielist.itemsperpage.getValue()
+			itemHeight = self.listHeight / config.movielist.itemsperpage.value
 		else:
 			itemHeight = 25 # some default (270/5)
 		self.itemHeight = itemHeight
@@ -263,8 +276,8 @@ class MovieList(GUIComponent):
 		self.instance.resize(eSize(self.listWidth, self.listHeight / itemHeight * itemHeight))
 
 	def setFontsize(self):
-		self.l.setFont(0, gFont(self.fontName, self.fontSize + config.movielist.fontsize.getValue()))
-		self.l.setFont(1, gFont(self.fontName, (self.fontSize - 3) + config.movielist.fontsize.getValue()))
+		self.l.setFont(0, gFont(self.fontName, self.fontSize + config.movielist.fontsize.value))
+		self.l.setFont(1, gFont(self.fontName, (self.fontSize - 3) + config.movielist.fontsize.value))
 
 	def invalidateItem(self, index):
 		x = self.list[index]
@@ -274,7 +287,7 @@ class MovieList(GUIComponent):
 		self.invalidateItem(self.getCurrentIndex())
 
 	def buildMovieListEntry(self, serviceref, info, begin, data):
-		switch = config.usage.show_icons_in_movielist.getValue()
+		switch = config.usage.show_icons_in_movielist.value
 		width = self.l.getItemSize().width()
 		pathName = serviceref.getPath()
 		res = [ None ]
@@ -308,7 +321,7 @@ class MovieList(GUIComponent):
 			data.len = 0 #dont recalc movielist to speedup loading the list
 			self.list[cur_idx] = (x[0], x[1], x[2], data) #update entry in list... so next time we don't need to recalc
 			data.txt = info.getName(serviceref)
-			if config.movielist.hide_extensions.getValue():
+			if config.movielist.hide_extensions.value:
 				fileName, fileExtension = os.path.splitext(data.txt)
 				if fileExtension in KNOWN_EXTENSIONS:
 					data.txt = fileName
@@ -334,13 +347,13 @@ class MovieList(GUIComponent):
 					if data.part is not None and data.part > 0:
 						data.icon = self.iconPart[data.part // 25]
 					else:
-						if config.usage.movielist_unseen.getValue():
+						if config.usage.movielist_unseen.value:
 							data.icon = self.iconUnwatched
 				elif switch == 'p' or switch == 's':
 					if data.part is not None and data.part > 0:
 						data.partcol = 0xffc71d
 					else:
-						if config.usage.movielist_unseen.getValue():
+						if config.usage.movielist_unseen.value:
 							data.part = 100
 							data.partcol = 0x206333
 		len = data.len
@@ -439,11 +452,18 @@ class MovieList(GUIComponent):
 		self.l.setList(self.list)
 
 	def removeService(self, service):
+		index = self.findService(service)
+		if index is not None:
+			del self.list[index]
+			self.l.setList(self.list)
+
+	def findService(self, service):
+		if service is None:
+			return None
 		for index, l in enumerate(self.list):
 			if l[0] == service:
-				del self.list[index]
-				break
-		self.l.setList(self.list)
+				return index
+		return None
 
 	def __len__(self):
 		return len(self.list)
@@ -467,13 +487,13 @@ class MovieList(GUIComponent):
 			return
 		realtags = set()
 		tags = {}
-		rootPath = os.path.normpath(root.getPath());
+		rootPath = os.path.normpath(root.getPath())
 		parent = None
 		# Don't navigate above the "root"
-		if len(rootPath) > 1 and (os.path.realpath(rootPath) != config.movielist.root.getValue()):
+		if len(rootPath) > 1 and (os.path.realpath(rootPath) != config.movielist.root.value):
 			parent = os.path.split(os.path.normpath(rootPath))[0]
 			currentfolder = os.path.normpath(rootPath) + '/'
-			if parent and (parent not in defaultInhibitDirs) and not currentfolder.endswith(config.usage.default_path.getValue()):
+			if parent and (parent not in defaultInhibitDirs) and not currentfolder.endswith(config.usage.default_path.value):
 				# enigma wants an extra '/' appended
 				if not parent.endswith('/'):
 					parent += '/'
@@ -619,8 +639,8 @@ class MovieList(GUIComponent):
 		ref = x[0]
 		name = x[1] and x[1].getName(ref)
 		if ref.flags & eServiceReference.mustDescent:
-			return (0, name and name.lower() or "", -x[2])
-		return (1, name and name.lower() or "", -x[2])
+			return 0, name and name.lower() or "", -x[2]
+		return 1, name and name.lower() or "", -x[2]
 
 	def buildAlphaNumericFlatSortKey(self, x):
 		# x = ref,info,begin,...
@@ -635,21 +655,19 @@ class MovieList(GUIComponent):
 			name = p[1]
 		# print "Sorting for -%s-" % name
 
-		return (1, name and name.lower() or "", -x[2])
+		return 1, name and name.lower() or "", -x[2]
 
 	def buildBeginTimeSortKey(self, x):
 		ref = x[0]
 		if ref.flags & eServiceReference.mustDescent:
-			return (0, x[1] and -os.stat(ref.getPath()).st_mtime)
-		return (1, -x[2])
+			return 0, x[1] and -os.stat(ref.getPath()).st_mtime
+		return 1, -x[2]
 
 	def moveTo(self, serviceref):
-		count = 0
-		for x in self.list:
-			if x[0] == serviceref:
-				self.instance.moveSelectionTo(count)
-				return True
-			count += 1
+		index = self.findService(serviceref)
+		if index is not None:
+			self.instance.moveSelectionTo(index)
+			return True
 		return False
 
 	def moveDown(self):

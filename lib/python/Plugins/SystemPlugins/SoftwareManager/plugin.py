@@ -29,7 +29,7 @@ from Components.Task import job_manager
 from Tools.Directories import pathExists, fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_CURRENT_PLUGIN, SCOPE_ACTIVE_SKIN, SCOPE_METADIR, SCOPE_CURRENT_SKIN
 from Tools.LoadPixmap import LoadPixmap
 from Tools.NumericalTextInput import NumericalTextInput
-from enigma import eTimer, RT_HALIGN_LEFT, RT_VALIGN_CENTER, eListboxPythonMultiContent, eListbox, gFont, getDesktop, ePicLoad, eRCInput, getPrevAsciiCode, eEnv, iRecordableService, getBoxType, getEnigmaVersionString, getMachineBrand, getMachineName
+from enigma import eTimer, RT_HALIGN_LEFT, RT_VALIGN_CENTER, eListboxPythonMultiContent, eListbox, gFont, getDesktop, ePicLoad, eRCInput, getPrevAsciiCode, eEnv, iRecordableService, getEnigmaVersionString
 from cPickle import dump, load
 from os import path as os_path, system as os_system, unlink, stat, mkdir, popen, makedirs, listdir, access, rename, remove, W_OK, R_OK, F_OK
 from time import time, gmtime, strftime, localtime
@@ -43,6 +43,10 @@ from ImageWizard import ImageWizard
 from BackupRestore import BackupSelection, RestoreMenu, BackupScreen, RestoreScreen, getBackupPath, getOldBackupPath, getBackupFilename
 from SoftwareTools import iSoftwareTools
 import os
+from boxbranding import getBoxType, getMachineBrand, getMachineName, getBrandOEM
+
+boxtype = getBoxType()
+brandoem = getBrandOEM()
 
 if os.path.exists("/usr/lib/enigma2/python/Plugins/Extensions/dFlash"):
 	from Plugins.Extensions.dFlash.plugin import dFlash
@@ -51,7 +55,7 @@ else:
 	DFLASH = False
 
 config.plugins.configurationbackup = ConfigSubsection()
-if getBoxType() == "odinm9" :
+if boxtype == "maram9":
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/backup/', visible_width = 50, fixed_size = False)
 else:
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/hdd/', visible_width = 50, fixed_size = False)
@@ -111,6 +115,13 @@ def load_cache(cache_file):
 	fd.close()
 	return cache_data
 
+def Check_Softcam():
+	found = False
+	for x in os.listdir('/etc'):
+		if x.find('.emu') > -1:
+			found = True
+			break;
+	return found
 
 class UpdatePluginMenu(Screen):
 	skin = """
@@ -151,14 +162,14 @@ class UpdatePluginMenu(Screen):
 		self.menutext = _("Press MENU on your remote control for additional options.")
 		self.infotext = _("Press INFO on your remote control for additional information.")
 		self.text = ""
-		self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.getValue() )
+		self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.value )
 		if self.menu == 0:
 			print "building menu entries"
 			self.list.append(("install-extensions", _("Manage extensions"), _("\nManage extensions or plugins for your %s %s") % (getMachineBrand(), getMachineName()) + self.oktext, None))
 			self.list.append(("software-update", _("Software update"), _("\nOnline update of your %s %s software.") % (getMachineBrand(), getMachineName()) + self.oktext, None))
 			self.list.append(("software-restore", _("Software restore"), _("\nRestore your %s %s with a new firmware.") % (getMachineBrand(), getMachineName()) + self.oktext, None))
-			if not getBoxType().startswith('az') and not getBoxType().startswith('dream') and not getBoxType().startswith('ebox'):
-				self.list.append(("backup-image", _("Backup Image"), _("\nBackup your running %s %s image to HDD or USB.") % (getMachineBrand(), getMachineName()) + self.oktext, None))
+			if not boxtype.startswith('az') and not boxtype.startswith('dm') and not brandoem.startswith('cube'):
+			self.list.append(("backup-image", _("Backup Image"), _("\nBackup your running %s %s image to HDD or USB.") % (getMachineBrand(), getMachineName()) + self.oktext, None))
 			self.list.append(("system-backup", _("Backup system settings"), _("\nBackup your %s %s settings.") % (getMachineBrand(), getMachineName()) + self.oktext + "\n\n" + self.infotext, None))
 			self.list.append(("system-restore",_("Restore system settings"), _("\nRestore your %s %s settings.") % (getMachineBrand(), getMachineName()) + self.oktext, None))
 			self.list.append(("ipkg-install", _("Install local extension"),  _("\nScan for local extensions and install them.") + self.oktext, None))
@@ -179,7 +190,7 @@ class UpdatePluginMenu(Screen):
 				self.list.append(("advanced", _("Advanced options"), _("\nAdvanced options and settings." ) + self.oktext, None))
 		elif self.menu == 1:
 			self.list.append(("advancedrestore", _("Advanced restore"), _("\nRestore your backups by date." ) + self.oktext, None))
-			self.list.append(("backuplocation", _("Select backup location"),  _("\nSelect your backup device.\nCurrent device: " ) + config.plugins.configurationbackup.backuplocation.getValue() + self.oktext, None))
+			self.list.append(("backuplocation", _("Select backup location"),  _("\nSelect your backup device.\nCurrent device: " ) + config.plugins.configurationbackup.backuplocation.value + self.oktext, None))
 			self.list.append(("backupfiles", _("Select backup files"),  _("Select files for backup.") + self.oktext + "\n\n" + self.infotext, None))
 			if config.usage.setup_level.index >= 2: # expert+
 				self.list.append(("ipkg-manager", _("Packet management"),  _("\nView, install and remove available or installed packages." ) + self.oktext, None))
@@ -336,19 +347,19 @@ class UpdatePluginMenu(Screen):
 					self.extended(self.session, None)
 
 	def backupfiles_choosen(self, ret):
-		self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.getValue() )
+		self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.value )
 		config.plugins.configurationbackup.backupdirs.save()
 		config.plugins.configurationbackup.save()
 		config.save()
 
 	def backuplocation_choosen(self, option):
-		oldpath = config.plugins.configurationbackup.backuplocation.getValue()
+		oldpath = config.plugins.configurationbackup.backuplocation.value
 		if option is not None:
 			config.plugins.configurationbackup.backuplocation.setValue(str(option[1]))
 		config.plugins.configurationbackup.backuplocation.save()
 		config.plugins.configurationbackup.save()
 		config.save()
-		newpath = config.plugins.configurationbackup.backuplocation.getValue()
+		newpath = config.plugins.configurationbackup.backuplocation.value
 		if newpath != oldpath:
 			self.createBackupfolders()
 
@@ -439,12 +450,13 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 		self.overwriteBootlogofilesEntry = getConfigListEntry(_("Overwrite Bootlogo Files ?"), config.plugins.softwaremanager.overwriteBootlogoFiles)
 		self.overwriteSpinnerfilesEntry = getConfigListEntry(_("Overwrite Spinner Files ?"), config.plugins.softwaremanager.overwriteSpinnerFiles)
 		self.updatetypeEntry  = getConfigListEntry(_("Select Software Update"), config.plugins.softwaremanager.updatetype)
-		if getBoxType().startswith('et'): 
+		if boxtype.startswith('et'): 
 			self.list.append(self.updatetypeEntry)
 		self.list.append(self.overwriteConfigfilesEntry)
 		self.list.append(self.overwriteSettingsfilesEntry)
 		self.list.append(self.overwriteDriversfilesEntry)
-		self.list.append(self.overwriteEmusfilesEntry)
+		if Check_Softcam():
+			self.list.append(self.overwriteEmusfilesEntry)
 		self.list.append(self.overwritePiconsfilesEntry)
 		self.list.append(self.overwriteBootlogofilesEntry)
 		self.list.append(self.overwriteSpinnerfilesEntry)
@@ -517,7 +529,7 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 		return self["config"].getCurrent()[0]
 
 	def getCurrentValue(self):
-		return str(self["config"].getCurrent()[1].getValue())
+		return str(self["config"].getCurrent()[1].value)
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
@@ -582,7 +594,7 @@ class SoftwareManagerInfo(Screen):
 	def showInfos(self):
 		if self.mode == "backupinfo":
 			self.list = []
-			backupfiles = config.plugins.configurationbackup.backupdirs.getValue()
+			backupfiles = config.plugins.configurationbackup.backupdirs.value
 			for entry in backupfiles:
 				self.list.append((entry,))
 			self['list'].setList(self.list)
@@ -968,7 +980,7 @@ class PluginManager(Screen, PackageInfoHandler):
 			elif tag == 'Multimedia':
 				return(( _("Multimedia"), _("View list of available multimedia extensions." ), tag, divpng ))
 			elif tag == 'Display':
-				return(( _("Display and userinterface"), _("View list of available display and userinterface extensions." ), tag, divpng ))
+				return(( _("Display and user interface"), _("View list of available display and userinterface extensions." ), tag, divpng ))
 			elif tag == 'EPG':
 				return(( _("Electronic Program Guide"), _("View list of available EPG extensions." ), tag, divpng ))
 			elif tag == 'Communication':
@@ -1665,8 +1677,6 @@ class UpdatePlugin(Screen):
         def exit(self):
                 if not self.ipkg.isRunning():
                         if self.packages != 0 and self.error == 0:
-				if config.osd.language.removelang.getValue():
-					language.delLanguage()
                                 self.session.openWithCallback(self.exitAnswer, MessageBox, _("Upgrade finished.") +" "+_("Do you want to reboot your Receiver?"))
                         else:
                                 self.close()
@@ -1678,7 +1688,6 @@ class UpdatePlugin(Screen):
                 if result is not None and result:
                         self.session.open(TryQuitMainloop,retvalue=2)
                 self.close()
-
 
 
 class IPKGMenu(Screen):

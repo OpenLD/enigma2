@@ -1,4 +1,5 @@
-from enigma import getBoxType
+from boxbranding import getBoxType, getBrandOEM
+from Components.About import about
 
 class HardwareInfo:
 	device_name = None
@@ -14,7 +15,7 @@ class HardwareInfo:
 			file = open("/proc/stb/info/model", "r")
 			HardwareInfo.device_name = file.readline().strip()
 			file.close()
-			if getBoxType().startswith('tm') or getBoxType().startswith('iqon') or getBoxType().startswith('media') or getBoxType().startswith('opti'):
+			if getBrandOEM() == "dags":
 				HardwareInfo.device_name = "dm800se"
 			try:
 				file = open("/proc/stb/info/version", "r")
@@ -48,13 +49,18 @@ class HardwareInfo:
 		return HardwareInfo.device_version
 
 	def has_hdmi(self):
-		return (getBoxType().startswith('gb') or getBoxType().startswith('vu') or getBoxType() == 'dm7020hd' or getBoxType() == 'dm800se' or getBoxType() == 'dm500hd' or (getBoxType() == 'dm8000' and HardwareInfo.device_version != None))
-
-	def has_deepstandby(self):
-		return getBoxType() != 'dm800'
+		return not (HardwareInfo.device_name == 'dm800' or (HardwareInfo.device_name == 'dm8000' and HardwareInfo.device_version == None))
 
 	def linux_kernel(self):
 		try:
 			return open("/proc/version","r").read().split(' ', 4)[2].split('-',2)[0]
 		except:
 			return "unknown"
+
+	def has_deepstandby(self):
+		return getBoxType() != 'dm800'
+
+	def is_nextgen(self):
+		if about.getCPUString() in ('BCM7346B2', 'BCM7425B2', 'BCM7429B0'):
+			return True
+		return False

@@ -1,10 +1,11 @@
 import os
 from Renderer import Renderer
-from enigma import ePixmap, getBoxType, ePicLoad
+from enigma import ePixmap, ePicLoad
 from Tools.Alternatives import GetWithAlternative
 from Tools.Directories import pathExists, SCOPE_SKIN_IMAGE, SCOPE_ACTIVE_SKIN, resolveFilename
 from Components.Harddisk import harddiskmanager
 from Components.config import config, ConfigBoolean
+from boxbranding import getBoxType
 
 searchPaths = []
 lastPiconPath = None
@@ -80,10 +81,11 @@ def getPiconName(serviceName):
 	pngname = findPicon(sname)
 	if not pngname:
 		fields = sname.split('_', 3)
-		if len(fields) > 2 and fields[2] != '2':
-			#fallback to 1 for tv services with nonstandard servicetypes
+		if len(fields) > 2 and fields[2] != '2': #fallback to 1 for tv services with nonstandard servicetypes
 			fields[2] = '1'
-			pngname = findPicon('_'.join(fields))
+		if len(fields) > 0 and fields[0] == '4097':	#fallback to 1 for IPTV streams
+			fields[0] = '1'
+		pngname = findPicon('_'.join(fields))
 	return pngname
 
 class Picon(Renderer):
@@ -133,7 +135,7 @@ class Picon(Renderer):
 
 	def updatePicon(self, picInfo=None):
 		ptr = self.PicLoad.getData()
-		if ptr != None:
+		if ptr is not None:
 			self.instance.setPixmap(ptr.__deref__())
 			self.instance.show()
 	def changed(self, what):
@@ -143,7 +145,7 @@ class Picon(Renderer):
 				pngname = getPiconName(self.source.text)
 			if not pngname: # no picon for service found
 				pngname = self.defaultpngname
-			if not config.usage.showpicon.getValue():
+			if not config.usage.showpicon.value:
 				pngname = self.nopicon
 			if self.pngname != pngname:
 				if pngname:

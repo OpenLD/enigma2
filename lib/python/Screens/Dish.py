@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from enigma import eDVBSatelliteEquipmentControl, eTimer, iPlayableService
+from enigma import iServiceInformation
+
 from Screens.Screen import Screen
 from Components.BlinkingPixmap import BlinkingPixmapConditional
 from Components.config import config, ConfigInteger
 from Components.Label import Label
 from Components.ServiceEventTracker import ServiceEventTracker
-from enigma import eDVBSatelliteEquipmentControl, eTimer, iPlayableService
-from enigma import eServiceCenter, iServiceInformation
+
 
 INVALID_POSITION = 9999
 config.misc.lastrotorposition = ConfigInteger(INVALID_POSITION)
@@ -33,11 +35,11 @@ class Dish(Screen):
 		self.timeoutTimer = eTimer()
 		self.timeoutTimer.callback.append(self.testIsTuned)
 
-		self.showdish = config.usage.showdish.getValue()
+		self.showdish = config.usage.showdish.value
 		config.usage.showdish.addNotifier(self.configChanged)
 		self.configChanged(config.usage.showdish)
 
-		self.rotor_pos = self.cur_orbpos = config.misc.lastrotorposition.getValue()
+		self.rotor_pos = self.cur_orbpos = config.misc.lastrotorposition.value
 		self.turn_time = self.total_time = self.pmt_timeout = self.close_timeout = None
 		self.cur_polar = 0
 		self.__state = self.STATE_HIDDEN
@@ -140,8 +142,8 @@ class Dish(Screen):
 		return self.__state
 
 	def configChanged(self, configElement):
-		self.showdish = configElement.getValue()
-		if configElement.getValue() == "off":
+		self.showdish = configElement.value
+		if configElement.value == "off":
 			self["Dishpixmap"].setConnect(lambda: False)
 		else:
 			self["Dishpixmap"].setConnect(eDVBSatelliteEquipmentControl.getInstance().isRotorMoving)
@@ -158,9 +160,9 @@ class Dish(Screen):
 	def getTurnTime(self, start, end, pol=0):
 		mrt = abs(start - end) if start and end else 0
 		if mrt > 0:
-			if (mrt > 1800):
+			if mrt > 1800:
 				mrt = 3600 - mrt
-			if (mrt % 10):
+			if mrt % 10:
 				mrt += 10
 			mrt = round((mrt * 1000 / self.getTurningSpeed(pol) ) / 10000) + 3
 		return mrt

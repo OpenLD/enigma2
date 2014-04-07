@@ -1,9 +1,12 @@
+from time import time
+from boxbranding import getImageVersion
+
+from enigma import eTimer
+
 import Components.Task
 from Components.Ipkg import IpkgComponent
-from Components.About import about
 from Components.config import config
-from time import time
-from enigma import eTimer, getImageVersionString
+
 
 def OnlineUpdateCheck(session=None, **kwargs):
 	global onlineupdatecheckpoller
@@ -32,9 +35,9 @@ class OnlineUpdateCheckPoller:
 		self.timer.stop()
 
 	def onlineupdate_check(self):
-		if config.softwareupdate.check.getValue():
+		if config.softwareupdate.check.value:
 			Components.Task.job_manager.AddJob(self.createCheckJob())
-		self.timer.startLongTimer(config.softwareupdate.checktimer.getValue() * 3600)
+		self.timer.startLongTimer(config.softwareupdate.checktimer.value * 3600)
 
 	def createCheckJob(self):
 		job = Components.Task.Job(_("OnlineVersionCheck"))
@@ -62,7 +65,7 @@ class OnlineUpdateCheckPoller:
 					socket.setdefaulttimeout(3)
 					config.softwareupdate.updatefound.setValue(True)
 					try:
-						config.softwareupdate.updateisunstable.setValue(urlopen("http://feeds.openld.es/" + getImageVersionString() + "/status").read())
+						config.softwareupdate.updateisunstable.setValue(urlopen("http://feeds.openld.es/" + getImageVersion() + "/status").read())
 					except:
 						config.softwareupdate.updateisunstable.setValue(1)
 					socket.setdefaulttimeout(currentTimeoutDefault)
@@ -77,8 +80,8 @@ class VersionCheck:
 		pass
 
 	def getStableUpdateAvailable(self):
-		if config.softwareupdate.updatefound.getValue() and config.softwareupdate.check.getValue():
-			if config.softwareupdate.updateisunstable.getValue() == 1:
+		if config.softwareupdate.updatefound.value and config.softwareupdate.check.value:
+			if config.softwareupdate.updateisunstable.value == '1':
 # 				print '[OnlineVersionCheck] New Release updates found'
 				return True
 			else:
@@ -88,8 +91,8 @@ class VersionCheck:
 			return False
 
 	def getUnstableUpdateAvailable(self):
-		if config.softwareupdate.updatefound.getValue() and config.softwareupdate.check.getValue():
-			if config.softwareupdate.updateisunstable.getValue() == 1 and config.softwareupdate.updatebeta.getValue():
+		if config.softwareupdate.updatefound.value and config.softwareupdate.check.value:
+			if config.softwareupdate.updateisunstable.value == '1' and config.softwareupdate.updatebeta.value:
 # 				print '[OnlineVersionCheck] New Experimental updates found'
 				return True
 			else:

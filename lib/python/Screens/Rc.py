@@ -3,7 +3,7 @@ from Tools.Directories import resolveFilename, SCOPE_SKIN
 from xml.etree.ElementTree import ElementTree
 from Components.config import config, ConfigInteger
 from Components.RcModel import rc_model
-from enigma import getBoxType
+from boxbranding import getBoxType
 
 config.misc.rcused = ConfigInteger(default = 1)
 
@@ -29,11 +29,11 @@ class Rc:
 		self.onShown.append(self.initRc)
 
 	def initRc(self):
-		if getBoxType() == 'ventonhdx':
-			self["rc"].setPixmapNum(config.misc.rcused.getValue())
+		if getBoxType() in ('uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin'):
+			self["rc"].setPixmapNum(config.misc.rcused.value)
 		else:
 			if self.isDefaultRc:
-				self["rc"].setPixmapNum(config.misc.rcused.getValue())
+				self["rc"].setPixmapNum(config.misc.rcused.value)
 			else:
 				self["rc"].setPixmapNum(0)
 
@@ -56,7 +56,7 @@ class Rc:
 	def getSelectPic(self, pos):
 		for selectPic in self.selectpics:
 			if pos[1] <= selectPic[0]:
-				return (selectPic[1], selectPic[2])
+				return selectPic[1], selectPic[2]
 		return None
 
 	def hideRc(self):
@@ -68,12 +68,12 @@ class Rc:
 
 	def selectKey(self, key):
 		if self.isDefaultRc:
-			rc = self.rcs[config.misc.rcused.getValue()]
+			rc = self.rcs[config.misc.rcused.value]
 		else:
 			try:
 				rc = self.rcs[2]
 			except:
-				rc = self.rcs[config.misc.rcused.getValue()]
+				rc = self.rcs[config.misc.rcused.value]
 
 		if rc.has_key(key):
 			rcpos = self["rc"].getPosition()

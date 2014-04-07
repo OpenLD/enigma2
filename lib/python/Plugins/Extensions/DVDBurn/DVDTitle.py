@@ -1,4 +1,4 @@
-from Components.config import config, ConfigSubsection, ConfigSubList, ConfigInteger, ConfigText, ConfigSelection, getConfigListEntry, ConfigSequence, ConfigYesNo
+from Components.config import ConfigSubsection, ConfigSubList, ConfigInteger, ConfigText, ConfigSelection
 import TitleCutter
 
 class ConfigFixedText(ConfigText):
@@ -35,7 +35,8 @@ class DVDTitle:
 		from os import path
 		from enigma import eServiceCenter, iServiceInformation
 		from ServiceReference import ServiceReference
-		from time import localtime, time
+		from time import localtime
+
 		self.source = service
 		serviceHandler = eServiceCenter.getInstance()
 		info = serviceHandler.info(service)
@@ -66,8 +67,8 @@ class DVDTitle:
 
 	def initDVDmenuText(self, track):
 		s = self.project.menutemplate.settings
-		self.properties.menutitle.setValue(self.formatDVDmenuText(s.titleformat.getValue(), track))
-		self.properties.menusubtitle.setValue(self.formatDVDmenuText(s.subtitleformat.getValue(), track))
+		self.properties.menutitle.setValue(self.formatDVDmenuText(s.titleformat.value, track))
+		self.properties.menusubtitle.setValue(self.formatDVDmenuText(s.subtitleformat.value, track))
 
 	def formatDVDmenuText(self, template, track):
 		template = template.replace("$i", str(track))
@@ -81,10 +82,10 @@ class DVDTitle:
 		from TitleProperties import languageChoices
 		audiolist = [ ]
 		for audiotrack in self.properties.audiotracks:
-			active = audiotrack.active.getValue()
+			active = audiotrack.active.value
 			if active:
-				trackstring = audiotrack.format.getValue()
-				language = audiotrack.language.getValue()
+				trackstring = audiotrack.format.value
+				language = audiotrack.language.value
 				if languageChoices.langdict.has_key(language):
 					trackstring += ' (' + languageChoices.langdict[language] + ')'
 				audiolist.append(trackstring)
@@ -153,7 +154,7 @@ class DVDTitle:
 	def getChapterMarks(self, template="$h:$m:$s.$t"):
 		timestamps = [ ]
 		chapters = [ ]
-		minutes = self.properties.autochapter.getValue()
+		minutes = self.properties.autochapter.value
 		if len(self.chaptermarks) < 1 and minutes > 0:
 			chapterpts = 0
 			while chapterpts < (self.length-60*minutes)*90000:

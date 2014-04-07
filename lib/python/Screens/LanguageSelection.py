@@ -12,7 +12,7 @@ from enigma import eTimer
 
 from Screens.Rc import Rc
 
-from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN, SCOPE_LANGUAGE
+from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
 import gettext
 
@@ -20,9 +20,9 @@ inWizzard = False
 
 def LanguageEntryComponent(file, name, index):
 	png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + index + ".png"))
-	if png == None:
+	if png is None:
 		png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + file + ".png"))
-		if png == None:
+		if png is None:
 			png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "countries/missing.png"))
 	res = (index, name, png)
 	return res
@@ -48,6 +48,8 @@ class LanguageSelection(Screen):
 
 		self["key_red"] = Label(_("Cancel"))
 		self["key_green"] = Label(_("Save"))
+		self["key_yellow"] = Label(_("Update Cache"))
+		self["key_blue"] = Label(_("Delete Language"))
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
@@ -122,7 +124,7 @@ class LanguageSelection(Screen):
 			self["summarylangname"].setText("Updating cache")
 			return
 
-		if lang != config.osd.language.getValue():
+		if lang != config.osd.language.value:
 			config.osd.language.setValue(lang)
 			config.osd.language.save()
 
@@ -138,7 +140,7 @@ class LanguageSelection(Screen):
 			return
 
 		language.activateLanguage(lang)
-		config.misc.languageselected.setValue(0)
+		config.misc.languageselected.value = 0
 		config.misc.languageselected.save()
 		print "ok"
 

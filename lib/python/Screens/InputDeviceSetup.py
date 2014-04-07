@@ -9,7 +9,9 @@ from Components.ConfigList import ConfigListScreen
 from Components.ActionMap import ActionMap, HelpableActionMap
 from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
-from enigma import getMachineBrand, getMachineName
+from boxbranding import getBoxType, getMachineBrand, getMachineName
+
+boxtype = getBoxType()
 
 class InputDeviceSelection(Screen, HelpableScreen):
 	def __init__(self, session):
@@ -60,7 +62,7 @@ class InputDeviceSelection(Screen, HelpableScreen):
 		enabled = iInputDevices.getDeviceAttribute(device, 'enabled')
 
 		if type == 'remote':
-			if config.misc.rcused.getValue() == 0:
+			if config.misc.rcused.value == 0:
 				if enabled:
 					devicepng = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/input_rcnew-configured.png"))
 				else:
@@ -82,7 +84,7 @@ class InputDeviceSelection(Screen, HelpableScreen):
 				devicepng = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/input_mouse.png"))
 		elif isinputdevice:
 			devicepng = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/input_rcnew.png"))
-		return ((device, description, devicepng, divpng))
+		return device, description, devicepng, divpng
 
 	def updateList(self):
 		self.list = []
@@ -160,23 +162,23 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 		self.list = [ ]
 		label = _("Change repeat and delay settings?")
 		cmd = "self.enableEntry = getConfigListEntry(label, config.inputDevices." + self.inputDevice + ".enabled)"
-		exec (cmd)
+		exec cmd
 		label = _("Interval between keys when repeating:")
 		cmd = "self.repeatEntry = getConfigListEntry(label, config.inputDevices." + self.inputDevice + ".repeat)"
-		exec (cmd)
+		exec cmd
 		label = _("Delay before key repeat starts:")
 		cmd = "self.delayEntry = getConfigListEntry(label, config.inputDevices." + self.inputDevice + ".delay)"
-		exec (cmd)
+		exec cmd
 		label = _("Devicename:")
 		cmd = "self.nameEntry = getConfigListEntry(label, config.inputDevices." + self.inputDevice + ".name)"
-		exec (cmd)
+		exec cmd
 		if self.enableEntry:
 			if isinstance(self.enableEntry[1], ConfigYesNo):
 				self.enableConfigEntry = self.enableEntry[1]
 
 		self.list.append(self.enableEntry)
 		if self.enableConfigEntry:
-			if self.enableConfigEntry.getValue() is True:
+			if self.enableConfigEntry.value is True:
 				self.list.append(self.repeatEntry)
 				self.list.append(self.delayEntry)
 			else:
@@ -220,7 +222,7 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 		else:
 			self.nameEntry[1].setValue(iInputDevices.getDeviceAttribute(self.inputDevice, 'name'))
 			cmd = "config.inputDevices." + self.inputDevice + ".name.save()"
-			exec (cmd)
+			exec cmd
 			self.keySave()
 
 	def apply(self):
@@ -248,7 +250,7 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 		return self["config"].getCurrent()[0]
 
 	def getCurrentValue(self):
-		return str(self["config"].getCurrent()[1].getValue())
+		return str(self["config"].getCurrent()[1].value)
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
@@ -256,28 +258,32 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 
 
 class RemoteControlType(Screen, ConfigListScreen):
+	
 	rcList = [
 			("0", _("Default")),
-			("3", _("OdinM9")),
+			("3", _("MaraM9")),
 			("4", _("DMM normal")),
 			("6", _("DMM advanced")),
 			("7", _("et5000/6000")),
 			("8", _("VU+")),
+			("9", _("et8000/et10000")),
 			("11", _("et9x00/6500")),
 			("13", _("et4000")),
-			("14", _("XP1000")),
-		]
+			("14", _("XP1000"))
+			]
 
 	defaultRcList = [
 			("et4000", 13),
 			("et5000", 7),
 			("et6000", 7),
 			("et6500", 11),
+			("et8000", 9),
 			("et9000", 11),
 			("et9200", 11),
 			("et9500", 11),
-			("xp1000", 14),
-		]
+			("et10000", 9),
+			("xp1000", 14)
+			]
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -295,7 +301,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 		self.list = []
 		ConfigListScreen.__init__(self, self.list, session = self.session)
 
-		rctype = config.plugins.remotecontroltype.rctype.getValue()
+		rctype = config.plugins.remotecontroltype.rctype.value
 		self.rctype = ConfigSelection(choices = self.rcList, default = str(rctype))
 		self.list.append(getConfigListEntry(_("Remote control type"), self.rctype))
 		self["config"].list = self.list
@@ -314,7 +320,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 		iRcTypeControl.writeRcType(self.defaultRcType)
 
 	def keySave(self):
-		if config.plugins.remotecontroltype.rctype.getValue() == int(self.rctype.getValue()):
+		if config.plugins.remotecontroltype.rctype.value == int(self.rctype.value):
 			self.close()
 		else:
 			self.setNewSetting()
@@ -324,21 +330,21 @@ class RemoteControlType(Screen, ConfigListScreen):
 		if answer is False:
 			self.restoreOldSetting()
 		else:
-			config.plugins.remotecontroltype.rctype.value = int(self.rctype.getValue())
+			config.plugins.remotecontroltype.rctype.value = int(self.rctype.value)
 			config.plugins.remotecontroltype.save()
 			self.close()
 
 	def restoreOldSetting(self):
-		if config.plugins.remotecontroltype.rctype.getValue() == 0:
+		if config.plugins.remotecontroltype.rctype.value == 0:
 			self.setDefaultRcType()
 		else:
-			iRcTypeControl.writeRcType(config.plugins.remotecontroltype.rctype.getValue())
+			iRcTypeControl.writeRcType(config.plugins.remotecontroltype.rctype.value)
 
 	def setNewSetting(self):
-		if int(self.rctype.getValue()) == 0:
+		if int(self.rctype.value) == 0:
 			self.setDefaultRcType()
 		else:
-			iRcTypeControl.writeRcType(int(self.rctype.getValue()))
+			iRcTypeControl.writeRcType(int(self.rctype.value))
 
 	def keyCancel(self):
 		self.restoreOldSetting()

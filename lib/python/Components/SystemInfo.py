@@ -1,14 +1,18 @@
-from enigma import eDVBResourceManager, getBoxType
-from Tools.Directories import fileExists, resolveFilename, SCOPE_SKIN
-from Tools.HardwareInfo import HardwareInfo
 from os import path
+
+from enigma import eDVBResourceManager
+
+from Tools.Directories import fileExists
+from Tools.HardwareInfo import HardwareInfo
+
+from boxbranding import getBoxType
 
 SystemInfo = { }
 
 #FIXMEE...
 def getNumVideoDecoders():
 	idx = 0
-	while fileExists("/dev/dvb/adapter0/video%d"%(idx), 'f'):
+	while fileExists("/dev/dvb/adapter0/video%d"% idx, 'f'):
 		idx += 1
 	return idx
 
@@ -39,3 +43,5 @@ SystemInfo["GraphicLCD"] = getBoxType() == "vuultimo"
 SystemInfo["Blindscan"] = fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/Blindscan/plugin.pyo")
 SystemInfo["Satfinder"] = fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/Satfinder/plugin.pyo")
 SystemInfo["GBWOL"] = fileExists("/usr/bin/gigablue_wol")
+SystemInfo["Fan"] = fileExists("/proc/stb/fp/fan")
+SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileExists("/proc/stb/fp/fan_pwm")
