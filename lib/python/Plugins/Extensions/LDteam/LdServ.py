@@ -11,7 +11,10 @@ from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, pathExists, resolveFilename, SCOPE_CURRENT_SKIN
 from os import system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 from Screens.Setup import Setup
+from Screens.NetworkSetup import *
+from Plugins.SystemPlugins.NetworkBrowser.MountManager import AutoMountManager
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
+from Plugins.SystemPlugins.NetworkWizard.NetworkWizard import NetworkWizard
 
 
 
