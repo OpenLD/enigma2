@@ -2,7 +2,7 @@ from enigma import *
 from Screens.Screen import Screen
 from Components.ActionMap import ActionMap
 from Components.Sources.List import List
-from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN,  SCOPE_PLUGINS
+from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from Tools.LoadPixmap import LoadPixmap
 from Components.Label import Label
 
