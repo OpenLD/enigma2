@@ -1,7 +1,17 @@
+from boxbranding import getBoxType, getMachineBrand, getMachineName
+from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
+from os import system, listdir, rename, symlink, unlink, path, mkdir
+from time import sleep
+from shutil import move
+import time
+
+from enigma import eTimer
+
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from Screens.HelpMenu import HelpableScreen
+from Components.About import about, getVersionString
 from Components.Console import Console
 from Components.Network import iNetwork
 from Components.Sources.StaticText import StaticText
@@ -12,7 +22,7 @@ from Components.Label import Label, MultiColorLabel
 from Components.ScrollLabel import ScrollLabel
 from Components.Pixmap import Pixmap, MultiPixmap
 from Components.MenuList import MenuList
-from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigIP, NoSave, ConfigText, ConfigPassword, ConfigSelection, getConfigListEntry, ConfigNumber, ConfigLocations, ConfigInteger, ConfigClock, configfile
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigIP, NoSave, ConfigText, ConfigPassword, ConfigSelection, getConfigListEntry, ConfigNumber, ConfigLocations, ConfigInteger, ConfigClock, configfile, ConfigMacText
 from Plugins.Extensions.LDteam.ExtraActionBox import ExtraActionBox
 from Components.ConfigList import ConfigListScreen
 from Components.PluginComponent import plugins
@@ -21,12 +31,13 @@ from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
 from Plugins.Plugin import PluginDescriptor
-from enigma import eTimer, getBoxType, getMachineBrand, getMachineName
-from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
-from shutil import move
-import time
-from os import system, listdir, rename, symlink, unlink, path, mkdir
-from time import sleep
+import commands
+
+
+if float(getVersionString()) >= 4.0:
+	basegroup = "packagegroup-base"
+else:
+	basegroup = "task-base"
 
 class NetworkAdapterSelection(Screen,HelpableScreen):
 	def __init__(self, session):
@@ -134,7 +145,7 @@ class NetworkAdapterSelection(Screen,HelpableScreen):
 
 		description = iNetwork.getFriendlyAdapterDescription(iface)
 
-		return((iface, name, description, interfacepng, defaultpng, activepng, divpng))
+		return iface, name, description, interfacepng, defaultpng, activepng, divpng
 
 	def updateList(self):
 		self.list = []
@@ -284,7 +295,7 @@ class NameserverSetup(Screen, ConfigListScreen, HelpableScreen):
 
 		i = 1
 		for x in self.nameserverEntries:
-			self.list.append(getConfigListEntry(_("Nameserver %d") % (i), x))
+			self.list.append(getConfigListEntry(_("Nameserver %d") % i, x))
 			i += 1
 
 		self["config"].list = self.list
@@ -293,7 +304,7 @@ class NameserverSetup(Screen, ConfigListScreen, HelpableScreen):
 	def ok(self):
 		iNetwork.clearNameservers()
 		for nameserver in self.nameserverEntries:
-			iNetwork.addNameserver(nameserver.getValue())
+			iNetwork.addNameserver(nameserver.value)
 		iNetwork.writeNameserverConfig()
 		self.close()
 
@@ -320,6 +331,78 @@ class NameserverSetup(Screen, ConfigListScreen, HelpableScreen):
 			self.createConfig()
 			self.createSetup()
 
+class NetworkMacSetup(Screen, ConfigListScreen, HelpableScreen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		HelpableScreen.__init__(self)
+		Screen.setTitle(self, _("MAC-address settings"))
+		self.curMac = self.getmac('eth0')
+		self.getConfigMac = NoSave(ConfigMacText(default=self.curMac))
+
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Save"))
+
+		self["introduction"] = StaticText(_("Press OK to set the MAC-address."))
+
+		self["OkCancelActions"] = HelpableActionMap(self, "OkCancelActions",
+			{
+			"cancel": (self.cancel, _("Exit nameserver configuration")),
+			"ok": (self.ok, _("Activate current configuration")),
+			})
+
+		self["ColorActions"] = HelpableActionMap(self, "ColorActions",
+			{
+			"red": (self.cancel, _("Exit MAC-address configuration")),
+			"green": (self.ok, _("Activate MAC-address configuration")),
+			})
+
+		self["actions"] = NumberActionMap(["SetupActions"],
+		{
+			"ok": self.ok,
+		}, -2)
+
+		self.list = []
+		ConfigListScreen.__init__(self, self.list)
+		self.createSetup()
+
+	def getmac(self, iface):
+		eth = about.getIfConfig(iface)
+		return eth['hwaddr']
+
+	def createSetup(self):
+		self.list = []
+		self.list.append(getConfigListEntry(_("MAC-address"), self.getConfigMac))
+		self["config"].list = self.list
+		self["config"].l.setList(self.list)
+
+	def ok(self):
+		MAC = self.getConfigMac.value
+		f = open('/etc/enigma2/hwmac', 'w')
+		f.write(MAC)
+		f.close()
+		self.restartLan()
+
+	def run(self):
+		self.ok()
+
+	def cancel(self):
+		self.close()
+
+	def restartLan(self):
+		iNetwork.restartNetwork(self.restartLanDataAvail)
+		self.restartLanRef = self.session.openWithCallback(self.restartfinishedCB, MessageBox, _("Please wait while we configure your network..."), type = MessageBox.TYPE_INFO, enable_input = False)
+
+	def restartLanDataAvail(self, data):
+		if data is True:
+			iNetwork.getInterfaces(self.getInterfacesDataAvail)
+
+	def getInterfacesDataAvail(self, data):
+		if data is True:
+			self.restartLanRef.close(True)
+
+	def restartfinishedCB(self, data):
+		if data is True:
+			self.session.openWithCallback(self.close, MessageBox, _("Finished configuring your network"), type = MessageBox.TYPE_INFO, timeout = 10, default = False)
 
 class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 	def __init__(self, session, networkinfo, essid=None):
@@ -472,24 +555,25 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self.secondaryDNS = NoSave(ConfigIP(default=nameserver[1]))
 
 	def createSetup(self):
-		self.wolstartvalue = config.network.wol.getValue()
+		self.wolstartvalue = config.network.wol.value
 		self.list = []
 		self.InterfaceEntry = getConfigListEntry(_("Use interface"), self.activateInterfaceEntry)
 
 		self.list.append(self.InterfaceEntry)
-		if self.activateInterfaceEntry.getValue():
+		if self.activateInterfaceEntry.value:
 			self.dhcpEntry = getConfigListEntry(_("Use DHCP"), self.dhcpConfigEntry)
 			self.list.append(self.dhcpEntry)
-			if not self.dhcpConfigEntry.getValue():
+			if not self.dhcpConfigEntry.value:
 				self.list.append(getConfigListEntry(_('IP address'), self.ipConfigEntry))
 				self.list.append(getConfigListEntry(_('Netmask'), self.netmaskConfigEntry))
 				self.gatewayEntry = getConfigListEntry(_('Use a gateway'), self.hasGatewayConfigEntry)
 				self.list.append(self.gatewayEntry)
-				if self.hasGatewayConfigEntry.getValue():
+				if self.hasGatewayConfigEntry.value:
 					self.list.append(getConfigListEntry(_('Gateway'), self.gatewayConfigEntry))
 			if SystemInfo["WOL"] and self.iface == 'eth0':
-				self.wakeonlan = getConfigListEntry(_('Use WOL'), config.network.wol)
-				self.list.append(self.wakeonlan)
+				if not getBoxType() == 'gbquad' :
+					self.wakeonlan = getConfigListEntry(_('Use WOL'), config.network.wol)
+					self.list.append(self.wakeonlan)
 
 			self.extended = None
 			self.configStrings = None
@@ -511,8 +595,8 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 						self.encryptionType = getConfigListEntry(_("Encryption key type"), config.plugins.wlan.wepkeytype)
 						self.encryptionKey = getConfigListEntry(_("Encryption key"), config.plugins.wlan.psk)
 
-						if config.plugins.wlan.encryption.getValue() != "Unencrypted":
-							if config.plugins.wlan.encryption.getValue() == 'WEP':
+						if config.plugins.wlan.encryption.value != "Unencrypted":
+							if config.plugins.wlan.encryption.value == 'WEP':
 								self.list.append(self.encryptionType)
 							self.list.append(self.encryptionKey)
 		self["config"].list = self.list
@@ -542,7 +626,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 
 	def keySave(self):
 		self.hideInputHelp()
-		if self["config"].isChanged() or (self.wolstartvalue != config.network.wol.getValue()):
+		if self["config"].isChanged() or (self.wolstartvalue != config.network.wol.value):
 			self.session.openWithCallback(self.keySaveConfirm, MessageBox, (_("Are you sure you want to activate this network configuration?\n\n") + self.oktext ) )
 		else:
 			if self.finished_cb:
@@ -552,7 +636,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		config.network.save()
 
 	def keySaveConfirm(self, ret = False):
-		if (ret == True):
+		if ret == True:
 			num_configured_if = len(iNetwork.getConfiguredAdapters())
 			if num_configured_if >= 1:
 				if self.iface in iNetwork.getConfiguredAdapters():
@@ -580,22 +664,22 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			self.applyConfig(True)
 
 	def applyConfig(self, ret = False):
-		if (ret == True):
+		if ret == True:
 			self.applyConfigRef = None
-			iNetwork.setAdapterAttribute(self.iface, "up", self.activateInterfaceEntry.getValue())
-			iNetwork.setAdapterAttribute(self.iface, "dhcp", self.dhcpConfigEntry.getValue())
-			iNetwork.setAdapterAttribute(self.iface, "ip", self.ipConfigEntry.getValue())
-			iNetwork.setAdapterAttribute(self.iface, "netmask", self.netmaskConfigEntry.getValue())
-			if self.hasGatewayConfigEntry.getValue():
-				iNetwork.setAdapterAttribute(self.iface, "gateway", self.gatewayConfigEntry.getValue())
+			iNetwork.setAdapterAttribute(self.iface, "up", self.activateInterfaceEntry.value)
+			iNetwork.setAdapterAttribute(self.iface, "dhcp", self.dhcpConfigEntry.value)
+			iNetwork.setAdapterAttribute(self.iface, "ip", self.ipConfigEntry.value)
+			iNetwork.setAdapterAttribute(self.iface, "netmask", self.netmaskConfigEntry.value)
+			if self.hasGatewayConfigEntry.value:
+				iNetwork.setAdapterAttribute(self.iface, "gateway", self.gatewayConfigEntry.value)
 			else:
 				iNetwork.removeAdapterAttribute(self.iface, "gateway")
 
-			if (self.extended is not None and self.configStrings is not None):
+			if self.extended is not None and self.configStrings is not None:
 				iNetwork.setAdapterAttribute(self.iface, "configStrings", self.configStrings(self.iface))
 				self.ws.writeConfig(self.iface)
 
-			if self.activateInterfaceEntry.getValue() is False:
+			if self.activateInterfaceEntry.value is False:
 				iNetwork.deactivateInterface(self.iface,self.deactivateInterfaceCB)
 				iNetwork.writeNetworkConfig()
 				self.applyConfigRef = self.session.openWithCallback(self.applyConfigfinishedCB, MessageBox, _("Please wait for activation of your network configuration..."), type = MessageBox.TYPE_INFO, enable_input = False)
@@ -648,7 +732,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 
 	def keyCancel(self):
 		self.hideInputHelp()
-		if self["config"].isChanged() or (self.wolstartvalue != config.network.wol.getValue()):
+		if self["config"].isChanged() or (self.wolstartvalue != config.network.wol.value):
 			self.session.openWithCallback(self.keyCancelConfirm, MessageBox, _("Really close without saving settings?"), default = False)
 		else:
 			self.close('cancel')
@@ -678,7 +762,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		if current == self.wlanSSID:
 			if current[1].help_window.instance is not None:
 				current[1].help_window.instance.hide()
-		elif current == self.encryptionKey and config.plugins.wlan.encryption.getValue() is not "Unencrypted":
+		elif current == self.encryptionKey and config.plugins.wlan.encryption.value is not "Unencrypted":
 			if current[1].help_window.instance is not None:
 				current[1].help_window.instance.hide()
 
@@ -783,6 +867,8 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			self.session.open(NetworkAdapterTest,self.iface)
 		if self["menulist"].getCurrent()[1] == 'dns':
 			self.session.open(NameserverSetup)
+		if self["menulist"].getCurrent()[1] == 'mac':
+			self.session.open(NetworkMacSetup)
 		if self["menulist"].getCurrent()[1] == 'scanwlan':
 			try:
 				from Plugins.SystemPlugins.WirelessLan.plugin import WlanScan
@@ -842,9 +928,11 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 		if self["menulist"].getCurrent()[1] == 'lanrestart':
 			self["description"].setText(_("Restart your network connection and interfaces.\n" ) + self.oktext )
 		if self["menulist"].getCurrent()[1] == 'openwizard':
-			self["description"].setText(_("Use the networkwizard to configure your Network\n" ) + self.oktext )
+			self["description"].setText(_("Use the network wizard to configure your Network\n" ) + self.oktext )
 		if self["menulist"].getCurrent()[1][0] == 'extendedSetup':
 			self["description"].setText(_(self["menulist"].getCurrent()[1][1]) + self.oktext )
+		if self["menulist"].getCurrent()[1] == 'mac':
+			self["description"].setText(_("Set the MAC-address of your %s %s.\n" ) % (getMachineBrand(), getMachineName()) + self.oktext )
 		item = self["menulist"].getCurrent()
 		if item:
 			name = str(self["menulist"].getCurrent()[0])
@@ -877,11 +965,7 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 		pass
 
 	def genMainMenu(self):
-		menu = []
-		menu.append((_("Adapter settings"), "edit"))
-		menu.append((_("Nameserver settings"), "dns"))
-		menu.append((_("Network test"), "test"))
-		menu.append((_("Restart network"), "lanrestart"))
+		menu = [(_("Adapter settings"), "edit"), (_("Nameserver settings"), "dns"), (_("Network test"), "test"), (_("Restart network"), "lanrestart")]
 
 		self.extended = None
 		self.extendedSetup = None
@@ -907,6 +991,9 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 
 		if os_path.exists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/NetworkWizard/networkwizard.xml")):
 			menu.append((_("Network wizard"), "openwizard"))
+		kernel_ver = about.getKernelVersionString()
+		if kernel_ver <= "3.5.0":
+			menu.append((_("Network MAC settings"), "mac"))
 
 		return menu
 
@@ -942,7 +1029,7 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			self.updateStatusbar()
 
 	def restartLan(self, ret = False):
-		if (ret == True):
+		if ret == True:
 			iNetwork.restartNetwork(self.restartLanDataAvail)
 			self.restartLanRef = self.session.openWithCallback(self.restartfinishedCB, MessageBox, _("Please wait while your network is restarting..."), type = MessageBox.TYPE_INFO, enable_input = False)
 
@@ -968,7 +1055,7 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 					self.LinkState = True
 				else:
 					self.LinkState = False
-		if self.LinkState == True:
+		if self.LinkState:
 			iNetwork.checkNetworkState(self.checkNetworkCB)
 		else:
 			self["statuspic"].setPixmapNum(1)
@@ -1228,11 +1315,11 @@ class NetworkAdapterTest(Screen):
 	def KeyGreenRestart(self):
 		self.nextstep = 0
 		self.layoutFinished()
-		self["Adapter"].setText((""))
-		self["Network"].setText((""))
-		self["Dhcp"].setText((""))
-		self["IP"].setText((""))
-		self["DNS"].setText((""))
+		self["Adapter"].setText("")
+		self["Network"].setText("")
+		self["Dhcp"].setText("")
+		self["IP"].setText("")
+		self["DNS"].setText("")
 		self["AdapterInfo_Text"].setForegroundColorNum(0)
 		self["NetworkInfo_Text"].setForegroundColorNum(0)
 		self["DhcpInfo_Text"].setForegroundColorNum(0)
@@ -1540,31 +1627,10 @@ class NetworkMountsMenu(Screen,HelpableScreen):
 		return menu
 
 class NetworkAfp(Screen):
-        skin = """
-        <screen name="NetworkAfp" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="lab1" position="20,50" size="200,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labactive" position="220,50" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="lab2" position="20,100" size="200,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labstop" position="220,100" size="100,30" font="Regular;20" valign="center"  halign="center" backgroundColor="red"/>
-                <widget name="labrun" position="220,100" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("AFP Setup"))
-		self.skinName = "NetworkServiceSetup"
+		self.skinName = "NetworkAfp"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
@@ -1581,15 +1647,15 @@ class NetworkAfp(Screen):
 		self.my_afp_active = False
 		self.my_afp_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.AfpStartStop, 'yellow': self.activateAfp})
-		self.service_name = 'task-base-appletalk netatalk'
+		self.service_name = basegroup + '-appletalk netatalk'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -1600,12 +1666,12 @@ class NetworkAfp(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -1632,7 +1698,7 @@ class NetworkAfp(Screen):
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
 			restartbox = self.session.openWithCallback(self.RemovePackage,MessageBox,_('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
-			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
+			restartbox.setTitle(_('Ready to remove %s ?') % self.service_name)
 		else:
 			self.updateService()
 
@@ -1652,9 +1718,9 @@ class NetworkAfp(Screen):
 		return NetworkServicesSummary
 
 	def AfpStartStop(self):
-		if self.my_afp_run == False:
+		if not self.my_afp_run:
 			self.Console.ePopen('/etc/init.d/atalk start', self.StartStopCallback)
-		elif self.my_afp_run == True:
+		elif self.my_afp_run:
 			self.Console.ePopen('/etc/init.d/atalk stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -1671,7 +1737,7 @@ class NetworkAfp(Screen):
 		import process
 		p = process.ProcessList()
 		afp_process = str(p.named('afpd')).strip('[]')
- 		self['labrun'].hide()
+		self['labrun'].hide()
 		self['labstop'].hide()
 		self['labactive'].setText(_("Disabled"))
 		self.my_afp_active = False
@@ -1682,7 +1748,7 @@ class NetworkAfp(Screen):
 			self.my_afp_active = True
 		if afp_process:
 			self.my_afp_run = True
-		if self.my_afp_run == True:
+		if self.my_afp_run:
 			self['labstop'].hide()
 			self['labactive'].show()
 			self['labrun'].show()
@@ -1699,26 +1765,154 @@ class NetworkAfp(Screen):
 
 		for cb in self.onChangedEntry:
 			cb(title, status_summary, autostartstatus_summary)
+######################################################################################################################
+class NetworkSABnzbd(Screen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("SABnzbd Setup"))
+		self.skinName = "NetworkSABnzbd"
+		self.onChangedEntry = [ ]
+		self['lab1'] = Label(_("Autostart:"))
+		self['labactive'] = Label(_(_("Disabled")))
+		self['lab2'] = Label(_("Current Status:"))
+		self['labstop'] = Label(_("Stopped"))
+		self['labrun'] = Label(_("Running"))
+		self['key_red'] = Label(_("Remove Service"))
+		self['key_green'] = Label(_("Start"))
+		self['key_yellow'] = Label(_("Autostart"))
+		self['key_blue'] = Label()
+		self['status_summary'] = StaticText()
+		self['autostartstatus_summary'] = StaticText()
+		self.Console = Console()
+		self.my_sabnzbd_active = False
+		self.my_sabnzbd_run = False
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.SABnzbStartStop, 'yellow': self.activateSABnzbd})
+		self.service_name = 'sabnzbd'
+		self.checkSABnzbdService()
 
+	def checkSABnzbdService(self):
+		print 'INSTALL CHECK STARTED',self.service_name
+		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
+
+	def checkNetworkState(self, str, retval, extra_args):
+		print 'INSTALL CHECK FINISHED',str
+		if not str:
+			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck.setTitle(_('Checking Feeds'))
+			cmd1 = "opkg update"
+			self.CheckConsole = Console()
+			self.CheckConsole.ePopen(cmd1, self.checkNetworkStateFinished)
+		else:
+			print 'INSTALL ALREADY INSTALLED'
+			self.updateService()
+
+	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+		if (float(getVersionString()) < 3.0 and result.find('mipsel/Packages.gz, wget returned 1') != -1) or (float(getVersionString()) >= 3.0 and result.find('mips32el/Packages.gz, wget returned 1') != -1):
+			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		elif result.find('bad address') != -1:
+			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		else:
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+
+	def InstallPackage(self, val):
+		if val:
+			self.doInstall(self.installComplete, self.service_name)
+		else:
+			self.feedscheck.close()
+			self.close()
+
+	def InstallPackageFailed(self, val):
+		self.feedscheck.close()
+		self.close()
+
+	def doInstall(self, callback, pkgname):
+		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message.setTitle(_('Installing Service'))
+		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
+
+	def installComplete(self,result = None, retval = None, extra_args = None):
+		self.message.close()
+		self.feedscheck.close()
+		self.updateService()
+
+	def UninstallCheck(self):
+		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
+
+	def RemovedataAvail(self, str, retval, extra_args):
+		if str:
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+		else:
+			self.updateService()
+
+	def RemovePackage(self, val):
+		if val:
+			self.doRemove(self.removeComplete, self.service_name)
+
+	def doRemove(self, callback, pkgname):
+		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message.setTitle(_('Removing Service'))
+		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
+
+	def removeComplete(self,result = None, retval = None, extra_args = None):
+		self.message.close()
+		self.updateService()
+
+	def createSummary(self):
+		return NetworkServicesSummary
+
+	def SABnzbStartStop(self):
+		if not self.my_sabnzbd_run:
+			self.Console.ePopen('/etc/init.d/sabnzbd start')
+			time.sleep(3)
+			self.updateService()
+		elif self.my_sabnzbd_run:
+			self.Console.ePopen('/etc/init.d/sabnzbd stop')
+			time.sleep(3)
+			self.updateService()
+
+	def activateSABnzbd(self):
+		if fileExists('/etc/rc2.d/S20sabnzbd'):
+			self.Console.ePopen('update-rc.d -f sabnzbd remove')
+		else:
+			self.Console.ePopen('update-rc.d -f sabnzbd defaults')
+		time.sleep(3)
+		self.updateService()
+
+	def updateService(self,result = None, retval = None, extra_args = None):
+		import process
+		p = process.ProcessList()
+		sabnzbd_process = str(p.named('SABnzbd.py')).strip('[]')
+		self['labrun'].hide()
+		self['labstop'].hide()
+		self['labactive'].setText(_("Disabled"))
+		self.my_sabnzbd_active = False
+		self.my_sabnzbd_run = False
+		if fileExists('/etc/rc2.d/S20sabnzbd'):
+			self['labactive'].setText(_("Enabled"))
+			self['labactive'].show()
+			self.my_sabnzbd_active = True
+		if sabnzbd_process:
+			self.my_sabnzbd_run = True
+		if self.my_sabnzbd_run:
+			self['labstop'].hide()
+			self['labactive'].show()
+			self['labrun'].show()
+			self['key_green'].setText(_("Stop"))
+			status_summary= self['lab2'].text + ' ' + self['labrun'].text
+		else:
+			self['labrun'].hide()
+			self['labstop'].show()
+			self['labactive'].show()
+			self['key_green'].setText(_("Start"))
+			status_summary= self['lab2'].text + ' ' + self['labstop'].text
+		title = _("SABnzbd Setup")
+		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
+
+		for cb in self.onChangedEntry:
+			cb(title, status_summary, autostartstatus_summary)
+
+#########################################################################################################
 class NetworkFtp(Screen):
-	skin = """
-        <screen name="NetworkFtp" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="lab1" position="20,30" size="300,80" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="lab2" position="20,150" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labstop" position="170,150" size="100,30" font="Regular;20" valign="center"  halign="center" backgroundColor="red"/>
-                <widget name="labrun" position="170,150" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("FTP Setup"))
@@ -1738,12 +1932,12 @@ class NetworkFtp(Screen):
 		return NetworkServicesSummary
 
 	def FtpStartStop(self):
-		if self.my_ftp_active == False:
+		if not self.my_ftp_active:
 			if fileExists('/etc/inetd.conf'):
 				inme = open('/etc/inetd.conf', 'r')
 				out = open('/etc/inetd.tmp', 'w')
 				for line in inme.readlines():
-					if line.find('vsftpd') != -1:
+					if 'vsftpd' in line:
 						line = line.replace('#', '')
 					out.write(line)
 				out.close()
@@ -1752,12 +1946,12 @@ class NetworkFtp(Screen):
 				move('/etc/inetd.tmp', '/etc/inetd.conf')
 				self.Console.ePopen('killall -HUP inetd')
 				self.updateService()
-		elif self.my_ftp_active == True:
+		elif self.my_ftp_active:
 			if fileExists('/etc/inetd.conf'):
 				inme = open('/etc/inetd.conf', 'r')
 				out = open('/etc/inetd.tmp', 'w')
 				for line in inme.readlines():
-					if line.find('vsftpd') != -1:
+					if 'vsftpd' in line:
 						line = '#' + line
 					out.write(line)
 				out.close()
@@ -1779,7 +1973,7 @@ class NetworkFtp(Screen):
 					self.my_ftp_active = True
 					continue
 			f.close()
-		if self.my_ftp_active == True:
+		if self.my_ftp_active:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Disable"))
@@ -1796,31 +1990,10 @@ class NetworkFtp(Screen):
 			cb(title, status_summary, autostartstatus_summary)
 
 class NetworkNfs(Screen):
-        skin = """
-        <screen name="NetworkNfs" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="lab1" position="20,50" size="200,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labactive" position="220,50" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="lab2" position="20,100" size="200,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labstop" position="220,100" size="100,30" font="Regular;20" valign="center"  halign="center" backgroundColor="red"/>
-                <widget name="labrun" position="220,100" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("NFS Setup"))
-		self.skinName = "NetworkServiceSetup"
+		self.skinName = "NetworkNfs"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
@@ -1835,15 +2008,15 @@ class NetworkNfs(Screen):
 		self.my_nfs_active = False
 		self.my_nfs_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.NfsStartStop, 'yellow': self.Nfsset})
-		self.service_name = 'task-base-nfs'
+		self.service_name = basegroup + '-nfs'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -1854,12 +2027,12 @@ class NetworkNfs(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -1886,7 +2059,7 @@ class NetworkNfs(Screen):
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
 			restartbox = self.session.openWithCallback(self.RemovePackage,MessageBox,_('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
-			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
+			restartbox.setTitle(_('Ready to remove %s ?') % self.service_name)
 		else:
 			self.updateService()
 
@@ -1906,9 +2079,9 @@ class NetworkNfs(Screen):
 		return NetworkServicesSummary
 
 	def NfsStartStop(self):
-		if self.my_nfs_run == False:
+		if not self.my_nfs_run:
 			self.Console.ePopen('/etc/init.d/nfsserver start', self.StartStopCallback)
-		elif self.my_nfs_run == True:
+		elif self.my_nfs_run:
 			self.Console.ePopen('/etc/init.d/nfsserver stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -1936,7 +2109,7 @@ class NetworkNfs(Screen):
 			self.my_nfs_active = True
 		if nfs_process:
 			self.my_nfs_run = True
-		if self.my_nfs_run == True:
+		if self.my_nfs_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Stop"))
@@ -1954,33 +2127,10 @@ class NetworkNfs(Screen):
 
 
 class NetworkOpenvpn(Screen):
-        skin = """
-        <screen name="NetworkOpenvpn" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="lab1" position="20,90" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labactive" position="180,90" size="250,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="lab2" position="20,160" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-                <widget name="labstop" position="180,160" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="red"/>
-                <widget name="labrun" position="180,160" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
-                <widget name="blue" font="Regular;20" halign="center" position="420,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-		
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("OpenVpn Setup"))
-		self.skinName = "NetworkServiceSetup"
+		self.skinName = "NetworkOpenvpn"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
@@ -2002,8 +2152,8 @@ class NetworkOpenvpn(Screen):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -2014,12 +2164,12 @@ class NetworkOpenvpn(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2047,7 +2197,7 @@ class NetworkOpenvpn(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2071,9 +2221,9 @@ class NetworkOpenvpn(Screen):
 		self.session.open(NetworkVpnLog)
 
 	def VpnStartStop(self):
-		if self.my_vpn_run == False:
+		if not self.my_vpn_run:
 			self.Console.ePopen('/etc/init.d/openvpn start', self.StartStopCallback)
-		elif self.my_vpn_run == True:
+		elif self.my_vpn_run:
 			self.Console.ePopen('/etc/init.d/openvpn stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -2101,7 +2251,7 @@ class NetworkOpenvpn(Screen):
 			self.my_Vpn_active = True
 		if openvpn_process:
 			self.my_vpn_run = True
-		if self.my_vpn_run == True:
+		if self.my_vpn_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Stop"))
@@ -2118,17 +2268,6 @@ class NetworkOpenvpn(Screen):
 			cb(title, status_summary, autostartstatus_summary)
 
 class NetworkVpnLog(Screen):
-        skin = """
-        <screen name="NetworkVpnLog" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="infotext" position="10,10" size="590,410" font="Console;16" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("OpenVpn Log"))
@@ -2148,50 +2287,33 @@ class NetworkVpnLog(Screen):
 		self['infotext'].setText(strview)
 
 class NetworkSamba(Screen):
-	skin = """
-		<screen name="NetworkSamba" position="center,center" size="560,310" title="Samba Setup">
-			<widget name="lab1" position="20,90" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-			<widget name="labactive" position="180,90" size="250,30" font="Regular;20" valign="center" transparent="0"/>
-			<widget name="lab2" position="20,160" size="150,30" font="Regular;20" valign="center" transparent="0"/>
-			<widget name="labstop" position="180,160" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="red"/>
-			<widget name="labrun" position="180,160" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,260" size="140,40" alphatest="on" />
-			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,260" size="140,40" alphatest="on" />
-			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,260" size="140,40" alphatest="on" />
-			<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue.png" position="420,260" size="140,40" alphatest="on" />
-			<widget name="key_red" position="0,260" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-			<widget name="key_green" position="140,260" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-			<widget name="key_yellow" position="280,260" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
-			<widget name="key_blue" position="420,260" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
-		</screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Samba Setup"))
-		self.skinName = "NetworkServiceSetup"
+		self.skinName = "NetworkSamba"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
 		self['lab2'] = Label(_("Current Status:"))
 		self['labstop'] = Label(_("Stopped"))
 		self['labrun'] = Label(_("Running"))
-		self['key_red'] = Label(_("Remove Service"))
 		self['key_green'] = Label(_("Start"))
+		self['key_red'] = Label(_("Remove Service"))
 		self['key_yellow'] = Label(_("Autostart"))
 		self['key_blue'] = Label(_("Show Log"))
 		self.Console = Console()
 		self.my_Samba_active = False
 		self.my_Samba_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.SambaStartStop, 'yellow': self.activateSamba, 'blue': self.Sambashowlog})
-		self.service_name = 'task-base-smbfs'
+		self.service_name = basegroup + '-smbfs'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -2202,12 +2324,12 @@ class NetworkSamba(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.QuestionCallback, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.QuestionCallback, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def QuestionCallback(self, val):
 		if val:
@@ -2218,7 +2340,7 @@ class NetworkSamba(Screen):
 
 	def InstallPackage(self, val):
 		if val:
-			self.service_name = self.service_name + ' task-base-smbfs-client'
+			self.service_name = self.service_name + ' ' + basegroup + '-smbfs-client'
 		self.doInstall(self.installComplete, self.service_name)
 
 	def InstallPackageFailed(self, val):
@@ -2236,12 +2358,12 @@ class NetworkSamba(Screen):
 		self.SambaStartStop()
 
 	def UninstallCheck(self):
-		self.service_name = self.service_name + ' task-base-smbfs-client'
+		self.service_name = self.service_name + ' ' + basegroup + '-smbfs-client'
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2266,11 +2388,11 @@ class NetworkSamba(Screen):
 
 	def SambaStartStop(self):
 		commands = []
-		if self.my_Samba_run == False:
+		if not self.my_Samba_run:
 			commands.append('/etc/init.d/samba start')
 			commands.append('nmbd -D')
 			commands.append('smbd -D')
-		elif self.my_Samba_run == True:
+		elif self.my_Samba_run:
 			commands.append('/etc/init.d/samba stop')
 			commands.append('killall nmbd')
 			commands.append('killall smbd')
@@ -2312,7 +2434,7 @@ class NetworkSamba(Screen):
 
 		if samba_process:
 			self.my_Samba_run = True
-		if self.my_Samba_run == True:
+		if self.my_Samba_run:
 			self['labstop'].hide()
 			self['labactive'].show()
 			self['labrun'].show()
@@ -2331,21 +2453,10 @@ class NetworkSamba(Screen):
 			cb(title, status_summary, autostartstatus_summary)
 
 class NetworkSambaLog(Screen):
-        skin = """
-        <screen name="NetworkSambaLog" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="infotext" position="10,10" size="590,410" font="Console;16" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Samba Log"))
-		self.skinName = "NetworkSambaLog"
+		self.skinName = "NetworkInadynLog"
 		self['infotext'] = ScrollLabel('')
 		self.Console = Console()
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'up': self['infotext'].pageUp, 'down': self['infotext'].pageDown})
@@ -2361,25 +2472,6 @@ class NetworkSambaLog(Screen):
 		self['infotext'].setText(strview)
 
 class NetworkTelnet(Screen):
-        skin = """
-        <screen name="NetworkOpenvpn" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="lab1" position="20,30" size="300,80" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="lab2" position="20,150" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labstop" position="170,150" size="100,30" font="Regular;20" valign="center"  halign="center" backgroundColor="red"/>
-                <widget name="labrun" position="170,150" size="100,30" zPosition="1" font="Regular;20" valign="center"  halign="center" backgroundColor="green"/>
-
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Telnet Setup"))
@@ -2399,12 +2491,12 @@ class NetworkTelnet(Screen):
 		return NetworkServicesSummary
 
 	def TelnetStartStop(self):
-		if self.my_telnet_active == False:
+		if not self.my_telnet_active:
 			if fileExists('/etc/inetd.conf'):
 				inme = open('/etc/inetd.conf', 'r')
 				out = open('/etc/inetd.tmp', 'w')
 				for line in inme.readlines():
-					if line.find('telnetd') != -1:
+					if 'telnetd' in line:
 						line = line.replace('#', '')
 					out.write(line)
 				out.close()
@@ -2412,12 +2504,12 @@ class NetworkTelnet(Screen):
 			if fileExists('/etc/inetd.tmp'):
 				move('/etc/inetd.tmp', '/etc/inetd.conf')
 				self.Console.ePopen('killall -HUP inetd')
-		elif self.my_telnet_active == True:
+		elif self.my_telnet_active:
 			if fileExists('/etc/inetd.conf'):
 				inme = open('/etc/inetd.conf', 'r')
 				out = open('/etc/inetd.tmp', 'w')
 				for line in inme.readlines():
-					if line.find('telnetd') != -1:
+					if 'telnetd' in line:
 						line = '#' + line
 					out.write(line)
 				out.close()
@@ -2439,7 +2531,7 @@ class NetworkTelnet(Screen):
 					self.my_telnet_active = True
 					continue
 			f.close()
-		if self.my_telnet_active == True:
+		if self.my_telnet_active:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Disable"))
@@ -2456,42 +2548,6 @@ class NetworkTelnet(Screen):
 			cb(title, status_summary, autostartstatus_summary)
 
 class NetworkInadyn(Screen):
-        skin = """
-        <screen name="NetworkInadyn" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="autostart" position="10,0" size="100,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labdisabled" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labactive" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2" />
-                <widget name="status" position="240,0" size="150,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labstop" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labrun" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2"/>
-                <widget name="time" position="10,50" size="230,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labtime" position="240,50" size="100,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="username" position="10,100" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labuser" position="160,100" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="password" position="10,150" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labpass" position="160,150" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="alias" position="10,200" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labalias" position="160,200" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="sinactive" position="10,250" zPosition="1" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="sactive" position="10,250" zPosition="2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="system" position="50,250" size="100,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labsys" position="160,250" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,390" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,390" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,390" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,391" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue.png" position="420,390" size="140,40" alphatest="on" />
-                <widget name="blue" font="Regular;20" halign="center" position="420,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Inadyn Setup"))
@@ -2527,8 +2583,8 @@ class NetworkInadyn(Screen):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -2539,12 +2595,12 @@ class NetworkInadyn(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2572,7 +2628,7 @@ class NetworkInadyn(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2593,9 +2649,9 @@ class NetworkInadyn(Screen):
 		return NetworkServicesSummary
 
 	def InadynStartStop(self):
-		if self.my_inadyn_run == False:
+		if not self.my_inadyn_run:
 			self.Console.ePopen('/etc/init.d/inadyn-mt start', self.StartStopCallback)
-		elif self.my_inadyn_run == True:
+		elif self.my_inadyn_run:
 			self.Console.ePopen('/etc/init.d/inadyn-mt stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -2630,7 +2686,7 @@ class NetworkInadyn(Screen):
 			autostartstatus_summary = self['autostart'].text + ' ' + self['labdisabled'].text
 		if inadyn_process:
 			self.my_inadyn_run = True
-		if self.my_inadyn_run == True:
+		if self.my_inadyn_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Stop"))
@@ -2681,21 +2737,6 @@ class NetworkInadyn(Screen):
 		self.session.open(NetworkInadynLog)
 
 class NetworkInadynSetup(Screen, ConfigListScreen):
-        skin = """
-        <screen name="NetworkInadynSetup" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="config" position="10,10" size="540,240" scrollbarMode="showOnDemand" />
-                <widget name="HelpWindow" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/vkey_icon.png" position="170,300" zPosition="1" size="440,350" transparent="1" alphatest="on" />
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,320" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,321" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/key_text.png" position="300,313" zPosition="4" size="35,25" alphatest="on" transparent="1" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.onChangedEntry = [ ]
@@ -2703,7 +2744,7 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 		ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.selectionChanged)
 		Screen.setTitle(self, _("Inadyn Setup"))
 		self['key_red'] = Label(_("Save"))
-		self['actions'] = ActionMap(['WizardActions', 'ColorActions', 'VirtualKeyboardActions', "MenuActions"], {'red': self.saveIna, 'back': self.close, 'showVirtualKeyboard': self.KeyText, "menu": self.closeRecursive})
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions', 'VirtualKeyboardActions'], {'red': self.saveIna, 'back': self.close, 'showVirtualKeyboard': self.KeyText})
 		self["HelpWindow"] = Pixmap()
 		self["HelpWindow"].hide()
 		self.updateList()
@@ -2718,7 +2759,7 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 		item = self["config"].getCurrent()
 		if item:
 			name = str(item[0])
-			desc = str(item[1].getValue())
+			desc = str(item[1].value)
 		else:
 			name = ""
 			desc = ""
@@ -2767,7 +2808,7 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 						line = line[15:]
 					ina_sysactive1 = getConfigListEntry(_("Set System") + ":", self.ina_sysactive)
 					self.list.append(ina_sysactive1)
-					self.ina_system.value = line
+					self.ina_value = line
 					ina_system1 = getConfigListEntry(_("System") + ":", self.ina_system)
 					self.list.append(ina_system1)
 
@@ -2784,7 +2825,7 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 			self.vkvar = sel[0]
 			if self.vkvar == _("Username") + ':' or self.vkvar == _("Password") + ':' or self.vkvar == _("Alias") + ':' or self.vkvar == _("System") + ':':
 				from Screens.VirtualKeyBoard import VirtualKeyBoard
-				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].getValue())
+				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
 
 	def VirtualKeyBoardCallback(self, callback = None):
 		if callback is not None and len(callback):
@@ -2804,11 +2845,11 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 				elif line.startswith('alias '):
 					line = ('alias ' + self.ina_alias.value.strip())
 				elif line.startswith('update_period_sec '):
-					strview = (self.ina_period.getValue() * 60)
+					strview = (self.ina_period.value * 60)
 					strview = str(strview)
 					line = ('update_period_sec ' + strview)
 				elif line.startswith('dyndns_system ') or line.startswith('#dyndns_system '):
-					if self.ina_sysactive.getValue() == True:
+					if self.ina_sysactive.value:
 						line = ('dyndns_system ' + self.ina_system.value.strip())
 					else:
 						line = ('#dyndns_system ' + self.ina_system.value.strip())
@@ -2826,17 +2867,6 @@ class NetworkInadynSetup(Screen, ConfigListScreen):
 		self.close()
 
 class NetworkInadynLog(Screen):
-        skin = """
-        <screen name="NetworkInadynLog" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="infotext" position="10,10" size="590,410" font="Console;16" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Inadyn Log"))
@@ -2856,50 +2886,6 @@ class NetworkInadynLog(Screen):
 config.networkushare = ConfigSubsection()
 config.networkushare.mediafolders = NoSave(ConfigLocations(default=""))
 class NetworkuShare(Screen):
-	skin = """
-       <screen name="NetworkuShare" position="center,center" size="590,460">
-                <widget name="autostart" position="10,0" size="100,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labdisabled" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labactive" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2" />
-                <widget name="status" position="240,0" size="150,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labstop" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labrun" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2"/>
-                <widget name="username" position="10,50" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labuser" position="160,50" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="iface" position="10,90" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labiface" position="160,90" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="port" position="10,130" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labport" position="160,130" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="telnetport" position="10,170" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labtelnetport" position="160,170" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="sharedir" position="10,210" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labsharedir" position="160,210" size="310,90" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="web" position="10,300" size="180,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="webinactive" position="200,300" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="webactive" position="200,300" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="telnet" position="10,330" size="180,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="telnetinactive" position="200,330" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="telnetactive" position="200,330" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="xbox" position="250,300" size="200,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="xboxinactive" position="470,300" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="xboxactive" position="470,300" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="dlna" position="250,330" size="200,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="dlnainactive" position="470,330" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="dlnaactive" position="470,330" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,390" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,390" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,390" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,391" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue.png" position="420,390" size="140,40" alphatest="on" />
-                <widget name="blue" font="Regular;20" halign="center" position="420,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <eLabel backgroundColor="darkgrey" position="0,430" size="590,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("uShare Setup"))
@@ -2946,8 +2932,8 @@ class NetworkuShare(Screen):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -2958,12 +2944,12 @@ class NetworkuShare(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2991,7 +2977,7 @@ class NetworkuShare(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -3012,9 +2998,9 @@ class NetworkuShare(Screen):
 		return NetworkServicesSummary
 
 	def uShareStartStop(self):
-		if self.my_ushare_run == False:
+		if not self.my_ushare_run:
 			self.Console.ePopen('/etc/init.d/ushare start >> /tmp/uShare.log', self.StartStopCallback)
-		elif self.my_ushare_run == True:
+		elif self.my_ushare_run:
 			self.Console.ePopen('/etc/init.d/ushare stop >> /tmp/uShare.log', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -3052,7 +3038,7 @@ class NetworkuShare(Screen):
 			autostartstatus_summary = self['autostart'].text + ' ' + self['labdisabled'].text
 		if ushare_process:
 			self.my_ushare_run = True
-		if self.my_ushare_run == True:
+		if self.my_ushare_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Stop"))
@@ -3125,23 +3111,6 @@ class NetworkuShare(Screen):
 		self.session.open(NetworkuShareLog)
 
 class NetworkuShareSetup(Screen, ConfigListScreen):
-	skin = """
-        <screen name="NetworkuShareSetup" position="center,center" size="560,460" zPosition="3">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-				<widget name="config" position="10,10" size="420,240" scrollbarMode="showOnDemand" />
-                <widget name="HelpWindow" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/icons/vkey_icon.png" position="440,390" size="440,350" transparent="1" alphatest="on" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,370" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,370" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,370" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,370" size="140,40" transparent="1" valign="center" zPosition="10" />
-				<ePixmap pixmap="skin_default/buttons/key_text.png" position="320,366" zPosition="4" size="35,25" alphatest="on" transparent="1" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("uShare Setup"))
@@ -3166,7 +3135,7 @@ class NetworkuShareSetup(Screen, ConfigListScreen):
 		item = self["config"].getCurrent()
 		if item:
 			name = str(item[0])
-			desc = str(item[1].getValue())
+			desc = str(item[1].value)
 		else:
 			name = ""
 			desc = ""
@@ -3250,7 +3219,7 @@ class NetworkuShareSetup(Screen, ConfigListScreen):
 			self.vkvar = sel[0]
 			if self.vkvar == _("uShare Name") + ":" or self.vkvar == _("Share Folder's") + ":":
 				from Screens.VirtualKeyBoard import VirtualKeyBoard
-				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].getValue())
+				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
 
 	def VirtualKeyBoardCallback(self, callback = None):
 		if callback is not None and len(callback):
@@ -3268,28 +3237,28 @@ class NetworkuShareSetup(Screen, ConfigListScreen):
 				elif line.startswith('USHARE_IFACE='):
 					line = ('USHARE_IFACE=' + self.ushare_iface.value.strip())
 				elif line.startswith('USHARE_PORT='):
-					line = ('USHARE_PORT=' + str(self.ushare_port.getValue()))
+					line = ('USHARE_PORT=' + str(self.ushare_port.value))
 				elif line.startswith('USHARE_TELNET_PORT='):
-					line = ('USHARE_TELNET_PORT=' + str(self.ushare_telnetport.getValue()))
+					line = ('USHARE_TELNET_PORT=' + str(self.ushare_telnetport.value))
 				elif line.startswith('USHARE_DIR='):
-					line = ('USHARE_DIR=' + ', '.join( config.networkushare.mediafolders.getValue() ))
+					line = ('USHARE_DIR=' + ', '.join( config.networkushare.mediafolders.value ))
 				elif line.startswith('ENABLE_WEB='):
-					if not self.ushare_web.getValue():
+					if not self.ushare_web.value:
 						line = 'ENABLE_WEB=no'
 					else:
 						line = 'ENABLE_WEB=yes'
 				elif line.startswith('ENABLE_TELNET='):
-					if not self.ushare_telnet.getValue():
+					if not self.ushare_telnet.value:
 						line = 'ENABLE_TELNET=no'
 					else:
 						line = 'ENABLE_TELNET=yes'
 				elif line.startswith('ENABLE_XBOX='):
-					if not self.ushare_xbox.getValue():
+					if not self.ushare_xbox.value:
 						line = 'ENABLE_XBOX=no'
 					else:
 						line = 'ENABLE_XBOX=yes'
 				elif line.startswith('ENABLE_DLNA='):
-					if not self.ushare_ps3.getValue():
+					if not self.ushare_ps3.value:
 						line = 'ENABLE_DLNA=no'
 					else:
 						line = 'ENABLE_DLNA=yes'
@@ -3311,23 +3280,6 @@ class NetworkuShareSetup(Screen, ConfigListScreen):
 		self.session.openWithCallback(self.updateList,uShareSelection)
 
 class uShareSelection(Screen):
-	skin = """
-        <screen name="uShareSelection" position="center,center" size="560,460" zPosition="3">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget source="key_red" render="Label" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-                <widget source="key_green" render="Label" font="Regular;20" halign="center" position="140,0" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-                <widget source="key_yellow" render="Label" font="Regular;20" halign="center" position="280,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <widget name="checkList" position="5,50" size="550,350" transparent="1" scrollbarMode="showOnDemand" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Select folders"))
@@ -3404,19 +3356,6 @@ class uShareSelection(Screen):
 			self.filelist.descent()
 
 class NetworkuShareLog(Screen):
-        skin = """
-        <screen name="NetworkuShareLog" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-
-                <widget name="config" position="10,10" size="540,240" scrollbarMode="showOnDemand" />
-                <widget name="HelpWindow" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/vkey_icon.png" position="170,300" zPosition="1" size="440,350" transparent="1" alphatest="on" />
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/key_text.png" position="300,313" zPosition="4" size="35,25" alphatest="on" transparent="1" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.skinName = "NetworkInadynLog"
@@ -3438,50 +3377,6 @@ class NetworkuShareLog(Screen):
 config.networkminidlna = ConfigSubsection()
 config.networkminidlna.mediafolders = NoSave(ConfigLocations(default=""))
 class NetworkMiniDLNA(Screen):
-	skin = """
-        <screen name="NetworkMiniDLNA" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="autostart" position="10,0" size="100,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labdisabled" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labactive" position="110,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2" />
-                <widget name="status" position="240,0" size="150,24" font="Regular;20" valign="center" transparent="0" />
-                <widget name="labstop" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="red" zPosition="1" />
-                <widget name="labrun" position="390,0" size="100,24" font="Regular;20" valign="center" halign="center" backgroundColor="green" zPosition="2"/>
-                <widget name="username" position="10,50" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labuser" position="160,50" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="iface" position="10,90" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labiface" position="160,90" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="port" position="10,130" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labport" position="160,130" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="serialno" position="10,170" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labserialno" position="160,170" size="310,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-                <widget name="sharedir" position="10,210" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="labsharedir" position="160,210" size="310,90" font="Regular;20" valign="top" backgroundColor="#4D5375"/>
-                <widget name="inotify" position="10,300" size="180,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="inotifyinactive" position="200,300" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="inotifyactive" position="200,300" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="tivo" position="10,330" size="180,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="tivoinactive" position="200,330" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="tivoactive" position="200,330" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-                <widget name="dlna" position="250,300" size="200,30" font="Regular;20" valign="center" transparent="1"/>
-                <widget name="dlnainactive" position="470,300" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32"  alphatest="on" />
-                <widget name="dlnaactive" position="470,300" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32"  alphatest="on" />
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,390" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green.png" position="140,390" size="140,40" alphatest="on" />
-                <widget name="key_green" font="Regular;20" halign="center" position="140,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow.png" position="280,390" size="140,40" alphatest="on" />
-                <widget name="key_yellow" font="Regular;20" halign="center" position="280,391" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue.png" position="420,390" size="140,40" alphatest="on" />
-                <widget name="blue" font="Regular;20" halign="center" position="420,390" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <eLabel backgroundColor="darkgrey" position="0,430" size="590,2" zPosition="1"/>
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("MiniDLNA Setup"))
@@ -3525,8 +3420,8 @@ class NetworkMiniDLNA(Screen):
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
 
 	def checkNetworkState(self, str, retval, extra_args):
-		if str.find('Collected errors') != -1:
-			self.session.openWithCallback(self.close, MessageBox, _("A background update check is is progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
 			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
@@ -3537,12 +3432,12 @@ class NetworkMiniDLNA(Screen):
 			self.updateService()
 
 	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if result.find('bad address') != -1:
+		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('wget returned 1') != -1 or result.find('wget returned 255') != -1 or result.find('404 Not Found') != -1:
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -3570,7 +3465,7 @@ class NetworkMiniDLNA(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -3591,9 +3486,9 @@ class NetworkMiniDLNA(Screen):
 		return NetworkServicesSummary
 
 	def MiniDLNAStartStop(self):
-		if self.my_minidlna_run == False:
+		if not self.my_minidlna_run:
 			self.Console.ePopen('/etc/init.d/minidlna start', self.StartStopCallback)
-		elif self.my_minidlna_run == True:
+		elif self.my_minidlna_run:
 			self.Console.ePopen('/etc/init.d/minidlna stop', self.StartStopCallback)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
@@ -3627,7 +3522,7 @@ class NetworkMiniDLNA(Screen):
 			autostartstatus_summary = self['autostart'].text + ' ' + self['labdisabled'].text
 		if minidlna_process:
 			self.my_minidlna_run = True
-		if self.my_minidlna_run == True:
+		if self.my_minidlna_run:
 			self['labstop'].hide()
 			self['labrun'].show()
 			self['key_green'].setText(_("Stop"))
@@ -3692,19 +3587,6 @@ class NetworkMiniDLNA(Screen):
 		self.session.open(NetworkMiniDLNALog)
 
 class NetworkMiniDLNASetup(Screen, ConfigListScreen):
-        skin = """
-        <screen name="NetworkMiniDLNASetup" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-
-                <widget name="config" position="10,10" size="540,240" scrollbarMode="showOnDemand" />
-                <widget name="HelpWindow" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/vkey_icon.png" position="170,300" zPosition="1" size="440,350" transparent="1" alphatest="on" />
-               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-                <widget name="key_red" font="Regular;20" halign="center" position="-2,1" size="140,40" transparent="1" valign="center" zPosition="10" />
-                <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/key_text.png" position="300,313" zPosition="4" size="35,25" alphatest="on" transparent="1" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("MiniDLNA Setup"))
@@ -3730,7 +3612,7 @@ class NetworkMiniDLNASetup(Screen, ConfigListScreen):
 		item = self["config"].getCurrent()
 		if item:
 			name = str(item[0])
-			desc = str(item[1].getValue())
+			desc = str(item[1].value)
 		else:
 			name = ""
 			desc = ""
@@ -3806,7 +3688,7 @@ class NetworkMiniDLNASetup(Screen, ConfigListScreen):
 			self.vkvar = sel[0]
 			if self.vkvar == _("Name") + ":" or self.vkvar == _("Share Folder's") + ":":
 				from Screens.VirtualKeyBoard import VirtualKeyBoard
-				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].getValue())
+				self.session.openWithCallback(self.VirtualKeyBoardCallback, VirtualKeyBoard, title = self["config"].getCurrent()[0], text = self["config"].getCurrent()[1].value)
 
 	def VirtualKeyBoardCallback(self, callback = None):
 		if callback is not None and len(callback):
@@ -3824,23 +3706,23 @@ class NetworkMiniDLNASetup(Screen, ConfigListScreen):
 				elif line.startswith('network_interface='):
 					line = ('network_interface=' + self.minidlna_iface.value.strip())
 				elif line.startswith('port='):
-					line = ('port=' + str(self.minidlna_port.getValue()))
+					line = ('port=' + str(self.minidlna_port.value))
 				elif line.startswith('serial='):
-					line = ('serial=' + str(self.minidlna_serialno.getValue()))
+					line = ('serial=' + str(self.minidlna_serialno.value))
 				elif line.startswith('media_dir='):
-					line = ('media_dir=' + ', '.join( config.networkminidlna.mediafolders.getValue() ))
+					line = ('media_dir=' + ', '.join( config.networkminidlna.mediafolders.value ))
 				elif line.startswith('inotify='):
-					if not self.minidlna_inotify.getValue():
+					if not self.minidlna_inotify.value:
 						line = 'inotify=no'
 					else:
 						line = 'inotify=yes'
 				elif line.startswith('enable_tivo='):
-					if not self.minidlna_tivo.getValue():
+					if not self.minidlna_tivo.value:
 						line = 'enable_tivo=no'
 					else:
 						line = 'enable_tivo=yes'
 				elif line.startswith('strict_dlna='):
-					if not self.minidlna_strictdlna.getValue():
+					if not self.minidlna_strictdlna.value:
 						line = 'strict_dlna=no'
 					else:
 						line = 'strict_dlna=yes'
@@ -3938,20 +3820,9 @@ class MiniDLNASelection(Screen):
 			self.filelist.descent()
 
 class NetworkMiniDLNALog(Screen):
-        skin = """
-        <screen name="NetworkMiniDLNALog" position="center,center" size="560,460">
-                <eLabel backgroundColor="#21090909" position="0,0" size="560,460" zPosition="-1" />
-                <widget source="title" render="Label" position="10,5" size="280,35" valign="center" font="Enigma;30" halign="center" />
-                <eLabel backgroundColor="#666666" position="0,430" size="560,2" zPosition="1"/>
-                <widget source="global.CurrentTime" render="Label" position="500,435" size="55,22" font="Enigma;18" halign="right" transparent="1" valign="center" zPosition="3">
-                        <convert type="ClockToText">Default</convert>
-                </widget>
-                <widget name="infotext" position="10,10" size="590,410" font="Console;16" />
-        </screen>"""
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		self.skinName = "NetworkMiniDLNALog"
+		self.skinName = "NetworkInadynLog"
 		Screen.setTitle(self, _("MiniDLNA Log"))
 		self['infotext'] = ScrollLabel('')
 		self.Console = Console()
@@ -3987,3 +3858,4 @@ class NetworkServicesSummary(Screen):
 		self["title"].text = title
 		self["status_summary"].text = status_summary
 		self["autostartstatus_summary"].text = autostartstatus_summary
+
