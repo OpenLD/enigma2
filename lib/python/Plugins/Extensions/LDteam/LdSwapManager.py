@@ -173,11 +173,11 @@ class Swap(Screen):
                                                 self.swapsize = info[stat.ST_SIZE]
                                                 continue
 
-                if config.plugins.ldteam.swapautostart.getValue() and self.swap_place:
+                if config.plugins.ldteam.swapautostart.value and self.swap_place:
                         self['autostart_off'].hide()
                         self['autostart_on'].show()
                 else:
-                        config.plugins.ldteam.swapautostart.setValue(False)
+                        config.plugins.ldteam.swapautostart.value = False
                         config.plugins.ldteam.swapautostart.save()
                         configfile.save()
                         self['autostart_on'].hide()
@@ -255,8 +255,8 @@ class Swap(Screen):
         def createDel2(self, result, retval, extra_args = None):
                 if retval == 0:
                         remove(self.swap_place)
-                        if config.plugins.ldteam.swapautostart.getValue():
-                                config.plugins.ldteam.swapautostart.setValue(False)
+                        if config.plugins.ldteam.swapautostart.value:
+                                config.plugins.ldteam.swapautostart.value = False
                                 config.plugins.ldteam.swapautostart.save()
                                 configfile.save()
                         self.updateSwap()
@@ -295,11 +295,11 @@ class Swap(Screen):
                 
         def autoSsWap(self):
                 if self.swap_place:
-                        if config.plugins.ldteam.swapautostart.getValue():
-                                config.plugins.ldteam.swapautostart.setValue(False)
+                        if config.plugins.ldteam.swapautostart.value:
+                                config.plugins.ldteam.swapautostart.value = False
                                 config.plugins.ldteam.swapautostart.save()
                         else:
-                                config.plugins.ldteam.swapautostart.setValue(True)
+                                config.plugins.ldteam.swapautostart.value = True
                                 config.plugins.ldteam.swapautostart.save()
                         configfile.save()
                 else:
