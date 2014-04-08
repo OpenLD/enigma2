@@ -1,26 +1,39 @@
 from Screens.Screen import Screen
+from Screens.ChoiceBox import ChoiceBox
 from Screens.MessageBox import MessageBox
 from Components.FileList import FileEntryComponent, FileList
-from Components.ActionMap import ActionMap, NumberActionMap
+from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
 from Components.Button import Button
 from Components.Label import Label
 from Components.config import config, ConfigElement, ConfigSubsection, ConfigSelection, ConfigSubList, getConfigListEntry, KEY_LEFT, KEY_RIGHT, KEY_OK
 from Components.ConfigList import ConfigList
 from Components.ScrollLabel import ScrollLabel
 from Components.MenuList import MenuList
+from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
+from Components.Sources.Progress import Progress
 from Components.About import about
-from Tools.Directories import fileExists
+from Tools.BoundFunction import boundFunction
+from Tools.LoadPixmap import LoadPixmap
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from ServiceReference import ServiceReference
 from os import system, listdir, remove as os_remove
-import os
 from enigma import iServiceInformation, eTimer, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent
-import socket
 
+import os
+import sys
+import re
+import socket
+import time
+import datetime
 
 class LDBluePanel(Screen):
 	skin = """
 <screen name="LDBluePanel" position="center,center" size="800,560" title="OpenLD - Blue Panel">
+<widget source="global.CurrentTime" render="Label" position="60,10" size="500,24" font="Regular;22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
+		<convert type="ClockToText">>Format%H:%M:%S</convert>
+	</widget>
 <ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
 <ePixmap position="50,55" size="510,255" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/bp_deko.png" zPosition="1" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="55,510" size="150,30" alphatest="on"/>
@@ -244,3 +257,4 @@ class LDBp:
 		if len(args):
 			(actionmap, context, action) = args
 			actionmap.action(context, action)
+
