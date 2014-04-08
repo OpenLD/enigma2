@@ -36,9 +36,12 @@ class LdsysInfo(Screen):
 	def updateInfo(self):
 		rc = system("df -h > /tmp/syinfo.tmp")
 		text = "BOX\n"
+		f = open("/proc/stb/info/model",'r')
+ 		text += "Model:\t" + f.readline()
+ 		f.close()
 		f = open("/proc/stb/info/chipset",'r')
  		text += "Chipset:\t" + f.readline() +"\n"
- 		f.close()		
+ 		f.close()
 		text += "MEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
@@ -77,7 +80,7 @@ class LdsysInfo(Screen):
 		f = open("/etc/ldversion",'r')
 		text += "Firmware: \t" + f.readline() + "\n"
 		f.close()
-		text += "Build: \t" +  getBuildVersionString() + "\n"
+		text += "Version: \t" +  about.getEnigmaVersionString() + "\n"
 		text += "Kernel: \t" +  about.getKernelVersionString() + "\n"
 		
 		self["lab1"].setText(text)
