@@ -16,6 +16,7 @@ from Components.Button import Button
 from Components.Label import Label
 from Components.SelectionList import SelectionList, SelectionEntryComponent
 from Components.ScrollLabel import ScrollLabel
+import Components.PluginComponent
 from Tools.FuzzyDate import FuzzyTime
 import NavigationInstance
 
@@ -25,7 +26,7 @@ config.plugins.epgimport.enabled = ConfigEnableDisable(default = False)
 config.plugins.epgimport.runboot = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeupsleep = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeup = ConfigClock(default = ((4*60) + 45) * 60) # 4:45
-config.plugins.epgimport.showinextensions = ConfigYesNo(default = False)
+config.plugins.epgimport.showinextensions = ConfigYesNo(default = True)
 config.plugins.epgimport.deepstandby = ConfigSelection(default = "skip", choices = [
 		("wakeup", _("Wake up and import")),
 #		("later", _("Import on next boot")),
@@ -486,5 +487,25 @@ config.plugins.epgimport.showinextensions.addNotifier(housekeepingExtensionsmenu
 extDescriptor = PluginDescriptor(name="EPGImport", description = description, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = extensionsmenu)
 
 def Plugins(**kwargs):
-
-	return PluginDescriptor(name = "EPGImport", description = "Automated EPG Importer", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main)
+	result = [
+		PluginDescriptor(
+			name="EPGImport",
+			description = description,
+			where = [
+				PluginDescriptor.WHERE_AUTOSTART,
+				PluginDescriptor.WHERE_SESSIONSTART
+			],
+			fnc = autostart,
+			wakeupfnc = getNextWakeup
+		),
+		PluginDescriptor(
+			name="EPGImport",
+			description = description,
+			where = PluginDescriptor.WHERE_PLUGINMENU,
+			icon = 'plugin.png',
+			fnc = main
+		),
+	]
+	if config.plugins.epgimport.showinextensions.value:
+		result.append(extDescriptor)
+	return result
