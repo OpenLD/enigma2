@@ -1530,12 +1530,12 @@ class UpdatePlugin(Screen):
         #                urlopenSTATUS = "http://status.openmips.com/index.php"
         #                d = urlopen(urlopenSTATUS)
         #                tmpStatus = d.read()
-        #                if config.softwareupdate.updatebeta.getValue() and 'gelb.png' in tmpStatus:
+        #                if config.softwareupdate.updatebeta.value and 'gelb.png' in tmpStatus:
         #                        message = _("Caution update not tested yet !!") + "\n" + _("Update at your own risk") + "\n\n" + _("For more information see http://www.openmips.com") + "\n\n"# + _("Last Status Date") + ": "  + statusDate + "\n\n"
         #                        picon = MessageBox.TYPE_ERROR
         #                        default = False
         #                elif 'rot.png' in tmpStatus:
-        #                        if config.softwareupdate.updateisunstable.getValue():
+        #                        if config.softwareupdate.updateisunstable.value:
         #                                message = _("Update is reported as faulty !!") + "\n" + _("But you have activated \"Install unstable updates\"") + "\n" + _("Update anyway?")# + "\n\n" + _("Last Status Date") + ": " + statusDate
         #                                picon = MessageBox.TYPE_ERROR
         #                                default = False
@@ -1612,8 +1612,8 @@ class UpdatePlugin(Screen):
                         self.status.setText(_("Configuring"))
 
                 elif event == IpkgComponent.EVENT_MODIFIED:
-                        if config.plugins.softwaremanager.overwriteConfigFiles.getValue() in ("N", "Y"):
-                                self.ipkg.write(True and config.plugins.softwaremanager.overwriteConfigFiles.getValue())
+                        if config.plugins.softwaremanager.overwriteConfigFiles.value in ("N", "Y"):
+                                self.ipkg.write(True and config.plugins.softwaremanager.overwriteConfigFiles.value)
                         else:
                                 self.session.openWithCallback(
                                         self.modificationCallback,
@@ -1633,7 +1633,7 @@ class UpdatePlugin(Screen):
                                 #        return
                                 if self.total_packages and self.TraficCheck and self.TraficResult:
                                         message = _("Do you want to update your Receiver?") + "                 \n(%s " % self.total_packages + _("Packages") + ")"
-                                        if config.plugins.softwaremanager.updatetype.getValue() == "cold":
+                                        if config.plugins.softwaremanager.updatetype.value == "cold":
                                                 choices = [(_("Show new Packages"), "show"), (_("Unattended upgrade without GUI and reboot system"), "cold"), (_("Cancel"), "")]
                                         else:
                                                 choices = [(_("Show new Packages"), "show"), (_("Upgrade and ask to reboot"), "hot"), (_("Cancel"), "")]
