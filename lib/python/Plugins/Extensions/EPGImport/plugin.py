@@ -1,7 +1,11 @@
-import time
 import os
+import sys
+import time
 import enigma
 import log
+import re
+import shutil
+import xmltv
 
 # Config
 from Components.config import config, ConfigEnableDisable, ConfigSubsection, \
@@ -16,7 +20,6 @@ from Components.Button import Button
 from Components.Label import Label
 from Components.SelectionList import SelectionList, SelectionEntryComponent
 from Components.ScrollLabel import ScrollLabel
-import Components.PluginComponent
 from Tools.FuzzyDate import FuzzyTime
 import NavigationInstance
 
@@ -26,7 +29,7 @@ config.plugins.epgimport.enabled = ConfigEnableDisable(default = False)
 config.plugins.epgimport.runboot = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeupsleep = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeup = ConfigClock(default = ((4*60) + 45) * 60) # 4:45
-config.plugins.epgimport.showinextensions = ConfigYesNo(default = True)
+config.plugins.epgimport.showinextensions = ConfigYesNo(default = False)
 config.plugins.epgimport.deepstandby = ConfigSelection(default = "skip", choices = [
 		("wakeup", _("Wake up and import")),
 #		("later", _("Import on next boot")),
@@ -247,7 +250,7 @@ class EPGImportSources(Screen):
 		sources = [
 			# (description, value, index, selected)
 			SelectionEntryComponent(x.description, x.description, 0, (filter is None) or (x.description in filter))
-			for x in EPGConfig.enumSources(CONFIG_PATH, filter=None)
+			for x in EPGConfig.enumSources(CONFIG_PATH, filter = None)
 			]
 		self["list"] = SelectionList(sources)
 		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
@@ -342,7 +345,7 @@ def doneConfiguring(session, retval):
 	if autoStartTimer is not None:
 		autoStartTimer.update()
 
-def doneImport(reboot=False, epgfile=None):
+def doneImport(reboot = False, epgfile = None):
 	global _session, lastImportResult
 	lastImportResult = (time.time(), epgimport.eventCount)
 	if reboot:
@@ -487,25 +490,5 @@ config.plugins.epgimport.showinextensions.addNotifier(housekeepingExtensionsmenu
 extDescriptor = PluginDescriptor(name="EPGImport", description = description, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = extensionsmenu)
 
 def Plugins(**kwargs):
-	result = [
-		PluginDescriptor(
-			name="EPGImport",
-			description = description,
-			where = [
-				PluginDescriptor.WHERE_AUTOSTART,
-				PluginDescriptor.WHERE_SESSIONSTART
-			],
-			fnc = autostart,
-			wakeupfnc = getNextWakeup
-		),
-		PluginDescriptor(
-			name="EPGImport",
-			description = description,
-			where = PluginDescriptor.WHERE_PLUGINMENU,
-			icon = 'plugin.png',
-			fnc = main
-		),
-	]
-	if config.plugins.epgimport.showinextensions.value:
-		result.append(extDescriptor)
-	return result
+
+	return PluginDescriptor(name = "EPGImport", description = "Automated EPG Importer", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main)
