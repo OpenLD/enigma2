@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# epgdat.py  by Ambrosa http://www.dreamboxonline.com
-# Heavily modified by MiLo http://www.sat4all.com/
-# Lots of stuff removed that i did not need.
+# EPG Import 2.0 by Javilonas 
+# Based for https://github.com/oe-alliance/XMTV-Import
+# EPG Import 2.0 - 10-04-2014
 
 import os
 import sys

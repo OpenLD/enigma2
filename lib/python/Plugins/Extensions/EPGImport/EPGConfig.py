@@ -2,12 +2,16 @@ import os
 import log
 from xml.etree.cElementTree import ElementTree, Element, SubElement, tostring, iterparse
 from Tools.Directories import fileExists
-import cPickle as pickle
 import gzip
 import time
+import socket
+import urllib
+import urllib2
 
-# User selection stored here, so it goes into a user settings backup
-SETTINGS_FILE = '/etc/enigma2/epgimport.conf'
+# timeout in seconds
+timeout = 5
+socket.setdefaulttimeout(timeout)
+
 channelCache = {}
 
 def isLocalFile(filename):
@@ -42,7 +46,6 @@ class EPGChannel:
 	def openStream(self):
 		if not isLocalFile(self.filename):
 			# just returning urlopen() does not work, parser needs 'tell'
-			import urllib
 			filename,headers = urllib.urlretrieve(self.filename)
 		else:
 			filename = self.filename
@@ -56,7 +59,8 @@ class EPGChannel:
 	def parse(self, filterCallback):
 		print>>log,"[EPGImport] Parsing channels from '%s'" % self.filename
 		self.items = {}
-		for event, elem in iterparse(self.openStream()):
+		file = self.openStream()
+		for event, elem in iterparse(file):
 			if elem.tag == 'channel':
 				id = elem.get('id')
 				ref = elem.text
@@ -68,6 +72,7 @@ class EPGChannel:
 						else:
 							self.items[id] = [ref]
 				elem.clear()
+		file.close()
 
 	def update(self, filterCallback = lambda x: True):
 		try:
@@ -100,12 +105,14 @@ class EPGSource:
 
 def enumSourcesFile(sourcefile, filter=None):
 	result = ""
-	for event, elem in iterparse(open(sourcefile, 'rb')):
+	file = open(sourcefile, 'rb')
+	for event, elem in iterparse(file):
 		if elem.tag == 'source':
 			s = EPGSource(sourcefile, elem)
 			elem.clear()
 			if (filter is None) or (s.description in filter):
 				yield s
+	file.close()
 
 def enumSources(path, filter=None):
 	try:
@@ -121,57 +128,24 @@ def enumSources(path, filter=None):
 		if fileExists(os.path.join(path, 'sourcelist')):
 			import random
 			count = 0
-			sourcelist = file(os.path.join(path, 'sourcelist')).readlines()
+			f = open(os.path.join(path, 'sourcelist'))
+			sourcelist = f.readlines()
+			f.close()
 			noofsources = int(len(sourcelist))
 			while (count < noofsources):
 				try: 
 					sourcefile = random.choice(sourcelist)
 					sourcefile = sourcefile.replace("\n","")
-					sourcefiletmp = sourcefile.replace("\n","")
 					print>>log, "[EPGImport] using source",sourcefile
-					import urllib
 					sourcefile,headers = urllib.urlretrieve(sourcefile)
 					for s in enumSourcesFile(sourcefile, filter):
 						yield s
 					count = noofsources + 1
 				except Exception, e:
 					print>>log, "[EPGImport] source is unavailble"
-					sourcelist = [l for l in sourcelist if sourcefiletmp not in l]
+					sourcelist = [l for l in sourcelist if sourcefile not in l]
 					count = count + 1
 					if count == 3:
 						print>>log, "[EPGImport] all online sources are unavailble."
 	except Exception, e:
 		print>>log, "[EPGImport] failed to list", path, "Error:", e
-
-
-def loadUserSettings(filename = SETTINGS_FILE):
-	try:
-		return pickle.load(open(filename, 'rb'))
-	except Exception, e:
-		print>>log, "[EPGImport] No settings", e
-		return {"sources": []}
-
-def storeUserSettings(filename = SETTINGS_FILE, sources = None):
-	container = {"sources": sources}
-	pickle.dump(container, open(filename, 'wb'), pickle.HIGHEST_PROTOCOL)
-
-if __name__ == '__main__':
-	import sys
-	x = []
-	l = []
-	path = '.'
-	if len(sys.argv) > 1:
-		path = sys.argv[1]
-	for p in enumSources(path):
-		t = (p.description, p.url, p.parser, p.format, p.channels)
-		l.append(t)  
-		print t
-		x.append(p.description)
-	storeUserSettings('settings.pkl', [1,"twee"])
-	assert loadUserSettings('settings.pkl') == {"sources": [1,"twee"]}
-	os.remove('settings.pkl')
-	for p in enumSources(path, x):
-		t = (p.description, p.url, p.parser, p.format, p.channels)
-		assert t in l
-		l.remove(t)
-	assert not l 	

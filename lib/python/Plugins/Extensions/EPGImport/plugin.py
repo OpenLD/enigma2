@@ -3,14 +3,9 @@ import sys
 import time
 import enigma
 import log
-import re
-import shutil
-import xmltv
 
 # Config
-from Components.config import config, ConfigEnableDisable, ConfigSubsection, \
-			 ConfigYesNo, ConfigClock, getConfigListEntry, \
-			 ConfigSelection, ConfigNumber
+from Components.config import config, configfile, ConfigEnableDisable, ConfigSubsection, ConfigYesNo, ConfigClock, getConfigListEntry,  ConfigSelection, ConfigNumber, ConfigText
 import Screens.Standby
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
@@ -18,17 +13,25 @@ from Components.ConfigList import ConfigListScreen
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
+from Components.Sources.StaticText import StaticText
 from Components.SelectionList import SelectionList, SelectionEntryComponent
 from Components.ScrollLabel import ScrollLabel
+import Components.PluginComponent
 from Tools.FuzzyDate import FuzzyTime
 import NavigationInstance
+
+from Components.PluginComponent import plugins
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+
+from boxbranding import getImageDistro
 
 #Set default configuration
 config.plugins.epgimport = ConfigSubsection()
 config.plugins.epgimport.enabled = ConfigEnableDisable(default = False)
 config.plugins.epgimport.runboot = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeupsleep = ConfigEnableDisable(default = False)
-config.plugins.epgimport.wakeup = ConfigClock(default = ((4*60) + 45) * 60) # 4:45
+config.plugins.epgimport.wakeup = ConfigClock(default = 7*60 * 60) # 7:00
+config.plugins.epgimport.showinplugins = ConfigYesNo(default = False)
 config.plugins.epgimport.showinextensions = ConfigYesNo(default = False)
 config.plugins.epgimport.deepstandby = ConfigSelection(default = "skip", choices = [
 		("wakeup", _("Wake up and import")),
@@ -36,6 +39,7 @@ config.plugins.epgimport.deepstandby = ConfigSelection(default = "skip", choices
 		("skip", _("Skip the import")) 
 		])
 config.plugins.epgimport.longDescDays = ConfigNumber(default = 7)
+config.plugins.epgimport.sources = ConfigText("", False)
 
 # Plugin
 import EPGImport
@@ -45,7 +49,7 @@ import EPGConfig
 from Plugins.Plugin import PluginDescriptor
 
 # historically located (not a problem, we want to update it)
-CONFIG_PATH = '/usr/lib/enigma2/python/Plugins/Extensions/EPGImport'
+CONFIG_PATH = '/usr/lib/enigma2/python/Plugins/Extensions/EPGImport/epgimport'
 
 # Global variable
 autoStartTimer = None
@@ -74,7 +78,7 @@ lastImportResult = None
 
 class EPGMainSetup(ConfigListScreen,Screen):
 	skin = """
-<screen position="center,center" size="560,400" title="EPG Import Configuration" >
+<screen position="center,center" size="560,400" >
 	<ePixmap name="red"    position="0,0"   zPosition="2" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
 	<ePixmap name="green"  position="140,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
 	<ePixmap name="yellow" position="280,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" /> 
@@ -97,14 +101,16 @@ class EPGMainSetup(ConfigListScreen,Screen):
 		
 	def __init__(self, session, args = 0):
 		self.session = session
-		self.setup_title = _("EPG Import Configuration")
 		Screen.__init__(self, session)
+		self.setup_title = _("EPG Import Configuration")
+		Screen.setTitle(self, self.setup_title)
 		cfg = config.plugins.epgimport
 		self.list = [
 			getConfigListEntry(_("Daily automatic import"), cfg.enabled),
 			getConfigListEntry(_("Automatic start time"), cfg.wakeup),   
 			getConfigListEntry(_("Standby at startup"), cfg.wakeupsleep),
 			getConfigListEntry(_("When in deep standby"), cfg.deepstandby),
+			getConfigListEntry(_("Show in plugin browser"), cfg.showinplugins),
 			getConfigListEntry(_("Show in extensions"), cfg.showinextensions),
 			getConfigListEntry(_("Start import after booting up"), cfg.runboot),
 			getConfigListEntry(_("Load long descriptions up to X days"), cfg.longDescDays)
@@ -116,7 +122,7 @@ class EPGMainSetup(ConfigListScreen,Screen):
 		self["key_green"] = Button(_("Ok"))
 		self["key_yellow"] = Button(_("Manual"))
 		self["key_blue"] = Button(_("Sources"))
-		self["setupActions"] = ActionMap(["SetupActions", "ColorActions", "TimerEditActions"],
+		self["setupActions"] = ActionMap(["SetupActions", "ColorActions", "TimerEditActions", "MenuActions"],
 		{
 			"red": self.cancel,
 			"green": self.save,
@@ -126,11 +132,12 @@ class EPGMainSetup(ConfigListScreen,Screen):
 			"cancel": self.cancel,
 			"ok": self.save,
 			"log": self.showLog,
+			"menu": self.cancel,
 		}, -2)
 		self.lastImportResult = None
 		self.onChangedEntry = []
 		self.updateTimer = enigma.eTimer()
-	    	self.updateTimer.callback.append(self.updateStatus)
+		self.updateTimer.callback.append(self.updateStatus)
 		self.updateTimer.start(2000)
 		self.updateStatus()
 	
@@ -146,10 +153,26 @@ class EPGMainSetup(ConfigListScreen,Screen):
 		from Screens.Setup import SetupSummary
 		return SetupSummary
 
+	def saveAll(self):
+		for x in self["config"].list:
+			x[1].save()
+		configfile.save()
+
 	def save(self):
 		#print "saving"
 		self.updateTimer.stop()
 		self.saveAll()
+		if not config.plugins.epgimport.showinplugins.value:
+			for plugin in plugins.getPlugins(PluginDescriptor.WHERE_PLUGINMENU):
+				if plugin.name == _("EPG-Importer"):
+					plugins.removePlugin(plugin)
+
+		if not config.plugins.epgimport.showinextensions.value:
+			for plugin in plugins.getPlugins(PluginDescriptor.WHERE_EXTENSIONSMENU):
+				if plugin.name == _("EPG-Importer"):
+					plugins.removePlugin(plugin)
+				
+		plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
 		self.close(True,self.session)
 
 	def cancel(self):
@@ -181,8 +204,8 @@ class EPGMainSetup(ConfigListScreen,Screen):
 			print>>log, "[EPGImport] Already running, won't start again"
 			self.session.open(MessageBox, _("EPGImport Plugin\nImport of epg data is still in progress. Please wait."), MessageBox.TYPE_ERROR, timeout = 10, close_on_any_key = True)
 			return
-		cfg = EPGConfig.loadUserSettings()
-		sources = [ s for s in EPGConfig.enumSources(CONFIG_PATH, filter = cfg["sources"]) ]
+		cfg = config.plugins.epgimport.sources.getValue().split("|")
+		sources = [ s for s in EPGConfig.enumSources(CONFIG_PATH, filter = cfg) ]
 		if not sources:
 			self.session.open(MessageBox, _("No active EPG sources found, nothing to do"), MessageBox.TYPE_INFO, timeout = 10, close_on_any_key = True)
 			return
@@ -219,7 +242,7 @@ class EPGMainSetup(ConfigListScreen,Screen):
 class EPGImportSources(Screen):
 	"Pick sources from config"
 	skin = """
-		<screen position="center,center" size="560,400" title="EPG Import Sources" >
+		<screen position="center,center" size="560,400" >
 			<ePixmap name="red"    position="0,0"   zPosition="2" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
 			<ePixmap name="green"  position="140,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
 			<ePixmap name="yellow" position="280,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" /> 
@@ -241,19 +264,21 @@ class EPGImportSources(Screen):
 	def __init__(self, session):
 		self.session = session
 		Screen.__init__(self, session)
+		self.setup_title = _("EPG Import Sources")
+		Screen.setTitle(self, self.setup_title)
 		self["key_red"] = Button(_("Cancel"))
 		self["key_green"] = Button(_("Ok"))
 		self["key_yellow"] = Button() # _("Import now"))
 		self["key_blue"] = Button()
-		cfg = EPGConfig.loadUserSettings()
-		filter = cfg["sources"]
+		self.onChangedEntry = []
+		filter = config.plugins.epgimport.sources.getValue().split("|")
 		sources = [
 			# (description, value, index, selected)
 			SelectionEntryComponent(x.description, x.description, 0, (filter is None) or (x.description in filter))
-			for x in EPGConfig.enumSources(CONFIG_PATH, filter = None)
+			for x in EPGConfig.enumSources(CONFIG_PATH, filter=None)
 			]
 		self["list"] = SelectionList(sources)
-		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
+		self["setupActions"] = ActionMap(["SetupActions", "ColorActions", "MenuActions"],
 		{
 			"red": self.cancel,
 			"green": self.save,
@@ -261,12 +286,31 @@ class EPGImportSources(Screen):
 			"save": self.save,
 			"cancel": self.cancel,
 			"ok": self["list"].toggleSelection,
+			"menu": self.cancel,
 		}, -2)
+
+	# for summary:
+	def changedEntry(self):
+		for x in self.onChangedEntry:
+			x()
+	def getCurrentEntry(self):
+		return str(self["list"].getCurrent()[0][1])
+	def getCurrentValue(self):
+		return str(self["list"].getCurrent()[0][3])
+	def createSummary(self):
+		return SetupSummary
 
 	def save(self):
 		sources = [ item[0][1] for item in self["list"].list if item[0][3] ]
 		print>>log, "[EPGImport] Selected sources:", sources
-		EPGConfig.storeUserSettings(sources=sources)
+		config_string = ""
+		for source in sources:
+			if len(config_string) > 0:
+				config_string += "|"
+			config_string += source
+		config.plugins.epgimport.sources.setValue(config_string)
+		config.plugins.epgimport.sources.save()
+		configfile.save()
 		self.close(True, sources)
 
 	def cancel(self):
@@ -277,7 +321,7 @@ class EPGImportSources(Screen):
 
 class EPGImportLog(Screen):
 	skin = """
-		<screen position="center,center" size="560,400" title="EPG Import Log" >
+		<screen position="center,center" size="560,400" >
 			<ePixmap name="red"    position="0,0"   zPosition="2" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
 			<ePixmap name="green"  position="140,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
 			<ePixmap name="yellow" position="280,0" zPosition="2" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" /> 
@@ -298,12 +342,13 @@ class EPGImportLog(Screen):
 	def __init__(self, session):
 		self.session = session
 		Screen.__init__(self, session)
+		Screen.setTitle(self, _("EPG Import Log"))
 		self["key_red"] = Button(_("Clear"))
 		self["key_green"] = Button()
 		self["key_yellow"] = Button()
 		self["key_blue"] = Button(_("Save"))
 		self["list"] = ScrollLabel(log.getvalue())
-		self["actions"] = ActionMap(["DirectionActions", "OkCancelActions", "ColorActions"],
+		self["actions"] = ActionMap(["DirectionActions", "OkCancelActions", "ColorActions", "MenuActions"],
 		{
 			"red": self.clear,
 			"green": self.cancel,
@@ -317,7 +362,8 @@ class EPGImportLog(Screen):
 			"up": self["list"].pageUp,
 			"down": self["list"].pageDown,
 			"pageUp": self["list"].pageUp,
-			"pageDown": self["list"].pageDown
+			"pageDown": self["list"].pageDown,
+			"menu": self.cancel,
 		}, -2)
 
 	def save(self):
@@ -345,7 +391,7 @@ def doneConfiguring(session, retval):
 	if autoStartTimer is not None:
 		autoStartTimer.update()
 
-def doneImport(reboot = False, epgfile = None):
+def doneImport(reboot=False, epgfile=None):
 	global _session, lastImportResult
 	lastImportResult = (time.time(), epgimport.eventCount)
 	if reboot:
@@ -405,8 +451,8 @@ class AutoStartTimer:
 		return wake
 
 	def runImport(self):
-		cfg = EPGConfig.loadUserSettings()
-		sources = [ s for s in EPGConfig.enumSources(CONFIG_PATH, filter = cfg["sources"]) ]
+		cfg = config.plugins.epgimport.sources.getValue().split("|")
+		sources = [ s for s in EPGConfig.enumSources(CONFIG_PATH, filter = cfg) ]
 		if sources:
 			sources.reverse()
 			epgimport.sources = sources
@@ -459,6 +505,12 @@ def autostart(reason, session=None, **kwargs):
 				os.remove("/tmp/enigmastandby")
 			except:
 				pass
+		else:
+			if config.plugins.epgimport.deepstandby.value == 'wakeup':
+				if config.plugins.epgimport.wakeupsleep.value:
+					print>>log, "[EPGImport] Returning to standby"
+					from Tools import Notifications
+					Notifications.AddNotification(Screens.Standby.Standby)
 	else:
 		print>>log, "[EPGImport] Stop"
 		#if autoStartTimer:
@@ -487,8 +539,66 @@ def housekeepingExtensionsmenu(el):
 
 description = _("Automated EPG Importer")
 config.plugins.epgimport.showinextensions.addNotifier(housekeepingExtensionsmenu, initial_call = False, immediate_feedback = False)
-extDescriptor = PluginDescriptor(name="EPGImport", description = description, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = extensionsmenu)
+extDescriptor = PluginDescriptor(name=_("EPG-Importer"), description = description, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = extensionsmenu)
+pluginlist = PluginDescriptor(name=_("EPG-Importer"), description = description, where = PluginDescriptor.WHERE_PLUGINMENU, icon = 'plugin.png', fnc = main)
+
+
+def epgmenu(menuid, **kwargs):
+	if getImageDistro() in ("openld", "ventonsupport", "egami"):
+		if menuid == "epg":
+			return [(_("EPG-Importer"), main, "epgimporter", 1002)]
+		else:
+			return []
+	else:
+		if menuid == "setup":
+			return [(_("EPG-Importer"), main, "epgimporter", 1002)]
+		else:
+			return []
 
 def Plugins(**kwargs):
+	result = [
+		PluginDescriptor(
+			name=_("EPG-Importer"),
+			description = description,
+			where = [
+				PluginDescriptor.WHERE_AUTOSTART,
+				PluginDescriptor.WHERE_SESSIONSTART
+			],
+			fnc = autostart,
+			wakeupfnc = getNextWakeup
+		),
+		PluginDescriptor(
+			name=_("EPG-Importer"),
+			description = description,
+			where = PluginDescriptor.WHERE_MENU,
+			fnc = epgmenu
+		),
+	]
+	if config.plugins.epgimport.showinextensions.value:
+		result.append(extDescriptor)
+	if config.plugins.epgimport.showinplugins.value:
+		result.append(pluginlist)
+	return result
 
-	return PluginDescriptor(name = "EPGImport", description = "Automated EPG Importer", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main)
+class SetupSummary(Screen):
+	def __init__(self, session, parent):
+		Screen.__init__(self, session, parent = parent)
+		self["SetupTitle"] = StaticText(_(parent.setup_title))
+		self["SetupEntry"] = StaticText("")
+		self["SetupValue"] = StaticText("")
+		self.onShow.append(self.addWatcher)
+		self.onHide.append(self.removeWatcher)
+
+	def addWatcher(self):
+		self.parent.onChangedEntry.append(self.selectionChanged)
+		self.parent["list"].onSelectionChanged.append(self.selectionChanged)
+		self.selectionChanged()
+
+	def removeWatcher(self):
+		self.parent.onChangedEntry.remove(self.selectionChanged)
+		self.parent["list"].onSelectionChanged.remove(self.selectionChanged)
+
+	def selectionChanged(self):
+		self["SetupEntry"].text = self.parent.getCurrentEntry()
+		self["SetupValue"].text = self.parent.getCurrentValue()
+

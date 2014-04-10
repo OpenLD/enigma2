@@ -2,19 +2,23 @@
 #
 # This file no longer has a direct link to Enigma2, allowing its use anywhere
 # you can supply a similar interface. See plugin.py and OfflineImport.py for
-# the contract. 
-# 
-import time
-import os
-import gzip
-import log
-
-HDD_EPG_DAT = "/hdd/epg.dat" 
-
+# the contract.
+#
+from Components.Console import Console
+from Components.config import config
 from twisted.internet import reactor, threads
 from twisted.web.client import downloadPage
 import twisted.python.runtime
-from Screens.MessageBox import MessageBox
+
+import time, os, gzip, log
+
+try:
+	from Components.SwapCheck import SwapCheck
+	swapcheckimport = True
+except:
+	swapcheckimport = False
+	
+HDD_EPG_DAT = config.misc.epgcache_filename.value
 
 PARSERS = {
 #	'radiotimes': 'uk_radiotimes',
@@ -51,12 +55,11 @@ def bigStorage(minFree, default, *candidates):
 				try:
 					diskstat = os.statvfs(candidate)
 					free = diskstat.f_bfree * diskstat.f_bsize
-					if free > minFree: 
+					if free > minFree:
 						return candidate
 				except:
 					pass
 		return default
-
 
 class OudeisImporter:
 	'Wrapper to convert original patch to new one that accepts multiple services'
@@ -83,13 +86,13 @@ class EPGImport:
 		self.onDone = None
 		self.epgcache = epgcache
 		self.channelFilter = channelFilter
-	
+
 	def beginImport(self, longDescUntil = None):
 		'Starts importing using Enigma reactor. Set self.sources before calling this.'
 		if hasattr(self.epgcache, 'importEvents'):
 			self.storage = self.epgcache
 		elif hasattr(self.epgcache, 'importEvent'):
-			self.storage = OudeisImporter(self.epgcache)             
+			self.storage = OudeisImporter(self.epgcache)
 		else:
 			print "[EPGImport] oudeis patch not detected, using epg.dat instead."
 			import epgdat_importer
@@ -113,7 +116,10 @@ class EPGImport:
 		if filename.startswith('http:') or filename.startswith('ftp:'):
 			self.do_download(filename)
 		else:
-			self.afterDownload(None, filename, deleteFile=False)
+			if swapcheckimport:
+				self.MemCheck(None, filename, False)
+			else:
+				self.MemCheck1(None, filename, deleteFile=False)
 
 	def createIterator(self):
 		self.source.channels.update(self.channelFilter)
@@ -150,6 +156,58 @@ class EPGImport:
 		except Exception, e:
 		    print>>log, "[EPGImport] Failed to import %s:" % filename, e
 
+	def MemCheck(self, result, filename, deleteFile):
+		SwapCheck(self.MemCheckCallback, [result, filename, deleteFile])
+
+	def MemCheckCallback(self, callbackArgs):
+		(result, filename, deleteFile) = callbackArgs
+		self.afterDownload(result, filename, deleteFile)
+
+	def MemCheck1(self, result, filename, deleteFile=False):
+		self.swapdevice = ""
+		self.Console = Console()
+		self.swapdevice = os.path.split(filename)
+		self.swapdevice = self.swapdevice[0]
+		print>>log, "[EPGImport] SwapFile location",self.swapdevice
+		if os.path.exists(self.swapdevice + "/swapfile_xmltv"):
+			print>>log, "[EPGImport] Removing old swapfile."
+			self.Console.ePopen("swapoff " + self.swapdevice + "/swapfile_xmltv && rm " + self.swapdevice + "/swapfile_xmltv")
+		f = open('/proc/meminfo', 'r')
+		for line in f.readlines():
+			if line.find('MemFree') != -1:
+				parts = line.strip().split()
+				memfree = int(parts[1])
+			elif line.find('SwapFree') != -1:
+				parts = line.strip().split()
+				swapfree = int(parts[1])
+		f.close()
+		TotalFree = memfree + swapfree
+		print>>log, "[EPGImport] Free Mem",TotalFree
+		if int(TotalFree) < 5000:
+			print>>log, "[EPGImport] Not Enough Ram"
+			self.MemCheck2(filename, deleteFile)
+		else:
+			print>>log, "[EPGImport] Found Enough Ram"
+			self.afterDownload(None, filename, deleteFile)
+
+	def MemCheck2(self, filename, deleteFile):
+		print>>log, "[EPGImport] Creating Swapfile."
+		self.Console.ePopen("dd if=/dev/zero of=" + self.swapdevice + "/swapfile_xmltv bs=1024 count=16440", self.MemCheck3, [filename, deleteFile])
+
+	def MemCheck3(self, result, retval, extra_args = None):
+		(filename, deleteFile) = extra_args
+		if retval == 0:
+			self.Console.ePopen("mkswap " + self.swapdevice + "/swapfile_xmltv", self.MemCheck4, [filename, deleteFile])
+
+	def MemCheck4(self, result, retval, extra_args = None):
+		(filename, deleteFile) = extra_args
+		if retval == 0:
+			self.Console.ePopen("swapon " + self.swapdevice + "/swapfile_xmltv", self.MemCheck5, [filename, deleteFile])
+
+	def MemCheck5(self, result, retval, extra_args = None):
+		(filename, deleteFile) = extra_args
+		self.afterDownload(None, filename, deleteFile)
+
 	def afterDownload(self, result, filename, deleteFile=False):
 		if os.path.getsize(filename) > 0:
 			print>>log, "[EPGImport] afterDownload", filename
@@ -180,7 +238,6 @@ class EPGImport:
 			failure = "File downloaded was zero bytes."
 			self.downloadFail(failure)
 
-
 	def fileno(self):
 		if self.fd is not None:
 			return self.fd.fileno()
@@ -198,7 +255,7 @@ class EPGImport:
 					self.storage.importEvents(r, (d,))
 				except Exception, e:
 					print>>log, "[EPGImport] ### importEvents exception:", e
-		print>>log, "[EPGImport] ### thread is ready ### Events:", self.eventCount 
+		print>>log, "[EPGImport] ### thread is ready ### Events:", self.eventCount
 
 	def doRead(self):
 		'called from reactor to read some data'
@@ -272,17 +329,26 @@ class EPGImport:
 		print>>log, "[EPGImport] #### Finished ####"
 		import glob
 		for filename in glob.glob('/tmp/*.xml'):
-			os.remove(filename) 
+			os.remove(filename)
+		if swapcheckimport:
+			SwapCheck().RemoveSwap()
+		else:
+			if os.path.exists(self.swapdevice + "/swapfile_xmltv"):
+				print>>log, "[EPGImport] Removing Swapfile."
+				self.Console.ePopen("swapoff " + self.swapdevice + "/swapfile_xmltv && rm " + self.swapdevice + "/swapfile_xmltv")
 
 	def isImportRunning(self):
 		return self.source is not None
 
 	def do_download(self,sourcefile):
-		path = bigStorage(9000000, '/tmp', '/media/cf', '/media/usb', '/media/hdd')
+		path = bigStorage(9000000, '/tmp', '/media/hdd', '/media/usb', '/media/cf')
 		filename = os.path.join(path, 'epgimport')
 		if sourcefile.endswith('.gz'):
 			filename += '.gz'
 		sourcefile = sourcefile.encode('utf-8')
 		print>>log, "[EPGImport] Downloading: " + sourcefile + " to local path: " + filename
-		downloadPage(sourcefile, filename).addCallbacks(self.afterDownload, self.downloadFail, callbackArgs=(filename,True))
+		if swapcheckimport:
+			downloadPage(sourcefile, filename).addCallbacks(self.MemCheck, self.downloadFail, callbackArgs=(filename,True))
+		else:
+			downloadPage(sourcefile, filename).addCallbacks(self.MemCheck1, self.downloadFail, callbackArgs=(filename,True))
 		return filename
