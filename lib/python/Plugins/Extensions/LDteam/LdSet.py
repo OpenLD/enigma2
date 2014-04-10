@@ -88,8 +88,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 			from Plugins.Extensions.LDteam.LdPlugin import LDPluginPanel
 			self.session.open(LDPluginPanel)
 		elif self.sel == 14:
-			from Plugins.Extensions.LDteam.LdCrondManager import CronManager
-			self.session.open(CronManager)
+			from Screens.CronTimer import CronTimers
+			self.session.open(CronTimers)
 		elif self.sel == 15:
 			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
 			self.session.open(RestartNetwork)
