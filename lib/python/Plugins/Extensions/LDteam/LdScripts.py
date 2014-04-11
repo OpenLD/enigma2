@@ -15,14 +15,14 @@ from enigma import eDVBDB
 
 class LDScripts(Screen):
 	skin = """
-	<screen name="LDSettings" position="center,center" size="800,560" title="OpenLD - Run Scripts">
-		<widget source="list" render="Listbox" position="10,10" size="780,430" scrollbarMode="showOnDemand" >
-			<convert type="StringList" />
-		</widget>
-		<widget name="statuslab" position="10,510" size="780,80" font="Regular;16" valign="center" noWrap="1" backgroundColor="#333f3f3f" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" />
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red.png" position="350,460" size="140,40" alphatest="on" />
-		<widget name="key_red" position="350,460" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-	</screen>"""
+<screen name="LDScripts" position="70,35" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget source="list" render="Listbox" position="15,10" size="660,650" font="Regular;20" scrollbarMode="showOnDemand">
+<convert type="StringList">
+	</convert>
+	</widget>
+<widget name="statuslab" position="10,590" size="780,70" font="Regular;16" valign="center" noWrap="1" backgroundColor="#333f3f3f" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" />
+</screen>"""
 	
 	def __init__(self, session):
 		Screen.__init__(self, session)

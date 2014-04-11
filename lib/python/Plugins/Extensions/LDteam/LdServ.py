@@ -20,20 +20,20 @@ from Plugins.SystemPlugins.NetworkWizard.NetworkWizard import NetworkWizard
 
 class LDServices(Screen):
 	skin = """
-	<screen position="center,center" size="800,560" title="OpenLD - Services List">
-		<ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
-		<widget source="list" render="Listbox" position="10,10" size="750,540" scrollbarMode="showOnDemand">
-			<convert type="TemplatedMultiContent">
-                		{"template": [
-                		MultiContentEntryText(pos = (60, 1), size = (300, 36), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-                		MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
-                		],
-                		"fonts": [gFont("Regular", 24)],
-                		"itemHeight": 36
-                		}
-            		</convert>
-		</widget>
-	</screen>"""
+<screen name="LDServices" position="70,35" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget source="list" render="Listbox" position="15,10" size="660,650" scrollbarMode="showOnDemand">
+<convert type="TemplatedMultiContent">
+{"template": [
+MultiContentEntryText(pos = (60, 1), size = (300, 40), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
+],
+"fonts": [gFont("Regular", 24)],
+"itemHeight": 40
+}
+	</convert>
+	</widget>
+</screen>"""
 	
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -93,63 +93,63 @@ class LDServices(Screen):
 		self.list = [ ]
 		mypath = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/"
 
-		mypixmap = mypath + "samba.png"
+		mypixmap = mypath + "Mounts.png"
 		png = LoadPixmap(mypixmap)
 		name = "Samba"
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "nfs.png"
+		mypixmap = mypath + "MountManager.png"
 		png = LoadPixmap(mypixmap)
 		name = "NFS"
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "vpn.png"
+		mypixmap = mypath + "Vpn.png"
 		png = LoadPixmap(mypixmap)
 		name = "OpenVPN"
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "inadyn.png"
+		mypixmap = mypath + "Inadyn.png"
 		png = LoadPixmap(mypixmap)
 		name = "Inadyn"
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "dlna.png"
+		mypixmap = mypath + "Dlna.png"
 		png = LoadPixmap(mypixmap)
 		name = "MiniDLNA"
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "ftp.png"
+		mypixmap = mypath + "Ftp.png"
 		png = LoadPixmap(mypixmap)
 		name = "FTP"
 		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "afp.png"
+		mypixmap = mypath + "Afp.png"
 		png = LoadPixmap(mypixmap)
 		name = "AFP"
 		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "ushare.png"
+		mypixmap = mypath + "Ushare.png"
 		png = LoadPixmap(mypixmap)
 		name = "uShare"
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)	
 		
-		mypixmap = mypath + "telnet.png"
+		mypixmap = mypath + "Telnet.png"
 		png = LoadPixmap(mypixmap)
 		name = "Telnet"
 		idx = 8

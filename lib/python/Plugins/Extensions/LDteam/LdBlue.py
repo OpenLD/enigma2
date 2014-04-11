@@ -30,31 +30,32 @@ import datetime
 
 class LDBluePanel(Screen):
 	skin = """
-<screen name="LDBluePanel" position="center,center" size="800,560" title="OpenLD - Blue Panel">
-<widget source="global.CurrentTime" render="Label" position="60,10" size="500,24" font="Regular;22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
+<screen name="LDBluePanel" position="center,center" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget source="global.CurrentTime" render="Label" position="35,10" size="500,24" font="Regular;22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
 		<convert type="ClockToText">>Format%H:%M:%S</convert>
 	</widget>
-<ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
-<ePixmap position="50,55" size="510,255" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/bp_deko.png" zPosition="1" alphatest="on" />
-<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="55,510" size="150,30" alphatest="on"/>
-<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="235,510" size="150,30" alphatest="on"/>
-<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="415,510" size="150,30" alphatest="on"/>
-<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="595,510" size="150,30" alphatest="on"/>
-<eLabel text="Servicios" position="55,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-<eLabel text="Scripts" position="235,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-<eLabel text="Info" position="415,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-<eLabel text="Settings" position="595,512" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-<widget name="lab1" position="220,43" size="230,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="lab2" position="220,73" size="190,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="list" position="60,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1"/>
-<widget name="lab3" position="60,149" size="120,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<eLabel text="CAM Activa:" position="60,149" size="245,25" font="Regular;20" halign="left" zPosition="2" foregroundColor="white" backgroundColor="transpBlack" transparent="1"/>
-<widget name="activecam" position="191,149" size="245,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab1" position="60,183" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab2" position="60,208" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab3" position="60,233" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab4" position="60,258" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ecmtext" position="60,293" size="505,240" font="Regular;18" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<ePixmap position="380,10" size="310,155" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
+<ePixmap position="25,55" size="510,255" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/bp_deko.png" zPosition="1" alphatest="on" />
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="30,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on"/>
+<eLabel text="Servicios" position="30,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<eLabel text="Scripts" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<eLabel text="Info" position="370,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<eLabel text="Settings" position="543,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<widget name="lab1" position="195,43" size="230,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="lab2" position="195,73" size="190,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="list" position="35,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1"/>
+<widget name="lab3" position="35,149" size="120,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<eLabel text="CAM Activa:" position="35,149" size="245,25" font="Regular;20" halign="left" zPosition="2" foregroundColor="white" backgroundColor="transpBlack" transparent="1"/>
+<widget name="activecam" position="166,149" size="245,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab1" position="35,183" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab2" position="35,208" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab3" position="35,233" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab4" position="35,258" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ecmtext" position="40,293" size="505,380" font="Regular;18" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
  
  </screen>""" 
 	def __init__(self, session):
@@ -218,7 +219,7 @@ class LDBluePanel(Screen):
 
 class startstopCam(Screen):
 	skin = """
-	<screen position="center,center" size="360,200" title="OpenLD - CAM">
+	<screen position="center,center" size="360,200">
 		<widget name="lab1" position="10,10" halign="center" size="340,180" zPosition="1" font="Regular;20" valign="center" backgroundColor="transpBlack" transparent="1"/>
 	</screen>"""
 

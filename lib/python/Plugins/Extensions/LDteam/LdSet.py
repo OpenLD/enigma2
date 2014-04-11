@@ -19,19 +19,19 @@ from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 
 class LDSettings(Screen):
 	skin = """
-	<screen name="LDSettings" position="center,center" size="800,560" title="OpenLD - Settings">
-<ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
-<widget source="list" render="Listbox" position="10,10" size="750,540" scrollbarMode="showOnDemand">
+<screen name="LDSettings" position="70,35" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget source="list" render="Listbox" position="15,10" size="660,650" scrollbarMode="showOnDemand">
 <convert type="TemplatedMultiContent">
 {"template": [
-MultiContentEntryText(pos = (60, 1), size = (300, 36), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
+MultiContentEntryText(pos = (60, 1), size = (300, 40), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 ],
 "fonts": [gFont("Regular", 24)],
-"itemHeight": 36
+"itemHeight": 40
 }
-</convert>
-</widget>    
+	</convert>
+	</widget>
 </screen>"""
 	
 	def __init__(self, session):
@@ -105,105 +105,105 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		self.list = [ ]
 		mypath = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/"
 		
-		mypixmap = mypath + "cron.png"
+		mypixmap = mypath + "crond.png"
 		png = LoadPixmap(mypixmap)
 		name = "CronManager"
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "hdd.png"
+		mypixmap = mypath + "Harddisk.png"
 		png = LoadPixmap(mypixmap)
 		name = "Admin Dispositivos"
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "usb.png"
+		mypixmap = mypath + "Usb.png"
 		png = LoadPixmap(mypixmap)
 		name = "Formatear USB"
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "swapsettings.png"
+		mypixmap = mypath + "SwapManager.png"
 		png = LoadPixmap(mypixmap)
 		name = "Memoria Swap"
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "usb.png"
+		mypixmap = mypath + "SundtekControlCenter.png"
 		png = LoadPixmap(mypixmap)
 		name = "Soundtek Center"
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "osd.png"
+		mypixmap = mypath + "AV_Setup.png"
 		png = LoadPixmap(mypixmap)
 		name = "Opciones Osd"
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "epg.png"
+		mypixmap = mypath + "Epg_setup.png"
 		png = LoadPixmap(mypixmap)
 		name = "EPG Ajustes internos"
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "plugins.png"
+		mypixmap = mypath + "Plugins.png"
 		png = LoadPixmap(mypixmap)
 		name = "Plugins Instalados"
 		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "ajustes_grabar.png"
+		mypixmap = mypath + "Ajustes_grabar.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes de grabacion"
 		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "ruta_grabar.png"
+		mypixmap = mypath + "folder.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ruta de grabacion"
 		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "conf_idiomas.png"
+		mypixmap = mypath + "Conf_idiomas.png"
 		png = LoadPixmap(mypixmap)
 		name = "Auto configuracion idioma"
 		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
 		
-		mypixmap = mypath + "ajustes_http.png"
+		mypixmap = mypath + "Ajustes_http.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes Http stream"
 		idx = 11
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "mountwizard.png"
+		mypixmap = mypath + "Network.png"
 		png = LoadPixmap(mypixmap)
 		name = "Reiniciar RED"
 		idx = 15
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "cccam.png"
+		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
 		name = "CCcamInfo"
 		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "cccam.png"
+		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
 		name = "OScamInfo"
 		idx = 6

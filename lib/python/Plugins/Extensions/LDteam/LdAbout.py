@@ -16,10 +16,12 @@ from enigma import iServiceInformation, eTimer
 			
 class LdsysInfo(Screen):
 	skin = """
-	<screen position="center,center" size="800,560" title="OpenLD - Info">
-	<ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
-	<widget name="lab1" position="50,25" halign="left" size="700,550" zPosition="1" font="Regular;20" valign="top" transparent="1" />
-	</screen>"""
+<screen name="LdsysInfo" position="70,35" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;20" scrollbarMode="showOnDemand">
+</widget>
+</screen>"""
+
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
