@@ -19,6 +19,22 @@ class SkinSelectorBase:
 			self.skinlist.append(self.DEFAULTSKIN)
 		if self.PICONSKINXML and os.path.exists(os.path.join(self.root, self.PICONSKINXML)):
 			self.skinlist.append(self.PICONDEFAULTSKIN)
+		if self.PICON1SKINXML and os.path.exists(os.path.join(self.root, self.PICON1SKINXML)):
+			self.skinlist.append(self.PICON1DEFAULTSKIN)
+		if self.PICON2SKINXML and os.path.exists(os.path.join(self.root, self.PICON2SKINXML)):
+			self.skinlist.append(self.PICON2DEFAULTSKIN)
+		if self.PICON3SKINXML and os.path.exists(os.path.join(self.root, self.PICON3SKINXML)):
+			self.skinlist.append(self.PICON3DEFAULTSKIN)
+		if self.PICON4SKINXML and os.path.exists(os.path.join(self.root, self.PICON4SKINXML)):
+			self.skinlist.append(self.PICON4DEFAULTSKIN)
+		if self.PICON5SKINXML and os.path.exists(os.path.join(self.root, self.PICON5SKINXML)):
+			self.skinlist.append(self.PICON5DEFAULTSKIN)
+		if self.PICON6SKINXML and os.path.exists(os.path.join(self.root, self.PICON6SKINXML)):
+			self.skinlist.append(self.PICON6DEFAULTSKIN)
+		if self.PICON7SKINXML and os.path.exists(os.path.join(self.root, self.PICON7SKINXML)):
+			self.skinlist.append(self.PICON7DEFAULTSKIN)
+		if self.PICON8SKINXML and os.path.exists(os.path.join(self.root, self.PICON8SKINXML)):
+			self.skinlist.append(self.PICON8DEFAULTSKIN)
 		for root, dirs, files in os.walk(self.root, followlinks=True):
 			for subdir in dirs:
 				dir = os.path.join(root,subdir)
@@ -78,6 +94,30 @@ class SkinSelectorBase:
 		elif self["SkinList"].getCurrent() == self.PICONDEFAULTSKIN:
 			skinfile = ""
 			skinfile = os.path.join(skinfile, self.PICONSKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON1DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON1SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON2DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON2SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON3DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON3SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON4DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON4SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON5DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON5SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON6DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON6SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON7DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON7SKINXML)
+		elif self["SkinList"].getCurrent() == self.PICON8DEFAULTSKIN:
+			skinfile = ""
+			skinfile = os.path.join(skinfile, self.PICON8SKINXML)
 		else:
 			skinfile = self["SkinList"].getCurrent()
 			skinfile = os.path.join(skinfile, self.SKINXML)
@@ -116,6 +156,30 @@ class SkinSelectorBase:
 		elif self["SkinList"].getCurrent() == self.PICONDEFAULTSKIN:
 			pngpath = "."
 			pngpath = os.path.join(os.path.join(self.root, pngpath), "piconprev.png")
+		elif self["SkinList"].getCurrent() == self.PICON1DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon1prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON2DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon2prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON3DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon3prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON4DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon4prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON5DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon5prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON6DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon6prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON7DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon7prev.png")
+		elif self["SkinList"].getCurrent() == self.PICON8DEFAULTSKIN:
+			pngpath = "."
+			pngpath = os.path.join(os.path.join(self.root, pngpath), "picon8prev.png")
 		else:
 			pngpath = self["SkinList"].getCurrent()
 			pngpath = os.path.join(os.path.join(self.root, pngpath), "prev.png")
@@ -137,6 +201,22 @@ class SkinSelector(Screen, SkinSelectorBase):
 	DEFAULTSKIN = "< Default >"
 	PICONSKINXML = None
 	PICONDEFAULTSKIN = None
+	PICON1SKINXML = None
+	PICON1DEFAULTSKIN = None
+	PICON2SKINXML = None
+	PICON2DEFAULTSKIN = None
+	PICON3SKINXML = None
+	PICON3DEFAULTSKIN = None
+	PICON4SKINXML = None
+	PICON4DEFAULTSKIN = None
+	PICON5SKINXML = None
+	PICON5DEFAULTSKIN = None
+	PICON6SKINXML = None
+	PICON6DEFAULTSKIN = None
+	PICON7SKINXML = None
+	PICON7DEFAULTSKIN = None
+	PICON8SKINXML = None
+	PICON8DEFAULTSKIN = None
 
 	skinlist = []
 	root = os.path.join(eEnv.resolve("${datadir}"),"enigma2")
@@ -153,6 +233,22 @@ class LcdSkinSelector(Screen, SkinSelectorBase):
 	DEFAULTSKIN = "< Default >"
 	PICONSKINXML = "skin_display_picon.xml"
 	PICONDEFAULTSKIN = "< Default with Picon >"
+	PICON1SKINXML = "skin_display_picon1.xml"
+	PICON1DEFAULTSKIN = "< Skin picon A >"
+	PICON2SKINXML = "skin_display_picon2.xml"
+	PICON2DEFAULTSKIN = "< Skin picon B >"
+	PICON3SKINXML = "skin_display_picon3.xml"
+	PICON3DEFAULTSKIN = "< Skin picon C >"
+	PICON4SKINXML = "skin_display_picon4.xml"
+	PICON4DEFAULTSKIN = "< Skin picon D >"
+	PICON5SKINXML = "skin_display5.xml"
+	PICON5DEFAULTSKIN = "< Skin modelo E >"
+	PICON6SKINXML = "skin_display6.xml"
+	PICON6DEFAULTSKIN = "< Skin modelo F >"
+	PICON7SKINXML = "skin_display7.xml"
+	PICON7DEFAULTSKIN = "< Skin modelo H >"
+	PICON8SKINXML = "skin_display8.xml"
+	PICON8DEFAULTSKIN = "< Skin modelo I >"
 
 	skinlist = []
 	root = os.path.join(eEnv.resolve("${datadir}"),"enigma2/display/")
