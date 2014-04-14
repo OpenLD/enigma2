@@ -325,11 +325,11 @@ class CronTimersConfig(Screen, ConfigListScreen):
 
 	def createSetup(self):
 		predefinedlist = []
-		f = listdir('/usr/scripts')
+		f = listdir('/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts')
 		if f:
 			for line in f:
 				parts = line.split()
-				path = "/usr/scripts/"
+				path = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts/"
 				pkg = parts[0]
 				description = path + parts[0]
 				if pkg.find('.sh') >= 0:
