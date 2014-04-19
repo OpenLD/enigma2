@@ -26,6 +26,7 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.LocationBox import MovieLocationBox
+from Screens import ScreenSaver
 from Screens.HelpMenu import HelpableScreen
 import Screens.InfoBar
 from Tools import NumericalTextInput
@@ -411,7 +412,9 @@ class MovieSelectionSummary(Screen):
 		else:
 			self["name"].text = ""
 
-class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
+from Screens.InfoBarGenerics import InfoBarScreenSaver
+
+class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, InfoBarScreenSaver):
 	# SUSPEND_PAUSES actually means "please call my pauseService()"
 	ALLOW_SUSPEND = Screen.SUSPEND_PAUSES
 
@@ -422,8 +425,10 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
 		else:
 			self.skinName = "MovieSelection"
 		HelpableScreen.__init__(self)
+		InfoBarScreenSaver.__init__(self)
 		if not timeshiftEnabled:
 			InfoBarBase.__init__(self) # For ServiceEventTracker
+
 		self.initUserDefinedActions()
 		self.tags = {}
 		if selectedmovie:
@@ -1107,6 +1112,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
 				ext = os.path.splitext(path)[1].lower()
 				if config.movielist.play_audio_internal.value and (ext in AUDIO_EXTENSIONS):
 					self.preview()
+					self.ScreenSaverTimerStart()
 					return
 				if self.list.playInBackground:
 					# Stop preview, come back later
