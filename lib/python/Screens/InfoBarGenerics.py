@@ -964,13 +964,17 @@ class InfoBarNumberZap:
 						self.servicelist2.saveRoot()
 					self.selectAndStartService(service, bouquet)
 				else:
-					self.servicelist.recallPrevService()
+					self.checkTimeshiftRunning(self.recallPrevService)
 		else:
 			if self.has_key("TimeshiftActions") and self.timeshiftEnabled():
 				ts = self.getTimeshift()
 				if ts and ts.isTimeshiftActive():
 					return
 			self.session.openWithCallback(self.numberEntered, NumberZap, number, self.searchNumber)
+
+	def recallPrevService(self, reply):
+		if reply:
+			self.servicelist.recallPrevService()
 
 	def numberEntered(self, service = None, bouquet = None):
 		if service:
