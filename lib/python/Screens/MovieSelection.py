@@ -579,6 +579,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, In
 		self.onLayoutFinish.append(self.saveListsize)
 		self.list.connectSelChanged(self.updateButtons)
 		self.onClose.append(self.__onClose)
+		self.screensaver.onShow.append(self.screensaver_onShow)
 		NavigationInstance.instance.RecordTimer.on_state_change.append(self.list.updateRecordings)
 		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
 			{
@@ -591,6 +592,13 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, In
 			self.onExecBegin.append(self.asciiOff)
 		else:
 			self.onExecBegin.append(self.asciiOn)
+
+	def screensaver_onShow(self):
+		playInBackground = self.list.playInBackground
+		if playInBackground:
+			index = self.list.findService(playInBackground)
+			if index:
+				self["list"].moveToIndex(index)
 
 	def asciiOn(self):
 		rcinput = eRCInput.getInstance()
@@ -1014,7 +1022,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, In
 			if ext in AUDIO_EXTENSIONS:
 				self.nextInBackground = next
 				self.callLater(self.preview)
-				self["list"].moveDown()
+				self["list"].moveToIndex(index+1)
 
 		if config.movielist.show_live_tv_in_movielist.value:
 			self.LivePlayTimer.start(100)
