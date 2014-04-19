@@ -963,7 +963,7 @@ class InfoBarNumberZap:
 						self.servicelist2.enterPath(bouquet)
 						self.servicelist2.saveRoot()
 					self.selectAndStartService(service, bouquet)
-				else:
+				elif len(self.servicelist.history) > 1:
 					self.checkTimeshiftRunning(self.recallPrevService)
 		else:
 			if self.has_key("TimeshiftActions") and self.timeshiftEnabled():
