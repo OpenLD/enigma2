@@ -41,9 +41,9 @@ class LdsysInfo(Screen):
 		f = open("/proc/stb/info/model",'r')
  		text += "Model:\t" + f.readline()
  		f.close()
-		f = open("/proc/stb/info/chipset",'r')
- 		text += "Chipset:\t" + about.getChipSetString() + "\n"
- 		f.close()
+#		f = open("/proc/stb/info/chipset",'r')
+# 		text += "Chipset:\t" + about.getChipSetString() + "\n"
+# 		f.close()
 		text += "\nMEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
