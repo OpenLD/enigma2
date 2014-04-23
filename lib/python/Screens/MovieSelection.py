@@ -574,7 +574,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
 		self.onLayoutFinish.append(self.saveListsize)
 		self.list.connectSelChanged(self.updateButtons)
 		self.onClose.append(self.__onClose)
-		self.screensaver.onShow.append(self.screensaver_onShow)
 		NavigationInstance.instance.RecordTimer.on_state_change.append(self.list.updateRecordings)
 		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
 			{
@@ -587,13 +586,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase):
 			self.onExecBegin.append(self.asciiOff)
 		else:
 			self.onExecBegin.append(self.asciiOn)
-
-	def screensaver_onShow(self):
-		playInBackground = self.list.playInBackground
-		if playInBackground:
-			index = self.list.findService(playInBackground)
-			if index:
-				self["list"].moveToIndex(index)
 
 	def asciiOn(self):
 		rcinput = eRCInput.getInstance()
