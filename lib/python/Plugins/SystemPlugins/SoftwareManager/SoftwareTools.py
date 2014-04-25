@@ -1,4 +1,7 @@
 # -*- coding: iso-8859-1 -*-
+from time import time
+from boxbranding import getImageVersion
+
 from enigma import eConsoleAppContainer
 from Components.Console import Console
 from Components.About import about
@@ -9,7 +12,7 @@ from Components.Ipkg import IpkgComponent
 from Components.Network import iNetwork
 from Tools.Directories import pathExists, fileExists, resolveFilename, SCOPE_METADIR
 from Tools.HardwareInfo import HardwareInfo
-from time import time
+from boxbranding import getBoxType
 
 from boxbranding import getImageVersion
 
@@ -271,7 +274,7 @@ class SoftwareTools(PackageInfoHandler):
 		if prerequisites.has_key("hardware"):
 			hardware_found = False
 			for hardware in prerequisites["hardware"]:
-				if hardware == self.hardware_info.device_name:
+				if hardware == getBoxType():
 					hardware_found = True
 			if not hardware_found:
 				return False
