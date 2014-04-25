@@ -107,6 +107,10 @@ class VirtualKeyBoard(Screen):
 		self.setLang()
 		self.onExecBegin.append(self.setKeyboardModeAscii)
 		self.onLayoutFinish.append(self.buildVirtualKeyBoard)
+		self.onClose.append(self.__onClose)
+
+	def __onClose(self):
+		self.sms.timer.stop()
 	
 	def switchLang(self):
 		self.lang = self.nextLang
