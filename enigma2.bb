@@ -1,5 +1,5 @@
 DESCRIPTION = "Enigma2 is an experimental, but useful framebuffer-based frontend for DVB functions"
-MAINTAINER = "OpenPLi team <info@openpli.org>"
+MAINTAINER = "OpenLD"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
@@ -24,18 +24,18 @@ bindir = "/usr/bin"
 sbindir = "/usr/sbin"
 
 EXTRA_OECONF = "\
-	--enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE} \
-	--enable-dependency-tracking \
-	${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)} \
-	${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)} \
-	BUILD_SYS=${BUILD_SYS} \
-	HOST_SYS=${HOST_SYS} \
-	STAGING_INCDIR=${STAGING_INCDIR} \
-	STAGING_LIBDIR=${STAGING_LIBDIR} \
-	"
+    --enable-maintainer-mode --with-target=native --with-libsdl=no --with-boxtype=${MACHINE} \
+    --enable-dependency-tracking \
+    ${@base_contains("MACHINE_FEATURES", "textlcd", "--with-textlcd" , "", d)} \
+    ${@base_contains("MACHINE_FEATURES", "colorlcd", "--with-colorlcd" , "", d)} \
+    BUILD_SYS=${BUILD_SYS} \
+    HOST_SYS=${HOST_SYS} \
+    STAGING_INCDIR=${STAGING_INCDIR} \
+    STAGING_LIBDIR=${STAGING_LIBDIR} \
+    "
 
 do_install_append() {
-	install -d ${D}/usr/share/keymaps
+    install -d ${D}/usr/share/keymaps
 }
 
 python populate_packages_prepend () {
