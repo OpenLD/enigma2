@@ -1,6 +1,5 @@
 from boxbranding import getBoxType, getMachineBrand, getMachineName
-from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
-from os import system, listdir, rename, symlink, unlink, path, mkdir
+from os import path as os_path, remove, unlink, rename, chmod, access, X_OK, system, listdir, symlink, mkdir
 from time import sleep
 from shutil import move
 import time
@@ -34,10 +33,6 @@ from Plugins.Plugin import PluginDescriptor
 import commands
 
 
-if float(getVersionString()) >= 4.0:
-	basegroup = "packagegroup-base"
-else:
-	basegroup = "task-base"
 
 class NetworkAdapterSelection(Screen,HelpableScreen):
 	def __init__(self, session):
@@ -571,9 +566,8 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 				if self.hasGatewayConfigEntry.value:
 					self.list.append(getConfigListEntry(_('Gateway'), self.gatewayConfigEntry))
 			if SystemInfo["WOL"] and self.iface == 'eth0':
-				if not getBoxType() == 'gbquad' :
-					self.wakeonlan = getConfigListEntry(_('Use WOL'), config.network.wol)
-					self.list.append(self.wakeonlan)
+				self.wakeonlan = getConfigListEntry(_('Use WOL'), config.network.wol)
+				self.list.append(self.wakeonlan)
 
 			self.extended = None
 			self.configStrings = None
@@ -636,7 +630,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		config.network.save()
 
 	def keySaveConfirm(self, ret = False):
-		if ret == True:
+		if ret:
 			num_configured_if = len(iNetwork.getConfiguredAdapters())
 			if num_configured_if >= 1:
 				if self.iface in iNetwork.getConfiguredAdapters():
@@ -664,7 +658,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			self.applyConfig(True)
 
 	def applyConfig(self, ret = False):
-		if ret == True:
+		if ret:
 			self.applyConfigRef = None
 			iNetwork.setAdapterAttribute(self.iface, "up", self.activateInterfaceEntry.value)
 			iNetwork.setAdapterAttribute(self.iface, "dhcp", self.dhcpConfigEntry.value)
@@ -1029,7 +1023,7 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			self.updateStatusbar()
 
 	def restartLan(self, ret = False):
-		if ret == True:
+		if ret:
 			iNetwork.restartNetwork(self.restartLanDataAvail)
 			self.restartLanRef = self.session.openWithCallback(self.restartfinishedCB, MessageBox, _("Please wait while your network is restarting..."), type = MessageBox.TYPE_INFO, enable_input = False)
 
@@ -1630,7 +1624,7 @@ class NetworkAfp(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("AFP Setup"))
-		self.skinName = "NetworkAfp"
+		self.skinName = "NetworkServiceSetup"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
@@ -1647,7 +1641,7 @@ class NetworkAfp(Screen):
 		self.my_afp_active = False
 		self.my_afp_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.AfpStartStop, 'yellow': self.activateAfp})
-		self.service_name = basegroup + '-appletalk netatalk'
+		self.service_name = 'packagegroup-base-appletalk netatalk'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
@@ -1657,7 +1651,7 @@ class NetworkAfp(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -1665,13 +1659,13 @@ class NetworkAfp(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -1685,7 +1679,7 @@ class NetworkAfp(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -1697,8 +1691,8 @@ class NetworkAfp(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			restartbox = self.session.openWithCallback(self.RemovePackage,MessageBox,_('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
-			restartbox.setTitle(_('Ready to remove %s ?') % self.service_name)
+			restartbox = self.session.openWithCallback(self.RemovePackage, MessageBox, _('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
+			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
 		else:
 			self.updateService()
 
@@ -1707,7 +1701,7 @@ class NetworkAfp(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -1765,153 +1759,7 @@ class NetworkAfp(Screen):
 
 		for cb in self.onChangedEntry:
 			cb(title, status_summary, autostartstatus_summary)
-######################################################################################################################
-class NetworkSABnzbd(Screen):
-	def __init__(self, session):
-		Screen.__init__(self, session)
-		Screen.setTitle(self, _("SABnzbd Setup"))
-		self.skinName = "NetworkSABnzbd"
-		self.onChangedEntry = [ ]
-		self['lab1'] = Label(_("Autostart:"))
-		self['labactive'] = Label(_(_("Disabled")))
-		self['lab2'] = Label(_("Current Status:"))
-		self['labstop'] = Label(_("Stopped"))
-		self['labrun'] = Label(_("Running"))
-		self['key_red'] = Label(_("Remove Service"))
-		self['key_green'] = Label(_("Start"))
-		self['key_yellow'] = Label(_("Autostart"))
-		self['key_blue'] = Label()
-		self['status_summary'] = StaticText()
-		self['autostartstatus_summary'] = StaticText()
-		self.Console = Console()
-		self.my_sabnzbd_active = False
-		self.my_sabnzbd_run = False
-		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.SABnzbStartStop, 'yellow': self.activateSABnzbd})
-		self.service_name = 'sabnzbd'
-		self.checkSABnzbdService()
 
-	def checkSABnzbdService(self):
-		print 'INSTALL CHECK STARTED',self.service_name
-		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
-
-	def checkNetworkState(self, str, retval, extra_args):
-		print 'INSTALL CHECK FINISHED',str
-		if not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
-			self.feedscheck.setTitle(_('Checking Feeds'))
-			cmd1 = "opkg update"
-			self.CheckConsole = Console()
-			self.CheckConsole.ePopen(cmd1, self.checkNetworkStateFinished)
-		else:
-			print 'INSTALL ALREADY INSTALLED'
-			self.updateService()
-
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
-		if (float(getVersionString()) < 3.0 and result.find('mipsel/Packages.gz, wget returned 1') != -1) or (float(getVersionString()) >= 3.0 and result.find('mips32el/Packages.gz, wget returned 1') != -1):
-			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		elif result.find('bad address') != -1:
-			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
-		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
-
-	def InstallPackage(self, val):
-		if val:
-			self.doInstall(self.installComplete, self.service_name)
-		else:
-			self.feedscheck.close()
-			self.close()
-
-	def InstallPackageFailed(self, val):
-		self.feedscheck.close()
-		self.close()
-
-	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
-		self.message.setTitle(_('Installing Service'))
-		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
-
-	def installComplete(self,result = None, retval = None, extra_args = None):
-		self.message.close()
-		self.feedscheck.close()
-		self.updateService()
-
-	def UninstallCheck(self):
-		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
-
-	def RemovedataAvail(self, str, retval, extra_args):
-		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
-		else:
-			self.updateService()
-
-	def RemovePackage(self, val):
-		if val:
-			self.doRemove(self.removeComplete, self.service_name)
-
-	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
-		self.message.setTitle(_('Removing Service'))
-		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
-
-	def removeComplete(self,result = None, retval = None, extra_args = None):
-		self.message.close()
-		self.updateService()
-
-	def createSummary(self):
-		return NetworkServicesSummary
-
-	def SABnzbStartStop(self):
-		if not self.my_sabnzbd_run:
-			self.Console.ePopen('/etc/init.d/sabnzbd start')
-			time.sleep(3)
-			self.updateService()
-		elif self.my_sabnzbd_run:
-			self.Console.ePopen('/etc/init.d/sabnzbd stop')
-			time.sleep(3)
-			self.updateService()
-
-	def activateSABnzbd(self):
-		if fileExists('/etc/rc2.d/S20sabnzbd'):
-			self.Console.ePopen('update-rc.d -f sabnzbd remove')
-		else:
-			self.Console.ePopen('update-rc.d -f sabnzbd defaults')
-		time.sleep(3)
-		self.updateService()
-
-	def updateService(self,result = None, retval = None, extra_args = None):
-		import process
-		p = process.ProcessList()
-		sabnzbd_process = str(p.named('SABnzbd.py')).strip('[]')
-		self['labrun'].hide()
-		self['labstop'].hide()
-		self['labactive'].setText(_("Disabled"))
-		self.my_sabnzbd_active = False
-		self.my_sabnzbd_run = False
-		if fileExists('/etc/rc2.d/S20sabnzbd'):
-			self['labactive'].setText(_("Enabled"))
-			self['labactive'].show()
-			self.my_sabnzbd_active = True
-		if sabnzbd_process:
-			self.my_sabnzbd_run = True
-		if self.my_sabnzbd_run:
-			self['labstop'].hide()
-			self['labactive'].show()
-			self['labrun'].show()
-			self['key_green'].setText(_("Stop"))
-			status_summary= self['lab2'].text + ' ' + self['labrun'].text
-		else:
-			self['labrun'].hide()
-			self['labstop'].show()
-			self['labactive'].show()
-			self['key_green'].setText(_("Start"))
-			status_summary= self['lab2'].text + ' ' + self['labstop'].text
-		title = _("SABnzbd Setup")
-		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
-
-		for cb in self.onChangedEntry:
-			cb(title, status_summary, autostartstatus_summary)
-
-#########################################################################################################
 class NetworkFtp(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -2008,7 +1856,7 @@ class NetworkNfs(Screen):
 		self.my_nfs_active = False
 		self.my_nfs_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.NfsStartStop, 'yellow': self.Nfsset})
-		self.service_name = basegroup + '-nfs'
+		self.service_name = 'packagegroup-base-nfs'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
@@ -2018,7 +1866,7 @@ class NetworkNfs(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -2026,13 +1874,13 @@ class NetworkNfs(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2046,7 +1894,7 @@ class NetworkNfs(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -2058,8 +1906,8 @@ class NetworkNfs(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			restartbox = self.session.openWithCallback(self.RemovePackage,MessageBox,_('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
-			restartbox.setTitle(_('Ready to remove %s ?') % self.service_name)
+			restartbox = self.session.openWithCallback(self.RemovePackage, MessageBox, _('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
+			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
 		else:
 			self.updateService()
 
@@ -2068,7 +1916,7 @@ class NetworkNfs(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -2130,7 +1978,7 @@ class NetworkOpenvpn(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("OpenVpn Setup"))
-		self.skinName = "NetworkOpenvpn"
+		self.skinName = "NetworkServiceSetup"
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
 		self['labactive'] = Label(_(_("Disabled")))
@@ -2155,7 +2003,7 @@ class NetworkOpenvpn(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -2163,13 +2011,13 @@ class NetworkOpenvpn(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2183,7 +2031,7 @@ class NetworkOpenvpn(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -2197,7 +2045,7 @@ class NetworkOpenvpn(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2206,7 +2054,7 @@ class NetworkOpenvpn(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -2305,7 +2153,7 @@ class NetworkSamba(Screen):
 		self.my_Samba_active = False
 		self.my_Samba_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.SambaStartStop, 'yellow': self.activateSamba, 'blue': self.Sambashowlog})
-		self.service_name = basegroup + '-smbfs'
+		self.service_name = 'packagegroup-base-smbfs'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
@@ -2315,7 +2163,7 @@ class NetworkSamba(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -2323,13 +2171,13 @@ class NetworkSamba(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.QuestionCallback, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.QuestionCallback, MessageBox, _('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def QuestionCallback(self, val):
 		if val:
@@ -2340,7 +2188,7 @@ class NetworkSamba(Screen):
 
 	def InstallPackage(self, val):
 		if val:
-			self.service_name = self.service_name + ' ' + basegroup + '-smbfs-client'
+			self.service_name += ' packagegroup-base-smbfs-client'
 		self.doInstall(self.installComplete, self.service_name)
 
 	def InstallPackageFailed(self, val):
@@ -2348,22 +2196,20 @@ class NetworkSamba(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
 	def installComplete(self,result = None, retval = None, extra_args = None):
-		self.message.close()
-		self.feedscheck.close()
-		self.SambaStartStop()
+		self.session.open(TryQuitMainloop, 2)
 
 	def UninstallCheck(self):
-		self.service_name = self.service_name + ' ' + basegroup + '-smbfs-client'
 		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			restartbox = self.session.openWithCallback(self.RemovePackage, MessageBox, _('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
+			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
 		else:
 			self.updateService()
 
@@ -2372,13 +2218,12 @@ class NetworkSamba(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
 	def removeComplete(self,result = None, retval = None, extra_args = None):
-		self.message.close()
-		self.close()
+		self.session.open(TryQuitMainloop, 2)
 
 	def createSummary(self):
 		return NetworkServicesSummary
@@ -2586,7 +2431,7 @@ class NetworkInadyn(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -2594,13 +2439,13 @@ class NetworkInadyn(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2614,7 +2459,7 @@ class NetworkInadyn(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -2628,7 +2473,7 @@ class NetworkInadyn(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2637,7 +2482,7 @@ class NetworkInadyn(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -2935,7 +2780,7 @@ class NetworkuShare(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -2943,13 +2788,13 @@ class NetworkuShare(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2963,7 +2808,7 @@ class NetworkuShare(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -2977,7 +2822,7 @@ class NetworkuShare(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -2986,7 +2831,7 @@ class NetworkuShare(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -3423,7 +3268,7 @@ class NetworkMiniDLNA(Screen):
 		if 'Collected errors' in str:
 			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif not str:
-			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck = self.session.open(MessageBox, _('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
 			self.feedscheck.setTitle(_('Checking Feeds'))
 			cmd1 = "opkg update"
 			self.CheckConsole = Console()
@@ -3431,13 +3276,13 @@ class NetworkMiniDLNA(Screen):
 		else:
 			self.updateService()
 
-	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+	def checkNetworkStateFinished(self, result, retval, extra_args=None):
 		if 'bad address' in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Ready to install "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -3451,7 +3296,7 @@ class NetworkMiniDLNA(Screen):
 		self.close()
 
 	def doInstall(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Installing Service'))
 		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
 
@@ -3465,7 +3310,7 @@ class NetworkMiniDLNA(Screen):
 
 	def RemovedataAvail(self, str, retval, extra_args):
 		if str:
-			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove %s ?') % self.service_name, MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.RemovePackage, MessageBox, _('Ready to remove "%s" ?') % self.service_name, MessageBox.TYPE_YESNO)
 		else:
 			self.updateService()
 
@@ -3474,7 +3319,7 @@ class NetworkMiniDLNA(Screen):
 			self.doRemove(self.removeComplete, self.service_name)
 
 	def doRemove(self, callback, pkgname):
-		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message = self.session.open(MessageBox, _("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
 		self.message.setTitle(_('Removing Service'))
 		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
 
@@ -3858,4 +3703,3 @@ class NetworkServicesSummary(Screen):
 		self["title"].text = title
 		self["status_summary"].text = status_summary
 		self["autostartstatus_summary"].text = autostartstatus_summary
-
