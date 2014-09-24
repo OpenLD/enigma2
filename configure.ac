@@ -498,6 +498,7 @@ lib/python/Plugins/Extensions/MediaScanner/Makefile
 lib/python/Plugins/Extensions/MediaScanner/meta/Makefile
 lib/python/Plugins/Extensions/Modem/Makefile
 lib/python/Plugins/Extensions/EPGImport/Makefile
+lib/python/Plugins/Extensions/EPGImport/epgimport/Makefile
 lib/python/Plugins/Extensions/PicturePlayer/Makefile
 lib/python/Plugins/Extensions/PicturePlayer/meta/Makefile
 lib/python/Plugins/Extensions/PicturePlayer/data/Makefile
@@ -551,6 +552,8 @@ lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
 lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
 lib/python/Plugins/SystemPlugins/SkinSelector/Makefile
 lib/python/Plugins/SystemPlugins/SkinSelector/meta/Makefile
+lib/python/Plugins/SystemPlugins/Videomode/Makefile
+lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
 lib/python/Tools/Makefile
 po/Makefile
 main/Makefile
