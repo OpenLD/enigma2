@@ -880,6 +880,9 @@
 		<key id="KEY_CHANNELUP" mapto="incUphop" flags="m"/>
 		<key id="KEY_CHANNELDOWN" mapto="decUphop" flags="m"/>
 	</map>
+		<map context="LDBluePanel">
+			<key id="KEY_BLUE" mapto="ldteam" flags="b" />
+		</map>
 
 		<map context="DVDPlayerActions">
 			<key id="KEY_MENU" mapto="dvdMenu" flags="m" />
