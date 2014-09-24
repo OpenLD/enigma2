@@ -34,7 +34,9 @@ eDVBVolumecontrol::eDVBVolumecontrol()
 	openMixer();
 #endif
 	volumeUnMute();
+#if not defined (__sh__) // dont reset volume on start
 	setVolume(100, 100);
+#endif
 }
 
 int eDVBVolumecontrol::openMixer()
@@ -175,7 +177,7 @@ void eDVBVolumecontrol::volumeMute()
 	int fd = openMixer();
 	if (fd >= 0)
 	{
-#ifdef HAVE_DVB_API_VERSION	
+#ifdef HAVE_DVB_API_VERSION
 		ioctl(fd, AUDIO_SET_MUTE, true);
 #endif
 		closeMixer(fd);

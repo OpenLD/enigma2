@@ -21,7 +21,7 @@
 		<item level="1" text="Plugins" entryID="plugin_selection"><screen module="PluginBrowser" screen="PluginBrowser" /></item>
 		<menu level="0" text="Setup" flushConfigOnClose="1" entryID="setup_selection" >
 			<id val="setup" />
-			<menu weight="7" level="0" text="Service searching" entryID="service_searching_selection">
+			<menu weight="7" level="0" text="Service searching" entryID="service_searching_selection" requires="!isGBIPBOX">
 				<id val="scan" />
 				<item weight="10" text="Tuner configuration" entryID="tuner_setup"><screen module="Satconfig" screen="NimSelection" /></item>
 				<item weight="20" text="Automatic scan" entryID="auto_scan"><screen module="ScanSetup" screen="ScanSimple" /></item>
@@ -34,12 +34,12 @@
 				<item level="0" entryID="remote_setup"><setup id="remotesetup"/></item>
 				<item level="0" entryID="usage_setup"><setup id="usage" /></item>
 				<item level="0" entryID="channelselection_setup"><setup id="channelselection" /></item>
-				<menu level="0" text="Sistema Extendido" entryID="extended_selection">
+				<menu level="0" text="Extended System" entryID="extended_selection">
 					<id val="extended" />
 				<menu level="0" text="Display" entryID="display_selection" requires="Display">
 					<id val="display" />
 					<item level="0" entryID="display_setup"><setup id="display" /></item>
-					<item level="0" text="Skin setup" entryID="lcd_skin_setup"><screen module="SkinSelector" screen="LcdSkinSelector"/></item>
+					<item level="0" text="Skin setup" entryID="lcd_skin_setup" requires="LCDSKINSetup"><screen module="SkinSelector" screen="LcdSkinSelector"/></item>
 				</menu>
 				<item level="0" entryID="specialfeatures_menu"><setup id="specialfeatures" /></item>
 				<item level="0" text="Timeshift settings" entryID="timshift_setup"><screen module="Timershift" screen="TimeshiftSettings" /></item>
@@ -51,7 +51,7 @@
 				<menu level="2" text="OSD settings" entryID="osd_setup" requires="OsdMenu">
 					<id val="osd_menu" />
 					<item level="0" entryID="user_interface"><setup id="userinterface" /></item>
-					<item level="2" text="OSD Position" entryID="osdsetup" requires="OsdSetup"><screen module="UserInterfacePositioner" screen="UserInterfacePositioner2"/></item>
+					<item level="2" text="OSD Position" entryID="osdsetup" requires="CanChangeOsdPosition"><screen module="UserInterfacePositioner" screen="UserInterfacePositioner2"/></item>
 					<item level="2" text="OSD 3D Setup" entryID="osd3dsetup" requires="CanChange3DOsd"><screen module="UserInterfacePositioner" screen="OSD3DSetupScreen"/></item>
 				</menu>
 				<menu level="0" text="Storage devices" entryID="hardisk_selection" requires="Harddisk">
@@ -125,6 +125,7 @@ self.session.open(RemoteControlCode)
 					<item level="2" text="Samba Setup" entryID="netsmba_setup"><screen module="NetworkSetup" screen="NetworkSamba"/></item>
 					<item level="2" text="Telnet Setup" entryID="nettelnet_setup"><screen module="NetworkSetup" screen="NetworkTelnet"/></item>
 					<item level="2" text="uShare Setup" entryID="netushare_setup"><screen module="NetworkSetup" screen="NetworkuShare"/></item>
+					<item level="2" text="Remote Tuner Server Setup" entryID="netrts_setup"><screen module="NetworkSetup" screen="RemoteTunerServer"/></item>
 				</menu>
 				<item level="0" text="Skin Setup" entryID="skin_setup"><screen module="SkinSelector" screen="SkinSelector"/></item>
 
@@ -136,9 +137,11 @@ self.session.open(RemoteControlCode)
 from Screens.FactoryReset import FactoryReset
 def msgClosed(ret):
 	if ret:
-		from os import system, _exit
+		from os import system, path, _exit
 		print"[FACTORY RESET] remove dir /etc/enigma2"
 		system("rm -R /etc/enigma2")
+		if path.exists("/media/hdd/images/config"):
+			system("rm -R /media/hdd/images/config")
 		print"[FACTORY RESET] set network to DHCP"
 		system("cp -f /usr/share/enigma2/defaults/interfaces /etc/network/interfaces")
 		system("/etc/init.d/networking restart")

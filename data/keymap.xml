@@ -46,6 +46,8 @@
 		<key id="KEY_GREEN" mapto="save" flags="b" />
 		<key id="KEY_LEFT" mapto="left" flags="mr" />
 		<key id="KEY_RIGHT" mapto="right" flags="mr" />
+		<key id="KEY_UP" mapto="up" flags="mr" />
+		<key id="KEY_DOWN" mapto="down" flags="mr" />
 		<key id="KEY_MUTE" mapto="deleteForward" flags="mr" />
 		<key id="KEY_NEXT" mapto="deleteForward" flags="mr" />
 		<key id="KEY_PREVIOUS" mapto="deleteBackward" flags="mr" />
@@ -81,7 +83,7 @@
 	<map context="InfobarEPGActions">
 		<key id="KEY_RED" mapto="RedPressed" flags="b" />
 		<key id="KEY_I" mapto="IPressed" flags="b" />
-		<key id="KEY_INFO" mapto="InfoPressed" flags="b" />
+		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_INFO" mapto="showEventInfoPlugin" flags="l" />
 		<key id="KEY_EPG" mapto="EPGPressed" flags="b" />
 		<key id="KEY_EPG" mapto="showEventInfoPlugin" flags="l" />
@@ -110,6 +112,7 @@
  	</map>
 
 	<map context="SatlistShortcutAction">
+		<key id="KEY_YELLOW" mapto="changetype" flags="b"/>
 		<key id="KEY_BLUE" mapto="nothingconnected" flags="b" />
 	</map>
 
@@ -131,12 +134,14 @@
 		<key id="KEY_CHANNELDOWN" mapto="ChannelMinusPressedLong" flags="l" /-->
 		<key id="BTN_0" mapto="zapUp" flags="mr" />
 		<key id="BTN_1" mapto="zapDown" flags="mr" />
-		<key id="KEY_SAT" mapto="openSatellites" flags="m" />		
+		<key id="KEY_SAT" mapto="openSatellites" flags="m" />
 	</map>
 	
 	<map context="InfobarHDMIActions">
 		<key id="KEY_AUX" mapto="HDMIin" flags="b" />
 		<key id="KEY_AUX" mapto="HDMIinLong" flags="l" />
+		<key id="KEY_F11" mapto="HDMIin" flags="b" />
+		<key id="KEY_F11" mapto="HDMIinLong" flags="l" />
 	</map>	
 
 	<map context="MinuteInputActions">
@@ -190,9 +195,10 @@
 		<key id="KEY_MENU" mapto="mainMenu" flags="mr" />
 		<key id="KEY_SPACE" mapto="mainMenu" flags="mr" />
 		<key id="KEY_PC" mapto="showNetworkSetup" flags="mr" />
+		<key id="KEY_LAN" mapto="showNetworkSetup" flags="mr" />
 		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" /> 
 		<key id="KEY_ANGLE" mapto="toggleAspectRatio" flags="b" />
-		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />			
+		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />
 	</map>
 
 	<map context="MenuActions">
@@ -203,7 +209,6 @@
 	<map context="InfobarShowHideActions">
 		<key id="KEY_OK" mapto="toggleShow" flags="m" />
 		<key id="KEY_OK" mapto="LongOKPressed" flags="l" />
-		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_ENTER" mapto="toggleShow" flags="m" />
 		<key id="KEY_EXIT" mapto="hide" flags="m" />
 		<key id="KEY_ESC" mapto="hide" flags="m" />
@@ -226,6 +231,7 @@
 		<key id="KEY_PROGRAM" mapto="openTimerList" flags="b" />
 		<key id="KEY_SLOW" mapto="openTimerList" flags="b" />
 		<key id="KEY_F5" mapto="openTimerList" flags="b" />
+		<key id="KEY_TIME" mapto="openTimerList" flags="b" />
 		<key id="KEY_PROGRAM" mapto="openAutoTimerList" flags="l" />
 		<key id="KEY_SEARCH" mapto="openEPGSearch" flags="b" />
 		<key id="KEY_SEARCH" mapto="openIMDB" flags="l" />
@@ -252,8 +258,13 @@
 		</device>
 		<device name="gigablue remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
-			<key id="KEY_AUDIO" mapto="audioSelection" flags="m" />
 		</device>
+		<device name="OPTIMUSS OS2+ remote control (native)">
+			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+		</device>
+		<device name="remote control">
+			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+		</device>		
 		<key id="KEY_AUDIO" mapto="audio_key" flags="m" />
 		<key id="KEY_OPTION" mapto="audioSelection" flags="m" />
 	</map>
@@ -428,6 +439,7 @@
 			<key id="KEY_RED" mapto="seekBackManual" flags="l" />
 			<key id="KEY_BLUE" mapto="seekFwdManual" flags="l" />
 		</device>
+		<key id="KEY_YELLOW" mapto="playpauseService" flags="m" />
 		<key id="KEY_PLAYPAUSE" mapto="playpauseService" flags="m" />
 		<key id="KEY_PAUSE" mapto="pauseService" flags="m" />
 		<key id="KEY_PLAY" mapto="playpauseService" flags="m" />
@@ -492,7 +504,6 @@
 	</map>
 
 	<map context="InfobarTimeshiftActions">
-		<key id="KEY_YELLOW" mapto="timeshiftStartY" flags="b" />
 		<device name="dreambox advanced remote control (native)">
 			<key id="KEY_PLAY" mapto="timeshiftStart" flags="m" />
 			<key id="KEY_TV" mapto="timeshiftStop" flags="m" />
@@ -511,7 +522,7 @@
 		<key id="KEY_PLAYPAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />
-		<key id="KEY_TIME" mapto="timeshiftStart" flags="m" />
+		<!--key id="KEY_TIME" mapto="timeshiftStart" flags="m" /-->
 		<key id="KEY_RECORD" mapto="instantRecord" flags="m" />
 		<key id="KEY_PREVIOUS" mapto="jumpPreviousFile" flags="m" />
 		<key id="KEY_NEXT" mapto="jumpNextFile" flags="m" />
@@ -599,6 +610,7 @@
 		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_FILE" mapto="transparent" flags="m" />
+		<key id="KEY_MEDIA" mapto="transparent" flags="m" />
 		<key id="KEY_GREEN" mapto="green" flags="m" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
 		<key id="KEY_RED" mapto="red" flags="m" />
@@ -606,6 +618,7 @@
 		<key id="KEY_CHANNELUP" mapto="zoomMode" flags="m" />
 		<key id="KEY_CHANNELDOWN" mapto="screenMode" flags="m" />
 		<key id="KEY_HELP" mapto="hint" flags="m" />
+		<key id="KEY_INFO" mapto="hint" flags="m" />
 		<key id="KEY_MENU" mapto="menu" flags="m" />
 		<key id="KEY_TEXT" mapto="exit" flags="m" />
 		<key id="KEY_EXIT" mapto="exit" flags="m" />
@@ -799,6 +812,7 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_CHANNELUP" mapto="size+" flags="mr" />
 		<key id="KEY_CHANNELDOWN" mapto="size-" flags="mr" />
+		<key id="KEY_INFO" mapto="mode" flags="mr" />
 	</map>
 
 	<map context="MediaPlayerActions">
@@ -866,9 +880,7 @@
 		<key id="KEY_CHANNELUP" mapto="incUphop" flags="m"/>
 		<key id="KEY_CHANNELDOWN" mapto="decUphop" flags="m"/>
 	</map>
-		<map context="LDBluePanel">
-			<key id="KEY_BLUE" mapto="ldteam" flags="b" />
-		</map>
+
 		<map context="DVDPlayerActions">
 			<key id="KEY_MENU" mapto="dvdMenu" flags="m" />
 			<key id="KEY_INFO" mapto="toggleInfo" flags="m" />

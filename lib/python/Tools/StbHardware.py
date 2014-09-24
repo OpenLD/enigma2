@@ -6,7 +6,12 @@ from boxbranding import getBoxType, getBrandOEM
 def getFPVersion():
 	ret = None
 	try:
-		ret = long(open("/proc/stb/fp/version", "r").read())
+		if getBrandOEM() == "blackbox":
+			file = open("/proc/stb/info/micomver", "r")
+			ret = file.readline().strip()
+			file.close()
+		else:	
+			ret = long(open("/proc/stb/fp/version", "r").read())
 	except IOError:
 		try:
 			fp = open("/dev/dbox/fp0")
@@ -46,6 +51,8 @@ def setRTCoffset():
 		print "set RTC Offset failed!"
 
 def setRTCtime(wutime):
+	if getBoxType() in ('gb800solo', 'gb800se', 'gb800ue') or getBrandOEM().startswith('ini') or getBrandOEM() in ('fulan'):
+		setRTCoffset() 
 	try:
 		f = open("/proc/stb/fp/rtc", "w")
 		f.write(str(wutime))

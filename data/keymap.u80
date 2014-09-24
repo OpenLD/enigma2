@@ -75,7 +75,7 @@
 	</map>
 
 	<map context="InfobarEPGActions">
-		<key id="KEY_INFO" mapto="InfoPressed" flags="b" />
+		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_INFO" mapto="showEventInfoPlugin" flags="l" />
 		<key id="KEY_EPG" mapto="EPGPressed" flags="b" />
 		<key id="KEY_EPG" mapto="showEventInfoPlugin" flags="l" />
@@ -182,7 +182,6 @@
 	<map context="InfobarShowHideActions">
 		<key id="KEY_OK" mapto="toggleShow" flags="m" />
 		<key id="KEY_OK" mapto="LongOKPressed" flags="l" />
-		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_ENTER" mapto="toggleShow" flags="m" />
 		<key id="KEY_EXIT" mapto="hide" flags="m" />
 		<key id="KEY_ESC" mapto="hide" flags="m" />
@@ -196,6 +195,7 @@
 		<key id="KEY_RADIO" mapto="showRadio" flags="b" //-->
 		<key id="KEY_HOMEPAGE" mapto="showMC" flags="b" />
 		<key id="KEY_BOOKMARKS" mapto="showMC" flags="b" />
+		<key id="KEY_TIME" mapto="openTimerList" flags="b" />
 		<!--key id="KEY_RADIO" mapto="openBouquetList" flags="l" //-->
 		<key id="KEY_TV" mapto="showTv" flags="b" />
 		<key id="KEY_TV" mapto="openBouquetList" flags="l" />
@@ -384,16 +384,16 @@
 	</map>
 
 	<map context="InfobarTimeshiftActions">
-		<key id="KEY_YELLOW" mapto="timeshiftStartY" flags="b" />
+		<key id="KEY_YELLOW" mapto="timeshiftStart" flags="b" />
 
 		<device name="dreambox ir keyboard">
-			<key id="KEY_YELLOW" mapto="timeshiftStartY" flags="m" />
+			<key id="KEY_YELLOW" mapto="timeshiftStart" flags="m" />
 			<key id="KEY_TV" mapto="timeshiftStop" flags="m" />
 		</device>
 		<key id="KEY_PLAYPAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />
-		<key id="KEY_TIME" mapto="timeshiftStart" flags="m" />
+		<!--key id="KEY_TIME" mapto="timeshiftStart" flags="m" /-->
 		<key id="KEY_RECORD" mapto="instantRecord" flags="m" />
 		<key id="KEY_STOP" mapto="instantRecord" flags="l" />
 	</map>
@@ -477,6 +477,7 @@
 		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_FILE" mapto="transparent" flags="m" />
+		<key id="KEY_MEDIA" mapto="transparent" flags="m" />
 		<key id="KEY_GREEN" mapto="green" flags="m" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
 		<key id="KEY_RED" mapto="red" flags="m" />
@@ -484,6 +485,7 @@
 		<key id="KEY_CHANNELUP" mapto="zoomMode" flags="m" />
 		<key id="KEY_CHANNELDOWN" mapto="screenMode" flags="m" />
 		<key id="KEY_HELP" mapto="hint" flags="m" />
+		<key id="KEY_INFO" mapto="hint" flags="m" />
 		<key id="KEY_MENU" mapto="menu" flags="m" />
 		<key id="KEY_TEXT" mapto="exit" flags="m" />
 		<key id="KEY_EXIT" mapto="exit" flags="m" />
@@ -669,6 +671,7 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_CHANNELUP" mapto="size+" flags="mr" />
 		<key id="KEY_CHANNELDOWN" mapto="size-" flags="mr" />
+		<key id="KEY_INFO" mapto="mode" flags="mr" />
 	</map>
 
 	<map context="MediaPlayerActions">

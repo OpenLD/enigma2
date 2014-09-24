@@ -42,8 +42,8 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_ESC" mapto="cancel" flags="m" />
-		<key id="KEY_RED" mapto="cancel" flags="m" />
-		<key id="KEY_GREEN" mapto="save" flags="m" />
+		<key id="KEY_RED" mapto="cancel" flags="b" />
+		<key id="KEY_GREEN" mapto="save" flags="b" />
 		<key id="KEY_LEFT" mapto="left" flags="mr" />
 		<key id="KEY_RIGHT" mapto="right" flags="mr" />
 		<key id="KEY_MUTE" mapto="deleteForward" flags="mr" />
@@ -79,7 +79,7 @@
 	<map context="InfobarEPGActions">
 		<key id="KEY_RED" mapto="RedPressed" flags="b" />
 		<key id="KEY_I" mapto="IPressed" flags="b" />
-		<key id="KEY_INFO" mapto="InfoPressed" flags="b" />
+		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_INFO" mapto="showEventInfoPlugin" flags="l" />
 		<key id="KEY_EPG" mapto="EPGPressed" flags="b" />
 		<key id="KEY_EPG" mapto="showEventInfoPlugin" flags="l" />
@@ -94,20 +94,12 @@
 
 	<map context="InfobarExtensions">
 		<key id="KEY_RED" mapto="RedPressed" flags="b" />
-		<!--key id="KEY_RED" mapto="showEventInfo" flags="l" />
+		<key id="KEY_RED" mapto="showEventInfo" flags="l" />
 		<key id="KEY_GREEN" mapto="openTimerList" flags="b" />
 		<key id="KEY_GREEN" mapto="openAutoTimerList" flags="l" />
 		<key id="KEY_YELLOW" mapto="openEPGSearch" flags="b" />
 		<key id="KEY_YELLOW" mapto="openIMDB" flags="l" />
-		<key id="KEY_BLUE" mapto="showPluginBrowser" flags="l" /-->
-		<key id="KEY_F1" mapto="RedPressed" flags="b" />
-		<key id="KEY_F1" mapto="showEventInfo" flags="l" />
-		<key id="KEY_F2" mapto="openTimerList" flags="b" />
-		<key id="KEY_F2" mapto="openAutoTimerList" flags="l" />
-		<key id="KEY_F3" mapto="openEPGSearch" flags="b" />
-		<key id="KEY_F3" mapto="openIMDB" flags="l" />
-		<key id="KEY_F4" mapto="showPluginBrowser" flags="l" />
-		<key id="KEY_F4" mapto="extensions" flags="b" />
+		<key id="KEY_BLUE" mapto="showPluginBrowser" flags="l" />
 		<key id="KEY_BLUE" mapto="extensions" flags="l" />
 	</map>
 
@@ -195,7 +187,7 @@
 		<key id="KEY_PC" mapto="showNetworkSetup" flags="mr" />
 		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" /> 
 		<key id="KEY_ANGLE" mapto="toggleAspectRatio" flags="b" />
-		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />			
+		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_ENTER" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="back" flags="m" />
@@ -216,7 +208,6 @@
 	<map context="InfobarShowHideActions">
 		<key id="KEY_OK" mapto="toggleShow" flags="m" />
 		<key id="KEY_OK" mapto="LongOKPressed" flags="l" />
-		<key id="KEY_INFO" mapto="InfoPressed" flags="m" />
 		<key id="KEY_ENTER" mapto="toggleShow" flags="m" />
 		<key id="KEY_EXIT" mapto="toggleShow" flags="b" />
 		<key id="KEY_ESC" mapto="hide" flags="m" />
@@ -224,38 +215,47 @@
 
 	<map context="InfobarActions">
 		<key id="KEY_VIDEO" mapto="showMovies" flags="b" />
-		<key id="KEY_VIDEO" mapto="showMediaPlayer" flags="l" />
-		<key id="KEY_PLAY" mapto="showMovies" flags="m" />
-		<key id="KEY_RADIO" mapto="showRadio" flags="b" />
-		<key id="KEY_HOMEPAGE" mapto="showWWW" flags="b" />
-		<key id="KEY_BOOKMARKS" mapto="showWWW" flags="b" />
-		<key id="KEY_RADIO" mapto="openBouquetList" flags="l" />
-		<key id="KEY_TV" mapto="showTv" flags="b" />
-		<key id="KEY_TV" mapto="openBouquetList" flags="l" />
-		<key id="KEY_FAVORITES" mapto="openBouquetList" flags="b" />
-		<key id="KEY_FILE" mapto="showMovies" flags="m" />
-		<key id="KEY_MEDIA" mapto="showMovies" flags="m" />
-		<key id="KEY_LIST" mapto="showMediaPlayer" flags="b" />
-		<key id="KEY_PROGRAM" mapto="openTimerList" flags="b" />
-		<key id="KEY_SLOW" mapto="openTimerList" flags="b" />
-		<key id="KEY_F5" mapto="openTimerList" flags="b" />
-		<key id="KEY_PROGRAM" mapto="openAutoTimerList" flags="l" />
-		<key id="KEY_SEARCH" mapto="openEPGSearch" flags="b" />
-		<key id="KEY_SEARCH" mapto="openIMDB" flags="l" />
-		<key id="KEY_SLEEP" mapto="openSleepTimer" flags="b" />
-		<key id="KEY_ZOOM" mapto="ZoomInOut" flags="b" />
-		<key id="KEY_ZOOM" mapto="ZoomOff" flags="l" />
-		<key id="KEY_CONNECT" mapto="HarddiskSetup" flags="b" />
-		<key id="KEY_WWW" mapto="showWWW" flags="m" />
-		<key id="KEY_SETUP" mapto="showSetup" flags="m" />
-		<key id="KEY_DIRECTORY" mapto="showPluginBrowser" flags="mm" />
-		<key id="KEY_PVR" mapto="showMovies" flags="m" />
-		<key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
-		<key id="KEY_F1" mapto="showWWW" flags="b" />
+        <key id="KEY_VIDEO" mapto="showMediaPlayer" flags="l" />
+        <key id="KEY_PLAY" mapto="showMovies" flags="m" />
+        <key id="KEY_RADIO" mapto="showRadio" flags="b" />
+        <key id="KEY_HOMEPAGE" mapto="showWWW" flags="b" />
+        <key id="KEY_BOOKMARKS" mapto="showWWW" flags="b" />
+        <key id="KEY_RADIO" mapto="openBouquetList" flags="l" />
+        <key id="KEY_TV" mapto="showTv" flags="b" />
+        <key id="KEY_TV" mapto="openBouquetList" flags="l" />
+        <key id="KEY_FAVORITES" mapto="openBouquetList" flags="b" />
+        <key id="KEY_FILE" mapto="showMovies" flags="m" />
+        <key id="KEY_MEDIA" mapto="showMovies" flags="m" />
+        <key id="KEY_LIST" mapto="showMediaPlayer" flags="b" />
+        <key id="KEY_PROGRAM" mapto="openTimerList" flags="b" />
+        <key id="KEY_SLOW" mapto="openTimerList" flags="b" />
+        <key id="KEY_F5" mapto="openTimerList" flags="b" />
+		<key id="KEY_TIME" mapto="openTimerList" flags="b" />
+        <key id="KEY_PROGRAM" mapto="openAutoTimerList" flags="l" />
+        <key id="KEY_SEARCH" mapto="openEPGSearch" flags="b" />
+        <key id="KEY_SEARCH" mapto="openIMDB" flags="l" />
+        <key id="KEY_SLEEP" mapto="openSleepTimer" flags="b" />
+        <key id="KEY_ZOOM" mapto="ZoomInOut" flags="b" />
+        <key id="KEY_ZOOM" mapto="ZoomOff" flags="l" />
+        <key id="KEY_CONNECT" mapto="HarddiskSetup" flags="b" />
+        <key id="KEY_WWW" mapto="showWWW" flags="m" />
+        <key id="KEY_SETUP" mapto="showSetup" flags="m" />
+        <key id="KEY_DIRECTORY" mapto="showPluginBrowser" flags="mm" />
+        <key id="KEY_PVR" mapto="showMovies" flags="m" />
+        <key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
+        <key id="KEY_OPEN" mapto="showBoxPortal" flags="b" />
+        <key id="KEY_F1" mapto="showWWW" flags="b" />
+        <key id="KEY_F2" mapto="showMC" flags="b" />
 	</map>
 
 	<map context="InfobarAudioSelectionActions">
 		<device name="dreambox advanced remote control (native)">
+			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+		</device>
+		<device name="OPTIMUSS OS2+ remote control (native)">
+			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+		</device>
+		<device name="remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
 		</device>
 		<key id="KEY_AUDIO" mapto="audio_key" flags="m" />
@@ -478,16 +478,16 @@
 	</map>
 
 	<map context="InfobarTimeshiftActions">
-		<key id="KEY_YELLOW" mapto="timeshiftStartY" flags="b" />
+		<key id="KEY_YELLOW" mapto="timeshiftStart" flags="b" />
 
 		<device name="dreambox ir keyboard">
-			<key id="KEY_YELLOW" mapto="timeshiftStartY" flags="m" />
+			<key id="KEY_YELLOW" mapto="timeshiftStart" flags="m" />
 			<key id="KEY_TV" mapto="timeshiftStop" flags="m" />
 		</device>
 		<key id="KEY_PLAYPAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />
-		<key id="KEY_TIME" mapto="timeshiftStart" flags="m" />
+		<!--key id="KEY_TIME" mapto="timeshiftStart" flags="m" /-->
 		<key id="KEY_RECORD" mapto="instantRecord" flags="m" />
 		<key id="KEY_PREVIOUS" mapto="jumpPreviousFile" flags="m" />
 		<key id="KEY_NEXT" mapto="jumpNextFile" flags="m" />
@@ -573,6 +573,7 @@
 		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_FILE" mapto="transparent" flags="m" />
+		<key id="KEY_MEDIA" mapto="transparent" flags="m" />
 		<key id="KEY_GREEN" mapto="green" flags="m" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
 		<key id="KEY_RED" mapto="red" flags="m" />
@@ -580,6 +581,7 @@
 		<key id="KEY_CHANNELUP" mapto="zoomMode" flags="m" />
 		<key id="KEY_CHANNELDOWN" mapto="screenMode" flags="m" />
 		<key id="KEY_HELP" mapto="hint" flags="m" />
+		<key id="KEY_INFO" mapto="hint" flags="m" />
 		<key id="KEY_MENU" mapto="menu" flags="m" />
 		<key id="KEY_TEXT" mapto="exit" flags="m" />
 		<key id="KEY_EXIT" mapto="exit" flags="m" />
@@ -723,10 +725,10 @@
 		<key id="KEY_F3" mapto="green" flags="mr" />
 		<key id="KEY_F4" mapto="blue" flags="mr" />
 
-		<key id="KEY_RED" mapto="red" flags="mr" />
-		<key id="KEY_YELLOW" mapto="yellow" flags="mr" />
-		<key id="KEY_GREEN" mapto="green" flags="mr" />
-		<key id="KEY_BLUE" mapto="blue" flags="mr" />
+		<key id="KEY_RED" mapto="red" flags="b" />
+		<key id="KEY_YELLOW" mapto="yellow" flags="b" />
+		<key id="KEY_GREEN" mapto="green" flags="b" />
+		<key id="KEY_BLUE" mapto="blue" flags="b" />
 		<key id="KEY_CHANNELUP" mapto="nextBouquet" flags="m" />
 		<key id="KEY_CHANNELDOWN" mapto="prevBouquet" flags="m" />
 	</map>
@@ -774,6 +776,7 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_CHANNELUP" mapto="size+" flags="mr" />
 		<key id="KEY_CHANNELDOWN" mapto="size-" flags="mr" />
+		<key id="KEY_INFO" mapto="mode" flags="mr" />
 	</map>
 
 	<map context="MediaPlayerActions">

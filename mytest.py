@@ -92,7 +92,7 @@ def NTPserverChanged(configelement):
 	os.chmod("/etc/default/ntpdate", 0755)
 	from Components.Console import Console
 	Console = Console()
-	Console.ePopen('/usr/bin/ntpdate ' + config.misc.NTPserver.value)
+	Console.ePopen('/usr/bin/ntpdate-sync')
 config.misc.NTPserver.addNotifier(NTPserverChanged, immediate_feedback = True)
 
 profile("Twisted")
@@ -253,6 +253,7 @@ class Session:
 			errstr = "Screen %s(%s, %s): %s" % (str(screen), str(arguments), str(kwargs), exc_info()[0])
 			print errstr
 			print_exc(file=stdout)
+			print "[mytest.py] quitMainloop #1"
 			enigma.quitMainloop(5)
 
 	def instantiateDialog(self, screen, *arguments, **kwargs):
@@ -285,6 +286,7 @@ class Session:
 			print 'EXCEPTION IN DIALOG INIT CODE, ABORTING:'
 			print '-'*60
 			print_exc(file=stdout)
+			print "[mytest.py] quitMainloop #2"
 			enigma.quitMainloop(5)
 			print '-'*60
 
@@ -491,6 +493,21 @@ from Components.VolumeControl import VolumeControl
 from time import time, localtime, strftime
 from Tools.StbHardware import setFPWakeuptime, setRTCtime
 
+def autorestoreLoop():
+	# Check if auto restore settings fails, just start the wizard (avoid a endless loop) 
+	count = 0
+	if os.path.exists("/media/hdd/images/config/autorestore"):
+		f = open("/media/hdd/images/config/autorestore", "r")
+		count = int(f.read())
+		f.close()
+		if count >= 3:
+			return False
+	count += 1
+	f = open("/media/hdd/images/config/autorestore", "w")
+	f.write(str(count))
+	f.close()
+	return True		
+
 def runScreenTest():
 	config.misc.startCounter.value += 1
 
@@ -503,17 +520,32 @@ def runScreenTest():
 
 	CiHandler.setSession(session)
 
-	screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
-
 	profile("wizards")
-	screensToRun += wizardManager.getWizards()
+	screensToRun = []
+	RestoreSettings = None
+	if os.path.exists("/media/hdd/images/config/settings") and config.misc.firstrun.value:
+		if autorestoreLoop():
+			RestoreSettings = True
+			from Plugins.SystemPlugins.SoftwareManager.BackupRestore import RestoreScreen
+			session.open(RestoreScreen, runRestore = True)
+		else:
+			screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
+			screensToRun += wizardManager.getWizards()
+	else:
+		if os.path.exists("/media/hdd/images/config/autorestore"):
+			os.system('rm -f /media/hdd/images/config/autorestore')
+		screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
+		screensToRun += wizardManager.getWizards()
+	
 	screensToRun.append((100, InfoBar.InfoBar))
 	screensToRun.sort()
+	print screensToRun
 
 	enigma.ePythonConfigQuery.setQueryFunc(configfile.getResolvedKey)
 
 	def runNextScreen(session, screensToRun, *result):
 		if result:
+			print "[mytest.py] quitMainloop #3"
 			enigma.quitMainloop(*result)
 			return
 
@@ -524,14 +556,15 @@ def runScreenTest():
 		else:
 			session.open(screen, *args)
 
-	runNextScreen(session, screensToRun)
+	if not RestoreSettings:
+		runNextScreen(session, screensToRun)
 
 	profile("Init:VolumeControl")
 	vol = VolumeControl(session)
 	profile("Init:PowerKey")
 	power = PowerKey(session)
 	
-	if boxtype in ('mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00'):
+	if boxtype in ('mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3'):
 		profile("VFDSYMBOLS")
 		import Components.VfdSymbols
 		Components.VfdSymbols.SymbolsCheck(session)
@@ -550,21 +583,11 @@ def runScreenTest():
 	profile("RunReactor")
 	profile_final()
 
-	if boxtype in ( 'gb800se', 'gb800solo', 'gb800seplus'):
-		from enigma import evfd, eConsoleAppContainer
-		try:
-			cmd = 'vfdctl "    openld starting e2"'
-			container = eConsoleAppContainer()
-			container.execute(cmd)
-		except:
-			evfd.getInstance().vfd_write_string("-E2-")
-		evfd.getInstance().vfd_led(str(1))
-		
 	if boxtype in ('sf8', 'classm', 'axodin', 'axodinc', 'starsatlx', 'genius', 'evo'):
 		f = open("/dev/dbox/oled0", "w")
 		f.write('-E2-')
 		f.close()
-		
+
 	print "lastshutdown=%s		(True = last shutdown was OK)" % config.usage.shutdownOK.value
 	print "NOK shutdown action=%s" % config.usage.shutdownNOK_action.value
 	print "bootup action=%s" % config.usage.boot_action.value
@@ -575,11 +598,15 @@ def runScreenTest():
 
 	config.usage.shutdownOK.setValue(False)
 	config.usage.shutdownOK.save()
-	configfile.save()
+	if not RestoreSettings:
+		configfile.save()
+
+	# kill showiframe if it is running (sh4 hack...)
+	os.system("killall -9 showiframe")
 	
 	runReactor()
 
-	print "normal shutdown"
+	print "[mytest.py] normal shutdown"
 	config.misc.startCounter.save()
 	config.usage.shutdownOK.setValue(True)
 	config.usage.shutdownOK.save()
@@ -696,8 +723,7 @@ import keymapparser
 keymapparser.readKeymap(config.usage.keymap.value)
 
 profile("Network")
-import Components.Network, Components.Wol
-Components.Wol.Init()
+import Components.Network
 Components.Network.InitNetwork()
 
 profile("LCD")
@@ -705,7 +731,7 @@ import Components.Lcd
 Components.Lcd.InitLcd()
 Components.Lcd.IconCheck()
 # Disable internal clock vfd for ini5000 until we can adjust it for standby
-if boxtype in ('uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin'):
+if boxtype in ('uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'beyonwizt3'):
 	try:
 		f = open("/proc/stb/fp/enable_clock", "r").readline()[:-1]
 		if f != '0':
@@ -751,5 +777,6 @@ except:
 	print 'EXCEPTION IN PYTHON STARTUP CODE:'
 	print '-'*60
 	print_exc(file=stdout)
+	print "[mytest.py] quitMainloop #4"
 	enigma.quitMainloop(5)
 	print '-'*60

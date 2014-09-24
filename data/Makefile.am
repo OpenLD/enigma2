@@ -10,7 +10,6 @@ dist_pkgdata_DATA = \
 	rcpositions.xml \
 	setup.xml \
 	skin_subtitles.xml \
-	startwizard.xml \
 	userinterfacepositionerwizard.xml \
 	videowizard.xml \
 	freesat.t1 \
@@ -19,8 +18,18 @@ dist_pkgdata_DATA = \
 	hd-testcard.mvi \
 	distro-logo.png
 
+if GBIPBOX
+SUBDIRS += gbipbox
+else
+dist_pkgdata_DATA += startwizard.xml
+endif
+
 if HAVE_TEXTLCD
+if SPARK
+SUBDIRS += displaydualtext
+else
 SUBDIRS += displaytext
+endif
 endif
 
 if HAVE_COLORLCD2

@@ -48,8 +48,7 @@
 			<convert type="ConditionalShowHide">Blink</convert>
 		</widget>
 		<widget source="session.CurrentService" render="Pixmap" pixmap="hd.png" position="215,0" size="21,12">
-			<convert type="ServiceInfo">VideoWidth</convert>
-			<convert type="ValueRange">721,1980</convert>
+			<convert type="ServiceInfo">IsHD</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
 		<widget source="session.CurrentService" render="Pixmap" pixmap="dolby.png" position="239,0" size="16,12">
@@ -110,7 +109,7 @@
 		<widget source="parent.Event" render="Label" position="0,48" size="190,20" font="FdLcD;15" halign="left" noWrap="1">
 			<convert type="EventName">Name</convert>
 		</widget>
-		<widget source="parent.Event" render="Label" position="140,41" size="70,17" font="FdLcD;15" halign="left" valign="bottom">
+		<widget source="parent.Event" render="Label" position="140,40" size="70,12" font="FdLcD;10" halign="left" valign="bottom">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>
@@ -130,7 +129,7 @@
 		<widget source="session.Event_Now" render="Label" position="0,48" size="190,20" font="FdLcD;15" halign="left" noWrap="1">
 			<convert type="EventName">Name</convert>
 		</widget>
-		<widget source="session.Event_Now" render="Label" position="140,41" size="70,17" font="FdLcD;15" halign="left" valign="bottom">
+		<widget source="session.Event_Now" render="Label" position="140,40" size="70,12" font="FdLcD;10" halign="left" valign="bottom">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>
@@ -194,7 +193,7 @@
 		<widget source="parent.ServiceEvent" render="Label" position="0,48" size="190,20" font="FdLcD;15" halign="left" noWrap="1">
 			<convert type="EventName">Name</convert>
 		</widget>
-		<widget source="parent.ServiceEvent" render="Label" position="140,41" size="70,17" font="FdLcD;15" halign="left" valign="bottom">
+		<widget source="parent.ServiceEvent" render="Label" position="140,40" size="70,12" font="FdLcD;10" halign="left" valign="bottom">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>

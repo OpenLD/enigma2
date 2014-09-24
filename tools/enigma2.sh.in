@@ -12,10 +12,11 @@ fi
 
 # update NTP time if NTP Time Enabled
 if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.SyncTimeUsing=1" ]; then
-	/usr/bin/ntpdate -s -u pool.ntp.org &
+	/usr/sbin/ntpdate -s -u pool.ntp.org &
 fi
 
 if [ -x @bindir@/showiframe ]; then
+	killall -9 showiframe; sleep 1
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
@@ -23,24 +24,20 @@ if [ -x @bindir@/showiframe ]; then
 	fi
 fi
 
-# OpenLD - chmod 755 for scripts Blue Panel
-cd /usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts
-chmod 755 *.sh
-
 # hook to execute scripts always before enigma2 start
 if [ -x @bindir@/enigma2_pre_start.sh ]; then
 	@bindir@/enigma2_pre_start.sh
 fi
 
 if [ -e /proc/stb/info/hwmodel ]; then
-	stbcheck=`cat /proc/stb/info/hwmodel| cut -c1-8`
-	if [ $stbcheck == "optimuss" ]; then
-		string=`mount | grep 'sda1' | cut -c21-23` 
-		if [ -e /media/$string/sat-soft/settings.sh ]; then
-			chmod 755 /media/$string/sat-soft/settings.sh
-			/media/$string/sat-soft/settings.sh
-		fi
-	fi
+   stbcheck=`cat /proc/stb/info/hwmodel | cut -c1-8`
+   if [ $stbcheck == "optimuss" ]; then
+      string=`mount | grep 'sda1' | cut -d " " -f3`
+      if [ -e $string/sat-soft/settings.sh ]; then
+         chmod 755 $string/sat-soft/settings.sh
+         $string/sat-soft/settings.sh
+      fi
+   fi
 fi	
 
 if [ -d /home/root ]; then
@@ -69,6 +66,9 @@ if [ ! -e /etc/enigma2/settings ]; then
 fi
 
 sync
+
+(sleep 2; echo "enigma2 is the main pvr application... adjust oom score!"; PID=$(pidof enigma2); \
+        [ -e /proc/$PID/oom_score_adj ] && echo "-999" > /proc/$PID/oom_score_adj || echo "-17" > /proc/$PID/oom_adj;) &
 
 if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.enabledebug=true" ]; then
 	RANDOMIZE1970=''
@@ -112,11 +112,6 @@ case $ret in
 		/sbin/rmmod fp
 		/sbin/modprobe fp
 		/sbin/reboot
-		;;
-	5)
-		if ! grep -q config.misc.RestartUI /etc/enigma2/settings; then
-			echo "config.misc.RestartUI=true" >>/etc/enigma2/settings
-		fi
 		;;
 	42)
 		python /usr/lib/enigma2/python/upgrade.pyo

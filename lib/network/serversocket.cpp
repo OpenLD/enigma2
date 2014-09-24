@@ -39,7 +39,7 @@ eServerSocket::eServerSocket(int port, eMainloop *ml): eSocket(ml)
 
 	okflag=1;
 	int val=1;
-	
+
 	setsockopt(getDescriptor(), SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
 
 	if(bind(getDescriptor(),
@@ -66,9 +66,15 @@ eServerSocket::eServerSocket(std::string path, eMainloop *ml) : eSocket(ml, AF_L
 	okflag=1;
 
 	unlink(path.c_str());
+#if HAVE_LINUXSOCKADDR
+	if(bind(getDescriptor(),
+	(struct sockaddr *) &serv_addr,
+	strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family))<0)
+#else
 	if(bind(getDescriptor(),
 		(struct sockaddr *) &serv_addr,
 		sizeof(serv_addr))<0)
+#endif
 	{
 		eDebug("[SERVERSOCKET] ERROR on bind() (%m)");
 		okflag=0;

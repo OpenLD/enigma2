@@ -1,4 +1,5 @@
 from enigma import eServiceReference, eServiceCenter, getBestPlayableServiceReference
+from Components.SystemInfo import SystemInfo
 import NavigationInstance
 
 class ServiceReference(eServiceReference):
@@ -35,7 +36,7 @@ class ServiceReference(eServiceReference):
 
 	def isRecordable(self):
 		ref = self.ref
-		return ref.flags & eServiceReference.isGroup or (ref.type == eServiceReference.idDVB or ref.type == eServiceReference.idDVB + 0x100)
+		return ref.flags & eServiceReference.isGroup or (ref.type == eServiceReference.idDVB or ref.type == eServiceReference.idDVB + 0x100 or ref.type == 0x2000)
 
 def getPlayingref(ref):
 	playingref = None
@@ -47,7 +48,10 @@ def getPlayingref(ref):
 
 def isPlayableForCur(ref):
 	info = eServiceCenter.getInstance().info(ref)
-	return not not (info and info.isPlayable(ref, getPlayingref(ref)))
+	if SystemInfo["isGBIPBOX"]:
+		return not (info and info.isPlayable(ref, getPlayingref(ref)))
+	else:
+		return not not (info and info.isPlayable(ref, getPlayingref(ref)))
 
 def resolveAlternate(ref):
 	nref = None

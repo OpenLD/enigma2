@@ -10,7 +10,7 @@ import enigma
 def getTrashFolder(path=None):
 	# Returns trash folder without symlinks
 	try:
-		if path is None or os.path.realpath(path) == '/media/autofs/':
+		if path is None or os.path.realpath(path) == '/media/autofs':
 			print 'path is none'
 			return ""
 		else:
@@ -21,16 +21,19 @@ def getTrashFolder(path=None):
 				trashcan = Harddisk.findMountPoint(os.path.realpath(path))
 			return os.path.realpath(os.path.join(trashcan, ".Trash"))
 	except:
-		return ""
+		return None
 
 def createTrashFolder(path=None):
 	trash = getTrashFolder(path)
-	if not os.path.isdir(trash):
-		try:
-			os.mkdir(trash)
-		except:
-			pass
-	return trash
+	if trash and os.access(os.path.split(trash)[0], os.W_OK):
+		if not os.path.isdir(trash):
+			try:
+				os.mkdir(trash)
+			except:
+				return None
+		return trash
+	else:
+		return None
 
 def get_size(start_path = '.'):
 	total_size = 0

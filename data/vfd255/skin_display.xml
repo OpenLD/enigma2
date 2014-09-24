@@ -48,8 +48,7 @@
 			<convert type="ConditionalShowHide">Blink</convert>
 		</widget>
 		<widget source="session.CurrentService" render="Pixmap" pixmap="hd.png" position="215,0" size="21,12">
-			<convert type="ServiceInfo">VideoWidth</convert>
-			<convert type="ValueRange">721,1980</convert>
+			<convert type="ServiceInfo">IsHD</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
 		<widget source="session.CurrentService" render="Pixmap" pixmap="dolby.png" position="239,0" size="16,12">
@@ -110,7 +109,7 @@
 		<widget source="parent.Event" render="Progress" position="0,43" size="140,5" borderWidth="1">
 			<convert type="EventTime">Progress</convert>
 		</widget>
-		<widget source="parent.Event" render="Label" position="0,51" size="140,18" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
+		<widget source="parent.Event" render="Label" position="0,51" size="140,19" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>
@@ -127,7 +126,7 @@
 		<widget source="session.Event_Now" render="Progress" position="0,43" size="140,5" borderWidth="1">
 			<convert type="EventTime">Progress</convert>
 		</widget>
-		<widget source="session.Event_Now" render="Label" position="0,51" size="140,18" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
+		<widget source="session.Event_Now" render="Label" position="0,51" size="140,19" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>
@@ -188,7 +187,7 @@
 		<widget source="parent.ServiceEvent" render="Progress" position="0,43" size="140,5" borderWidth="1">
 			<convert type="EventTime">Progress</convert>
 		</widget>
-		<widget source="parent.ServiceEvent" render="Label" position="0,51" size="140,18" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
+		<widget source="parent.ServiceEvent" render="Label" position="0,51" size="140,19" font="FdLcD;17" halign="left" valign="bottom" noWrap="1">
 			<convert type="EventTime">VFDRemaining</convert>
 			<convert type="RemainingToText">VFDNoSeconds</convert>
 		</widget>

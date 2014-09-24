@@ -12,7 +12,7 @@ from Tools.Directories import fileExists
 
 profile("LOAD:enigma")
 import enigma
-from boxbranding import getBoxType, getMachineBrand,getBrandOEM
+from boxbranding import getBoxType, getMachineBrand, getBrandOEM
 
 boxtype = getBoxType()
 

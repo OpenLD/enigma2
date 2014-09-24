@@ -25,6 +25,9 @@ eDVBCIMMISession::eDVBCIMMISession(eDVBCISlot *tslot)
 
 eDVBCIMMISession::~eDVBCIMMISession()
 {
+#ifdef __sh__
+	slot->mmiClosed();
+#endif
 	slot->setMMIManager(NULL);
 	eDVBCI_UI::getInstance()->mmiSessionDestroyed(slot->getSlotID());
 }
@@ -86,7 +89,7 @@ int eDVBCIMMISession::stopMMI()
 	unsigned char tag[]={0x9f, 0x88, 0x00};
 	unsigned char data[]={0x00};
 	sendAPDU(tag, data, 1);
-	
+
 	return 0;
 }
 
@@ -98,7 +101,7 @@ int eDVBCIMMISession::answerText(int answer)
 	unsigned char data[]={0x00};
 	data[0] = answer & 0xff;
 	sendAPDU(tag, data, 1);
-	
+
 	return 0;
 }
 
@@ -124,7 +127,7 @@ int eDVBCIMMISession::cancelEnq()
 	unsigned char tag[]={0x9f, 0x88, 0x08};
 	unsigned char data[]={0x00}; // canceled
 	sendAPDU(tag, data, 1);
-	
+
 	return 0;
 }
 

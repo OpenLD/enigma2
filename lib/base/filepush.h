@@ -13,6 +13,10 @@ class iFilePushScatterGather
 public:
 	virtual void getNextSourceSpan(off_t current_offset, size_t bytes_read, off_t &start, size_t &size)=0;
 	virtual ~iFilePushScatterGather() {}
+#if defined(__sh__)
+	//Changes in this file are cause e2 doesnt tell the player to play reverse
+	virtual int getSkipMode() = 0;
+#endif
 };
 
 class eFilePushThread: public eThread, public Object
@@ -26,12 +30,12 @@ public:
 
 	void pause();
 	void resume();
-	
+
 	void enablePVRCommit(int);
 	/* stream mode will wait on EOF until more data is available. */
 	void setStreamMode(int);
 	void setScatterGather(iFilePushScatterGather *);
-	
+
 	enum { evtEOF, evtReadError, evtWriteError, evtUser, evtStopped };
 	Signal1<void,int> m_event;
 
