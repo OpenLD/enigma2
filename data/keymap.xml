@@ -259,6 +259,7 @@
 		</device>
 		<device name="gigablue remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+			<key id="KEY_AUDIO" mapto="audioSelection" flags="m" />
 		</device>
 		<device name="OPTIMUSS OS2+ remote control (native)">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
