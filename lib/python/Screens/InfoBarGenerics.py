@@ -567,12 +567,8 @@ class InfoBarShowHide(InfoBarScreenSaver):
 			self.pvrStateDialog = None
 
 	def InfoBPressed(self):
-		if (config.plisettings.PLIINFO_mode.value == "infobar") or (config.plisettings.PLIINFO_mode.value == "eventview"):
+		if config.plisettings.PLIINFO_mode.value == "infobar":
 			self.toggleShow()
-		elif config.plisettings.PLIINFO_mode.value == "epgpress":
-			self.showDefaultEPG()
-		elif config.plisettings.PLIINFO_mode.value == "single":
-			self.openSingleServiceEPG()
 
 	def OkPressed(self):
 		if config.usage.okbutton_mode.value == "0":
@@ -698,28 +694,12 @@ class InfoBarShowHide(InfoBarScreenSaver):
 			self.LongButtonPressed = False
 		if not self.LongButtonPressed:
 			if self.__state == self.STATE_HIDDEN:
-				if config.plisettings.PLIINFO_mode.value == "eventview":
-					self.hide()
-					if self.EventViewIsShown:
-						try:
-							self.eventView.close()
-						except:
-							pass
-						self.EventViewIsShown = False
-					if not self.EventViewIsShown:
-                                        	try:
-							self.openEventView()
-						except:
-							pass
-						self.EventViewIsShown = True
-						self.hideTimer.stop()
-				else:
-					if not self.secondInfoBarWasShown or (config.usage.show_second_infobar.value == "1" and not self.EventViewIsShown):
-						self.show()
-					if self.secondInfoBarScreen:
-						self.secondInfoBarScreen.hide()
-					self.secondInfoBarWasShown = False
-					self.EventViewIsShown = False
+				if not self.secondInfoBarWasShown or (config.usage.show_second_infobar.value == "1" and not self.EventViewIsShown):
+					self.show()
+				if self.secondInfoBarScreen:
+					self.secondInfoBarScreen.hide()
+				self.secondInfoBarWasShown = False
+				self.EventViewIsShown = False
 			elif self.secondInfoBarScreen and (config.usage.show_second_infobar.value == "2" or config.usage.show_second_infobar.value == "3") and not self.secondInfoBarScreen.shown:
 				self.SwitchSecondInfoBarScreen()
 				self.hide()
@@ -4111,7 +4091,7 @@ class InfoBarHdmi:
 		self.hdmi_enabled_full = False
 		self.hdmi_enabled_pip = False
 
-		if getMachineBuild() == 'inihdp':
+		if getMachineProcModel().startswith('ini-90'):
 			if not self.hdmi_enabled_full:
 				self.addExtension((self.getHDMIInFullScreen, self.HDMIInFull, lambda: True), "blue")
 			if not self.hdmi_enabled_pip:
