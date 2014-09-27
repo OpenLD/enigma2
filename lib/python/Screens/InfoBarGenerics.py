@@ -2707,7 +2707,7 @@ class InfoBarPiP:
 
 		self.lastPiPService = None
 
-		if SystemInfo.get("NumVideoDecoders", 1) > 1 and isinstance(self, InfoBarEPG):
+		if SystemInfo["PIPAvailable"] and isinstance(self, InfoBarEPG):
 			self["PiPActions"] = HelpableActionMap(self, "InfobarPiPActions",
 				{
 					"activatePiP": (self.showPiP, _("Activate PiP")),
