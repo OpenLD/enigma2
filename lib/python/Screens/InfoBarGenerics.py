@@ -1142,7 +1142,7 @@ class InfoBarChannelSelection:
 	def switchChannelUp(self):
 		if not self.secondInfoBarScreen.shown:
 			self.keyHide()
-			if not self.LongButtonPressed:
+			if not self.LongButtonPressed or SystemInfo.get("NumVideoDecoders", 1) <= 1:
 				if not config.usage.show_bouquetalways.value:
 					if "keep" not in config.usage.servicelist_cursor_behavior.value:
 						self.servicelist.moveUp()
@@ -1162,7 +1162,7 @@ class InfoBarChannelSelection:
 	def switchChannelDown(self):
 		if not self.secondInfoBarScreen.shown:
 			self.keyHide()
-			if not self.LongButtonPressed:
+			if not self.LongButtonPressed or SystemInfo.get("NumVideoDecoders", 1) <= 1:
 				if not config.usage.show_bouquetalways.value:
 					if "keep" not in config.usage.servicelist_cursor_behavior.value:
 						self.servicelist.moveDown()
@@ -1190,7 +1190,7 @@ class InfoBarChannelSelection:
 		self.session.execDialog(self.servicelist)
 
 	def zapUp(self):
-		if not self.LongButtonPressed:
+		if not self.LongButtonPressed or SystemInfo.get("NumVideoDecoders", 1) <= 1:
 			if self.pts_blockZap_timer.isActive():
 				return
 
@@ -1246,7 +1246,7 @@ class InfoBarChannelSelection:
 			ChannelSelectionInstance.dopipzap = False
 
 	def zapDown(self):
-		if not self.LongButtonPressed:
+		if not self.LongButtonPressed or SystemInfo.get("NumVideoDecoders", 1) <= 1:
 			if self.pts_blockZap_timer.isActive():
 				return
 
