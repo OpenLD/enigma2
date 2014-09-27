@@ -2792,9 +2792,14 @@ class InfoBarPiP:
 						f.write("1")
 						f.close()
 			else:
-				self.lastPiPService = None
-				self.session.pipshown = False
-				del self.session.pip
+				newservice = self.session.nav.getCurrentlyPlayingServiceReference() or self.servicelist.servicelist.getCurrent()
+				if self.session.pip.playService(newservice):
+					self.session.pipshown = True
+					self.session.pip.servicePath = self.servicelist.getCurrentServicePath()
+				else:
+					self.lastPiPService = None
+					self.session.pipshown = False
+					del self.session.pip
 
 	def swapPiP(self):
 		swapservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
