@@ -2792,6 +2792,7 @@ class InfoBarPiP:
 						f.write("1")
 						f.close()
 			else:
+				self.lastPiPService = None
 				self.session.pipshown = False
 				del self.session.pip
 
