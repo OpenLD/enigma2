@@ -524,7 +524,6 @@ class InfoBarShowHide(InfoBarScreenSaver):
 		self["ShowHideActions"] = ActionMap( ["InfobarShowHideActions"] ,
 			{
 				"LongOKPressed": self.toggleShowLong,
-				"InfoPressed": self.InfoBPressed,
 				"toggleShow": self.OkPressed,
 				"hide": self.keyHide,
 			}, 1) # lower prio to make it possible to override ok and cancel..
@@ -565,10 +564,6 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				pass
 		except:
 			self.pvrStateDialog = None
-
-	def InfoBPressed(self):
-		if config.plisettings.PLIINFO_mode.value == "infobar":
-			self.toggleShow()
 
 	def OkPressed(self):
 		if config.usage.okbutton_mode.value == "0":
@@ -673,7 +668,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				try:
 					self.pvrStateDialog.hide()
 				except:
-					pass	
+					pass
 		elif self.__state == self.STATE_HIDDEN and self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
 			self.secondInfoBarScreen.hide()
 			self.secondInfoBarWasShown = False
@@ -684,7 +679,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				pass
 			self.EventViewIsShown = False
 		elif hasattr(self, "pvrStateDialog"):
-			try:		
+			try:
 				self.pvrStateDialog.hide()
 			except:
 				pass
@@ -718,7 +713,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				self.hide()
 				self.openEventView(True)
 				self.EventViewIsShown = True
-				self.startHideTimer()				
+				self.startHideTimer()
 			else:
 				self.hide()
 				if self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
@@ -1583,9 +1578,7 @@ class InfoBarEPG:
 
 	def InfoPressed(self):
 		if isStandardInfoBar(self) or isMoviePlayerInfoBar(self):
-			if getBoxType().startswith('vu'):
-				self.showDefaultEPG()
-			elif config.plisettings.PLIINFO_mode.value == "eventview":
+			if config.plisettings.PLIINFO_mode.value == "eventview":
 				self.openEventView()
 			elif config.plisettings.PLIINFO_mode.value == "epgpress":
 				self.showDefaultEPG()
@@ -3433,15 +3426,15 @@ class InfoBarAspectSelection:
 					if aspect[1] == "letterbox":
 						f = open("/proc/stb/video/policy", "w")
 						f.write("panscan")
-						f.close()						
+						f.close()
 					elif aspect[1] == "panscan":
 						f = open("/proc/stb/video/policy", "w")
 						f.write("letterbox")
-						f.close()							
+						f.close()
 					else:
 						f = open("/proc/stb/video/policy", "w")
 						f.write(aspect[1])
-						f.close()						
+						f.close()
 					self.ExGreen_doHide()
 		else:
 			self.ExGreen_doHide()
@@ -3454,7 +3447,7 @@ class InfoBarResolutionSelection:
 	def resolutionSelection(self):
 		f = open("/proc/stb/vmpeg/0/xres", "r")
 		xresString = f.read()
-		f.close()		
+		f.close()
 		f = open("/proc/stb/vmpeg/0/yres", "r")
 		yresString = f.read()
 		f.close()
@@ -3511,7 +3504,7 @@ class InfoBarResolutionSelection:
 				if Resolution[1] != "auto":
 					f = open("/proc/stb/video/videomode", "w")
 					f.write(Resolution[1])
-					f.close()					
+					f.close()
 					#from enigma import gMainDC
 					#gMainDC.getInstance().setResolution(-1, -1)
 					self.ExGreen_doHide()
