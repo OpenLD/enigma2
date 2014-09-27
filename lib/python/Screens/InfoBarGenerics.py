@@ -3,7 +3,7 @@ from Components.ActionMap import ActionMap, HelpableActionMap, NumberActionMap
 from Components.Harddisk import harddiskmanager, findMountPoint
 from Components.Input import Input
 from Components.Label import Label
-from Components.MovieList import AUDIO_EXTENSIONS
+from Components.MovieList import AUDIO_EXTENSIONS, MOVIE_EXTENSIONS, DVD_EXTENSIONS
 from Components.PluginComponent import plugins
 from Components.ServiceEventTracker import ServiceEventTracker
 from Components.Sources.Boolean import Boolean
@@ -46,7 +46,7 @@ from Tools import Directories, Notifications
 from Tools.Directories import pathExists, fileExists, getRecordingFilename, copyfile, moveFiles, resolveFilename, SCOPE_TIMESHIFT, SCOPE_CURRENT_SKIN
 from Tools.KeyBindings import getKeyDescription
 from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap
-from boxbranding import getBoxType, getMachineProcModel
+from boxbranding import getBoxType, getMachineProcModel, getMachineBuild
 
 from time import time, localtime, strftime
 from bisect import insort
@@ -1309,7 +1309,6 @@ class InfoBarChannelSelection:
 				self.servicelist2.moveDown()
 			self.servicelist2.zap(enable_pipzap = True)
 			ChannelSelectionInstance.dopipzap = False
-
 
 class InfoBarMenu:
 	""" Handles a menu action, to open the (main) menu """
@@ -2715,7 +2714,7 @@ class InfoBarPiP:
 		if SystemInfo["PIPAvailable"] and isinstance(self, InfoBarEPG):
 			self["PiPActions"] = HelpableActionMap(self, "InfobarPiPActions",
 				{
-					"activatePiP": (self.showPiP, _("Activate PiP")),
+					"activatePiP": (self.activePiP, self.activePiPName),
 				})
 			if self.allowPiP:
 				self.addExtension((self.getShowHideName, self.showPiP, lambda: True), "blue")
@@ -2805,6 +2804,20 @@ class InfoBarPiP:
 					self.lastPiPService = None
 					self.session.pipshown = False
 					del self.session.pip
+
+	def activePiP(self):
+		if self.servicelist and self.servicelist.dopipzap or not self.session.pipshown:
+			self.showPiP()
+		else:
+			self.togglePipzap()
+
+	def activePiPName(self):
+		if self.servicelist and self.servicelist.dopipzap:
+			return _("Disable Picture in Picture")
+		if self.session.pipshown:
+			return _("Zap focus to Picture in Picture")
+		else:
+			return _("Activate Picture in Picture")
 
 	def swapPiP(self):
 		swapservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
