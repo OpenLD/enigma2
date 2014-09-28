@@ -754,6 +754,11 @@ static inline uint32_t fe_udiv(uint32_t a, uint32_t b)
 
 void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &signalqualitydb)
 {
+	// morser - set adapter number for check usb adapters
+	int adapter_nr;
+	int frontend_nr;
+	sscanf(m_filename.c_str(),"/dev/dvb/adapter%d/frontend%d",&adapter_nr, &frontend_nr);
+	/////////
 	int sat_max = 1600; // for stv0288 / bsbe2
 	int ret = 0x12345678;
 	if (!strcmp(m_description, "AVL2108")) // ET9000
@@ -766,7 +771,8 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		ret = (int)(snr / 37.5);
 		sat_max = 1700;
 	}
-	else if (strstr("Nova-T StickNovaT 500StickDTB03", m_description)) // dib0700
+	else if (strstr("Nova-T StickNovaT 500StickDTB03", m_description) || // dib0700
+		eDVBAdapterLinux::isusb(adapter_nr)) // morser - usb adapters
 	{
 		if ( snr > 300 )
 			ret = 0; //error condition
