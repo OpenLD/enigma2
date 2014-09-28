@@ -268,7 +268,7 @@ class DeviceManager(Screen):
 		if self.currDevice is None or self.currPartition is None:
 			return
 		partition =  self.currPartition["partition"]
-		if deviceinfo.isMountable(partition) is False:
+		if not os.access("/autofs/%s"%partition,0):
 			self.session.open(MessageBox, _("This partition is not mountable.\nYou need to check or format this partition."), MessageBox.TYPE_ERROR, timeout = 10)
 			return
 		self["key_red"].setText(_("Partitions"))
@@ -797,9 +797,6 @@ class DeviceInit(Screen):
 				cmd = "/usr/sbin/mkfs.vfat -I -S4096 " + fulldevicename
 			else:
 				cmd = "/usr/sbin/mkfs.vfat -I " + fulldevicename
-			if partitionsize > 2 * 1024 * 1024: # if partiton size larger then 2GB, use FAT32
-				cmd += " -F 32"
-
 		else:
 			self.createFilesystemFinished(None, -1, (self.device, fulldevicename))
 			return
@@ -1096,8 +1093,6 @@ class DeviceFormat(Screen):
 					cmd = "/usr/sbin/mkfs.vfat -I -S4096 /dev/" + partition
 				else:
 					cmd = "/usr/sbin/mkfs.vfat -I /dev/" + partition
-				if size > 2 * 1024: # if partiton size larger then 2GB, use FAT32
-					cmd += " -F 32"
 			self.deviceFormatConsole.ePopen(cmd, self.mkfsFinished)
 		else:
 			errorMsg = _("Can not format device /dev/%s.\nrefresh partition information failed!")%partition
@@ -1292,7 +1287,7 @@ class DeviceInfo():
 
 	def isMounted(self, devpath, mountpoint):
 		try:
-			mounts = file('/proc/mounts').readlines()
+			mounts = file('/proc/mounts').read().split('\n')
 			for x in mounts:
 				if not x.startswith('/'):
 					continue
@@ -1303,48 +1298,15 @@ class DeviceInfo():
 			pass
 		return False
 
-       def isMounted_anymp(self, devpath):
-               try:
-                       mounts = open('/proc/mounts', 'r').readlines()
-                       for x in mounts:
-                               if not x.startswith('/'):
-                                       continue
-                               _devPart, _mountpoint  = x.split()[:2]
-                               if devPart == _devPart:
-                                       return True
-               except:
-                       pass
-               return False
-
-       # check partition ID in extended or swap.
-       def checkSwapExtended(self, partition):
-               partID_Extended = ("5", "0f", "85", "c5", "d5")
-               partID_swap = ("82", "42")
-               data = os.popen("fdisk -l /dev/%s |grep %s" % (partition[:-1], partition )).readline().split()
-               if data[1] == '*':
-                       partID = str(data[5])
-               else:
-                       partID = str(data[4])
-#              print "partID: " ,partID
-#              print "checkIDS : ", partID_Extended + partID_swap
-               if partID in partID_Extended + partID_swap:
-                       return True
-               else:
-                       return False
-
 	def isMountable(self, partition):
-              if self.checkSwapExtended(partition):
-                       return False
-
+		autofsPath = "/autofs/"+partition.device
+		mountable = False
 		try:
-                       if self.isMounted_anymp('/dev/'+partition):
-                               return True
-
-                       elif os.access('/autofs/'+partition, 0):
-                               return True
+			os.listdir(autofsPath)
+			mountable = True
 		except:
 			pass
-		return False
+		return mountable
 
 	def isFstabAutoMounted(self, uuid, devpath, mountpoint):
 #		print "	>> isFstabMounted, uuid : %s, devpath : %s, mountpoint : %s"%(uuid, devpath, mountpoint)
@@ -1784,18 +1746,9 @@ def checkMounts(session):
 			for partition in listdir(devpath):
 				if not partition.startswith(blockdev):
 					continue
-
-                               if deviceinfo.checkSwapExtended(partition):
-                                       continue
-
 				partitions.append(partition)
-
-                               if deviceinfo.isMounted_anymp('/dev/' + partition):
-                                       continue
-
-                               if os.access('/autofs/'+partition, 0) is False:
+				if os.access('/autofs/'+partition,0) is False:
 					noMountable_partitions.append(partition)
-
 			if len(partitions) == 0 or len(noMountable_partitions) != 0:
 				if noMountable_dev != "":
 					noMountable_dev +=  ' '
