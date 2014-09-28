@@ -4115,6 +4115,66 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<__u32, mhw_title_t>::iterat
 		descriptor[2] = content_id;
 		descriptor[3] = 0;
 	}
+	else
+	{
+		// Add content descriptor
+		u_char *descriptor = (u_char *) data + packet_length;
+		packet_length += 4;
+		descr_ll += 4;
+
+		u_char content_id = 0;
+
+		switch (itTitle->second.mhw2_theme)  // convert to standar theme
+		{
+			case 0x0: content_id = 0x10;break;  // Cine 
+			case 0x1: content_id = 0x40;break; // Deportes
+			case 0x2: content_id = 0x10;break; // Series
+			case 0x3: content_id = 0x50;break; // Infantiles
+			case 0x20: content_id = 0x70;break;
+			case 0x21: content_id = 0x80;break;
+			case 0x22: content_id = 0x70;break;
+			case 0x23: content_id = 0x80;break;
+			case 0x24: content_id = 0x90;break;
+			case 0x25: content_id = 0x90;break;
+			case 0x26: content_id = 0x70;break;
+			case 0x27: content_id = 0x80;break;
+			case 0x28: content_id = 0x80;break;
+			case 0x29: content_id = 0x70;break;
+			case 0x2A: content_id = 0x90;break;
+			case 0x2B: content_id = 0x80;break;
+			case 0x2C: content_id = 0x90;break;
+			case 0x2D: content_id = 0x80;break;
+			case 0x2E: content_id = 0x80;break;
+			case 0x2F: content_id = 0x90;break;
+			case 0x30: content_id = 0x70;break;
+			case 0x5: content_id = 0x60;break; // Musica
+			case 0x6: content_id = 0x20;break; // informacion
+			case 0x7: content_id = 0x30;break; // Entretenimiento
+			case 0x8: content_id = 0xA0;break; // Ocio
+			case 0x40: content_id = 0x90;break;
+			case 0x41: content_id = 0x70;break;
+			case 0x42: content_id = 0x70;break;
+			case 0x43: content_id = 0x90;break;
+			case 0x44: content_id = 0x90;break;
+			case 0x45: content_id = 0x70;break;
+			case 0x46: content_id = 0x70;break;
+			case 0x47: content_id = 0x70;break;
+			case 0x48: content_id = 0x70;break;
+			case 0x49: content_id = 0x90;break;
+			case 0x4A: content_id = 0x70;break;
+			case 0x4B: content_id = 0x90;break;
+			case 0x4C: content_id = 0x70;break;
+			case 0x4D: content_id = 0x90;break;
+			case 0xA: content_id = 0xB0;break; // Otros
+			default: content_id = 0xB0;
+		}
+			
+
+		descriptor[0] = 0x54;
+		descriptor[1] = 2;
+		descriptor[2] = content_id;
+		descriptor[3] = 0;
+	}
 
 	event_data->descriptors_loop_length_hi = (descr_ll & 0xf00)>>8;
 	event_data->descriptors_loop_length_lo = (descr_ll & 0xff);
@@ -4545,7 +4605,14 @@ void eEPGCache::channel_data::readMHWData2(const __u8 *data)
 			pos += 19 + slen;
 //			eDebug("%02x [%02x %02x]: %s", data[pos], data[pos+1], data[pos+2], dest);
 
-//			not used theme id (data[7] & 0x3f) + (data[pos] & 0x3f);
+			int theme = ( data[7] & 0x3f);
+			int subtheme = ( data[pos] & 0x3f );
+			if (theme == 0x4)  //fix for converter to standard theme after.
+				title.mhw2_theme = subtheme + 0x20;
+			else if (theme == 0x9)
+				title.mhw2_theme = subtheme + 0x40;
+			else
+				title.mhw2_theme = theme;
 			__u32 summary_id = (data[pos+1] << 8) | data[pos+2];
 
 //			if (title.channel_id > m_channels.size())
