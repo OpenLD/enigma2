@@ -366,6 +366,7 @@ eEPGCache::eEPGCache()
 
 	enabledSources = 0;
 	historySeconds = 0;
+	maxdays = 5;
 
 	CONNECT(messages.recv_msg, eEPGCache::gotMessage);
 	CONNECT(eDVBLocalTimeHandler::getInstance()->m_timeUpdated, eEPGCache::timeUpdated);
@@ -776,7 +777,7 @@ void eEPGCache::sectionRead(const __u8 *data, int source, channel_data *channel)
 
 		if ( (TM != 3599) &&		// NVOD Service
 		     (now <= (TM+duration)) &&	// skip old events
-		     (TM < (now+28*24*60*60)) &&	// no more than 4 weeks in future
+		     (TM < (now+maxdays*24*60*60)) &&	// maxdays for EPG - no more than 4 weeks in future
 		     ( (onid != 1714) || (duration != (24*3600-1)) )	// PlatformaHD invalid event
 		   )
 		{
@@ -2906,6 +2907,10 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 }
 #undef SET_HILO
 
+void eEPGCache::setEpgmaxdays(unsigned int epgmaxdays)
+{
+	maxdays = epgmaxdays;
+}
 
 void eEPGCache::setEpgHistorySeconds(time_t seconds)
 {
