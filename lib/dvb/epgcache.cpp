@@ -4803,7 +4803,7 @@ void eEPGCache::channel_data::readMHWData2(const __u8 *data)
 			    						if (ndate > edate)
 			    						{
 										char nd[200];
-                        							sprintf (nd," %s %s%02d %02d:%02d",m_channels[replay_chid[n]].name,days[next_date->tm_wday],next_date->tm_mday,next_date->tm_hour, next_date->tm_min);
+                        							sprintf (nd," %s %s%02d %02d:%02d",m_channels[chid].name,days[next_date->tm_wday],next_date->tm_mday,next_date->tm_hour, next_date->tm_min);
 										the_text2.append(nd);
 			    						}
 								}
