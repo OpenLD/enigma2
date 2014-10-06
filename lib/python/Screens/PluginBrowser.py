@@ -30,14 +30,12 @@ config.pluginfilter.drivers = ConfigYesNo(default = True)
 config.pluginfilter.extensions = ConfigYesNo(default = True)
 config.pluginfilter.m2k = ConfigYesNo(default = True)
 config.pluginfilter.picons = ConfigYesNo(default = True)
-config.pluginfilter.pli = ConfigYesNo(default = False)
 config.pluginfilter.security = ConfigYesNo(default = True)
 config.pluginfilter.settings = ConfigYesNo(default = True)
 config.pluginfilter.skins = ConfigYesNo(default = True)
 config.pluginfilter.display = ConfigYesNo(default = True)
 config.pluginfilter.softcams = ConfigYesNo(default = True)
 config.pluginfilter.systemplugins = ConfigYesNo(default = True)
-config.pluginfilter.vix = ConfigYesNo(default = False)
 config.pluginfilter.weblinks = ConfigYesNo(default = True)
 config.pluginfilter.userfeed = ConfigText(default = 'http://', fixed_size=False)
 
@@ -248,8 +246,6 @@ class PluginDownloadBrowser(Screen):
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'm2k')
 		if config.pluginfilter.picons.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'picons')
-		if config.pluginfilter.pli.value:
-			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'pli')
 		if config.pluginfilter.security.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'security')
 		if config.pluginfilter.settings.value:
@@ -262,8 +258,6 @@ class PluginDownloadBrowser(Screen):
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'softcams')
 		if config.pluginfilter.systemplugins.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'systemplugins')
-		if config.pluginfilter.vix.value:
-			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'vix')
 		if config.pluginfilter.weblinks.value:
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'weblinks')
 		if config.pluginfilter.kernel.value:
@@ -626,8 +620,6 @@ class PluginFilter(ConfigListScreen, Screen):
 		self.list.append(getConfigListEntry(_("settings"), config.pluginfilter.settings, _("This allows you to show settings modules in downloads")))
 		self.list.append(getConfigListEntry(_("m2k"), config.pluginfilter.m2k, _("This allows you to show m2k modules in downloads")))
 		self.list.append(getConfigListEntry(_("weblinks"), config.pluginfilter.weblinks, _("This allows you to show weblinks modules in downloads")))
-		self.list.append(getConfigListEntry(_("pli"), config.pluginfilter.pli, _("This allows you to show pli modules in downloads")))
-		self.list.append(getConfigListEntry(_("vix"), config.pluginfilter.vix, _("This allows you to show vix modules in downloads")))
 		self.list.append(getConfigListEntry(_("security"), config.pluginfilter.security, _("This allows you to show security modules in downloads")))
 		self.list.append(getConfigListEntry(_("kernel modules"), config.pluginfilter.kernel, _("This allows you to show kernel modules in downloads")))
 		self.list.append(getConfigListEntry(_("user feed url"), config.pluginfilter.userfeed, _("Please enter the your personal feed URL")))
