@@ -3,6 +3,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Standby import TryQuitMainloop 
 #from Screens.About import CommitInfo
+from Screens.TextBox import TextBox
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Ipkg import IpkgComponent
 from Components.Sources.StaticText import StaticText
