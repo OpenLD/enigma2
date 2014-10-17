@@ -710,7 +710,6 @@ class ChannelSelectionEPG:
 class ChannelSelectionEdit:
 	def __init__(self):
 		self.entry_marked = False
-		self.movemode = False
 		self.bouquet_mark_edit = OFF
 		self.mutableList = None
 		self.__marked = [ ]
@@ -1052,9 +1051,11 @@ class ChannelSelectionEdit:
 		if self.entry_marked:
 			self.servicelist.setCurrentMarked(False)
 			self.entry_marked = False
+			self.pathChangeDisabled = False # re-enable path change
 		else:
 			self.servicelist.setCurrentMarked(True)
 			self.entry_marked = True
+			self.pathChangeDisabled = True # no path change allowed in movemod
 
 	def doContext(self):
 		self.session.openWithCallback(self.exitContext, ChannelContextMenu, self)
@@ -1110,6 +1111,7 @@ class ChannelSelectionBase(Screen):
 
 
 		self.pathChangeDisabled = False
+		self.movemode = False
 
 		self["ChannelSelectBaseActions"] = NumberActionMap(["ChannelSelectBaseActions", "NumberActions", "InputAsciiActions"],
 			{
