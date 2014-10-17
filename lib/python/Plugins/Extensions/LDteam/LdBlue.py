@@ -179,13 +179,12 @@ class LDBluePanel(Screen):
 		cmd = "cp -f " + self.newcam + " /usr/bin/StartLdCam"
 		system (cmd)
 		cmd = "STOP_CAMD," + self.defaultcam
-		os.system("/usr/bin/StartLdCam stop")
 		self.sendtoLd_sock(cmd)
 		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, "Deteniendo")
 		
 	def keyOk2(self):
+		os.system("/usr/bin/StartLdCam stop")
 		cmd = "NEW_CAMD," + self.newcam
-		os.system("/usr/bin/StartLdCam start")
 		self.sendtoLd_sock(cmd)
 		oldcam = self.camnames[self.sel]
 		self.session.openWithCallback(self.myclose, startstopCam, self.sel, "Iniciando")
