@@ -1109,7 +1109,6 @@ class ChannelSelectionBase(Screen):
 		self.dopipzap = False
 		self.bouquet_mark_edit = OFF
 
-
 		self.pathChangeDisabled = False
 		self.movemode = False
 
