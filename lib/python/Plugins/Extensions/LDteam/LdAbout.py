@@ -8,12 +8,17 @@ from Components.ScrollLabel import ScrollLabel
 from Components.MenuList import MenuList
 from Components.Sources.List import List
 from Components.About import about
+from Components.Pixmap import MultiPixmap
+from Components.Network import iNetwork
 from Tools.Directories import fileExists
+from Tools.StbHardware import getFPVersion
 from ServiceReference import ServiceReference
-from os import system, listdir, remove as os_remove
+from os import path, popen, system, listdir, remove as os_remove
 from enigma import iServiceInformation, eTimer
+from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
 
-			
+from re import search
+
 class LdsysInfo(Screen):
 	skin = """
 <screen name="LdsysInfo" position="70,35" size="1150,650">
@@ -39,11 +44,29 @@ class LdsysInfo(Screen):
 		rc = system("df -h > /tmp/syinfo.tmp")
 		text = "BOX\n"
 		f = open("/proc/stb/info/model",'r')
- 		text += "Model:\t" + f.readline()
+		text += "Model:\t" + about.getBoxType() + "\n"
  		f.close()
-#		f = open("/proc/stb/info/chipset",'r')
-# 		text += "Chipset:\t" + about.getChipSetString() + "\n"
-# 		f.close()
+		f = open("/proc/stb/info/chipset",'r')
+ 		text += "Chipset:\t" + about.getChipSetString() + "\n"
+		f.close()
+		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
+		cmd2 = 'cat /proc/cpuinfo | grep "BogoMIPS" -m 1 | awk -F ": " ' + "'{print $2}'"
+		try:
+			res = popen(cmd).read()
+			res2 = popen(cmd2).read()
+		except:
+			res = ""
+			res2 = ""
+		cpuMHz = ""
+		bogoMIPS = ""		
+		if res:
+			cpuMHz = "   \t(" + res.replace("\n", "") + " MHz)"
+		if res2:
+			bogoMIPS = "" + res2.replace("\n", "")
+		f = open('/proc/cpuinfo', 'r')
+		text += "CPU: \t" +  about.getCPUString() + cpuMHz + "\n"
+		text += "BogoMIPS \t" + bogoMIPS + "\n"
+ 		f.close()
 		text += "\nMEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
