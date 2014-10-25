@@ -1,8 +1,8 @@
 #################################################################################
-# FULL BACKUP UYILITY FOR ENIGMA2, SUPPORTS THE MODELS OE-A 2.0     			#
-#	                         						                            #
-#					MAKES A FULLBACK-UP READY FOR FLASHING.						#
-#																				#
+#                         FULL BACKUP UYILITY FOR OPENLD                        #
+#                                                                               #
+#	             MAKES A FULLBACK-UP READY FOR FLASHING.                    #
+#                                                                               #
 #################################################################################
 from enigma import getEnigmaVersionString
 from Screens.Screen import Screen
@@ -18,7 +18,11 @@ import commands
 import datetime
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getDriverDate, getImageVersion, getImageBuild, getBrandOEM, getMachineBuild, getImageFolder, getMachineUBINIZE, getMachineMKUBIFS, getMachineMtdKernel, getMachineKernelFile, getMachineRootFile, getImageFileSystem
 
-VERSION = "Version 1.x openLD"
+VERSION = "Version 1.8 OpenLD"
+
+HaveGZkernel = True
+if getBrandOEM() in ("fulan"):
+	HaveGZkernel = False
 
 def Freespace(dev):
 	statdev = statvfs(dev)
@@ -186,7 +190,7 @@ class ImageBackup(Screen):
 		system("mount --bind / /tmp/bi/root")
 
 		if self.ROOTFSTYPE == "jffs2":
-			cmd1 = "%s --root=/tmp/bi/root --faketime --output=%s/root.jffs2 %s" % (self.MKFS, self.WORKDIR, self.JFFS2OPTIONS)
+			cmd1 = "%s --root=/tmp/bi/root --faketime --output=%s/root.jffs2 %s" % (self.MKFS, self.WORKDIR, self.MKUBIFS_ARGS)
 			cmd2 = None
 		else:
 			f = open("%s/ubinize.cfg" %self.WORKDIR, "w")
@@ -217,24 +221,28 @@ class ImageBackup(Screen):
 		cmdlist.append('echo " "')
 		cmdlist.append("nanddump -a -f %s/vmlinux.gz /dev/%s" % (self.WORKDIR, self.MTDKERNEL))
 		cmdlist.append('echo " "')
-		cmdlist.append('echo "Check: kerneldump"')
+		
+		if HaveGZkernel:
+			cmdlist.append('echo "Check: kerneldump"')
 		cmdlist.append("sync")
-				
+
 		self.session.open(Console, title = self.TITLE, cmdlist = cmdlist, finishedCallback = self.doFullBackupCB, closeOnSuccess = True)
 
 	def doFullBackupCB(self):
-		ret = commands.getoutput(' gzip -d %s/vmlinux.gz -c > /tmp/vmlinux.bin' % self.WORKDIR)
-		if ret:
-			text = "Kernel dump error\n"
-			text += "Please Flash your Kernel new and Backup again"
-			system('rm -rf /tmp/vmlinux.bin')
-			self.session.open(MessageBox, _(text), type = MessageBox.TYPE_ERROR)
-			return
+		if HaveGZkernel:
+			ret = commands.getoutput(' gzip -d %s/vmlinux.gz -c > /tmp/vmlinux.bin' % self.WORKDIR)
+			if ret:
+				text = "Kernel dump error\n"
+				text += "Please Flash your Kernel new and Backup again"
+				system('rm -rf /tmp/vmlinux.bin')
+				self.session.open(MessageBox, _(text), type = MessageBox.TYPE_ERROR)
+				return
 
 		cmdlist = []
 		cmdlist.append(self.message)
-		cmdlist.append('echo "Kernel dump OK"')
-		cmdlist.append("rm -rf /tmp/vmlinux.bin")
+		if HaveGZkernel:
+			cmdlist.append('echo "Kernel dump OK"')
+			cmdlist.append("rm -rf /tmp/vmlinux.bin")
 		cmdlist.append('echo "_________________________________________________"')
 		cmdlist.append('echo "Almost there... "')
 		cmdlist.append('echo "Now building the USB-Image"')
@@ -345,7 +353,7 @@ class ImageBackup(Screen):
 	def imageInfo(self):
 		AboutText = _("Full Image Backup ")
 		AboutText += _("Desarrollado por Javilonas") + "\n"
-		AboutText += _("Support at") + " www.lonasdigital.comn\n"
+		AboutText += _("Support at") + " www.lonasdigital.com\n\n"
 		AboutText += _("[Image Info]\n")
 		AboutText += _("Model: %s %s\n") % (getMachineBrand(), getMachineName())
 		AboutText += _("Backup Date: %s\n") % strftime("%Y-%m-%d", localtime(self.START))
