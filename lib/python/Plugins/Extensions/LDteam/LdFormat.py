@@ -23,8 +23,8 @@ class LD_UsbFormat(Screen):
 		Screen.__init__(self, session)
 
 		msg = """Este asistente le ayudara a formatear su USB para Linux (EXT2).
-Por favor, asegurese de que su unidad USB no se encuentra conectada al Gigablue antes de continuar.
-Si su unidad USB ya se encuentra conectada y montada, tienes que Desconectar el Gigablue, retirar el USB y reiniciar el sistema (REBOOT).
+Por favor, asegurese de que su unidad USB no se encuentra conectada al Receptor antes de continuar.
+Si su unidad USB ya se encuentra conectada y montada, tiene que apagar el receptor, retirar el USB y encender el receptor.
 Pulse el boton rojo para continuar cuando crea estar listo y su USB se encuentre desconectado.
 """
 		self["key_red"] = Label(_("Continue >>"))
