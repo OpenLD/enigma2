@@ -366,7 +366,7 @@ eEPGCache::eEPGCache()
 
 	enabledSources = 0;
 	historySeconds = 0;
-	maxdays = 5;
+	maxdays = 7;
 
 	CONNECT(messages.recv_msg, eEPGCache::gotMessage);
 	CONNECT(eDVBLocalTimeHandler::getInstance()->m_timeUpdated, eEPGCache::timeUpdated);
