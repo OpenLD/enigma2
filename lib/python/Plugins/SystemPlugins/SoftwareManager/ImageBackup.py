@@ -262,7 +262,7 @@ class ImageBackup(Screen):
 		cmdlist.append('echo "rename this file to "force" to force an update without confirmation" > %s/noforce' %self.MAINDEST)
 		cmdlist.append('cp -r %s %s' % (self.MAINDEST, self.EXTRA))
 
-		if self.MODEL in ("gbquad", "gbquadplus", "gb800ue", "gb800ueplus"):
+		if self.MODEL in ("gbquad", "gbquadplus", "gb800ue", "gb800ueplus", "gbultraue"):
 			lcdwaitkey = '/usr/share/lcdwaitkey.bin'
 			lcdwarning = '/usr/share/lcdwarning.bin'
 			if path.exists(lcdwaitkey):
