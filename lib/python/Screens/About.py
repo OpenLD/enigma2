@@ -68,10 +68,11 @@ class About(Screen):
 
 		AboutText += _("Version:\t%s") % getImageVersion() + "\n"
 		AboutText += _("Build:\t%s") % getImageBuild() + "\n"
+		AboutText += _("Installed:\t%s") % about.getFlashDateString() + "\n"
 		AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
 		AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n"
 		
-		GStreamerVersion = "GStreamer: " + about.getGStreamerVersionString()
+		GStreamerVersion = _("GStreamer:\t%s") % about.getGStreamerVersionString()
 		self["GStreamerVersion"] = StaticText(GStreamerVersion)
 		AboutText += GStreamerVersion + "\n"
 
@@ -84,7 +85,7 @@ class About(Screen):
 
 		AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
 
-		AboutText += _("Python version: ") + about.getPythonVersionString() + "\n\n"
+		AboutText += _("Python version:\t%s") % about.getPythonVersionString() + "\n\n"
 
 		fp_version = getFPVersion()
 		if fp_version is None:
