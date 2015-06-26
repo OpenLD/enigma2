@@ -82,7 +82,9 @@ class About(Screen):
 		driversdate = '-'.join((year, month, day))
 		AboutText += _("Drivers:\t%s") % driversdate + "\n"
 
-		AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n\n"
+		AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
+
+		AboutText += _("Python version: ") + about.getPythonVersionString() + "\n\n"
 
 		fp_version = getFPVersion()
 		if fp_version is None:

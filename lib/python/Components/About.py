@@ -42,6 +42,14 @@ def getChipSetString():
 		except IOError:
 			return "unavailable"
 
+def getPythonVersionString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("python -V")
+		return output.split(' ')[1]
+	except:
+		return _("unknown")
+
 def getCPUString():
 	try:
 		system="unknown"
