@@ -68,9 +68,10 @@ class About(Screen):
 
 		AboutText += _("Version:\t%s") % getImageVersion() + "\n"
 		AboutText += _("Build:\t%s") % getImageBuild() + "\n"
-		AboutText += _("Installed:\t%s") % about.getFlashDateString() + "\n"
+		#AboutText += _("Installed:\t%s") % about.getFlashDateString() + "\n"
 		AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
-		AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n"
+
+		AboutText += _("Python version:\t%s") % about.getPythonVersionString() + "\n"
 		
 		GStreamerVersion = _("GStreamer:\t%s") % about.getGStreamerVersionString().replace("GStreamer","")
 		self["GStreamerVersion"] = StaticText(GStreamerVersion)
@@ -83,10 +84,9 @@ class About(Screen):
 		driversdate = '-'.join((year, month, day))
 		AboutText += _("Drivers:\t%s") % driversdate + "\n"
 
-		AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
+		#AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
 
-		AboutText += _("Python version:\t%s") % about.getPythonVersionString() + "\n\n"
-
+		AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n\n"
 		fp_version = getFPVersion()
 		if fp_version is None:
 			fp_version = ""
