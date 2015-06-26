@@ -72,7 +72,7 @@ class About(Screen):
 		AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
 		AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n"
 		
-		GStreamerVersion = _("GStreamer:\t%s") % about.getGStreamerVersionString()
+		GStreamerVersion = _("GStreamer:\t%s") % about.getGStreamerVersionString().replace("GStreamer","")
 		self["GStreamerVersion"] = StaticText(GStreamerVersion)
 		AboutText += GStreamerVersion + "\n"
 
