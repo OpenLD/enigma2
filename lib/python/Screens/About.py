@@ -1,4 +1,5 @@
 from Screen import Screen
+from Components.config import config
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Sources.StaticText import StaticText
@@ -68,6 +69,7 @@ class About(Screen):
 		AboutText += _("Version:\t%s") % getImageVersion() + "\n"
 		AboutText += _("Build:\t%s") % getImageBuild() + "\n"
 		AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
+		AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n"
 		
 		GStreamerVersion = "GStreamer: " + about.getGStreamerVersionString()
 		self["GStreamerVersion"] = StaticText(GStreamerVersion)
