@@ -4603,7 +4603,7 @@ msgstr ""
 msgid "Samba Log"
 msgstr ""
 
-msgid "Samba Setup"
+msgid "CIFS/Samba Setup"
 msgstr ""
 
 msgid "Same resolution as skin"
@@ -9839,4 +9839,10 @@ msgid "Your %s %s is shutting down. Please wait..."
 msgstr ""
 
 msgid "Your backup succeeded. We will now continue to explain the further upgrade process."
+msgstr ""
+
+msgid "Usage & GUI"
+msgstr ""
+
+msgid "Recordings & Timeshift"
 msgstr ""

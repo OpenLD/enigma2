@@ -5775,7 +5775,7 @@ msgstr "SSID:"
 msgid "Samba Log"
 msgstr "Samba log"
 
-msgid "Samba Setup"
+msgid "CIFS/Samba Setup"
 msgstr "Samba instellingen"
 
 msgid "Samba setup"
@@ -10764,3 +10764,9 @@ msgstr "Hier kunt u instellen hoe 1080p 25Hz moet weergegeven worden op je TV. (
 
 msgid "This option allows you to choose how to display 1080p 30Hz on your TV. (as not all TV's support these resolutions)"
 msgstr "Hier kunt u instellen hoe 1080p 30Hz moet weergegeven worden op je TV. (sommige TVs ondersteunen deze resolutie niet)"
+
+msgid "Usage & GUI"
+msgstr "Bediening & GUI"
+
+msgid "Recordings & Timeshift"
+msgstr "Opname & Timeshift"
