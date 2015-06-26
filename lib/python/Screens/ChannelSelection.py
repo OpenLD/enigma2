@@ -1974,7 +1974,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.setRoot(root)
 		self.servicelist.setCurrent(ref)
 		if doZap:
-			self.session.nav.playService(ref)
+			self.session.nav.playService(ref, adjust=False)
 		if self.dopipzap:
 			self.setCurrentSelection(self.session.pip.getCurrentService())
 		else:
