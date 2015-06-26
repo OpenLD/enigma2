@@ -1,4 +1,4 @@
-import os
+import os, re, unicodedata
 from Renderer import Renderer
 from enigma import ePixmap
 from Tools.Alternatives import GetWithAlternative
@@ -69,6 +69,16 @@ def getPiconLName(serviceName):
 			#fallback to 1 for tv services with nonstandard servicetypes
 			fields[2] = '1'
 			pngname = findPiconL('_'.join(fields))
+	if not pngname: # picon by channel name
+		name = ServiceReference(serviceName).getServiceName()
+		name = unicodedata.normalize('NFKD', unicode(name, 'utf_8')).encode('ASCII', 'ignore')
+		excludeChars = ['/', '\\', '\'', '"', '`', '?', ' ', '(', ')', ':', '<', '>', '|', '.', '\n']
+		name = re.sub('[%s]' % ''.join(excludeChars), '', name)
+		name = name.replace('&', 'and')
+		name = name.replace('+', 'plus')
+		name = name.replace('*', 'star')
+		name = name.lower()
+		pngname = findPicon(name)
 	return pngname
 
 class PiconL(Renderer):
