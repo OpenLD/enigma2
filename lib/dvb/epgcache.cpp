@@ -78,6 +78,7 @@ eventData::eventData(const eit_event_struct* e, int size, int type, int tsidonid
 				case COMPONENT_DESCRIPTOR:
 				case CONTENT_DESCRIPTOR:
 				case PARENTAL_RATING_DESCRIPTOR:
+				case PDC_DESCRIPTOR:
 				{
 					__u32 crc = 0;
 					int cnt=0;
