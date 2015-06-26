@@ -244,6 +244,73 @@ class NetworkAdapterSelection(Screen,HelpableScreen):
 				if selection is not None:
 					self.session.openWithCallback(self.AdapterSetupClosed, NetworkWizard, selection[0])
 
+class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		HelpableScreen.__init__(self)
+		Screen.setTitle(self, _("IPv6 support"))
+
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Save"))
+
+		self["introduction"] = StaticText(_("Enable or disable Ipv6."))
+
+		self["OkCancelActions"] = HelpableActionMap(self, "OkCancelActions",
+			{
+			"cancel": (self.cancel, _("Exit IPv6 configuration")),
+			"ok": (self.ok, _("Activate IPv6 configuration")),
+			})
+
+		self["ColorActions"] = HelpableActionMap(self, "ColorActions",
+			{
+			"red": (self.cancel, _("Exit IPv6 configuration")),
+			"green": (self.ok, _("Activate IPv6 configuration")),
+			})
+
+		self["actions"] = NumberActionMap(["SetupActions"],
+		{
+			"ok": self.ok,
+		}, -2)
+
+		self.list = []
+		ConfigListScreen.__init__(self, self.list)
+
+		fp = open('/proc/sys/net/ipv6/conf/all/disable_ipv6', 'r')
+		old_ipv6 = fp.read()
+		fp.close()
+		if int(old_ipv6) == 1:
+			self.ipv6 = False
+		else:
+			self.ipv6 = True
+		self.IPv6ConfigEntry = NoSave(ConfigYesNo(default=self.ipv6 or False))
+		self.createSetup()
+
+	def createSetup(self):
+		self.list = []
+		self.IPv6Entry = getConfigListEntry(_("IPv6 support"), self.IPv6ConfigEntry)
+		self.list.append(self.IPv6Entry)
+		self["config"].list = self.list
+		self["config"].l.setList(self.list)
+
+	def ok(self):
+		ipv6 = '/etc/enigma2/ipv6'
+		fp = open('/proc/sys/net/ipv6/conf/all/disable_ipv6', 'w')
+		if self.IPv6ConfigEntry.value == False:
+			fp.write("1")
+			f = open(ipv6,'w')
+			f.write("1")
+			f.close()
+		else:
+			fp.write("0")
+			os_system("rm -R "+ipv6)
+		fp.close()
+		self.close()
+
+	def run(self):
+		self.ok()
+
+	def cancel(self):
+		self.close()
 
 class NameserverSetup(Screen, ConfigListScreen, HelpableScreen):
 	def __init__(self, session):
@@ -870,6 +937,8 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			self.session.open(NetworkAdapterTest,self.iface)
 		if self["menulist"].getCurrent()[1] == 'dns':
 			self.session.open(NameserverSetup)
+		if self["menulist"].getCurrent()[1] == 'ipv6':
+			self.session.open(IPv6Setup)
 		if self["menulist"].getCurrent()[1] == 'mac':
 			self.session.open(NetworkMacSetup)
 		if self["menulist"].getCurrent()[1] == 'scanwlan':
@@ -924,6 +993,8 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			self["description"].setText(_("Test the network configuration of your %s %s.\n" ) % (getMachineBrand(), getMachineName()) + self.oktext )
 		if self["menulist"].getCurrent()[1] == 'dns':
 			self["description"].setText(_("Edit the Nameserver configuration of your %s %s.\n" ) % (getMachineBrand(), getMachineName()) + self.oktext )
+		if self["menulist"].getCurrent()[1] == 'ipv6':
+			self["description"].setText(_("Enable/Disable IPv6 support of your %s %s.\n" ) % (getMachineBrand(), getMachineName()) + self.oktext )
 		if self["menulist"].getCurrent()[1] == 'scanwlan':
 			self["description"].setText(_("Scan your network for wireless access points and connect to them using your selected wireless device.\n" ) + self.oktext )
 		if self["menulist"].getCurrent()[1] == 'wlanstatus':
@@ -997,6 +1068,7 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 		# kernel_ver = about.getKernelVersionString()
 		# CHECK WHICH BOXES NOW SUPPORT MAC-CHANGE VIA GUI
 		if getBoxType() not in ('DUMMY') and self.iface == 'eth0':
+			menu.append((_("Enable/Disable IPv6"), "ipv6"))
 			menu.append((_("Network MAC settings"), "mac"))
 
 		return menu
