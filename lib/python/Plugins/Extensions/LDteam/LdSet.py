@@ -243,8 +243,6 @@ class LDepg(Screen, ConfigListScreen):
   <widget source="key_red" render="Label" position="30,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <ePixmap position="200,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" alphatest="blend" />
   <widget source="key_green" render="Label" position="200,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-  <ePixmap position="370,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" alphatest="blend" />
-  <widget source="key_yellow" render="Label" position="370,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <ePixmap position="543,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" alphatest="blend" />
   <widget source="key_blue" render="Label" position="543,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   </screen>"""
@@ -257,19 +255,17 @@ class LDepg(Screen, ConfigListScreen):
 		ConfigListScreen.__init__(self, self.list)
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
-		self["key_yellow"] = StaticText(_("EPG Net"))
-		self["key_blue"] = StaticText(_("EPG Sat"))
+		self["key_blue"] = StaticText(_("EPG Canal+"))
 		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "ColorActions"],
 		
 		{
 			"red": self.cancel,
 			"cancel": self.cancel,
 			"green": self.save,
-			"yellow": self.epgnet,
 			"blue": self.epgsat,
 			"ok": self.save
 		}, -2)
-		
+
 		self.list.append(getConfigListEntry(_("Enable EIT EPG"), config.epg.eit))
 		self.list.append(getConfigListEntry(_("Enable MHW EPG"), config.epg.mhw))
 		self.list.append(getConfigListEntry(_("Enable FreeSat EPG"), config.epg.freesat))
@@ -282,36 +278,10 @@ class LDepg(Screen, ConfigListScreen):
 		
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
-		
-	def epgnet(self):
-		try:
-			#os.system("wget -q http://openld.es/epg/epg.dat.gz -O %sepg.dat.gz" % (config.plugins.LDteam.direct.value))
-			#if fileExists("%sepg.dat" % config.plugins.LDteam.direct.value):
-			#	os.unlink("%sepg.dat" % config.plugins.LDteam.direct.value)
-			#	os.system("rm -f %sepg.dat" % config.plugins.LDteam.direct.value)
-			#if not os.path.exists("%sepgtmp" % config.plugins.LDteam.direct.value):
-			#	os.system("mkdir -p %sepgtmp" % config.plugins.LDteam.direct.value)
-			#os.system("cp -f %sepg.dat.gz %sepgtmp" % (config.plugins.LDteam.direct.value, config.plugins.LDteam.direct.value))
-			#os.system("gzip -df %sepg.dat.gz" % config.plugins.LDteam.direct.value)
-			#os.chmod("%sepg.dat" % config.plugins.LDteam.direct.value, 0644)
-			self.mbox = self.session.open(MessageBox,(_("Sorry, EPG Net Coming Soon. Use EPG SAT")), MessageBox.TYPE_INFO, timeout = 4 )
-			#epgcache = new.instancemethod(_enigma.eEPGCache_save,None,eEPGCache)
-			#epgcache = eEPGCache.getInstance().save()
-			#epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
-			#epgcache = eEPGCache.getInstance().load()
-		except:
-			self.mbox = self.session.open(MessageBox,(_("Sorry, the EPG download error")), MessageBox.TYPE_INFO, timeout = 4 )
-
+	
 	def epgsat(self):
-		try:
-			epgservice="1:0:1:75c6:422:1:c00000:0:0:0"
-			self.oldService = self.session.nav.getCurrentlyPlayingServiceReference().toString()
-			self.session.nav.playService(eServiceReference(epgservice))
-			os.system("sh /usr/bin/run.e2.sh &")
-			self.session.nav.playService(self.oldService)
-		except:
-			self.mbox = self.session.open(MessageBox,(_("Sorry, the EPG download error")), MessageBox.TYPE_INFO, timeout = 4 )
-			
+		os.system("sh /usr/bin/run.e2.sh &")
+	
 	def cancel(self):
 		for i in self["config"].list:
 			i[1].cancel()
