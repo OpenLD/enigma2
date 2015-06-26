@@ -177,7 +177,7 @@ class TimerSanityCheck:
 				if timer.service_ref.ref and timer.service_ref.ref.flags & eServiceReference.isGroup:
 					fakeRecService = NavigationInstance.instance.recordService(getBestPlayableServiceReference(timer.service_ref.ref, eServiceReference()), True)
 				else:
-					fakeRecService = NavigationInstance.instance.recordService(timer.service_ref, True)
+					fakeRecService = NavigationInstance.instance.recordService(getBestPlayableServiceReference(timer.service_ref.ref, eServiceReference(), True), True)
 				if fakeRecService:
 					fakeRecResult = fakeRecService.start(True)
 				else:
