@@ -2,6 +2,7 @@ from boxbranding import getBoxType, getMachineBrand, getMachineName
 from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
 from shutil import move
 import time
+import os
 
 from enigma import eTimer
 
@@ -252,6 +253,7 @@ class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
 
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("Save"))
+		self["key_blue"] = StaticText(_("Restore inetd"))
 
 		self["introduction"] = StaticText(_("Enable or disable Ipv6."))
 
@@ -265,6 +267,7 @@ class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
 			{
 			"red": (self.cancel, _("Exit IPv6 configuration")),
 			"green": (self.ok, _("Activate IPv6 configuration")),
+			"blue": (self.restoreinetdData, _("Restore inetd.conf")),
 			})
 
 		self["actions"] = NumberActionMap(["SetupActions"],
@@ -291,6 +294,48 @@ class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
 		self.list.append(self.IPv6Entry)
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
+
+	def restoreinetdData(self):
+		inetdData  = "# /etc/inetd.conf:  see inetd(music) for further informations.\n"
+		inetdData += "#\n"
+		inetdData += "# Internet server configuration database\n"
+		inetdData += "#\n"
+		inetdData += "# If you want to disable an entry so it isn't touched during\n"
+		inetdData += "# package updates just comment it out with a single '#' character.\n"
+		inetdData += "#\n"
+		inetdData += "# <service_name> <sock_type> <proto> <flags> <user> <server_path> <args>\n"
+		inetdData += "#\n"
+		inetdData += "#:INTERNAL: Internal services\n"
+		inetdData += "#echo	stream	tcp	nowait	root	internal\n"
+		inetdData += "#echo	dgram	udp	wait	root	internal\n"
+		inetdData += "#chargen	stream	tcp	nowait	root	internal\n"
+		inetdData += "#chargen	dgram	udp	wait	root	internal\n"
+		inetdData += "#discard	stream	tcp	nowait	root	internal\n"
+		inetdData += "#discard	dgram	udp	wait	root	internal\n"
+		inetdData += "#daytime	stream	tcp	nowait	root	internal\n"
+		inetdData += "#daytime	dgram	udp	wait	root	internal\n"
+		inetdData += "#time	stream	tcp	nowait	root	internal\n"
+		inetdData += "#time	dgram	udp	wait	root	internal\n"
+		if self.IPv6ConfigEntry.value == True:
+			inetdData += "ftp	stream	tcp6	nowait	root	/usr/sbin/vsftpd	vsftpd\n"
+		else:
+			inetdData += "ftp	stream	tcp	nowait	root	/usr/sbin/vsftpd	vsftpd\n"
+		inetdData += "#ftp	stream	tcp	nowait	root	ftpd	ftpd -w /\n"
+		if self.IPv6ConfigEntry.value == True:
+			inetdData += "telnet	stream	tcp6	nowait	root	/usr/sbin/telnetd	telnetd\n"
+		else:
+			inetdData += "telnet	stream	tcp	nowait	root	/usr/sbin/telnetd	telnetd\n"
+		if getBoxType() in ('gbquad', 'gbquadplus') and 	self.IPv6ConfigEntry.value == True:
+			inetdData += "8002	stream	tcp6	nowait	root	/usr/bin/transtreamproxy	transtreamproxy\n"
+		elif getBoxType() in ('gbquad', 'gbquadplus') and  self.IPv6ConfigEntry.value == False:
+			inetdData += "8002	stream	tcp	nowait	root	/usr/bin/transtreamproxy	transtreamproxy\n"
+		else:
+			pass
+		fd = file("/etc/inetd.conf", 'w')
+		fd.write(inetdData)
+		fd.close()
+		self.session.open(MessageBox, _("Successfully restored /etc/inetd.conf!"), type = MessageBox.TYPE_INFO,timeout = 10 )
+		self.ok()
 
 	def ok(self):
 		ipv6 = '/etc/enigma2/ipv6'
@@ -4053,6 +4098,74 @@ class NetworkMiniDLNALog(Screen):
 			f.close()
 			remove('/tmp/tmp.log')
 		self['infotext'].setText(strview)
+
+class InetdRecovery(Screen, ConfigListScreen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("Inetd recovery"))
+		
+		self["key_red"] = Label(_("Cancel"))
+		self["key_blue"] = Label(_("Recover"))
+
+		self.list = []
+		
+		self.ipv6 = NoSave(ConfigYesNo(default=False))
+		self.list.append(getConfigListEntry(_("IPv6"), self.ipv6))
+		
+		ConfigListScreen.__init__(self, self.list)
+
+		self["OkCancelActions"] = HelpableActionMap(self, "OkCancelActions", {
+			"cancel": (self.close, _("exit inetd recovery"))
+		})
+		self["ColorActions"] = HelpableActionMap(self, "ColorActions", {
+			"red": (self.close, _("exit inetd recovery")),
+			"blue": (self.keyBlue, _("recover inetd")),
+		})
+
+	def keyBlue(self):
+		sockType = "tcp"
+		if self.ipv6.value:
+			sockType = "tcp6"
+
+		inetdData  = "# /etc/inetd.conf:  see inetd(8) for further informations.\n"
+		inetdData += "#\n"
+		inetdData += "# Internet server configuration database\n"
+		inetdData += "#\n"
+		inetdData += "# If you want to disable an entry so it isn't touched during\n"
+		inetdData += "# package updates just comment it out with a single '#' character.\n"
+		inetdData += "#\n"
+		inetdData += "# <service_name> <sock_type> <proto> <flags> <user> <server_path> <args>\n"
+		inetdData += "#\n"
+		inetdData += "#:INTERNAL: Internal services\n"
+		inetdData += "#echo	stream	tcp	nowait	root	internal\n"
+		inetdData += "#echo	dgram	udp	wait	root	internal\n"
+		inetdData += "#chargen	stream	tcp	nowait	root	internal\n"
+		inetdData += "#chargen	dgram	udp	wait	root	internal\n"
+		inetdData += "#discard	stream	tcp	nowait	root	internal\n"
+		inetdData += "#discard	dgram	udp	wait	root	internal\n"
+		inetdData += "#daytime	stream	tcp	nowait	root	internal\n"
+		inetdData += "#daytime	dgram	udp	wait	root	internal\n"
+		inetdData += "#time	stream	tcp	nowait	root	internal\n"
+		inetdData += "#time	dgram	udp	wait	root	internal\n"
+		inetdData += "ftp	stream	" + sockType + "	nowait	root	/usr/sbin/vsftpd	vsftpd\n"
+		inetdData += "#ftp	stream	tcp	nowait	root	ftpd	ftpd -w /\n"
+		inetdData += "telnet	stream	" + sockType + "	nowait	root	/usr/sbin/telnetd	telnetd\n"
+		if getBoxType() in ('gbquad', 'gbquadplus'):
+			inetdData += "8002	stream	" + sockType + "	nowait	root	/usr/bin/transtreamproxy	transtreamproxy\n"
+
+		fd = file("/etc/inetd.conf", 'w')
+		fd.write(inetdData)
+		fd.close()
+		self.inetdRestart()
+
+		self.session.open(MessageBox, _("Successfully restored /etc/inetd.conf!"), type = MessageBox.TYPE_INFO,timeout = 10)
+		self.close()
+
+	def inetdRestart(self):
+		if fileExists("/etc/init.d/inetd"):
+			os.system("/etc/init.d/inetd restart")
+		elif fileExists("/etc/init.d/inetd.busybox"):
+			os.system("/etc/init.d/inetd.busybox restart")
 
 class NetworkServicesSummary(Screen):
 	def __init__(self, session, parent):

@@ -116,7 +116,7 @@ self.session.open(RemoteControlCode)
 					<id val="network" />
 					<item level="0" text="Device Setup" entryID="device_setup"><screen module="NetworkSetup" screen="NetworkAdapterSelection"/></item>
 					<item level="1" text="Mounts Setup" entryID="netmounts_setup"><screen module="NetworkSetup" screen="NetworkMountsMenu"/></item>
-					<item level="2" text="AFP Setup" entryID="netafp_setup"><screen module="NetworkSetup" screen="NetworkAfp"/></item>
+					<item level="2" text="Inetd recovery" entryID="netinetd_recovery"><screen module="NetworkSetup" screen="InetdRecovery"/></item>
 					<item level="2" text="CIFS/Samba Setup" entryID="netsmba_setup"><screen module="NetworkSetup" screen="NetworkSamba"/></item>
 					<item level="2" text="FTP Setup" entryID="netftp_setup"><screen module="NetworkSetup" screen="NetworkFtp"/></item>
 					<item level="2" text="Telnet Setup" entryID="nettelnet_setup"><screen module="NetworkSetup" screen="NetworkTelnet"/></item>
@@ -125,6 +125,7 @@ self.session.open(RemoteControlCode)
 					<item level="2" text="NFS Setup" entryID="netnfs_setup"><screen module="NetworkSetup" screen="NetworkNfs"/></item>
 					<item level="2" text="OpenVPN Setup" entryID="netvpn_setup"><screen module="NetworkSetup" screen="NetworkOpenvpn"/></item>
 					<item level="2" text="uShare Setup" entryID="netushare_setup"><screen module="NetworkSetup" screen="NetworkuShare"/></item>
+					<item level="2" text="AFP Setup" entryID="netafp_setup"><screen module="NetworkSetup" screen="NetworkAfp"/></item>
 				</menu>
 				<item level="0" text="Skin Setup" entryID="skin_setup"><screen module="SkinSelector" screen="SkinSelector"/></item>
 
