@@ -1,5 +1,4 @@
 from Screens.Screen import Screen
-from Screens.Dish import Dishpip
 from enigma import ePoint, eSize, eRect, eServiceCenter, getBestPlayableServiceReference, eServiceReference, eTimer
 from Components.SystemInfo import SystemInfo
 from Components.VideoWindow import VideoWindow
