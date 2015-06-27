@@ -344,6 +344,7 @@ def InitUsageConfig():
 	config.epg.viasat = ConfigYesNo(default = True)
 	config.epg.netmed = ConfigYesNo(default = True)
 	config.epg.virgin = ConfigYesNo(default = True)
+	config.epg.saveepg = ConfigYesNo(default = True)
 	
 	config.misc.showradiopic = ConfigYesNo(default = True)
 	config.misc.bootvideo = ConfigYesNo(default = True)
