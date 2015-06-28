@@ -387,9 +387,6 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(const char* line, int vers
 			sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
 				&frequency, &bandwidth, &code_rate_HP, &code_rate_LP, &modulation,
 				&transmission_mode, &guard_interval, &hierarchy, &inversion, &flags, &system, &plpid);
- 			// correction in system DVB-T for compability by morser
- 			if (system == eDVBFrontendParametersTerrestrial::System_DVB_T_T2) system = eDVBFrontendParametersTerrestrial::System_DVB_T;
- 			//
 			ter.frequency = frequency;
 			switch (bandwidth)
 			{
