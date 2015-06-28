@@ -160,7 +160,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		
 		mypixmap = mypath + "Epg_setup.png"
 		png = LoadPixmap(mypixmap)
-		name = "Descargar EPG"
+		name = "Opciones EPG"
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
@@ -243,26 +243,22 @@ class LDepg(Screen, ConfigListScreen):
   <widget source="key_red" render="Label" position="30,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <ePixmap position="200,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" alphatest="blend" />
   <widget source="key_green" render="Label" position="200,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-  <ePixmap position="543,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" alphatest="blend" />
-  <widget source="key_blue" render="Label" position="543,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   </screen>"""
  
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		
-		self.setTitle(_("Descargar EPG"))
+		self.setTitle(_("EPG Options"))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
-		self["key_blue"] = StaticText(_("EPG Canal+"))
 		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "ColorActions"],
 		
 		{
 			"red": self.cancel,
 			"cancel": self.cancel,
 			"green": self.save,
-			"blue": self.epgsat,
 			"ok": self.save
 		}, -2)
 
@@ -278,10 +274,7 @@ class LDepg(Screen, ConfigListScreen):
 		
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
-	
-	def epgsat(self):
-		os.system("sh /usr/bin/run.e2.sh &")
-	
+
 	def cancel(self):
 		for i in self["config"].list:
 			i[1].cancel()
