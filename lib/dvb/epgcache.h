@@ -11,14 +11,7 @@
 
 #include <vector>
 #include <list>
-// unordered_map unordered_set aren't there yet?
-#if 0
-#include <unordered_map>
-#include <unordered_set>
-#else
-#include <ext/hash_map>
-#include <ext/hash_set>
-#endif
+#include <tr1/unordered_map>
 
 #include <errno.h>
 
@@ -163,20 +156,11 @@ struct hash_uniqueEPGKey
 };
 
 #define tidMap std::set<__u32>
-#if 0
-	typedef std::unordered_map<uniqueEPGKey, std::pair<eventMap, timeMap>, hash_uniqueEPGKey, uniqueEPGKey::equal> eventCache;
-	#ifdef ENABLE_PRIVATE_EPG
-		typedef std::unordered_map<time_t, std::pair<time_t, __u16> > contentTimeMap;
-		typedef std::unordered_map<int, contentTimeMap > contentMap;
-		typedef std::unordered_map<uniqueEPGKey, contentMap, hash_uniqueEPGKey, uniqueEPGKey::equal > contentMaps;
-	#endif
-#else
-	typedef __gnu_cxx::hash_map<uniqueEPGKey, std::pair<eventMap, timeMap>, hash_uniqueEPGKey, uniqueEPGKey::equal> eventCache;
-	#ifdef ENABLE_PRIVATE_EPG
-		typedef __gnu_cxx::hash_map<time_t, std::pair<time_t, __u16> > contentTimeMap;
-		typedef __gnu_cxx::hash_map<int, contentTimeMap > contentMap;
-		typedef __gnu_cxx::hash_map<uniqueEPGKey, contentMap, hash_uniqueEPGKey, uniqueEPGKey::equal > contentMaps;
-	#endif
+typedef std::tr1::unordered_map<uniqueEPGKey, std::pair<eventMap, timeMap>, hash_uniqueEPGKey, uniqueEPGKey::equal> eventCache;
+#ifdef ENABLE_PRIVATE_EPG
+	typedef std::tr1::unordered_map<time_t, std::pair<time_t, uint16_t> > contentTimeMap;
+	typedef std::tr1::unordered_map<int, contentTimeMap > contentMap;
+	typedef std::tr1::unordered_map<uniqueEPGKey, contentMap, hash_uniqueEPGKey, uniqueEPGKey::equal > contentMaps;
 #endif
 
 #define descriptorPair std::pair<int,__u8*>
