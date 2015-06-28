@@ -438,14 +438,12 @@ private:
 	// For internal use only. Acquire the cache lock before calling.
 	RESULT lookupEventId(const eServiceReference &service, int event_id, const eventData *&);
 	RESULT lookupEventTime(const eServiceReference &service, time_t, const eventData *&, int direction=0);
-	RESULT getNextTimeEntry(const eventData *&);
 
 public:
 	// eit_event_struct's are plain dvb eit_events .. it's not safe to use them after cache unlock
 	// its not allowed to delete this pointers via delete or free..
 	RESULT lookupEventId(const eServiceReference &service, int event_id, const eit_event_struct *&);
 	RESULT lookupEventTime(const eServiceReference &service, time_t , const eit_event_struct *&, int direction=0);
-	RESULT getNextTimeEntry(const eit_event_struct *&);
 
 public:
 	// Event's are parsed epg events.. it's safe to use them after cache unlock
