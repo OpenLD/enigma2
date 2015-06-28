@@ -350,7 +350,7 @@ void eventData::cacheCorrupt(const char* context)
 eEPGCache* eEPGCache::instance;
 pthread_mutex_t eEPGCache::cache_lock=
 	PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-pthread_mutex_t eEPGCache::channel_map_lock=
+static pthread_mutex_t channel_map_lock =
 	PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 DEFINE_REF(eEPGCache)
