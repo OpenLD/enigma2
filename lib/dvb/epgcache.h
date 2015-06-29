@@ -376,6 +376,7 @@ private:
 	std::vector<int> onid_blacklist;
 	eventCache eventDB;
 	updateMap channelLastUpdated;
+	static pthread_mutex_t cache_lock;
 	std::string m_filename;
 	bool m_running;
 
@@ -424,6 +425,10 @@ public:
 #endif
 	// must be called once!
 	void setCacheFile(const char *filename);
+
+	// called from main thread
+	inline void Lock();
+	inline void Unlock();
 
 	// at moment just for one service..
 	RESULT startTimeQuery(const eServiceReference &service, time_t begin=-1, int minutes=-1);
@@ -497,5 +502,17 @@ public:
 	void importEvents(SWIG_PYOBJECT(ePyObject) serviceReferences, SWIG_PYOBJECT(ePyObject) list);
 	void importEvent(SWIG_PYOBJECT(ePyObject) serviceReference, SWIG_PYOBJECT(ePyObject) list);
 };
+
+#ifndef SWIG
+inline void eEPGCache::Lock()
+{
+	pthread_mutex_lock(&cache_lock);
+}
+
+inline void eEPGCache::Unlock()
+{
+	pthread_mutex_unlock(&cache_lock);
+}
+#endif
 
 #endif
