@@ -1228,6 +1228,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 						else:
 							skip_t2 = False
 				getInitialTerrestrialTransponderList(tlist, self.TerrestrialRegion.value, int(self.scan_ter.system.value), skip_t2)
+
 		flags = self.scan_networkScan.value and eComponentScan.scanNetworkSearch or 0
 
 		tmp = self.scan_clearallservices.value
