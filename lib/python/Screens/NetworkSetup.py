@@ -359,7 +359,7 @@ class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
 			f.close()
 		else:
 			fp.write("0")
-			os_system("rm -R "+ipv6)
+			os.system("rm -R "+ipv6)
 		fp.close()
 		self.close()
 
