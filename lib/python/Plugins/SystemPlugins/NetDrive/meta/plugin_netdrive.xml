@@ -1,0 +1,16 @@
+<default>
+	  <prerequisites>
+                    <tag type="System" />
+	  </prerequisites>
+          <info>
+                    <author>kos(oskwon@dev3)</author>
+                    <name>NetDrive</name>
+                    <packagename>enigma2-plugin-systemplugins-netdrive</packagename>
+                    <shortdescription>network mount plugin</shortdescription>
+                    <description>network mount plugin</description>
+          </info>
+
+	  <files type="package"> <!-- without version, without .ipk -->
+		<file type="package" name="enigma2-plugin-systemplugins-wolsetup" />
+	</files>
+</default>
