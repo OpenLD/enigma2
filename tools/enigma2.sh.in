@@ -4,6 +4,11 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 datarootdir=@datarootdir@
 
+#check for /etc/enigma2 folder
+if [ ! -d /etc/enigma2 ] ; then
+	mkdir -p /etc/enigma2
+fi
+
 # workaround for corrupt ssl files
 if [ ! "$(grep config.misc.firstrun /etc/enigma2/settings)" == "config.misc.firstrun=false" ]; then
 	rm -rf /etc/enigma2/cert.pem &
@@ -15,12 +20,19 @@ if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.S
 	/usr/sbin/ntpdate -s -u pool.ntp.org &
 fi
 
+# remove annoying WebInterface relicts
+if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
+	rm -rf /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/
+fi
+
 if [ -x @bindir@/showiframe ]; then
 	killall -9 showiframe; sleep 1
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
-	elif [ -f @datadir@/backdrop.mvi ]; then
-		@bindir@/showiframe @datadir@/backdrop.mvi
+	elif [ -f @sysconfdir@/enigma2/bootlogo.mvi ]; then
+		@bindir@/showiframe @sysconfdir@/enigma2/bootlogo.mvi
+	elif [ -f @datadir@/bootlogo.mvi ]; then
+		@bindir@/showiframe @datadir@/bootlogo.mvi
 	fi
 fi
 
@@ -42,6 +54,7 @@ fi
 
 if [ -d /home/root ]; then
 	cd /home/root
+	export HOME=/home/root
 fi
 
 #check for sundtek tuner helper lib
@@ -121,6 +134,11 @@ case $ret in
 		/sbin/modprobe fp
 		/sbin/reboot
 		;;
+	5)
+		if ! grep -q config.misc.RestartUI /etc/enigma2/settings; then
+			echo "config.misc.RestartUI=true" >>/etc/enigma2/settings
+		fi
+		;;
 	42)
 		python /usr/lib/enigma2/python/upgrade.pyo
 		;;
@@ -129,13 +147,12 @@ case $ret in
 		;;
 	44)
 		# little hack but it will be fixed soon in drivers
-		if [ "$(cat /proc/stb/info/boxtype)" == 'ini-9000de' ]; then
-			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /proc/vfd && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
-		elif [ "$(cat /proc/stb/info/boxtype)" == 'ini-9000ru' ]; then
-			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /proc/vfd && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
-		else
-			/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi && echo fpupload > /dev/dbox/oled0 && sleep 7 && cat /tmp/micom.bin > /dev/mcu && /usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi && sleep 200000
-		fi
+		/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear
+		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi
+		echo fpupload >/proc/vfd && sleep 3 && dd bs=256k if=/tmp/micom.bin of=/dev/mcu
+		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi
+		# Wait forever for the user to power off
+		while(true) ; do sleep 60 ; done
 		;;
 	45)
 		echo "    " > /dev/lcd0
