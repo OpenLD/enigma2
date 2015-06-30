@@ -347,7 +347,7 @@ def MenuSelected(selected, **kwargs):
 
 def Plugins(**kwargs):
 	l = []
-	l.append(PluginDescriptor(name=_("NetDrive Setup"), description=_("Mount a FTP server"), where=PluginDescriptor.WHERE_PLUGINMENU, fnc=PluginMain))
+	l.append(PluginDescriptor(name=_("NetDrive Setup"), description=_("Mount a FTP server"), where=PluginDescriptor.WHERE_PLUGINMENU, icon="netdrive.png", fnc=PluginMain))
 	l.append(PluginDescriptor(where=PluginDescriptor.WHERE_MENU, fnc=MenuSelected))
 	l.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=SessionStartMain))
 	return l
