@@ -5,7 +5,7 @@ from boxbranding import getBoxType
 
 boxtype = getBoxType()
 
-PERCENTAGE_START = 50
+PERCENTAGE_START = 0
 PERCENTAGE_END = 100
 
 profile_start = time.time()
@@ -48,6 +48,9 @@ def profile(id):
 				if boxtype in ("classm", "axodin", "axodinc", "starsatlx", "evo", "genius", "galaxym6" ):
 					f = open("/dev/dbox/oled0", "w")
 					f.write("%d" % perc)
+				elif boxtype in ("marvel1", "enfinity"):
+					f = open("/dev/dbox/oled0", "w")
+					f.write("  %d " % perc)
 				elif getBoxType() in ('gb800solo', 'gb800se', 'gb800seplus', 'gbultrase'):
 					f = open("/dev/mcu", "w")
 					f.write("%d  \n" % perc)
@@ -57,6 +60,9 @@ def profile(id):
 				elif boxtype in ("xpeedlx3", "sezammarvel", "atemionemesis"):
 					f = open("/proc/vfd", "w")
 					f.write("Loading %d %%" % perc)
+				elif boxtype in ("azboxhd", "azboxme"):
+					f = open("/proc/vfd", "w")
+					f.write("Loading %d%%" % perc)
 				elif getBoxType() in ('amikomini', 'amiko8900', 'sognorevolution', 'arguspingulux', 'arguspinguluxmini', 'sparkreloaded', 'sabsolo', 'sparklx', 'gis8120'):
 					f = open("/proc/vfd", "w")
 					f.write("%d \n" % perc)

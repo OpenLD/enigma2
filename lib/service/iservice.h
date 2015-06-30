@@ -387,6 +387,8 @@ public:
 
 		sHBBTVUrl,
 		sLiveStreamDemuxId,
+		sBuffer,
+		sIsDedicated3D,
 
 		sUser = 0x100
 	};
@@ -920,6 +922,7 @@ public:
 		evVideoProgressiveChanged,
 
 		evBuffering,
+		evGstreamerPlayStarted,
 
 		evStopped,
 

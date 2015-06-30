@@ -571,6 +571,8 @@ lib/python/Plugins/SystemPlugins/SkinSelector/Makefile
 lib/python/Plugins/SystemPlugins/SkinSelector/meta/Makefile
 lib/python/Plugins/SystemPlugins/Videomode/Makefile
 lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
+lib/python/Plugins/SystemPlugins/NetDrive/Makefile
+lib/python/Plugins/SystemPlugins/NetDrive/meta/Makefile
 lib/python/Tools/Makefile
 po/Makefile
 main/Makefile

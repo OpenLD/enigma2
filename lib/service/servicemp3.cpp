@@ -38,17 +38,25 @@ typedef enum
 	PROGRESSIVE_DOWNLOAD	= 0x00000002
 } eServiceMP3Flags;
 
+/*
+ * GstPlayFlags flags from playbin2. It is the policy of GStreamer to
+ * not publicly expose element-specific enums. That's why this
+ * GstPlayFlags enum has been copied here.
+ */
 typedef enum
 {
-	GST_PLAY_FLAG_VIDEO         = 0x00000001,
-	GST_PLAY_FLAG_AUDIO         = 0x00000002,
-	GST_PLAY_FLAG_TEXT          = 0x00000004,
-	GST_PLAY_FLAG_VIS           = 0x00000008,
-	GST_PLAY_FLAG_SOFT_VOLUME   = 0x00000010,
-	GST_PLAY_FLAG_NATIVE_AUDIO  = 0x00000020,
-	GST_PLAY_FLAG_NATIVE_VIDEO  = 0x00000040,
-	GST_PLAY_FLAG_DOWNLOAD      = 0x00000080,
-	GST_PLAY_FLAG_BUFFERING     = 0x00000100
+	GST_PLAY_FLAG_VIDEO         = (1 << 0),
+	GST_PLAY_FLAG_AUDIO         = (1 << 1),
+	GST_PLAY_FLAG_TEXT          = (1 << 2),
+	GST_PLAY_FLAG_VIS           = (1 << 3),
+	GST_PLAY_FLAG_SOFT_VOLUME   = (1 << 4),
+	GST_PLAY_FLAG_NATIVE_AUDIO  = (1 << 5),
+	GST_PLAY_FLAG_NATIVE_VIDEO  = (1 << 6),
+	GST_PLAY_FLAG_DOWNLOAD      = (1 << 7),
+	GST_PLAY_FLAG_BUFFERING     = (1 << 8),
+	GST_PLAY_FLAG_DEINTERLACE   = (1 << 9),
+	GST_PLAY_FLAG_SOFT_COLORBALANCE = (1 << 10),
+	GST_PLAY_FLAG_FORCE_FILTERS = (1 << 11),
 } GstPlayFlags;
 
 // eServiceFactoryMP3
@@ -395,6 +403,8 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_ignore_buffering_messages = 0;
 	m_is_live = false;
 	m_use_prefillbuffer = false;
+	m_paused = false;
+	m_seek_paused = false;
 	m_extra_headers = "";
 	m_download_buffer_path = "";
 	m_prev_decoder_time = -1;
@@ -534,12 +544,12 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 #endif
 	if ( m_gst_playbin )
 	{
-		guint flags;
-		g_object_get(G_OBJECT (m_gst_playbin), "flags", &flags, NULL);
-		/* avoid video conversion, let the (hardware) sinks handle that */
-		flags |= GST_PLAY_FLAG_NATIVE_VIDEO;
-		/* volume control is done by hardware */
-		flags &= ~GST_PLAY_FLAG_SOFT_VOLUME;
+		/*
+		 * avoid video conversion, let the dvbmediasink handle that using native video flag
+		 * volume control is done by hardware, do not use soft volume flag
+		 */
+		guint flags = GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_VIDEO | \
+				GST_PLAY_FLAG_TEXT | GST_PLAY_FLAG_NATIVE_VIDEO;
 		if ( m_sourceinfo.is_streaming )
 		{
 			g_signal_connect (G_OBJECT (m_gst_playbin), "notify::source", G_CALLBACK (playbinNotifySource), this);
@@ -739,6 +749,8 @@ RESULT eServiceMP3::stop()
 	m_state = stStopped;
 	m_subtitles_paused = false;
 	m_nownext_timer->stop();
+	if (m_streamingsrc_timeout)
+		m_streamingsrc_timeout->stop();
 
 	return 0;
 }
@@ -832,6 +844,12 @@ RESULT eServiceMP3::seekToImpl(pts_t to)
 	{
 		eDebug("eServiceMP3::seekTo failed");
 		return -1;
+	}
+
+	if (m_paused)
+	{
+		m_seek_paused = true;
+		gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 	}
 
 	return 0;
@@ -1079,6 +1097,7 @@ int eServiceMP3::getInfo(int w)
 	case sTagCRC:
 		tag = "has-crc";
 		break;
+	case sBuffer: return m_bufferInfo.bufferPercent;
 	default:
 		return resNA;
 	}
@@ -1138,12 +1157,27 @@ std::string eServiceMP3::getInfoString(int w)
 		break;
 	case sTagDate:
 		GDate *date;
+		GstDateTime *date_time;
 		if (gst_tag_list_get_date(m_stream_tags, GST_TAG_DATE, &date))
 		{
 			gchar res[5];
- 			g_date_strftime (res, sizeof(res), "%Y-%M-%D", date);
+ 			snprintf(res, sizeof(res), "%04d", g_date_get_year(date));
+ 			g_date_free(date);
 			return (std::string)res;
 		}
+#if GST_VERSION_MAJOR >= 1
+		else if (gst_tag_list_get_date_time(m_stream_tags, GST_TAG_DATE_TIME, &date_time))
+		{
+			if (gst_date_time_has_year(date_time))
+			{
+				gchar res[5];
+				snprintf(res, sizeof(res), "%04d", gst_date_time_get_year(date_time));
+				gst_date_time_unref(date_time);
+				return (std::string)res;
+			}
+			gst_date_time_unref(date_time);
+		}
+#endif
 		break;
 	case sTagComposer:
 		tag = GST_TAG_COMPOSER;
@@ -1582,9 +1616,18 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				{
 					if ( m_sourceinfo.is_streaming && m_streamingsrc_timeout )
 						m_streamingsrc_timeout->stop();
+					m_paused = false;
+					if (m_seek_paused)
+					{
+						m_seek_paused = false;
+						gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
+					}
+					else
+						m_event((iPlayableService*)this, evGstreamerPlayStarted);
 				}	break;
 				case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
 				{
+					m_paused = true;
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
@@ -1924,9 +1967,11 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 					owner = 0;
 				if ( owner )
 				{
+					GstState state;
+					gst_element_get_state(m_gst_playbin, &state, NULL, 0LL);
 					GstElementFactory *factory = gst_element_get_factory(GST_ELEMENT(owner));
 					const gchar *name = gst_plugin_feature_get_name(GST_PLUGIN_FEATURE(factory));
-					if (!strcmp(name, "souphttpsrc"))
+					if (!strcmp(name, "souphttpsrc") && (state == GST_STATE_READY) && !m_streamingsrc_timeout->isActive())
 					{
 						m_streamingsrc_timeout->start(HTTP_TIMEOUT*1000, true);
 						g_object_set (G_OBJECT (owner), "timeout", HTTP_TIMEOUT, NULL);
