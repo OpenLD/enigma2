@@ -79,12 +79,12 @@ class UpdatePlugin(Screen):
 		try:
 			# TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
 			# run in parallel to the package update.
-			if getBoxType() in urlopen("http://openpli.org/status").read().split(','):
-				message = _("The current beta image might not be stable.\nFor more information see %s.") % ("www.openpli.org")
+			if getBoxType() in urlopen("http://openld.es/status").read().split(','):
+				message = _("The current beta image might not be stable.\nFor more information see %s.") % ("www.openld.es")
 				picon = MessageBox.TYPE_ERROR
 				default = False
 		except:
-			message = _("The status of the current beta image could not be checked because %s can not be reached.") % ("www.openpli.org")
+			message = _("The status of the current beta image could not be checked because %s can not be reached.") % ("www.openld.es")
 			picon = MessageBox.TYPE_ERROR
 			default = False
 		socket.setdefaulttimeout(currentTimeoutDefault)
@@ -101,7 +101,7 @@ class UpdatePlugin(Screen):
 		try:
 			# TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
 			# run in parallel to the package update.
-			latestImageTimestamp = re.findall('<dd>(.*?)</dd>', urlopen("http://openpli.org/download/"+getBoxType()+"/").read())[0][:16]
+			latestImageTimestamp = re.findall('<dd>(.*?)</dd>', urlopen("http://openld.es/download/"+getBoxType()+"/").read())[0][:16]
 			latestImageTimestamp = time.strftime(_("%d-%b-%Y %-H:%M"), time.strptime(latestImageTimestamp, "%Y/%m/%d %H:%M"))
 		except:
 			pass
