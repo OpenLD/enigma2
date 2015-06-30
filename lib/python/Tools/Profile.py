@@ -57,6 +57,9 @@ def profile(id):
 				elif boxtype in ("xpeedlx3", "sezammarvel", "atemionemesis"):
 					f = open("/proc/vfd", "w")
 					f.write("Loading %d %%" % perc)
+				elif boxtype in ("azboxhd", "azboxme"):
+					f = open("/proc/vfd", "w")
+					f.write("Loading %d%%" % perc)
 				elif getBoxType() in ('amikomini', 'amiko8900', 'sognorevolution', 'arguspingulux', 'arguspinguluxmini', 'sparkreloaded', 'sabsolo', 'sparklx', 'gis8120'):
 					f = open("/proc/vfd", "w")
 					f.write("%d \n" % perc)
