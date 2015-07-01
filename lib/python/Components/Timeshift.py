@@ -570,24 +570,40 @@ class InfoBarTimeshift:
 		self.event_changed = False
 
 		ts = self.getTimeshift()
-		if ts and not ts.startTimeshift():
-			if (getBoxType() == 'vuuno' or getBoxType() == 'vuduo') and os.path.exists("/proc/stb/lcd/symbol_timeshift"):
-				if self.session.nav.RecordTimer.isRecording():
-					f = open("/proc/stb/lcd/symbol_timeshift", "w")
-					f.write("0")
-					f.close()
-			self.pts_starttime = time()
-			self.save_timeshift_postaction = None
-			self.ptsGetEventInfo()
-			self.ptsCreateHardlink()
-			self.__seekableStatusChanged()
+ 		if ts and (not ts.startTimeshift() or self.pts_eventcount == 0):
+ 			# Update internal Event Counter
+ 			self.pts_eventcount += 1
+ 			if (getBoxType() == 'vuuno' or getBoxType() == 'vuduo') and os.path.exists("/proc/stb/lcd/symbol_timeshift"):
+ 				if self.session.nav.RecordTimer.isRecording():
+ 					f = open("/proc/stb/lcd/symbol_timeshift", "w")
+ 					f.write("0")
+ 					f.close()
+ 			self.pts_starttime = time()
+ 			self.save_timeshift_postaction = None
+ 			self.ptsGetEventInfo()
+ 			self.ptsCreateHardlink()
+ 			self.__seekableStatusChanged()
+ 			self.ptsEventCleanTimerSTART()
+ 		elif ts and ts.startTimeshift():
+ 			self.ptsGetEventInfo()
+			try:
+				# rewrite .meta and .eit files
+				metafile = open("%spts_livebuffer_%s.meta" % (config.usage.timeshift_path.value,self.pts_eventcount), "w")
+				metafile.write("%s\n%s\n%s\n%i\n" % (self.pts_curevent_servicerefname,self.pts_curevent_name.replace("\n", ""),self.pts_curevent_description.replace("\n", ""),int(self.pts_starttime)))
+				metafile.close()
+				self.ptsCreateEITFile("%spts_livebuffer_%s" % (config.usage.timeshift_path.value,self.pts_eventcount))
+			except:
+				print "[Timeshift] - failure rewrite meta and eit files."
 			self.ptsEventCleanTimerSTART()
 		else:
 			self.ptsEventCleanTimerSTOP()
-			self.session.open(MessageBox, _("Timeshift not possible!"), MessageBox.TYPE_ERROR, timeout=2)
-		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
-
-	def createTimeshiftFolder(self):
+ 			try:
+ 				self.session.open(MessageBox, _("Timeshift not possible!"), MessageBox.TYPE_ERROR, timeout=2)
+ 			except:
+ 				print '[TIMESHIFT] Failed to open MessageBox, Timeshift not possible, probably another MessageBox was active.'
+ 		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
+ 
+ 	def createTimeshiftFolder(self):
 		timeshiftdir = resolveFilename(SCOPE_TIMESHIFT)
 		if not pathExists(timeshiftdir):
 			try:
