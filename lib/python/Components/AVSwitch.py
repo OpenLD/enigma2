@@ -156,9 +156,12 @@ class AVSwitch:
 			f.write(mode_50)
 			f.close()
 		if os.path.exists('/proc/stb/video/videomode_60hz') and getBoxType() not in ('gb800solo', 'gb800se', 'gb800ue'):
-			f = open("/proc/stb/video/videomode_60hz", "w")
-			f.write(mode_60)
-			f.close()
+			try:
+				f = open("/proc/stb/video/videomode_60hz", "w")
+				f.write(mode_60)
+				f.close()
+			except IOError:
+				print "setting videomode failed."
 		try:
 			mode_etc = modes.get(int(rate[:2]))
 			f = open("/proc/stb/video/videomode", "w")
@@ -373,6 +376,7 @@ def InitAVSwitch():
 	config.av.autores_delay = ConfigSelectionNumber(min = 50, max = 3000, stepwidth = 50, default = 400, wraparound = True)
 	config.av.autores_deinterlace = ConfigYesNo(default=False)
 	config.av.autores_sd = ConfigSelection(choices={"720p50": _("720p50"), "720p": _("720p"), "1080i50": _("1080i50"), "1080i": _("1080i")}, default="720p50")
+	config.av.autores_480p24 = ConfigSelection(choices={"480p24": _("480p 24Hz"), "720p24": _("720p 24Hz"), "1080p24": _("1080p 24Hz")}, default="1080p24")
 	config.av.autores_720p24 = ConfigSelection(choices={"720p24": _("720p 24Hz"), "1080p24": _("1080p 24Hz"), "1080i50": _("1080i 50Hz"), "1080i": _("1080i 60Hz")}, default="720p24")
 	config.av.autores_1080p24 = ConfigSelection(choices={"1080p24": _("1080p 24Hz"), "1080p25": _("1080p 25Hz"), "1080i50": _("1080p 50Hz"), "1080i": _("1080i 60Hz")}, default="1080p24")
 	config.av.autores_1080p25 = ConfigSelection(choices={"1080p25": _("1080p 25Hz"), "1080p50": _("1080p 50Hz"), "1080i50": _("1080i 50Hz")}, default="1080p25")
@@ -530,7 +534,27 @@ def InitAVSwitch():
 		config.av.surround_3d.addNotifier(set3DSurround)
 	else:
 		config.av.surround_3d = ConfigNothing()
-		
+	
+	if os.path.exists("/proc/stb/audio/3d_surround_speaker_position_choices"):
+		f = open("/proc/stb/audio/3d_surround_speaker_position_choices", "r")
+		can_3dsurround_speaker = f.read().strip().split(" ")
+		f.close()
+	else:
+		can_3dsurround_speaker = False
+
+	SystemInfo["Can3DSpeaker"] = can_3dsurround_speaker
+
+	if can_3dsurround_speaker:
+		def set3DSurroundSpeaker(configElement):
+			f = open("/proc/stb/audio/3d_surround_speaker_position", "w")
+			f.write(configElement.value)
+			f.close()
+		choice_list = [("center", _("center")), ("wide", _("wide")), ("extrawide", _("extra wide"))]
+		config.av.surround_3d_speaker = ConfigSelection(choices = choice_list, default = "center")
+		config.av.surround_3d_speaker.addNotifier(set3DSurroundSpeaker)
+	else:
+		config.av.surround_3d_speaker = ConfigNothing()
+	
 	if os.path.exists("/proc/stb/audio/avl_choices"):
 		f = open("/proc/stb/audio/avl_choices", "r")
 		can_autovolume = f.read().strip().split(" ")
