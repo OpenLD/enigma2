@@ -48,7 +48,7 @@
 				<item text="Keyboard" entryID="keyboard"><setup id="keyboard" /></item>
 				<item level="0" entryID="time_setup"><setup id="time"/></item>
 				<item level="0" entryID="logs_setup"><setup id="logs" /></item>
-				<menu level="2" text="OSD settings" entryID="osd_setup" requires="OsdMenu">
+				<menu level="2" text="OSD settings" entryID="osd_setup">
 					<id val="osd_menu" />
 					<item level="0" entryID="user_interface"><setup id="userinterface" /></item>
 					<item level="2" text="OSD Position" entryID="osdsetup" requires="CanChangeOsdPosition"><screen module="UserInterfacePositioner" screen="UserInterfacePositioner2"/></item>
@@ -145,6 +145,9 @@ def msgClosed(ret):
 		print"[FACTORY RESET] set network to DHCP"
 		system("cp -f /usr/share/enigma2/defaults/interfaces /etc/network/interfaces")
 		system("/etc/init.d/networking restart")
+		if path.exists("/etc/defaultsat.tar.gz"):
+			system("mkdir /etc/enigma2")
+			system("tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2")
 		_exit(0)
 self.session.openWithCallback(msgClosed, FactoryReset)
 </code>
