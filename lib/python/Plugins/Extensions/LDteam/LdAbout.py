@@ -1,5 +1,7 @@
 from enigma import *
 from Screens.Screen import Screen
+from twisted.internet import threads
+from Components.config import config
 from Components.Button import Button
 from Screens.MessageBox import MessageBox
 from Components.ActionMap import ActionMap
@@ -7,14 +9,17 @@ from Components.Label import Label
 from Components.ScrollLabel import ScrollLabel
 from Components.MenuList import MenuList
 from Components.Sources.List import List
-from Components.About import about
+from Components.Harddisk import Harddisk
+from Components.NimManager import nimmanager
+from Components.About import about, getVersionString
+from Components.Console import Console
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
 from Tools.Directories import fileExists
 from Tools.StbHardware import getFPVersion
 from ServiceReference import ServiceReference
 from os import path, popen, system, listdir, remove as os_remove
-from enigma import iServiceInformation, eTimer
+from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
 
 from re import search
@@ -46,9 +51,9 @@ class LdsysInfo(Screen):
 		f = open("/proc/stb/info/model",'r')
 		text += "Model:\t" + about.getBoxType() + "\n"
  		f.close()
-		f = open("/proc/stb/info/chipset",'r')
- 		text += "Chipset:\t" + about.getChipSetString() + "\n"
-		f.close()
+		#f = open("/proc/stb/info/chipset",'r')
+ 		#text += "Chipset:\t" + about.getChipSetString() + "\n"
+		#f.close()
 		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
 		cmd2 = 'cat /proc/cpuinfo | grep "BogoMIPS" -m 1 | awk -F ": " ' + "'{print $2}'"
 		try:
