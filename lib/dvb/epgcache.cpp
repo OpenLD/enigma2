@@ -600,16 +600,14 @@ void eEPGCache::DVBChannelStateChanged(iDVBChannel *chan)
 					eDebug("[eEPGCache] remove channel %p", chan);
 					if (it->second->state >= 0)
 						messages.send(Message(Message::leaveChannel, chan));
-					channel_data* cd = it->second;
-					pthread_mutex_lock(&cd->channel_active);
-					{
-						singleLock s(channel_map_lock);
-						m_knownChannels.erase(it);
-					}
-					pthread_mutex_unlock(&cd->channel_active);
-					delete cd;
+					pthread_mutex_lock(&it->second->channel_active);
+					singleLock s(channel_map_lock);
+					m_knownChannels.erase(it);
+					pthread_mutex_unlock(&it->second->channel_active);
+					delete it->second;
+					it->second=0;
 					// -> gotMessage -> abortEPG
-					return;
+					break;
 				}
 				default: // ignore all other events
 					return;
@@ -3204,7 +3202,6 @@ PyObject *eEPGCache::search(ePyObject arg)
 							eDebug("[EPGC] lookup events, title starting with '%s' (%s)", str, casetype?"ignore case":"case sensitive");
 							break;
 					}
-					Py_BEGIN_ALLOW_THREADS; /* No Python code in this section, so other threads can run */
 					singleLock s(cache_lock);
 					std::string title;
 					for (descriptorMap::iterator it(eventData::descriptors.begin());
@@ -3264,7 +3261,6 @@ PyObject *eEPGCache::search(ePyObject arg)
 							}
 						}
 					}
-					Py_END_ALLOW_THREADS;
 				}
 				else
 				{
