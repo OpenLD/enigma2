@@ -10,9 +10,6 @@ info = {}
 ecm = ''
 data = EMPTY_ECM_INFO
 
-def getECM():
-	return ecm
-
 class GetEcmInfo:
 	def __init__(self):
 		pass
@@ -83,8 +80,12 @@ class GetEcmInfo:
 					info['pid'] = line[line.find('pid 0x')+6:line.find(' =')]
 					info['provid'] = info.get('prov', '0')[:4]
 			data = self.getText()
+			return True
 		else:
 			info['ecminterval0'] = int(time.time()-ecm_time+0.5)
+
+	def getEcm(self):
+		return (self.pollEcmData(), ecm)
 
 	def getEcmData(self):
 		self.pollEcmData()
@@ -181,10 +182,20 @@ class GetEcmInfo:
 							hops = ''
 						self.textvalue = reader + hops + " (%ss)" % info.get('ecm time', '?')
 					else:
-						self.textvalue = ""
-		decCI = info.get('caid', '0')
-		provid = info.get('provid', '0')
-		if provid == '0':
-			provid = info.get('prov', '0')
-		ecmpid = info.get('pid', '0')
+							response = info.get('response time', None)
+							if response:
+								# wicardd
+								response = response.split(' ')
+								self.textvalue = "%s (%ss)" % (response[4], float(response[0])/1000)
+							else:
+								self.textvalue = ""
+			decCI = info.get('caid', info.get('CAID', '0'))
+			provid = info.get('provid', info.get('prov', info.get('Provider', '0')))
+			ecmpid = info.get('pid', info.get('ECM PID', '0'))
+ 		except:
+ 			ecm = ''
+ 			self.textvalue = ""
+ 			decCI='0'
+ 			provid='0'
+ 			ecmpid='0'
 		return self.textvalue,decCI,provid,ecmpid
