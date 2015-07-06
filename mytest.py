@@ -1,5 +1,4 @@
-import sys
-import os
+import sys, os
 from time import time
 
 if os.path.isfile("/usr/lib/enigma2/python/enigma.zip"):
@@ -74,7 +73,7 @@ config.misc.DeepStandby = NoSave(ConfigYesNo(default=False)) # detect deepstandb
 #config.misc.standbyCounter.addNotifier(standbyCountChanged, initial_call = False)
 ####################################################
 
-def useSyncUsingChanged(configelement):
+def useSyncUsingChanged(configElement):
 	if config.misc.SyncTimeUsing.value == "0":
 		print "[Time By]: Transponder"
 		enigma.eDVBLocalTimeHandler.getInstance().setUseDVBTime(True)
@@ -85,7 +84,7 @@ def useSyncUsingChanged(configelement):
 		enigma.eEPGCache.getInstance().timeUpdated()
 config.misc.SyncTimeUsing.addNotifier(useSyncUsingChanged)
 
-def NTPserverChanged(configelement):
+def NTPserverChanged(configElement):
 	if config.misc.NTPserver.value == "pool.ntp.org":
 		return
 	print "[NTPDATE] save /etc/default/ntpdate"
@@ -449,7 +448,7 @@ class AutoScartControl:
 		config.av.vcrswitch.addNotifier(self.recheckVCRSb)
 		enigma.eAVSwitch.getInstance().vcr_sb_notifier.get().append(self.VCRSbChanged)
 
-	def recheckVCRSb(self, configelement):
+	def recheckVCRSb(self, configElement):
 		self.VCRSbChanged(self.current_vcr_sb)
 
 	def VCRSbChanged(self, value):
