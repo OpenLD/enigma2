@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-07-06 20:20+0100\n"
-"Last-Translator: mike99 <mike99@mail.to>\n"
-"Language-Team: Team Linux-box <www.linux-box.es>\n"
+"PO-Revision-Date: 2015-07-06 22:04+0100\n"
+"Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
+"Language-Team: Team OpenLD <www.openld.es>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3468,8 +3468,8 @@ msgstr "Ha fallado el flasheo"
 msgid "Following tasks will be done after you press OK!"
 msgstr "Las siguientes tareas se realizarán después de pulsar 'OK'."
 
-msgid "For more information see www.openpli.org"
-msgstr "Para más información visita www.openpli.org"
+msgid "For more information see www.openld.es"
+msgstr "Para más información visita www.openld.es"
 
 #
 msgid "Format"
@@ -8249,8 +8249,8 @@ msgstr "El temporizador de apagado se ha activado."
 msgid "The sleep timer has been disabled."
 msgstr "El temporizador de apagado se ha desactivado."
 
-msgid "The status of the current beta image could not be checked because www.openpli.org could not be reached for some reason"
-msgstr "El estado de la imagen beta actual no pudo comprobarse porque por alguna razón no se puede conectar con www.openpli.org"
+msgid "The status of the current beta image could not be checked because www.openld.es could not be reached for some reason"
+msgstr "El estado de la imagen beta actual no pudo comprobarse porque por alguna razón no se puede conectar con www.openld.es"
 
 #
 msgid "The timer file (timers.xml) is corrupt and could not be loaded."
@@ -15674,7 +15674,7 @@ msgid "Kernel:\t%s"
 msgstr "Kernel:\t%s"
 
 msgid "Last update:\t%s"
-msgstr "Última actualización:\t%s"
+msgstr "Último Update:\t%s"
 
 msgid "Drivers:\t%s"
 msgstr "Drivers:\t%s"
