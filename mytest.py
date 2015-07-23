@@ -17,7 +17,7 @@ enigma.eSocketNotifier = eBaseImpl.eSocketNotifier
 enigma.eConsoleAppContainer = eConsoleImpl.eConsoleAppContainer
 boxtype = getBoxType()
 
-if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype=='dm7080':
+if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype in ('dm7080','dm820'):
 	import pyo_patcher
 
 from traceback import print_exc
@@ -43,6 +43,7 @@ from skin import readSkin
 profile("LOAD:Tools")
 from Tools.Directories import InitFallbackFiles, resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN, SCOPE_CURRENT_SKIN, SCOPE_CONFIG
 from Components.config import config, configfile, ConfigText, ConfigYesNo, ConfigInteger, ConfigSelection, NoSave
+import Components.RecordingConfig
 InitFallbackFiles()
 
 profile("config.misc")
@@ -362,6 +363,8 @@ class PowerKey:
 		globalActionMap.actions["power_long"]=self.powerlong
 		globalActionMap.actions["deepstandby"]=self.shutdown # frontpanel long power button press
 		globalActionMap.actions["discrete_off"]=self.standby
+		globalActionMap.actions["sleeptimer_standby"]=self.sleepStandby
+		globalActionMap.actions["sleeptimer_deepstandby"]=self.sleepDeepStandby
 		self.standbyblocked = 1
 
 	def MenuClosed(self, *val):
@@ -369,7 +372,7 @@ class PowerKey:
 
 	def shutdown(self):
 		wasRecTimerWakeup = False
-		recordings = self.session.nav.getRecordings()
+		recordings = self.session.nav.getRecordings(False,Components.RecordingConfig.recType(config.recording.warn_box_restart_rec_types.getValue()))
 		if not recordings:
 			next_rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
 		if recordings or (next_rec_time > 0 and (next_rec_time - time()) < 360):
@@ -419,6 +422,12 @@ class PowerKey:
 						return
 		elif action == "standby":
 			self.standby()
+		elif action == "sleeptimerStandby":
+			val = 3
+			self.setSleepTimer(val)
+		elif action == "sleeptimerDeepStandby":
+			val = 4
+			self.setSleepTimer(val)
 
 	def powerdown(self):
 		self.standbyblocked = 0
@@ -433,6 +442,27 @@ class PowerKey:
 	def standby(self):
 		if not Screens.Standby.inStandby and self.session.current_dialog and self.session.current_dialog.ALLOW_SUSPEND and self.session.in_exec:
 			self.session.open(Screens.Standby.Standby)
+
+	def setSleepTimer(self, val):
+		from PowerTimer import PowerTimerEntry
+		sleeptime = 15
+		data = (int(time() + 60), int(time() + 120))
+		self.addSleepTimer(PowerTimerEntry(checkOldTimers = True, *data, timerType = val, autosleepdelay = sleeptime))
+
+	def addSleepTimer(self, timer):
+		from Screens.PowerTimerEntry import TimerEntry
+		self.session.openWithCallback(self.finishedAdd, TimerEntry, timer)
+
+	def finishedAdd(self, answer):
+		if answer[0]:
+			entry = answer[1]
+			simulTimerList = self.session.nav.PowerTimer.record(entry)
+
+	def sleepStandby(self):
+		self.doAction(action = "sleeptimerStandby")
+
+	def sleepDeepStandby(self):
+		self.doAction(action = "sleeptimerDeepStandby")
 
 profile("Scart")
 from Screens.Scart import Scart
@@ -486,7 +516,6 @@ def autorestoreLoop():
 
 def runScreenTest():
 	config.misc.startCounter.value += 1
-	config.misc.startCounter.save()
 
 	profile("readPluginList")
 	plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
@@ -541,7 +570,7 @@ def runScreenTest():
 	profile("Init:PowerKey")
 	power = PowerKey(session)
 	
-	if boxtype in ('mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3'):
+	if boxtype in ('sf3038', 'spycat', 'mbmicro', 'et7500', 'mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3') or getBrandOEM() in ('fulan'):
 		profile("VFDSYMBOLS")
 		import Components.VfdSymbols
 		Components.VfdSymbols.SymbolsCheck(session)
@@ -584,6 +613,7 @@ def runScreenTest():
 	runReactor()
 
 	print "[mytest.py] normal shutdown"
+	config.misc.startCounter.save()
 	config.usage.shutdownOK.setValue(True)
 	config.usage.shutdownOK.save()
 
@@ -595,51 +625,72 @@ def runScreenTest():
 		print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
 		setRTCtime(nowTime)
 
+	#check RecordTimer instance
+	#if str(session.nav.RecordTimer).startswith('<RecordTimer.RecordTimer instance at'):
+	if session.nav.isRecordTimerImageStandard:
+		nextRecordingTime = session.nav.RecordTimer.getNextRecordingTime(getNextStbPowerOn = True)
+		nextRecordingAuto = session.nav.RecordTimer.isNextRecordAfterEventActionAuto()
+		nextZapTime = session.nav.RecordTimer.getNextZapTime()
+		nextZapAuto = nextRecordingAuto
+	else:
+		nextRecordingTime = session.nav.RecordTimer.getNextRecordingTime()
+		nextRecordingAuto = session.nav.RecordTimer.isNextRecordAfterEventActionAuto()
+		nextZapTime = session.nav.RecordTimer.getNextZapTime()
+		nextZapAuto = False
+
+	nextPowerManagerTime = session.nav.PowerTimer.getNextPowerManagerTime(getNextStbPowerOn = True)
+	nextPowerManagerAuto = session.nav.PowerTimer.isNextPowerManagerAfterEventActionAuto()
+
 	wakeupList = [
-		x for x in ((session.nav.RecordTimer.getNextRecordingTime(), 0, session.nav.RecordTimer.isNextRecordAfterEventActionAuto()),
-					(session.nav.RecordTimer.getNextZapTime(), 1),
-					(plugins.getNextWakeupTime(), 2),
-					(session.nav.PowerTimer.getNextPowerManagerTime(), 3, session.nav.PowerTimer.isNextPowerManagerAfterEventActionAuto()))
+		x for x in ((nextRecordingTime, 0, nextRecordingAuto),
+					(nextZapTime, 1, nextZapAuto),
+					(plugins.getNextWakeupTime(), 2, False),
+					(nextPowerManagerTime, 3, nextPowerManagerAuto))
 		if x[0] != -1
 	]
 	wakeupList.sort()
+
+	# individual wakeup time offset
+	if config.workaround.wakeuptimeoffset.value == "standard":
+		if boxtype.startswith("gb"):
+			wpoffset = -120 # Gigaboxes already starts 2 min. before wakeup time
+		else:
+			wpoffset = 0
+	else:
+		wpoffset = int(config.workaround.wakeuptimeoffset.value)
+
 	recordTimerWakeupAuto = False
 	if wakeupList and wakeupList[0][1] != 3:
 		startTime = wakeupList[0]
-		if (startTime[0] - nowTime) < 270: # no time to switch box back on
-			wptime = nowTime + 30  # so switch back on in 30 seconds
-		else:
-			if boxtype.startswith("gb"):
-				wptime = startTime[0] - 120 # Gigaboxes already starts 2 min. before wakeup time
-			else:
-				wptime = startTime[0] - 240
+		# wakeup time is 5 min before timer starts + offset
+		wptime = startTime[0] - 300 - wpoffset
+		if (wptime - nowTime) < 60: # no time to switch box back on
+			wptime = int(nowTime) + 60  # so switch back on in 60 seconds
+
 #		if not config.misc.SyncTimeUsing.value == "0" or boxtype.startswith('gb'):
 #			print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
 #			setRTCtime(nowTime)
-		print "set wakeup time to", strftime("%Y/%m/%d %H:%M", localtime(wptime))
+		print "set wakeup time to", strftime("%a, %Y/%m/%d %H:%M", localtime(wptime))
 		setFPWakeuptime(wptime)
-		recordTimerWakeupAuto = startTime[1] == 0 and startTime[2]
+		recordTimerWakeupAuto = startTime[2]
 		print 'recordTimerWakeupAuto',recordTimerWakeupAuto
 	config.misc.isNextRecordTimerAfterEventActionAuto.value = recordTimerWakeupAuto
 	config.misc.isNextRecordTimerAfterEventActionAuto.save()
 
-
 	PowerTimerWakeupAuto = False
 	if wakeupList and wakeupList[0][1] == 3:
 		startTime = wakeupList[0]
-		if (startTime[0] - nowTime) < 60: # no time to switch box back on
-			wptime = nowTime + 30  # so switch back on in 30 seconds
-		else:
-			if config.workaround.deeprecord.value:
-				wptime = startTime[0] - 240 # Gigaboxes already starts 2 min. before wakeup time
-			else:
-				wptime = startTime[0]
+		# wakeup time is 5 min before timer starts + offset
+		wptime = startTime[0] - 300 - wpoffset
+		if (wptime - nowTime) < 60: # no time to switch box back on
+			wptime = int(nowTime) + 60  # so switch back on in 60 seconds
+
 #		if not config.misc.SyncTimeUsing.value == "0" or getBrandOEM() == 'gigablue':
 #			print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
 #			setRTCtime(nowTime)
-		print "set wakeup time to", strftime("%Y/%m/%d %H:%M", localtime(wptime+60))
+		print "set wakeup time to", strftime("%a, %Y/%m/%d %H:%M", localtime(wptime))
 		setFPWakeuptime(wptime)
-		PowerTimerWakeupAuto = startTime[1] == 3 and startTime[2]
+		PowerTimerWakeupAuto = startTime[2]
 		print 'PowerTimerWakeupAuto',PowerTimerWakeupAuto
 	config.misc.isNextPowerTimerAfterEventActionAuto.value = PowerTimerWakeupAuto
 	config.misc.isNextPowerTimerAfterEventActionAuto.save()

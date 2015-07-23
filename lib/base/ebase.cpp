@@ -10,7 +10,8 @@
 
 DEFINE_REF(eSocketNotifier);
 
-eSocketNotifier::eSocketNotifier(eMainloop *context, int fd, int requested, bool startnow): context(*context), fd(fd), state(0), requested(requested)
+eSocketNotifier::eSocketNotifier(eMainloop *context, int fd, int requested, bool startnow):
+	context(*context), fd(fd), state(0), requested(requested)
 {
 	if (startnow)
 		start();
@@ -131,8 +132,8 @@ bool eMainloop::isValid(eMainloop *ml)
 eMainloop::~eMainloop()
 {
 	existing_loops.remove(this);
-	for (std::map<int, eSocketNotifier*>::iterator it(notifiers.begin());it != notifiers.end();)
-		(it++)->second->stop();
+	for (std::map<int, eSocketNotifier*>::iterator it(notifiers.begin());it != notifiers.end();++it)
+		it->second->stop();
 	while(m_timer_list.begin() != m_timer_list.end())
 		m_timer_list.begin()->stop();
 }

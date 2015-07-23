@@ -90,6 +90,30 @@ void eRCDeviceInputDev::handleCode(long rccode)
 		}
 	}
 
+#if KEY_FAV_TO_KEY_PVR
+	if (ev->code == KEY_FAVORITES)
+	{
+		/* tomcat remote dont have a PVR Key. Correct this, so we do not have to place hacks in the keymaps. */
+		ev->code = KEY_PVR;
+	}
+#endif
+
+#if KEY_LAST_TO_KEY_PVR
+	if (ev->code == KEY_LAST)
+	{
+		/* xwidowx Remote rc has a Funktion key, which sends KEY_LAST events but we need a KEY_PVR. Correct this, so we do not have to place hacks in the keymaps. */
+		ev->code = KEY_PVR;
+	}
+#endif
+
+#if KEY_MEDIA_TO_KEY_LIST
+	if (ev->code == KEY_MEDIA)
+	{
+		/* entwodia Remote rc has a Funktion key, which sends KEY_MEDIA events but we need a KEY_LIST. Correct this, so we do not have to place hacks in the keymaps. */
+		ev->code = KEY_LIST;
+	}
+#endif
+
 #if KEY_F1_TO_KEY_F2
 	if (ev->code == KEY_F1)
 	{
@@ -401,38 +425,6 @@ void eRCDeviceInputDev::handleCode(long rccode)
 		/* HDx , which sends KEY_LIST events. Correct this, so we do not have to place hacks in the keymaps. */
 		ev->code = KEY_PVR;
 	}
-#endif
-
-#if KEY_INFO_TO_KEY_EPG
- /* INFO to EPG Toggle , which sends KEY_INFO events. Correct this, so we do not have to place hacks in the keymaps. */
- if (ev->code == KEY_INFO)
- {
-  if (ev->value == 0)
-  {
-  ev->code = KEY_EPG;
-  }
-  else
-  {
-  ev->code = KEY_INFO;
-  ev->value == 0;
-  }
- }
-#endif
-
-#if KEY_EPG_TO_KEY_INFO
- /* EPG to INFO Toggle , which sends KEY_EPG events. Correct this, so we do not have to place hacks in the keymaps. */
- if (ev->code == KEY_EPG)
- {
-  if (ev->value == 0)
-  {
-  ev->code = KEY_EPG;
-  }
-  else
-  {
-  ev->code = KEY_INFO;
-  ev->value == 0;
-  }
- }
 #endif
 
 	switch (ev->value)

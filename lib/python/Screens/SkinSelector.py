@@ -13,6 +13,7 @@ import os
 
 class SkinSelectorBase:
 	def __init__(self, session, args = None):
+		self.setTitle(_("Skin Selector"))
 		self.skinlist = []
 		self.previewPath = ""
 		if self.SKINXML and os.path.exists(os.path.join(self.root, self.SKINXML)):
@@ -137,7 +138,7 @@ class SkinSelectorBase:
 
 class SkinSelector(Screen, SkinSelectorBase):
 	SKINXML = "skin.xml"
-	DEFAULTSKIN = "< Default >"
+	DEFAULTSKIN = _("< Default >")
 	PICONSKINXML = None
 	PICONDEFAULTSKIN = None
 
@@ -153,9 +154,9 @@ class SkinSelector(Screen, SkinSelectorBase):
 
 class LcdSkinSelector(Screen, SkinSelectorBase):
 	SKINXML = "skin_display.xml"
-	DEFAULTSKIN = "< Default >"
+	DEFAULTSKIN = _("< Default >")
 	PICONSKINXML = "skin_display_picon.xml"
-	PICONDEFAULTSKIN = "< Default with Picon >"
+	PICONDEFAULTSKIN = _("< Default with Picon >")
 
 	skinlist = []
 	root = os.path.join(eEnv.resolve("${datadir}"),"enigma2/display/")

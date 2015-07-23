@@ -18,6 +18,7 @@ config.mediaplayer.alternateUserAgent = ConfigText(default="")
 config.mediaplayer.sortPlaylists = ConfigYesNo(default=False)
 config.mediaplayer.alwaysHideInfoBar = ConfigYesNo(default=True)
 config.mediaplayer.onMainMenu = ConfigYesNo(default=False)
+config.mediaplayer.extraHeaders = ConfigText(default="")
 
 class DirectoryBrowser(Screen, HelpableScreen):
 
@@ -88,6 +89,7 @@ class MediaPlayerSettings(Screen,ConfigListScreen):
 		    "cancel": self.cancel,
 		    "ok": self.ok,
 		}, -2)
+		self.onLayoutFinish.append(self.layoutFinished)
 
 	def layoutFinished(self):
 		self.setTitle(self.setup_title)

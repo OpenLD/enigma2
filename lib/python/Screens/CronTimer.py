@@ -15,8 +15,8 @@ from boxbranding import getMachineBrand, getMachineName
 class CronTimers(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if not path.exists('/usr/scripts'):
-			mkdir('/usr/scripts', 0755)
+		if not path.exists('/usr/script'):
+			mkdir('/usr/script', 0755)
 		Screen.setTitle(self, _("Cron Manager"))
 		self.onChangedEntry = [ ]
 		self['lab1'] = Label(_("Autostart:"))
@@ -186,54 +186,24 @@ class CronTimers(Screen):
 			f = open('/etc/cron/crontabs/root', 'r')
 			for line in f.readlines():
 				parts = line.strip().split()
-				if parts:
+				if len(parts)>5 and not parts[0].startswith("#"):
 					if parts[1] == '*':
-						try:
-							line2 = 'H: 00:' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8] + parts[9]
-						except:
-							try:
-								line2 = 'H: 00:' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8]
-							except:
-								try:
-									line2 = 'H: 00:' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7]
-								except:
-									try:
-										line2 = 'H: 00:' + parts[0].zfill(2) + '\t' + parts[5] + parts[6]
-									except:
-										line2 = 'H: 00:' + parts[0].zfill(2) + '\t' + parts[5]
+						line2 = 'H: 00:' + parts[0].zfill(2) + '\t'
+						for i in range(5, len(parts)-1):
+							line2 = line2 + parts[i] + ' '
 						res = (line2, line)
 						self.list.append(res)
 					elif parts[2] == '*' and parts[4] == '*':
-						try:
-							line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8] + parts[9]
-						except:
-							try:
-								line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8]
-							except:
-								try:
-									line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7]
-								except:
-									try:
-										line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6]
-									except:
-										line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5]
+						line2 = 'D: ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t'
+						for i in range(5, len(parts)-1):
+							line2 = line2 + parts[i] + ' '
 						res = (line2, line)
 						self.list.append(res)
 					elif parts[3] == '*':
 						if parts[4] == "*":
-							try:
-								line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8] + parts[9]
-							except:
-								try:
-									line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8]
-								except:
-									try:
-										line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7]
-									except:
-										try:
-											line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6]
-										except:
-											line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5]
+							line2 = 'M:  Day ' + parts[2] + '  ' + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t'
+							for i in range(5, len(parts)-1):
+								line2 = line2 + parts[i] + ' '
 						header = 'W:  '
 						day = ""
 						if str(parts[4]).find('0') >= 0:
@@ -252,19 +222,9 @@ class CronTimers(Screen):
 							day += 'Sat '
 
 						if day:
-							try:
-								line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8] + parts[9]
-							except:
-								try:
-									line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7] + parts[8]
-								except:
-									try:
-										line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6] + parts[7]
-									except:
-										try:
-											line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5] + parts[6]
-										except:
-											line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t' + parts[5]
+							line2 = header + day + parts[1].zfill(2) + ':' + parts[0].zfill(2) + '\t'
+							for i in range(5, len(parts)-1):
+								line2 = line2 + parts[i] + ' '
 						res = (line2, line)
 						self.list.append(res)
 			f.close()
@@ -325,11 +285,11 @@ class CronTimersConfig(Screen, ConfigListScreen):
 
 	def createSetup(self):
 		predefinedlist = []
-		f = listdir('/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts')
+		f = listdir('/usr/script')
 		if f:
 			for line in f:
 				parts = line.split()
-				path = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts/"
+				path = "/usr/script/"
 				pkg = parts[0]
 				description = path + parts[0]
 				if pkg.find('.sh') >= 0:

@@ -153,14 +153,14 @@ public:
 	enum t_diseqc_mode { NONE=0, V1_0=1, V1_1=2, V1_2=3, SMATV=4 };	// DiSEqC Mode
 	enum t_toneburst_param { NO=0, A=1, B=2 };
 #ifndef SWIG
-	__u8 m_committed_cmd;
+	uint8_t m_committed_cmd;
 	t_diseqc_mode m_diseqc_mode;
 	t_toneburst_param m_toneburst_param;
 
-	__u8 m_repeats;	// for cascaded switches
+	uint8_t m_repeats;	// for cascaded switches
 	bool m_use_fast;	// send no DiSEqC on H/V or Lo/Hi change
 	bool m_seq_repeat;	// send the complete DiSEqC Sequence twice...
-	__u8 m_command_order;
+	uint8_t m_command_order;
 	/* 	diseqc 1.0)
 			0) commited, toneburst
 			1) toneburst, committed
@@ -169,7 +169,7 @@ public:
 			3) toneburst, committed, uncommitted
 			4) uncommitted, committed, toneburst
 			5) toneburst, uncommitted, committed */
-	__u8 m_uncommitted_cmd;	// state of the 4 uncommitted switches..
+	uint8_t m_uncommitted_cmd;	// state of the 4 uncommitted switches..
 #endif
 };
 
@@ -185,7 +185,7 @@ public:
 #ifndef SWIG
 	t_voltage_mode m_voltage_mode;
 	t_22khz_signal m_22khz_signal;
-	__u8 m_rotorPosNum; // 0 is disable.. then use gotoxx
+	uint8_t m_rotorPosNum; // 0 is disable.. then use gotoxx
 #endif
 };
 
@@ -204,15 +204,15 @@ public:
 	struct eDVBSatelliteRotorInputpowerParameters
 	{
 		bool m_use;	// can we use rotor inputpower to detect rotor running state ?
-		__u8 m_delta;	// delta between running and stopped rotor
+		uint8_t m_delta;	// delta between running and stopped rotor
 		unsigned int m_turning_speed; // SLOW, FAST, or fast turning epoch
 	};
 	eDVBSatelliteRotorInputpowerParameters m_inputpower_parameters;
 
 	struct eDVBSatelliteRotorGotoxxParameters
 	{
-		__u8 m_lo_direction;	// EAST, WEST
-		__u8 m_la_direction;	// NORT, SOUTH
+		uint8_t m_lo_direction;	// EAST, WEST
+		uint8_t m_la_direction;	// NORT, SOUTH
 		double m_longitude;	// longitude for gotoXX? function
 		double m_latitude;	// latitude for gotoXX? function
 	};
@@ -257,12 +257,18 @@ public:
 	int m_prio; // to override automatic tuner management ... -1 is Auto
 #endif
 public:
-#define guard_offset_min -8000
+#define guard_offset_min (-8000)
 #define guard_offset_max 8000
 #define guard_offset_step 8000
 #define MAX_SATCR 32
-#define MAX_LNBNUM 64
 
+#define MAX_EN50607_POSITIONS 		64
+#define MAX_FIXED_LNB_POSITIONS		64
+#define MAX_MOVABLE_LNBS 		6
+
+#define MAX_LNBNUM (MAX_FIXED_LNB_POSITIONS + MAX_MOVABLE_LNBS)
+
+	int SatCR_positionnumber;
 	int SatCR_positions;
 	int SatCR_idx;
 	int SatCR_format;
@@ -274,7 +280,6 @@ public:
 	int old_orbital_position;
 	int guard_offset_old;
 	int guard_offset;
-	int LNBNum;
 };
 
 class eDVBRegisteredFrontend;
@@ -341,7 +346,6 @@ public:
 	RESULT setLNBThreshold(int threshold);
 	RESULT setLNBIncreasedVoltage(bool onoff);
 	RESULT setLNBPrio(int prio);
-	RESULT setLNBNum(int LNBNum);
 /* DiSEqC Specific Parameters */
 	RESULT setDiSEqCMode(int diseqcmode);
 	RESULT setToneburst(int toneburst);
@@ -359,7 +363,9 @@ public:
 	RESULT setUseInputpower(bool onoff);
 	RESULT setInputpowerDelta(int delta);  // delta between running and stopped rotor
 	RESULT setRotorTurningSpeed(int speed);  // set turning speed..
+	RESULT getMaxMovableLnbNum() {return MAX_MOVABLE_LNBS;}
 /* Unicable Specific Parameters */
+	RESULT setLNBSatCRpositionnumber(int UnicablePositionNumber);
 	RESULT setLNBSatCRformat(int SatCR_format);	//DiSEqc or JESS (or ...)
 	RESULT setLNBSatCR(int SatCR_idx);
 	RESULT setLNBSatCRvco(int SatCRvco);
@@ -373,6 +379,8 @@ public:
 	RESULT setVoltageMode(int mode);
 	RESULT setToneMode(int mode);
 	RESULT setRotorPosNum(int rotor_pos_num);
+	RESULT getMaxFixedLnbPositions() {return MAX_FIXED_LNB_POSITIONS;}
+	RESULT getMaxLnbNum() {return MAX_LNBNUM;}
 /* Tuner Specific Parameters */
 	RESULT setTunerLinked(int from, int to);
 	RESULT setTunerDepends(int from, int to);

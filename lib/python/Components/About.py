@@ -8,12 +8,10 @@ def getVersionString():
 def getEnigmaVersionString():
 	return getImageVersion()
 
-def getFlashDateString():
-	try:
-		return time.strftime(_("%Y-%m-%d %H:%M"), time.localtime(os.stat("/boot").st_ctime))
-	except:
-		return _("unknown")
-	
+def getGStreamerVersionString():
+	import enigma
+	return enigma.getGStreamerVersionString()
+
 def getKernelVersionString():
 	try:
 		f = open("/proc/version","r")
@@ -22,22 +20,18 @@ def getKernelVersionString():
 		return kernelversion
 	except:
 		return _("unknown")
-		
-def getGStreamerVersionString():	
-	import enigma	
-	return enigma.getGStreamerVersionString()
 	
-def getModelString():	
+def getModelString():
 	try:
 		file = open("/proc/stb/info/boxtype", "r")
 		model = file.readline().strip()
 		file.close()
 		return model
 	except IOError:
-		return "unknown"		
+		return "unknown"
 
 def getChipSetString():
-	if getBoxType() == "dm7080":
+	if getBoxType() in ('dm7080','dm820'):
 		return "7435"
 	else:
 		try:
@@ -48,31 +42,45 @@ def getChipSetString():
 		except IOError:
 			return "unavailable"
 
-def getPythonVersionString():
+def getCPUSpeedString():
 	try:
-		import commands
-		status, output = commands.getstatusoutput("python -V")
-		return output.split(' ')[1]
-	except:
-		return _("unknown")
-
-def getCPUString():
-	try:
-		system="unknown"
 		file = open('/proc/cpuinfo', 'r')
 		lines = file.readlines()
 		for x in lines:
 			splitted = x.split(': ')
 			if len(splitted) > 1:
 				splitted[1] = splitted[1].replace('\n','')
-				if splitted[0].startswith("system type"):
-					system = splitted[1].split(' ')[0]
-				elif splitted[0].startswith("Processor"):
-					system = splitted[1].split(' ')[0]
+				if splitted[0].startswith("cpu MHz"):
+					mhz = float(splitted[1].split(' ')[0])
+					if mhz and mhz >= 1000:
+						mhz = "%s GHz" % str(round(mhz/1000,1))
+					else:
+						mhz = "%s MHz" % str(round(mhz,1))
 		file.close()
-		return system
+		return mhz
 	except IOError:
 		return "unavailable"
+
+def getCPUString():
+	if getBoxType() in ('xc7362'):
+		return "Broadcom"
+	else:
+		try:
+			system="unknown"
+			file = open('/proc/cpuinfo', 'r')
+			lines = file.readlines()
+			for x in lines:
+				splitted = x.split(': ')
+				if len(splitted) > 1:
+					splitted[1] = splitted[1].replace('\n','')
+					if splitted[0].startswith("system type"):
+						system = splitted[1].split(' ')[0]
+					elif splitted[0].startswith("Processor"):
+						system = splitted[1].split(' ')[0]
+			file.close()
+			return system
+		except IOError:
+			return "unavailable"
 
 def getCpuCoresString():
 	try:

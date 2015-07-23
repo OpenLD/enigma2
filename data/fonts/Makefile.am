@@ -7,8 +7,12 @@ dist_install_DATA = \
 	md_khmurabi_10.ttf \
 	time.ttf \
 	DejaVuSans.ttf \
-	nmsbd.ttf
-	
+	nmsbd.ttf \
+	LiberationSans-Bold.ttf \
+	LiberationSans-BoldItalic.ttf \
+	LiberationSans-Italic.ttf \
+	LiberationSans-Regular.ttf
+
 if VUULTIMO
 dist_install_DATA += analog.ttf MyriadPro-Regular.otf MyriadPro-Semibold.otf MyriadPro-SemiboldIt.otf
 endif
@@ -27,4 +31,12 @@ endif
 
 if INIHDP
 dist_install_DATA += analog.ttf MyriadPro-Regular.otf MyriadPro-Semibold.otf MyriadPro-SemiboldIt.otf
+endif
+
+if ET8500
+dist_install_DATA += verdana.ttf
+endif
+
+if ET8500S
+dist_install_DATA += verdana.ttf
 endif

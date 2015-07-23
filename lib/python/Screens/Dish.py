@@ -40,6 +40,7 @@ class Dish(Screen):
 		self.configChanged(config.usage.showdish)
 
 		self.rotor_pos = self.cur_orbpos = config.misc.lastrotorposition.value
+		config.misc.lastrotorposition.addNotifier(self.rotorPositionChanged)
 		self.turn_time = self.total_time = self.pmt_timeout = self.close_timeout = None
 		self.cur_polar = 0
 		self.__state = self.STATE_HIDDEN
@@ -156,6 +157,10 @@ class Dish(Screen):
 				self["Dishpixmap"].hide() # hide dish picture
 		else:
 			self["Dishpixmap"].show() # show dish picture
+
+	def rotorPositionChanged(self, configElement=None):
+		if self.cur_orbpos != config.misc.lastrotorposition.value != INVALID_POSITION:
+			self.rotor_pos = self.cur_orbpos = config.misc.lastrotorposition.value
 
 	def getTurnTime(self, start, end, pol=0):
 		mrt = abs(start - end) if start and end else 0

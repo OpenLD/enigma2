@@ -33,6 +33,7 @@ def _cached(x):
 class LanguageSelection(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
+		self.setTitle(_("Setup Language"))
 
 		language.InitLang()
 		self.oldActiveLanguage = language.getActiveLanguage()
@@ -116,7 +117,7 @@ class LanguageSelection(Screen):
 		self.session.openWithCallback(self.delLangCB, MessageBox, _("Do you want to delete all other languages?") + _(" Except %s") %(lang), default = False)
 
 	def delLangCB(self, anwser):
-		if anwser:		
+		if anwser:
 			language.delLanguage()
 			language.activateLanguage(self.oldActiveLanguage)
 			self.updateList()
@@ -155,7 +156,7 @@ class LanguageSelection(Screen):
 	def updateList(self):
 		languageList = language.getLanguageList()
 		if not languageList: # no language available => display only english
-			list = [ LanguageEntryComponent("es", "Spanish (ES)", "es_ES") ]
+			list = [ LanguageEntryComponent("en", "English (US)", "en_US") ]
 		else:
 			list = [ LanguageEntryComponent(file = x[1][2].lower(), name = x[1][0], index = x[0]) for x in languageList]
 		self.list = list

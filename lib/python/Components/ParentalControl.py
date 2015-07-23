@@ -43,6 +43,16 @@ def InitParentalControl():
 
 	config.ParentalControl.servicepin = ConfigSubList()
 
+	config.ParentalControl.config_sections = ConfigSubsection()
+	config.ParentalControl.config_sections.main_menu = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.configuration = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.timer_menu = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.movie_list = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.plugin_browser = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.standby_menu = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.infopanel = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.quickmenu = ConfigYesNo(default = False)
+
 	for i in (0, 1, 2):
 		config.ParentalControl.servicepin.append(ConfigPIN(default = -1))
 		#config.ParentalControl.servicepin.append(configElement("config.ParentalControl.servicepin.level" + str(i), configSequence, "0000", configSequenceArg().get("PINCODE", (4, ""))))
@@ -52,6 +62,7 @@ class ParentalControl:
 		#Do not call open on init, because bouquets are not ready at that moment
 		self.filesOpened = False
 		self.serviceLevel = {}
+		self.PinDlg = None
 		#Instead: Use Flags to see, if we already initialized config and called open
 		self.configInitialized = False
 		#This is the timer that is used to see, if the time for caching the pin is over
@@ -80,7 +91,8 @@ class ParentalControl:
 	def setServiceLevel(self, service, type, level):
 		self.serviceLevel[service] = level
 
-	def isServicePlayable(self, ref, callback):
+	def isServicePlayable(self, ref, callback, session=None):
+		self.session = session
 		if not config.ParentalControl.configured.value or not config.ParentalControl.servicepinactive.value:
 			return True
 		#Check if configuration has already been read or if the significant values have changed.
@@ -99,7 +111,14 @@ class ParentalControl:
 			if self.serviceLevel.has_key(service):
 				levelNeeded = self.serviceLevel[service]
 			pinList = self.getPinList()[:levelNeeded + 1]
-			Notifications.AddNotificationParentalControl(boundFunction(self.servicePinEntered, ref), PinInput, triesEntry = config.ParentalControl.retries.servicepin, pinList = pinList, service = ServiceReference(ref).getServiceName(), title = _("this service is protected by a parental control pin"), windowTitle = _("Parental control"))
+			title = 'FROM BOUQUET "userbouquet.' in service and _("this bouquet is protected by a parental control pin") or _("this service is protected by a parental control pin")
+			if session:
+				Notifications.RemovePopup("Parental control")
+				if self.PinDlg:
+					self.PinDlg.close()
+				self.PinDlg = session.openWithCallback(boundFunction(self.servicePinEntered, ref), PinInput, triesEntry=config.ParentalControl.retries.servicepin, pinList=pinList, service=ServiceReference(ref).getServiceName(), title=title, windowTitle=_("Parental control"), simple=False)
+			else:
+				Notifications.AddNotificationParentalControl(boundFunction(self.servicePinEntered, ref), PinInput, triesEntry=config.ParentalControl.retries.servicepin, pinList=pinList, service=ServiceReference(ref).getServiceName(), title=title, windowTitle=_("Parental control"))
 			return False
 		else:
 			return True
@@ -211,7 +230,11 @@ class ParentalControl:
 		else:
 			#This is the new function of caching cancelling of service pin
 			if result is not None:
-				AddPopup(_("The pin code you entered is wrong."), MessageBox.TYPE_ERROR, timeout = 3)
+				messageText = _("The pin code you entered is wrong.")
+				if self.session:
+					self.session.open(MessageBox, messageText, MessageBox.TYPE_INFO, timeout=3)
+				else:
+					AddPopup(messageText, MessageBox.TYPE_ERROR, timeout = 3)
 
 	def saveListToFile(self,sWhichList,vList):
 		#Replaces saveWhiteList and saveBlackList:

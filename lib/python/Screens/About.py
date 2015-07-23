@@ -1,5 +1,4 @@
 from Screen import Screen
-from Components.config import config
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Sources.StaticText import StaticText
@@ -18,6 +17,78 @@ from Tools.StbHardware import getFPVersion
 
 from os import path
 from re import search
+
+def getAboutText():
+	AboutText = ""
+	AboutText += _("Model:\t%s %s\n") % (getMachineBrand(), getMachineName())
+
+	if path.exists('/proc/stb/info/chipset'):
+		AboutText += _("Chipset:\t%s") % about.getChipSetString() + "\n"
+
+	cpuMHz = ""
+	if path.exists('/proc/cpuinfo'):
+		f = open('/proc/cpuinfo', 'r')
+		temp = f.readlines()
+		f.close()
+		try:
+			for lines in temp:
+				lisp = lines.split(': ')
+				if lisp[0].startswith('cpu MHz'):
+					#cpuMHz = "   (" +  lisp[1].replace('\n', '') + " MHz)"
+					cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n', '')))) + " MHz)"
+					break
+		except:
+			pass
+
+	AboutText += _("CPU:\t%s") % about.getCPUString() + cpuMHz + "\n"
+	AboutText += _("Cores:\t%s") % about.getCpuCoresString() + "\n"
+
+	AboutText += _("Version:\t%s") % getImageVersion() + "\n"
+	AboutText += _("Build:\t%s") % getImageBuild() + "\n"
+	AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
+
+	string = getDriverDate()
+	year = string[0:4]
+	month = string[4:6]
+	day = string[6:8]
+	driversdate = '-'.join((year, month, day))
+	AboutText += _("Drivers:\t%s") % driversdate + "\n"
+
+	AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n\n"
+
+	AboutText += _("GStreamer:\t%s") % about.getGStreamerVersionString() + "\n"
+
+	fp_version = getFPVersion()
+	if fp_version is None:
+		fp_version = ""
+	elif fp_version != 0:
+		fp_version = _("Frontprocessor version: %s") % fp_version
+		AboutText += fp_version + "\n"
+
+	tempinfo = ""
+	if path.exists('/proc/stb/sensors/temp0/value'):
+		f = open('/proc/stb/sensors/temp0/value', 'r')
+		tempinfo = f.read()
+		f.close()
+	elif path.exists('/proc/stb/fp/temp_sensor'):
+		f = open('/proc/stb/fp/temp_sensor', 'r')
+		tempinfo = f.read()
+		f.close()
+	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
+		mark = str('\xc2\xb0')
+		AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+
+	tempinfo = ""
+	if path.exists('/proc/stb/fp/temp_sensor_avs'):
+		f = open('/proc/stb/fp/temp_sensor_avs', 'r')
+		tempinfo = f.read()
+		f.close()
+	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
+		mark = str('\xc2\xb0')
+		AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+	AboutLcdText = AboutText.replace('\t', ' ')
+
+	return AboutText, AboutLcdText
 
 class About(Screen):
 	def __init__(self, session):
@@ -41,80 +112,9 @@ class About(Screen):
 		self["lab1"] = StaticText(_("Firmware: OpenLD"))
 		self["lab2"] = StaticText(_("Desarrollado por Javilonas"))
 		model = None
-		AboutText = ""
 		self["lab3"] = StaticText(_("Support at") + " www.lonasdigital.com")
-		AboutText += _("Model:\t%s %s\n") % (getMachineBrand(), getMachineName())
 
-		if path.exists('/proc/stb/info/chipset'):
-			AboutText += _("Chipset:\t%s") % about.getChipSetString() + "\n"
-
-		cpuMHz = ""
-		if path.exists('/proc/cpuinfo'):
-			f = open('/proc/cpuinfo', 'r')
-			temp = f.readlines()
-			f.close()
-			try:
-				for lines in temp:
-					lisp = lines.split(': ')
-					if lisp[0].startswith('cpu MHz'):
-						#cpuMHz = "   (" +  lisp[1].replace('\n', '') + " MHz)"
-						cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n', '')))) + " MHz)"
-						break
-			except:
-				pass
-
-		AboutText += _("CPU:\t%s") % about.getCPUString() + cpuMHz + "\n"
-		AboutText += _("Cores:\t%s") % about.getCpuCoresString() + "\n"
-
-		AboutText += _("Version:\t%s") % getImageVersion() + "\n"
-		AboutText += _("Build:\t%s") % getImageBuild() + "\n"
-		#AboutText += _("Installed:\t%s") % about.getFlashDateString() + "\n"
-		AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
-
-		#AboutText += _("Python version:\t%s") % about.getPythonVersionString() + "\n"
-		
-		#GStreamerVersion = _("GStreamer:\t%s") % about.getGStreamerVersionString().replace("GStreamer","")
-		#self["GStreamerVersion"] = StaticText(GStreamerVersion)
-		#AboutText += GStreamerVersion + "\n"
-
-		string = getDriverDate()
-		year = string[0:4]
-		month = string[4:6]
-		day = string[6:8]
-		driversdate = '-'.join((year, month, day))
-		AboutText += _("Drivers:\t%s") % driversdate + "\n"
-
-		AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n\n"
-
-		#AboutText += _("Enigma (re)starts:\t%d\n") % config.misc.startCounter.value + "\n\n"
-		fp_version = getFPVersion()
-		if fp_version is None:
-			fp_version = ""
-		elif fp_version != 0:
-			fp_version = _("Frontprocessor version: %s") % fp_version
-			AboutText += fp_version + "\n"
-
-		tempinfo = ""
-		if path.exists('/proc/stb/sensors/temp0/value'):
-			f = open('/proc/stb/sensors/temp0/value', 'r')
-			tempinfo = f.read()
-			f.close()
-		elif path.exists('/proc/stb/fp/temp_sensor'):
-			f = open('/proc/stb/fp/temp_sensor', 'r')
-			tempinfo = f.read()
-			f.close()
-		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
-			mark = str('\xc2\xb0')
-			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
-
-		tempinfo = ""
-		if path.exists('/proc/stb/fp/temp_sensor_avs'):
-			f = open('/proc/stb/fp/temp_sensor_avs', 'r')
-			tempinfo = f.read()
-			f.close()
-		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
-			mark = str('\xc2\xb0')
-			AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+		AboutText = getAboutText()[0]
 
 		self["AboutScrollLabel"] = ScrollLabel(AboutText)
 
@@ -527,39 +527,7 @@ class AboutSummary(Screen):
 		Screen.__init__(self, session, parent=parent)
 		self["selected"] = StaticText("openLD:" + getImageVersion())
 
-		AboutText = _("Model: %s %s\n") % (getMachineBrand(), getMachineName())
-
-		if path.exists('/proc/stb/info/chipset'):
-			chipset = open('/proc/stb/info/chipset', 'r').read()
-			AboutText += _("Chipset: BCM%s") % chipset.replace('\n', '') + "\n"
-
-		AboutText += _("Version: %s") % getImageVersion() + "\n"
-		AboutText += _("Build: %s") % getImageVersion() + "\n"
-		AboutText += _("Kernel: %s") % about.getKernelVersionString() + "\n"
-
-		string = getDriverDate()
-		year = string[0:4]
-		month = string[4:6]
-		day = string[6:8]
-		driversdate = '-'.join((year, month, day))
-		AboutText += _("Drivers: %s") % driversdate + "\n"
-		AboutText += _("Last update: %s") % getEnigmaVersionString() + "\n\n"
-
-		tempinfo = ""
-		if path.exists('/proc/stb/sensors/temp0/value'):
-			tempinfo = open('/proc/stb/sensors/temp0/value', 'r').read()
-		elif path.exists('/proc/stb/fp/temp_sensor'):
-			tempinfo = open('/proc/stb/fp/temp_sensor', 'r').read()
-		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
-			mark = str('\xc2\xb0')
-			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
-
-		tempinfo = ""
-		if path.exists('/proc/stb/fp/temp_sensor_avs'):
-			tempinfo = open('/proc/stb/fp/temp_sensor_avs', 'r').read()
-		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
-			mark = str('\xc2\xb0')
-			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
+		AboutText = getAboutText()[1]
 
 		self["AboutText"] = StaticText(AboutText)
 
@@ -613,8 +581,12 @@ class ViewGitLog(Screen):
 		self["text"].setText(releasenotes)
 		summarytext = releasenotes
 		try:
-			self['title_summary'].setText(summarytext[0] + ':')
-			self['text_summary'].setText(summarytext[1])
+			if self.logtype == 'e2':
+				self['title_summary'].setText(_("E2 Log"))
+				self['text_summary'].setText(_("Enigma2 Changes"))
+			else:
+				self['title_summary'].setText(_("OE Log"))
+				self['text_summary'].setText(_("OE Changes"))
 		except:
 			self['title_summary'].setText("")
 			self['text_summary'].setText("")

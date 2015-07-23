@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-07-07 02:16+0100\n"
+"PO-Revision-Date: 2015-07-22 13:10+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
-"Language-Team: Team OpenLD <www.openld.es>\n"
+"Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -201,10 +201,10 @@ msgid " extensions."
 msgstr " extensiones."
 
 msgid ""
-" has been sent to the OpenLD team.\n"
+" has been sent to the AAF beta team.\n"
 "please quote "
 msgstr ""
-" se ha enviado al equipo OpenLD.\n"
+" se ha enviado al equipo OpenLD Beta.\n"
 "Cítalo, por favor "
 
 msgid " ms"
@@ -775,6 +775,21 @@ msgstr "Activar Picture in Picture"
 #
 msgid "Setup Picture in Picture"
 msgstr "Configurar Picture in Picture"
+
+msgid "Picture in Picture Setup"
+msgstr "Configurar Picture in Picture"
+
+msgid "Cascade PiP"
+msgstr "Cascada PiP"
+
+msgid "Splitscreen"
+msgstr "Pantalla Dividida"
+
+msgid "Side by side"
+msgstr "Lado a Lado"
+
+msgid "Big PiP"
+msgstr "Gran PiP"
 
 #
 msgid "Activate network settings"
@@ -1426,8 +1441,8 @@ msgstr "Bus: "
 msgid "Button"
 msgstr "Tecla"
 
-msgid "By openLD Image Team"
-msgstr "Por el equipo openLD"
+msgid "By OpenLD Image Team"
+msgstr "Por el equipo OpenLD"
 
 #
 msgid "By pressing the OK Button on your remote control, the info bar is being displayed."
@@ -2595,22 +2610,22 @@ msgstr "Editar nueva entrada"
 
 #
 msgid "Disable"
-msgstr "Deshabilitar"
+msgstr "Desactivar"
 
 #
 msgid "Disable Picture in Picture"
-msgstr "Deshabilitar Picture in Picture"
+msgstr "Desactivar Picture in Picture"
 
 msgid "Disable background scanning"
-msgstr "Deshabilitar la búsqueda en segundo plano"
+msgstr "Desactivar la búsqueda en segundo plano"
 
 #
 msgid "Disable crashlog reporting"
-msgstr "Deshabilitar el reporte del historial de fallos"
+msgstr "Desactivar el reporte del historial de fallos"
 
 #
 msgid "Disable timer"
-msgstr "Deshabilitar temporizador"
+msgstr "Desactivar temporizador"
 
 #
 msgid "Disabled"
@@ -3365,7 +3380,7 @@ msgstr "Ventilador %d"
 #
 #, python-format
 msgid "Fan %d PWM"
-msgstr "Ventilador %d PWM"
+msgstr "PWM ventilador %d"
 
 #
 #, python-format
@@ -3431,7 +3446,7 @@ msgstr ""
 
 #
 msgid "Filesystem Check"
-msgstr "Comprobar sistema de ficheros"
+msgstr "Comprobar sistema de archivos"
 
 #
 msgid "Filesystem contains uncorrectable errors"
@@ -3468,8 +3483,8 @@ msgstr "Ha fallado el flasheo"
 msgid "Following tasks will be done after you press OK!"
 msgstr "Las siguientes tareas se realizarán después de pulsar 'OK'."
 
-msgid "For more information see www.openld.es"
-msgstr "Para más información visita www.openld.es"
+msgid "For more information see www.lonasdigital.com"
+msgstr "Para más información visita www.lonasdigital.com"
 
 #
 msgid "Format"
@@ -6228,7 +6243,7 @@ msgstr "Volver a introducir el nuevo PIN"
 
 #
 msgid "Refresh rate"
-msgstr "Velocidad de actualización"
+msgstr "Velocidad de refresco"
 
 msgid "Refresh every (in hours)"
 msgstr "Actualizar cada (horas)"
@@ -6238,7 +6253,7 @@ msgstr "Tu %s %s lee los datos guardados en EPG cada (horas)."
 
 #
 msgid "Refresh rate selection."
-msgstr "Selección de velocidad de actualización."
+msgstr "Selección de velocidad de refresco."
 
 msgid "Release"
 msgstr "Publicación"
@@ -6942,7 +6957,7 @@ msgstr "Seleccionar proveedor a añadir..."
 
 #
 msgid "Select refresh rate"
-msgstr "Seleccionar la velocidad de actualización"
+msgstr "Seleccionar la velocidad de refresco"
 
 #
 msgid "Select service to add..."
@@ -7721,12 +7736,15 @@ msgstr "Menú de apagado"
 #
 #, python-format
 msgid "Standby Fan %d PWM"
-msgstr "%d PWM del ventilador en modo de espera"
+msgstr "PWM ventilador %d en modo de espera"
+
+msgid "Standby fan %d PWM"
+msgstr "PWM ventilador %d en modo de espera"
 
 #
 #, python-format
 msgid "Standby Fan %d Voltage"
-msgstr "%d voltaje del ventilador en modo de espera"
+msgstr "Voltaje ventilador %d en modo de espera"
 
 msgid "Start"
 msgstr "Inicio"
@@ -8249,8 +8267,8 @@ msgstr "El temporizador de apagado se ha activado."
 msgid "The sleep timer has been disabled."
 msgstr "El temporizador de apagado se ha desactivado."
 
-msgid "The status of the current beta image could not be checked because www.openld.es could not be reached for some reason"
-msgstr "El estado de la imagen beta actual no pudo comprobarse porque por alguna razón no se puede conectar con www.openld.es"
+msgid "The status of the current beta image could not be checked because www.lonasdigital.com could not be reached for some reason"
+msgstr "El estado de la imagen beta actual no pudo comprobarse porque por alguna razón no se puede conectar con www.lonasdigital.com"
 
 #
 msgid "The timer file (timers.xml) is corrupt and could not be loaded."
@@ -8416,7 +8434,7 @@ msgid "This option configures the screen aspect ratio."
 msgstr "Esta opción configura el aspecto de la pantalla."
 
 msgid "Configure the refresh rate of the screen."
-msgstr "Configurar la velocidad de actualización de la pantalla."
+msgstr "Configurar la velocidad de refresco de la pantalla."
 
 msgid "This option configures the screen resolution in PC output mode."
 msgstr "Esta opción configura la resolución de pantalla en modo salida PC."
@@ -9893,10 +9911,10 @@ msgstr "Tienes que esperar %s."
 
 #
 msgid ""
-"You need a PC connected to your %s %s. If you need further instructions, please visit the website http://www.openld.es.\n"
+"You need a PC connected to your %s %s. If you need further instructions, please visit the website http://www.lonasdigital.com.\n"
 "Your %s %s will now be halted. After you have performed the update instructions from the website, your new firmware will ask you to restore your settings."
 msgstr ""
-"Necesitas un PC conectado a tu %s %s. Si necesitas ayuda, visita http://www.openld.es.\n"
+"Necesitas un PC conectado a tu %s %s. Si necesitas ayuda, visita http://www.lonasdigital.com.\n"
 "Se apagará tu %s %s. Después, sigue las instrucciones de la web y el nuevo firmware te pedirá que restaures la configuración."
 
 msgid ""
@@ -11882,7 +11900,7 @@ msgstr "Por favor, ten paciencia. La copia de seguridad se realizará en un mome
 
 #
 msgid "because of the used filesystem the back-up\n"
-msgstr "debido al sistema de ficheros de la copia de seguridad\n"
+msgstr "debido al sistema de archivos de la copia de seguridad\n"
 
 #
 msgid "will take about 3-12 minutes for this system\n"
@@ -12012,6 +12030,9 @@ msgstr "Mostrar CoolSingleGuide"
 
 #
 msgid "Show epg"
+msgstr "Ver EPG"
+
+msgid "Show EPG"
 msgstr "Ver EPG"
 
 #
@@ -12298,11 +12319,11 @@ msgstr "¡Cuidado, la actualización aún no ha sido probada!"
 msgid "Update at your own risk"
 msgstr "Actualiza bajo tu responsabilidad"
 
-msgid "For more information see http://www.openld.es"
-msgstr "Para más información visita http://www.openld.es"
+msgid "For more information see http://www.lonasdigital.com"
+msgstr "Para más información visita http://www.lonasdigital.com"
 
-msgid "The status of the current update could not be checked because http://www.openld.es could not be reached for some reason"
-msgstr "El estado de la actualización no se puede comprobar porque no hay conexión con http://www.openld.es"
+msgid "The status of the current update could not be checked because http://www.lonasdigital.com could not be reached for some reason"
+msgstr "El estado de la actualización no se puede comprobar porque no hay conexión con http://www.lonasdigital.com"
 
 msgid "Do you want to update your box?"
 msgstr "¿Quieres actualizar tu receptor?"
@@ -13880,7 +13901,7 @@ msgstr "Salir y mostrar mensaje"
 msgid "Show recording symbol depending on recording type"
 msgstr "Mostrar símbolo de grabación según tipo de grabación"
 
-msgid "Show warning before box restart bases on recording type"
+msgid "Show warning before box restart based on recording type"
 msgstr "Mostrar aviso antes de reiniciar por una grabación"
 
 msgid "any recordings"
@@ -14156,6 +14177,12 @@ msgstr "Reactivar"
 
 msgid "restart GUI"
 msgstr "Reiniciar GUI"
+
+msgid "restart Gui"
+msgstr "Reiniciar Gui"
+
+msgid "restart E2"
+msgstr "Reiniciar E2"
 
 msgid "reboot system"
 msgstr "Reiniciar sistema"
@@ -15353,12 +15380,12 @@ msgstr "Desactivar el modo PiP para HDMI-IN"
 #: BSOD
 msgid ""
 "We are really sorry. Your receiver encountered a software problem, and needs to be restarted.\n"
-"Please send the logfile %senigma2_crash_xxxxxx.log to www.openld.es.\n"
+"Please send the logfile %senigma2_crash_xxxxxx.log to www.lonasdigital.com.\n"
 "Your receiver restarts in 10 seconds!\n"
 "Component: enigma2"
 msgstr ""
 "Lo sentimos. Tu receptor ha sufrido un problema de software y necesita reiniciarse.\n"
-"Por favor, envia el historial de errores %senigma2_crash_xxxxxx.log a www.openld.es.\n"
+"Por favor, envia el historial de errores %senigma2_crash_xxxxxx.log a www.lonasdigital.com.\n"
 "Tu receptor se reiniciará en 10 segundo.\n"
 "Componente: enigma2"
 
@@ -15891,6 +15918,10 @@ msgid "Dutch"
 msgstr "Holandés"
 
 # Language
+msgid "Deutsch"
+msgstr "Alemán"
+
+# Language
 msgid "English"
 msgstr "Inglés"
 
@@ -15988,3 +16019,54 @@ msgstr "Ucraniano"
 
 msgid "Undetermined"
 msgstr "Indeterminado"
+
+msgid "Sleeptimer Standby"
+msgstr "Temporizador de modo de espera"
+
+msgid "Sleeptimer DeepStandby"
+msgstr "Temporizador de apagado"
+
+msgid "Animations"
+msgstr "Animaciones"
+
+msgid "Temperature and fan control"
+msgstr "Temperatura y ventilador"
+
+msgid "Disable Animations"
+msgstr "Desactivar animaciones"
+
+msgid "Animation Setup"
+msgstr "Configurar animaciones"
+
+msgid "Setting"
+msgstr "Opciones"
+
+msgid "Animation Speed"
+msgstr "Velocidad de animación"
+
+msgid "* current animation"
+msgstr "* animación actual"
+
+msgid "Simple fade"
+msgstr "Desvanecer"
+
+msgid "Grow drop"
+msgstr "Crecer desde arriba"
+
+msgid "Grow from left"
+msgstr "Crecer desde la izquierda"
+
+msgid "Popup"
+msgstr "Ventana emergente"
+
+msgid "Slide drop"
+msgstr "Deslizar desde arriba"
+
+msgid "Slide left to right"
+msgstr "Deslizar de izquierda a derecha"
+
+msgid "Slide top to bottom"
+msgstr "Deslizar de arriba a abajo"
+
+msgid "Stripes"
+msgstr "Rayas"

@@ -123,6 +123,8 @@ class InfoBarTimeshift:
 		self.service_changed = 0
 		self.event_changed = False
 		self.checkEvents_value = int(config.timeshift.timeshiftCheckEvents.value)
+		self.pts_starttime = time()
+		self.ptsAskUser_wait = False
 
 		# Init Global Variables
 		self.session.ptsmainloopvalue = 0
@@ -342,6 +344,8 @@ class InfoBarTimeshift:
 					self.recording.append(recording)
 				else:
 					self.SaveTimeshift()
+				if not config.timeshift.filesplitting.value:
+					self.stopTimeshiftcheckTimeshiftRunningCallback(True)
 
 			#(Re)Start TimeShift
 			# print 'self.pts_delay_timer.isActive',self.pts_delay_timer.isActive()
@@ -553,9 +557,6 @@ class InfoBarTimeshift:
 		if self.ptsCheckTimeshiftPath() is False or self.session.screen["Standby"].boolean is True or self.ptsLiveTVStatus() is False or (config.timeshift.stopwhilerecording.value and self.pts_record_running):
 			return
 
-		# Update internal Event Counter
-		self.pts_eventcount += 1
-
 		# setNextPlaybackFile() on event change while timeshifting
 		if self.isSeekable():
 			self.pts_nextplaying = self.pts_currplaying + 1
@@ -566,26 +567,27 @@ class InfoBarTimeshift:
 			self.switchToLive = True
 
 		# (Re)start Timeshift now
-		self.stopTimeshiftcheckTimeshiftRunningCallback(True)
+		if config.timeshift.filesplitting.value:
+			self.stopTimeshiftcheckTimeshiftRunningCallback(True)
 		self.event_changed = False
 
 		ts = self.getTimeshift()
- 		if ts and (not ts.startTimeshift() or self.pts_eventcount == 0):
- 			# Update internal Event Counter
- 			self.pts_eventcount += 1
- 			if (getBoxType() == 'vuuno' or getBoxType() == 'vuduo') and os.path.exists("/proc/stb/lcd/symbol_timeshift"):
- 				if self.session.nav.RecordTimer.isRecording():
- 					f = open("/proc/stb/lcd/symbol_timeshift", "w")
- 					f.write("0")
- 					f.close()
- 			self.pts_starttime = time()
- 			self.save_timeshift_postaction = None
- 			self.ptsGetEventInfo()
- 			self.ptsCreateHardlink()
- 			self.__seekableStatusChanged()
- 			self.ptsEventCleanTimerSTART()
- 		elif ts and ts.startTimeshift():
- 			self.ptsGetEventInfo()
+		if ts and (not ts.startTimeshift() or self.pts_eventcount == 0):
+			# Update internal Event Counter
+			self.pts_eventcount += 1
+			if (getBoxType() == 'vuuno' or getBoxType() == 'vuduo') and os.path.exists("/proc/stb/lcd/symbol_timeshift"):
+				if self.session.nav.RecordTimer.isRecording():
+					f = open("/proc/stb/lcd/symbol_timeshift", "w")
+					f.write("0")
+					f.close()
+			self.pts_starttime = time()
+			self.save_timeshift_postaction = None
+			self.ptsGetEventInfo()
+			self.ptsCreateHardlink()
+			self.__seekableStatusChanged()
+			self.ptsEventCleanTimerSTART()
+		elif ts and ts.startTimeshift():
+			self.ptsGetEventInfo()
 			try:
 				# rewrite .meta and .eit files
 				metafile = open("%spts_livebuffer_%s.meta" % (config.usage.timeshift_path.value,self.pts_eventcount), "w")
@@ -597,13 +599,13 @@ class InfoBarTimeshift:
 			self.ptsEventCleanTimerSTART()
 		else:
 			self.ptsEventCleanTimerSTOP()
- 			try:
- 				self.session.open(MessageBox, _("Timeshift not possible!"), MessageBox.TYPE_ERROR, timeout=2)
- 			except:
- 				print '[TIMESHIFT] Failed to open MessageBox, Timeshift not possible, probably another MessageBox was active.'
- 		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
- 
- 	def createTimeshiftFolder(self):
+			try:
+				self.session.open(MessageBox, _("Timeshift not possible!"), MessageBox.TYPE_ERROR, timeout=2)
+			except:
+				print '[TIMESHIFT] Failed to open MessageBox, Timeshift not possible, probably another MessageBox was active.'
+		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
+
+	def createTimeshiftFolder(self):
 		timeshiftdir = resolveFilename(SCOPE_TIMESHIFT)
 		if not pathExists(timeshiftdir):
 			try:
@@ -860,8 +862,60 @@ class InfoBarTimeshift:
 				Notifications.AddNotification(MessageBox, _("Timeshift save failed!")+"\n\n%s" % errormessage, MessageBox.TYPE_ERROR, timeout=30)
 		# print 'SAVE COMPLETED'
 
-	def ptsEventCleanTimerSTOP(self):
-		self.pts_eventcount = 0
+	def ptsAskUser(self, what):
+		if self.ptsAskUser_wait:
+			return
+		message_time =  _("The buffer time for timeshift exceeds the specified limit in the settings.\nWhat do you want to do ?")
+		message_space =  _("The available disk space for timeshift is less than specified in the settings.\nWhat do you want to do ?")
+		choice_restart = [(_("Delete the current timeshift buffer and restart timeshift"), "restarttimeshift"),
+						(_("Nothing, just leave this menu"), "no")]
+		choice_save = [(_("Stop timeshift and save timeshift buffer as movie and start recording of current event"), "savetimeshiftandrecord"),
+					(_("Stop timeshift and save timeshift buffer as movie"), "savetimeshift"),
+					(_("Stop timeshift"), "noSave"),
+					(_("Nothing, just leave this menu"), "no")]
+		if what == "time":
+			message = message_time
+			choice = choice_restart
+		elif what == "space":
+			message = message_space
+			choice = choice_restart
+		elif what == "time_and_save":
+			message = message_time
+			choice = choice_save
+		elif what == "space_and_save":
+			message = message_space
+			choice = choice_save
+		else:
+			return
+		self.ptsAskUser_wait = True
+		self.session.openWithCallback(self.ptsAskUserCallback, MessageBox, message, simple = True, list = choice, timeout=30)
+
+	def ptsAskUserCallback(self, answer):
+		self.ptsAskUser_wait = False
+		if answer:
+			if answer == "restarttimeshift":
+				self.ptsEventCleanTimerSTOP()
+				self.save_current_timeshift = False
+				self.stopTimeshiftAskUserCallback(True)
+				self.restartTimeshift()
+			elif answer == "noSave":
+				self.ptsEventCleanTimerSTOP()
+				self.save_current_timeshift = False
+				self.stopTimeshiftAskUserCallback(True)
+			elif answer == "savetimeshift" or answer == "savetimeshiftandrecord":
+				self.ptsEventCleanTimerSTOP()
+				self.save_current_timeshift = True
+				InfoBarTimeshift.saveTimeshiftActions(self, answer, self.stopTimeshiftAskUserCallback)
+
+	def stopTimeshiftAskUserCallback(self, answer):
+		ts = self.getTimeshift()
+		if answer and ts:
+			ts.stopTimeshift(True)
+			self.__seekableStatusChanged()
+
+	def ptsEventCleanTimerSTOP(self, justStop = False):
+		if justStop is False:
+			self.pts_eventcount = 0
 		if self.pts_cleanEvent_timer.isActive(): 
 			self.pts_cleanEvent_timer.stop()
 			print "[TIMESHIFT] - 'cleanEvent_timer' is stopped"
@@ -877,37 +931,45 @@ class InfoBarTimeshift:
 
 	def ptsCleanTimeshiftFolder(self, justZapped = True):
 		# print '!!!!!!!!!!!!!!!!!!!!! ptsCleanTimeshiftFolder'
-		if self.ptsCheckTimeshiftPath() is False:	# or self.session.screen["Standby"].boolean is True:
+		if self.ptsCheckTimeshiftPath() is False or self.session.screen["Standby"].boolean is True:
 			self.ptsEventCleanTimerSTOP()
 			return
 
-		freespace = 1024
+		freespace = int(config.timeshift.timeshiftCheckFreeSpace.value)
+		timeshiftEnabled = self.timeshiftEnabled()
+		isSeekable = self.isSeekable()
+		filecounter = 0
+		filesize = 0
 		lockedFiles = []
 		removeFiles = []
 
-		if config.timeshift.timeshiftCheckFreeSpace.value:
+		if timeshiftEnabled:
+			if isSeekable:
+				for i in range(self.pts_currplaying,self.pts_eventcount + 1):
+					lockedFiles.append(("pts_livebuffer_%s") % i)
+			else:
+				if not self.event_changed:
+					lockedFiles.append(("pts_livebuffer_%s") % self.pts_currplaying)
+
+		if freespace:
 			try:
 				stat = os.statvfs(config.usage.timeshift_path.value)
 				freespace = stat.f_bavail * stat.f_bsize / 1024 / 1024
 			except:
-				print "[TIMESHIFT] - error from reading of disk space - this function can not used"
+				print "[TIMESHIFT] - error reading disk space - function 'checking for free space' can't used"
 
-		for i in range(self.pts_currplaying,self.pts_eventcount + 1):
-			lockedFiles.append(("pts_livebuffer_%s") % i)
-
-		if not self.timeshiftEnabled():
-			lockedFiles = []
-
-		if self.pts_eventcount - config.timeshift.timeshiftMaxEvents.value > 0:
-			for i in range(1,self.pts_eventcount - config.timeshift.timeshiftMaxEvents.value + 1):
-				removeFiles.append(("pts_livebuffer_%s") % i)
-
-		if freespace < 1024:	#1024 MByte
+		if freespace < int(config.timeshift.timeshiftCheckFreeSpace.value):
 			for i in range(1,self.pts_eventcount + 1):
 				removeFiles.append(("pts_livebuffer_%s") % i)
-			print "[TIMESHIFT] - not enough diskspace available - try to the deleting of the old timeshift files"
+			print "[TIMESHIFT] - less than %s MByte disk space available - try to the deleting all unused timeshift files" % config.timeshift.timeshiftCheckFreeSpace.value
+		elif self.pts_eventcount - config.timeshift.timeshiftMaxEvents.value >= 0:
+			if self.event_changed or len(lockedFiles) == 0:
+				for i in range(1,self.pts_eventcount - config.timeshift.timeshiftMaxEvents.value + 2):
+					removeFiles.append(("pts_livebuffer_%s") % i)
+			else:
+				for i in range(1,self.pts_eventcount - config.timeshift.timeshiftMaxEvents.value + 1):
+					removeFiles.append(("pts_livebuffer_%s") % i)
 
-		filecounter = 0
 		for filename in os.listdir(config.usage.timeshift_path.value):
 			if (os.path.exists("%s%s" % (config.usage.timeshift_path.value,filename))) and ((filename.startswith("timeshift.") or filename.startswith("pts_livebuffer_"))):
 				# print 'filename:',filename
@@ -915,36 +977,59 @@ class InfoBarTimeshift:
 				if (justZapped is True) and (filename.endswith(".del") is False) and (filename.endswith(".copy") is False):
 					# after zapping, remove all regular timeshift files
 					# print "[TimeShift] Erasing stranded timeshift file %s" % filename
+					filesize += os.path.getsize("%s%s"  % (config.usage.timeshift_path.value,filename))
 					self.BgFileEraser.erase("%s%s" % (config.usage.timeshift_path.value,filename))
 				elif (filename.endswith(".eit") is False) and (filename.endswith(".meta") is False) and (filename.endswith(".sc") is False) and (filename.endswith(".del") is False) and (filename.endswith(".copy") is False):
 					# remove old files, but only complete sets of files (base file, .eit, .meta, .sc),
 					# and not while saveTimeshiftEventPopup is active (avoid deleting files about to be saved)
 					# and don't delete files from currently playing up to the last event
-					filecounter += 1
+					if not filename.startswith("timeshift."):
+						filecounter += 1
 					if ((statinfo.st_mtime < (time()-3600*config.timeshift.timeshiftMaxHours.value)) or any(filename in s for s in removeFiles)) and (self.saveTimeshiftEventPopupActive is False) and not any(filename in s for s in lockedFiles):
 						# print "[TimeShift] Erasing set of old timeshift files (base file, .eit, .meta, .sc) %s" % filename
+						filesize += os.path.getsize("%s%s"  % (config.usage.timeshift_path.value,filename))
 						self.BgFileEraser.erase("%s%s" % (config.usage.timeshift_path.value,filename))
 						if os.path.exists("%s%s.eit" % (config.usage.timeshift_path.value,filename)):
+							filesize += os.path.getsize("%s%s.eit"  % (config.usage.timeshift_path.value,filename))
 							self.BgFileEraser.erase("%s%s.eit" % (config.usage.timeshift_path.value,filename))
 						if os.path.exists("%s%s.meta" % (config.usage.timeshift_path.value,filename)):
+							filesize += os.path.getsize("%s%s.meta"  % (config.usage.timeshift_path.value,filename))
 							self.BgFileEraser.erase("%s%s.meta" % (config.usage.timeshift_path.value,filename))
 						if os.path.exists("%s%s.sc" % (config.usage.timeshift_path.value,filename)):
+							filesize += os.path.getsize("%s%s.sc"  % (config.usage.timeshift_path.value,filename))
 							self.BgFileEraser.erase("%s%s.sc" % (config.usage.timeshift_path.value,filename))
-						filecounter -= 1
+						if not filename.startswith("timeshift."):
+							filecounter -= 1
 				else:
 					# remove anything still left over another 24h later
 					if statinfo.st_mtime < (time()-3600*(24+config.timeshift.timeshiftMaxHours.value)):
 						# print "[TimeShift] Erasing very old timeshift file %s" % filename
 						if filename.endswith(".del") is True:
-							os.rename("%s%s" % (config.usage.timeshift_path.value,filename), "%s%s.del_again" % (config.usage.timeshift_path.value,filename))
-							self.BgFileEraser.erase("%s%s.del_again" % (config.usage.timeshift_path.value,filename))
+							filesize += os.path.getsize("%s%s"  % (config.usage.timeshift_path.value,filename))
+							try:
+								os.rename("%s%s" % (config.usage.timeshift_path.value,filename), "%s%s.del_again" % (config.usage.timeshift_path.value,filename))
+								self.BgFileEraser.erase("%s%s.del_again" % (config.usage.timeshift_path.value,filename))
+							except:
+								print "[TimeShift] - can't rename %s%s." % (config.usage.timeshift_path.value,filename)
+								self.BgFileEraser.erase("%s%s" % (config.usage.timeshift_path.value,filename))
 						else:
+							filesize += os.path.getsize("%s%s"  % (config.usage.timeshift_path.value,filename))
 							self.BgFileEraser.erase("%s%s" % (config.usage.timeshift_path.value,filename))
 
 		if filecounter == 0: 
 			self.ptsEventCleanTimerSTOP()
 		else:
-			if self.checkEvents_value <> int(config.timeshift.timeshiftCheckEvents.value):
+			if timeshiftEnabled and not isSeekable:
+				if freespace + (filesize / 1024 / 1024) < int(config.timeshift.timeshiftCheckFreeSpace.value):
+					self.ptsAskUser("space")
+				elif time() - self.pts_starttime > 3600 * config.timeshift.timeshiftMaxHours.value:
+					self.ptsAskUser("time")
+			elif isSeekable:
+				if freespace + (filesize / 1024 / 1024) < int(config.timeshift.timeshiftCheckFreeSpace.value):
+					self.ptsAskUser("space_and_save")
+				elif time() - self.pts_starttime > 3600 * config.timeshift.timeshiftMaxHours.value:
+					self.ptsAskUser("time_and_save")
+			if self.checkEvents_value != int(config.timeshift.timeshiftCheckEvents.value):
 				if self.pts_cleanEvent_timer.isActive():
 					print "[TIMESHIFT] - 'cleanEvent_timer' was changed"
 					self.pts_cleanEvent_timer.stop()

@@ -90,8 +90,6 @@ def resolveFilename(scope, base = "", path_prefix = None):
 		tmp = defaultPaths[SCOPE_CONFIG][0]
 		if base and pathExists(tmp + base):
 			path = tmp
-		elif base and pathExists(defaultPaths[SCOPE_SKIN][0] + base):
-			path = defaultPaths[SCOPE_SKIN][0]
 		else:
 			tmp = defaultPaths[SCOPE_SKIN][0]
 			pos = config.skin.primary_skin.value.rfind('/')
@@ -310,9 +308,11 @@ def getRecordingFilename(basename, dirname = None):
 
 	if dirname is not None:
 		if not dirname.startswith('/'):
-			dirname = os.path.join(defaultRecordingLocation(), dirname)
+			from Components.config import config
+			dirname = os.path.join(defaultRecordingLocation(config.usage.default_path.value), dirname)
 	else:
-		dirname = defaultRecordingLocation()
+		from Components.config import config
+		dirname = defaultRecordingLocation(config.usage.default_path.value)
 	filename = os.path.join(dirname, filename)
 
 	i = 0
