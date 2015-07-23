@@ -316,7 +316,7 @@ class eEPGCache: public eMainloop, private eThread, public Object
 		void readData(const uint8_t *data, int source);
 		void startChannel();
 		void startEPG();
-		bool finishEPG();
+		void finishEPG();
 		void abortEPG();
 		void abortNonAvail();
 	};
@@ -375,7 +375,7 @@ private:
 	std::vector<int> onid_blacklist;
 	eventCache eventDB;
 	updateMap channelLastUpdated;
-	static pthread_mutex_t cache_lock, channel_map_lock;
+	static pthread_mutex_t cache_lock;
 	std::string m_filename;
 	bool m_running;
 
