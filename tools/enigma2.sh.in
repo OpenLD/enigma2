@@ -9,11 +9,6 @@ if [ ! -d /etc/enigma2 ] ; then
 	mkdir -p /etc/enigma2
 fi
 
-#check for /usr/scripts folder
-if [ ! -d /usr/scripts ] ; then
-	mkdir -p /usr/scripts
-fi
-
 # workaround for corrupt ssl files
 if [ ! "$(grep config.misc.firstrun /etc/enigma2/settings)" == "config.misc.firstrun=false" ]; then
 	rm -rf /etc/enigma2/cert.pem &
