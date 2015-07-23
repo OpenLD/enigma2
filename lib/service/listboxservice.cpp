@@ -906,7 +906,7 @@ void eListboxServiceContent::paint(gPainter &painter, eWindowStyle &style, const
 							}
 							int correction = (area.height() - pixmap_size.height()) / 2;
 							area.moveBy(offset);
-							if (service_info->isCrypted())
+							if (service_info->isCrypted(*m_cursor))
 							{
 								if (m_crypto_icon_mode == 2)
 								{
