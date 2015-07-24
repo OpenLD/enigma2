@@ -53,10 +53,8 @@ def getAboutText():
 	day = string[6:8]
 	driversdate = '-'.join((year, month, day))
 	AboutText += _("Drivers:\t%s") % driversdate + "\n"
-
-	AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n\n"
-
-	AboutText += _("GStreamer:\t%s") % about.getGStreamerVersionString() + "\n"
+	AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
+	AboutText += _("GStreamer:\t%s") % about.getGStreamerVersionString() + "\n\n"
 
 	fp_version = getFPVersion()
 	if fp_version is None:
