@@ -928,7 +928,7 @@ class NimManager:
 				split[1] = split[1].replace(' ','')
 				split2 = split[0].split(" ")
 				modes = entries[current_slot].get("multi_type", {})
-				modes[split2[1]] = split[1]
+				modes[split2[1]] = split[1].strip()
 				entries[current_slot]["multi_type"] = modes
 			elif line.startswith("I2C_Device:"):
 				input = int(line[len("I2C_Device:") + 1:])
