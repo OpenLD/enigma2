@@ -195,6 +195,43 @@ class Session:
 
 		self.screen = SessionGlobals(self)
 
+		##### hack for Openwebif - Create folders & symlink
+		from enigma import eEnv
+		from Tools.Directories import fileExists
+		import os
+		origwebifpath = eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/WebInterface')
+		hookpath = eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/OpenWebif/pluginshook.src')
+		if not os.path.islink(origwebifpath + "/WebChilds/Toplevel.py") and os.path.exists(hookpath):
+			print "[OpenWebif] hooking original webif plugins"
+
+			cleanuplist = [
+				"/__init__.py",
+				"/__init__.pyo",
+				"/__init__.pyc",
+				"/WebChilds/__init__.py",
+				"/WebChilds/__init__.pyo",
+				"/WebChilds/__init__.pyc",
+				"/WebChilds/External/__init__.py",
+				"/WebChilds/External/__init__.pyo",
+				"/WebChilds/External/__init__.pyc",
+				"/WebChilds/Toplevel.py",
+				"/WebChilds/Toplevel.pyo"
+				"/WebChilds/Toplevel.pyc"
+			]
+
+			for cleanupfile in cleanuplist:
+				if fileExists(origwebifpath + cleanupfile):
+					os.remove(origwebifpath + cleanupfile)
+
+			if not os.path.exists(origwebifpath + "/WebChilds/External"):
+				os.makedirs(origwebifpath + "/WebChilds/External")
+			open(origwebifpath + "/__init__.py", "w").close()
+ 			open(origwebifpath + "/WebChilds/__init__.py", "w").close()
+ 			open(origwebifpath + "/WebChilds/External/__init__.py", "w").close()
+
+			os.symlink(hookpath, origwebifpath + "/WebChilds/Toplevel.py")
+		##########################################################
+
 		for p in plugins.getPlugins(PluginDescriptor.WHERE_SESSIONSTART):
 			try:
 				p(reason=0, session=self)
