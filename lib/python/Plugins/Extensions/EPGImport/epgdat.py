@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# EPG Import 2.0 by Javilonas 
+# EPG Import 2.1 by Javilonas 
 # Based for https://github.com/oe-alliance/XMTV-Import
-# EPG Import 2.0 - 10-04-2014
+# EPG Import 2.1 - 24-07-2015
 
 import os
 import sys

@@ -5,7 +5,9 @@ import enigma
 import log
 
 # Config
-from Components.config import config, configfile, ConfigEnableDisable, ConfigSubsection, ConfigYesNo, ConfigClock, getConfigListEntry,  ConfigSelection, ConfigNumber, ConfigText
+from Components.config import config, configfile, ConfigEnableDisable, ConfigSubsection, \
+			 ConfigYesNo, ConfigClock, getConfigListEntry, \
+			 ConfigSelection, ConfigNumber
 import Screens.Standby
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
@@ -25,12 +27,26 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 
 from boxbranding import getImageDistro
 
+def lastMACbyte():
+	try:
+		return int(open('/sys/class/net/eth0/address').readline().strip()[-2:], 16)
+	except:
+		return 256
+
+def calcDefaultStarttime():
+	try:
+		# Use the last MAC byte as time offset (half-minute intervals)
+		offset = lastMACbyte() * 30
+	except:
+		offset = 7680
+	return (7 * 60 * 60) + offset
+
 #Set default configuration
 config.plugins.epgimport = ConfigSubsection()
 config.plugins.epgimport.enabled = ConfigEnableDisable(default = False)
 config.plugins.epgimport.runboot = ConfigEnableDisable(default = False)
 config.plugins.epgimport.wakeupsleep = ConfigEnableDisable(default = False)
-config.plugins.epgimport.wakeup = ConfigClock(default = 7*60 * 60) # 7:00
+config.plugins.epgimport.wakeup = ConfigClock(default = calcDefaultStarttime())
 config.plugins.epgimport.showinplugins = ConfigYesNo(default = False)
 config.plugins.epgimport.showinextensions = ConfigYesNo(default = False)
 config.plugins.epgimport.deepstandby = ConfigSelection(default = "skip", choices = [
