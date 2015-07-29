@@ -614,6 +614,7 @@ lib/python/Plugins/SystemPlugins/Hotplug/Makefile
 lib/python/Plugins/SystemPlugins/Hotplug/meta/Makefile
 lib/python/Plugins/Extensions/LDteam/Makefile
 lib/python/Plugins/Extensions/LDteam/scripts/Makefile
+lib/python/Plugins/Extensions/LDteam/epg/Makefile
 lib/python/Plugins/Extensions/LDteam/images/Makefile
 lib/python/Plugins/Extensions/LDteam/images/buttons/Makefile
 lib/python/Plugins/Extensions/LDteam/images/extra/Makefile

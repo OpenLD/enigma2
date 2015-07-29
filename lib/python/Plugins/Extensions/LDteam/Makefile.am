@@ -1,6 +1,6 @@
 installdir = $(pkglibdir)/python/Plugins/Extensions/LDteam
 
-SUBDIRS = images scripts
+SUBDIRS = epg images scripts
 
 install_PYTHON = *.py
 

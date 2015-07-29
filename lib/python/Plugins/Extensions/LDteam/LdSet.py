@@ -9,8 +9,9 @@ from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.ConfigList import ConfigListScreen
 from Components.Harddisk import harddiskmanager
-from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigPassword, ConfigSubsection, ConfigClock, configfile
+from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigSubsection, ConfigClock, configfile
 from Components.Sources.List import List
+from Components.Sources.Progress import Progress
 from Screens.Console import Console
 from Components.Network import iNetwork
 from Components.MenuList import MenuList
@@ -18,13 +19,16 @@ from Components.ActionMap import ActionMap
 from Components.Language import language
 from ServiceReference import ServiceReference
 from enigma import eEPGCache
+from time import *
 from types import *
 from enigma import *
-import sys, traceback, re, new, os, gettext, commands, time, _enigma
+import sys, traceback, re, new, os, gettext, commands, time, datetime, _enigma, enigma, Screens.Standby
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, pathExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from os import system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
+
+count = 0
 
 
 config.plugins.LDteam = ConfigSubsection()
@@ -34,6 +38,12 @@ config.plugins.LDteam.direct = ConfigSelection(default = "/etc/enigma2/", choice
 		("/usr/share/enigma2/", _("/usr/share/enigma2/")),
 		("/etc/enigma2/", _("/etc/enigma2/")),
 		])
+config.plugins.LDteam.auto2 = ConfigSelection(default = "no", choices = [
+                ("no", _("no")),
+		("yes", _("yes")),
+		])
+config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
+config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 240 ) # 240 seconds = 4 minutes
 		
 class LDSettings(Screen):
 	skin = """
@@ -229,6 +239,59 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		self.list.append(res)
 		
 		self["list"].list = self.list
+
+## Timer especific function for epg
+class Ttimer(Screen):
+        
+        skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
+                        <widget name="srclabel" font="Regular; 15" position="424,614" zPosition="2" valign="center" halign="center" size="500,30" foregroundColor="white" backgroundColor="black" transparent="0" />
+                        <widget source="progress" render="Progress" position="322,677" foregroundColor="white" size="700,20" borderWidth="1" borderColor="grey" backgroundColor="black" />
+			 
+ <widget source="session.VideoPicture" render="Pig" position="center,center" size="975,475" backgroundColor="transparent" zPosition="-1" transparent="0" />
+ <widget source="Title" transparent="1" render="Label" zPosition="2" valign="center" halign="left" position="100,70" size="800,50" font="Regular; 30" backgroundColor="black" foregroundColor="white" noWrap="1" />
+</screen>"""
+
+        def __init__(self, session):
+                global count
+                self.skin = Ttimer.skin
+                Screen.__init__(self, session)
+                self['srclabel'] = Label(_("Espere, se esta actualizando el Epg"))
+                self.setTitle(_("Actualizacion EPG"))
+                self["progress"] = Progress(int(count))
+                self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value-5))
+                self.session = session
+                self.ctimer = enigma.eTimer()
+                count = 0
+                self.ctimer.callback.append(self.__run)
+                self.ctimer.start(1000,0)
+                                                                                                
+        def __run(self):
+                global count
+                count += 1
+                print ("%s Epg Downloaded") % count
+                self['progress'].setValue(count)
+                if count > config.plugins.LDteam.epgmhw2wait.value:
+                        self.ctimer.stop()
+                        self.session.nav.playService(eServiceReference(config.tv.lastservice.value))
+                        rDialog.stopDialog(self.session)
+                        self.mbox = self.session.open(MessageBox,(_("Epg Actualizado")), MessageBox.TYPE_INFO, timeout = 5 )
+                        self.close()
+pdialog = ""
+
+class runDialog():
+        def __init__(self):
+                self.dialog = None
+                        
+        def startDialog(self, session):
+                global pdialog
+                pdialog = session.instantiateDialog(Ttimer)
+                pdialog.show()
+                                
+        def stopDialog(self, session):
+                global pdialog
+                pdialog.hide()
+                                                                                                                                                                        
+rDialog = runDialog()
 		
 
 class LDepg(Screen, ConfigListScreen):
@@ -242,7 +305,9 @@ class LDepg(Screen, ConfigListScreen):
   <ePixmap position="30,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" alphatest="blend" />
   <widget source="key_red" render="Label" position="30,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <ePixmap position="200,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" alphatest="blend" />
+<ePixmap position="370,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" alphatest="blend" />
   <widget source="key_green" render="Label" position="200,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+<widget source="key_yellow" render="Label" position="370,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   </screen>"""
  
 	def __init__(self, session):
@@ -253,11 +318,13 @@ class LDepg(Screen, ConfigListScreen):
 		ConfigListScreen.__init__(self, self.list)
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
+		self["key_yellow"] = StaticText(_("Update"))
 		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "ColorActions"],
 		
 		{
 			"red": self.cancel,
 			"cancel": self.cancel,
+			"yellow": self.downepg,
 			"green": self.save,
 			"ok": self.save
 		}, -2)
@@ -271,9 +338,31 @@ class LDepg(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Ruta donde almacenar el epg.dat"), config.plugins.LDteam.direct))
 		self.list.append(getConfigListEntry(_("Maximum number of days in EPG"), config.epg.maxdays))
 		self.list.append(getConfigListEntry(_("Maintain old EPG data for"), config.epg.histminutes))
+		#self.list.append(getConfigListEntry(_("Auto Actualizacion EPG"), config.plugins.LDteam.auto2))
+		#self.list.append(getConfigListEntry(_("Horario Activacion Auto"), config.plugins.LDteam.epgtime2))
+		self.list.append(getConfigListEntry(_("Tiempo Duracion en Portada"), config.plugins.LDteam.epgmhw2wait))
 		
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
+
+	
+	def zapTo(self, reftozap):
+	        self.session.nav.playService(eServiceReference(reftozap))
+
+	def downepg(self):
+	        global count
+	        recordings = self.session.nav.getRecordings()
+	        rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
+	        mytime = time.time()
+	        if not recordings  or (rec_time > 0 and rec_time - mytime() < 360):
+	                channel = "1:0:1:75C6:422:1:C00000:0:0:0:"
+                        self.zapTo(channel)
+	                ## Crea y muestra la barra de dialogo
+	                diag = runDialog()
+	                diag.startDialog(self.session) 
+                        
+                else:
+                        self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
 
 	def cancel(self):
 		for i in self["config"].list:
@@ -284,6 +373,9 @@ class LDepg(Screen, ConfigListScreen):
 		config.misc.epgcache_filename.value = ("%sepg.dat" % config.plugins.LDteam.direct.value)
 		config.misc.epgcache_filename.save()
 		config.plugins.LDteam.direct.save()
+		#config.plugins.LDteam.epgtime2.save()
+		#config.plugins.LDteam.auto2.save()
+		config.plugins.LDteam.epgmhw2wait.save()
 		configfile.save()
 		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
 		
