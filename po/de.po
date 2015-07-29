@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-07-23 18:17+0100\n"
+"PO-Revision-Date: 2015-07-27 20:18+0100\n"
 "Last-Translator: mike99 <mike99@mail.to>\n"
 "Language-Team: OpenLD\n"
 "Language: de\n"
@@ -685,14 +685,6 @@ msgstr ""
 #
 msgid "A small overview of the available icon states and actions."
 msgstr "Eine kurze Übersicht der verfügbaren Icon-Darstellungen und -Aktionen."
-
-#
-msgid ""
-"A timer failed to record!\n"
-"Disable TV and try again?\n"
-msgstr ""
-"Timeraufnahme fehlgeschlagen.\n"
-"Fernsehprogramm ändern und erneut versuchen?\n"
 
 #
 msgid "A/V settings"
@@ -14809,7 +14801,7 @@ msgid "Allows you to adjust the amount of time the resolution infomation display
 msgstr "Hiermit können Sie einstellen, ob oder wie lange die Bildschirmeinblendung bei Auflösungsänderungen angezeigt werden soll."
 
 msgid "All resolutions"
-msgstr "Alle Auflösung"
+msgstr "Alle Auflösungen"
 
 msgid "only HD"
 msgstr "Nur bei HD"
@@ -15877,7 +15869,7 @@ msgid "Setting"
 msgstr "Einstellungen"
 
 msgid "Disable Animations"
-msgstr "Animation Deaktivieren"
+msgstr "Animation deaktivieren"
 
 msgid "Animation Speed"
 msgstr "Animations Geschwindigkeit"
@@ -15892,7 +15884,7 @@ msgid "Grow drop"
 msgstr "Von oben fallend"
 
 msgid "Grow from left"
-msgstr "Von Links einschiebend"
+msgstr "Von links einschiebend"
 
 msgid "Slide drop"
 msgstr "Von oben gleitend"
@@ -15931,7 +15923,7 @@ msgstr "Hiermit können Sie einstellen, ob die Schriftart der externen Untertite
 
 # Subtitle neu 5.1  colorisation = colorization
 msgid "External subtitle dialog colorisation"
-msgstr "Farbige Dialoge bei externen Untertitel"
+msgstr "Farbige Dialoge bei externen Untertiteln"
 
 # Subtitle neu 5.1
 msgid "Replace `- ` in dialogs with colored text per speaker (like teletext subtitles for the hearing impaired)"
@@ -15967,7 +15959,7 @@ msgstr "Pseudo-Aufnahmen bei Aufnahmen beenden"
 
 # Record neu 5.1
 msgid "When enabled, a recording is allowed to abort pseudo recordings, when there are no free tuners."
-msgstr "Wenn aktiviert, werden pseudo Aufnahmen bei Aufnahmen beenden, falls kein freier Tuner zur Verfügung steht."
+msgstr "Wenn aktiviert, werden Pseudo-Aufnahmen bei Aufnahmen beendet, falls kein freier Tuner zur Verfügung steht."
 
 # Record neu 5.1
 msgid "Recordings abort streaming"
@@ -15975,23 +15967,23 @@ msgstr "Streaming bei Aufnahmen beenden"
 
 # Record neu 5.1
 msgid "When enabled, a recording is allowed to abort streaming, when there are no free tuners."
-msgstr "Wenn aktiviert, werden Streamings bei Aufnahmen beenden, falls kein freier Tuner zur Verfügung steht."
+msgstr "Wenn aktiviert, werden Streamings bei Aufnahmen beendet, falls kein freier Tuner zur Verfügung steht."
 
-# Record neu 5.1
+# data/setup.xml
 msgid "Show recording symbol depending on recording type"
 msgstr "Zeige Aufnahmesymbol, abhängig vom Aufnahmetyp"
 
-# Record neu 5.1
+# data/setup.xml
 msgid "Configure whether the 'recording' symbol (in the display skin and LCD skin) is visible for real recordings only or also for streaming and pseuso recordings (e.g. EPGrefresh)."
-msgstr "Konfigurieren Sie, ob das Aufnahmesymbol (im Display/LCD Skin) nur angezeigt werden soll bei realen Aufnahmen oder auch bei Streaming und pseudo Aufnahmen (z.B. EPGrefresh)."
+msgstr "Legt fest, ob das Aufnahme-Symbol (auf Bildschirm und LCD Display) nur bei echten Aufnahmen sichtbar ist oder auch bei Streaming bzw. Pseudo-Aufnahmen (z.B. EPG Refresh)"
 
-# Record neu 5.1
+# data/setup.xml
 msgid "Show warning before box restart based on recording type"
 msgstr "Zeige Warnung bei Neustart, abhängig vom Aufnahmetyp"
 
-# Record neu 5.1
+# data/setup.xml
 msgid "Configure for which types of recordings a warning about active recordings is shown when attempting to restart the box or the GUI."
-msgstr "Konfigurieren Sie, welcher Aufnahmetyp bei aktiven Aufnahmen eine Warnung zeigen soll, wenn ein Neustart der Box oder GUI erfolgen soll."
+msgstr "Legt fest, ob beim Neustart eine Warnung wegen laufender Aufnahmen nur bei echten Aufnahmen erfolgt oder auch bei Streaming bzw. Pseudo-Aufnahmen (z.B. EPG Refresh)"
 
 # Record neu 5.1
 msgid "any recordings"
@@ -16007,7 +15999,7 @@ msgstr "echte Aufnahmen / Streaming"
 
 # Record neu 5.1
 msgid "real or pseudo recordings"
-msgstr "echte/pseudo Aufnahmen"
+msgstr "echte/Pseudo-Aufnahmen"
 
 # Display neu 5.1
 msgid "Initial scroll delay"
@@ -16032,3 +16024,67 @@ msgstr "< Standard mit Picon >"
 # HelpMenu
 msgid "Show quickmenu..."
 msgstr "Schnellstartmenü anzeigen"
+
+# RecordTimer.py
+msgid ""
+"A timer failed to record!\n"
+"Disable PIP and try again?\n"
+msgstr ""
+"Eine Timer-Aufnahme konnte nicht gestartet werden.\n"
+"PIP deaktivieren und erneut versuchen?\n"
+
+# RecordTimer.py
+msgid ""
+"A timer failed to record!\n"
+"Abort pseudo recordings (e.g. EPG refresh) and try again?\n"
+msgstr ""
+"Eine Timer-Aufnahme konnte nicht gestartet werden.\n"
+"Pseudo-Aufnahmen (z.B. EPG Refresh) beenden und erneut versuchen?\n"
+
+# RecordTimer.py
+msgid ""
+"A timer failed to record!\n"
+"Disable TV and try again?\n"
+msgstr ""
+"Eine Timer-Aufnahme konnte nicht gestartet werden.\n"
+"TV-Sender umschalten und erneut versuchen?\n"
+
+# RecordTimer.py
+msgid ""
+"In order to record a timer, a tuner was freed successfully:\n"
+"\n"
+msgstr ""
+"Um eine Timer-Aufnahme zu starten, wurde erfolgreich ein Tuner frei gemacht:\n"
+"\n"
+
+# RecordTimer.py
+msgid "The TV was switched to the recording service!\n"
+msgstr "Es wurde auf den Sender umgeschaltet, auf dem die Aufnahme läuft.\n"
+
+# RecordTimer.py
+msgid ""
+"No tuner is available for recording a timer!\n"
+"\n"
+"The following methods of freeing a tuner were tried without success:\n"
+"\n"
+msgstr ""
+"Eine Timer-Aufnahme konnte nicht gestartet werden, da kein Tuner verfügbar war.\n"
+"\n"
+"Folgende Maßnahmen wurden versucht, jedoch ohne Erfolg:\n"
+"\n"
+
+# RecordTimer.py
+msgid "No tuner is available for recording a timer!\n"
+msgstr "Eine Timer-Aufnahme konnte nicht gestartet werden.\n"
+
+# RecordTimer.py
+msgid "Disabled PIP.\n"
+msgstr "PIP wurde deaktiviert.\n"
+
+# RecordTimer.py
+msgid "Tried to disable PIP, suddenly found no InfoBar.instance.\n"
+msgstr "Beim Versuch, PIP zu deaktivieren, wurde keine InfoBar.instance gefunden.\n"
+
+# RecordTimer.py
+msgid "Aborted a pseudo recording.\n"
+msgstr "Eine Pseudo-Aufnahme wurde deaktiviert.\n"
