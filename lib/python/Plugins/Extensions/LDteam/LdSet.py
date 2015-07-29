@@ -255,8 +255,8 @@ class Ttimer(Screen):
                 global count
                 self.skin = Ttimer.skin
                 Screen.__init__(self, session)
-                self['srclabel'] = Label(_("Espere, se esta actualizando el Epg"))
-                self.setTitle(_("Actualizacion EPG"))
+                self['srclabel'] = Label(_("Por favor Espere, Actualizando Epg"))
+                self.setTitle(_("Update EPG"))
                 self["progress"] = Progress(int(count))
                 self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value-5))
                 self.session = session
