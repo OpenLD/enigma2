@@ -177,7 +177,7 @@ class UpdatePlugin(Screen):
 					choices = [(_("Update and reboot (recommended)"), "cold"),
 						(_("Update and ask to reboot"), "hot"),
 						(_("Update channel list only"), "channels"),
-						(_("Show latest commits on sourceforge"), "commits"),
+						(_("Show latest commits"), "commits"),
 						(_("Cancel"), "")]
 					self.session.openWithCallback(self.startActualUpgrade, ChoiceBox, title=message, list=choices)
 				else:
