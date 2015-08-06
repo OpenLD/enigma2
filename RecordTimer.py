@@ -1116,7 +1116,7 @@ class RecordTimer(timer.Timer):
 			if timer.isStillRecording:
 				isStillRecording = True
 				break
-			elif abs(timer.begin - now) <= 10:
+			elif abs(timer.begin - now) <= 10 and not abs(timer.end - now) <= 10:
 				isStillRecording = True
 				break
 		return isStillRecording
