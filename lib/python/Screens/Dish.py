@@ -212,9 +212,13 @@ class Dish(Screen):
 		if nr is not None:
 			from Components.NimManager import nimmanager
 			nims = nimmanager.nimList()
-			if nr < 4:
+			if nr < len(nims) and nr >= 0:
 				return "".join(nims[nr].split(':')[:1])
-			return " ".join((_("Tuner"),str(nr)))
+			print "[Dish.py] bug hunting nr: %s\n" %nr
+			print "[Dish.py] bug hunting nims:\n"
+			print nims
+			raise
+#			return " ".join((_("Tuner"),str(nr)))
 		return ""
 
 	def OrbToStr(self, orbpos):
