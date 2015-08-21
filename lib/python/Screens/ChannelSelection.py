@@ -2568,7 +2568,7 @@ class ChannelSelectionRadio(ChannelSelectionBase, ChannelSelectionEdit, ChannelS
 		self.info.show()
 
 	def __onExecEnd(self):
-		self.info.hide()
+		self.session.deleteDialog(self.info)
 
 	def cancel(self):
 		self.infobar.rds_display.onRassInteractivePossibilityChanged.remove(self.RassInteractivePossibilityChanged)
