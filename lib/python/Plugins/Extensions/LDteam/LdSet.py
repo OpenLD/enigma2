@@ -19,6 +19,8 @@ from Components.ActionMap import ActionMap
 from Components.Language import language
 from ServiceReference import ServiceReference
 from enigma import eEPGCache
+from Components.ScrollLabel import ScrollLabel
+from Components.Console import Console as iConsole
 from time import *
 from types import *
 from enigma import *
@@ -306,6 +308,8 @@ class LDepg(Screen, ConfigListScreen):
   <widget source="key_red" render="Label" position="30,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <ePixmap position="200,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" alphatest="blend" />
 <ePixmap position="370,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" alphatest="blend" />
+<ePixmap position="540,590" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" alphatest="blend" />
+<widget source="key_blue" render="Label" position="540,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   <widget source="key_green" render="Label" position="200,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
 <widget source="key_yellow" render="Label" position="370,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   </screen>"""
@@ -316,12 +320,14 @@ class LDepg(Screen, ConfigListScreen):
 		self.setTitle(_("EPG Options"))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
+		self["key_blue"] = StaticText(_("ver log"))
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Update"))
 		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "ColorActions"],
 		
 		{
+			"blue": self.mhw,
 			"red": self.cancel,
 			"cancel": self.cancel,
 			"yellow": self.downepg,
@@ -355,7 +361,7 @@ class LDepg(Screen, ConfigListScreen):
 	        rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
 	        mytime = time.time()
 	        try:
-	            if not recordings  or (rec_time > 0 and rec_time - mytime() < 360):
+	            if not recordings or (rec_time > 0 and rec_time - mytime() < 360):
 	                    channel = "1:0:1:75C6:422:1:C00000:0:0:0:"
 	                    self.zapTo(channel)
 	                    ## Crea y muestra la barra de dialogo
@@ -366,6 +372,9 @@ class LDepg(Screen, ConfigListScreen):
                         self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
                 except:
                         print "Error download mhw2 epg, record active?"
+
+	def mhw(self):
+		self.session.open(Viewmhw)
 
 	def cancel(self):
 		for i in self["config"].list:
@@ -384,7 +393,47 @@ class LDepg(Screen, ConfigListScreen):
 		
 	def restart(self):
 		self.session.open(TryQuitMainloop, 3)
-	
+
+class Viewmhw(Screen):
+	skin = """
+<screen name="Viewmhw" position="center,80" size="1170,600" title="View mhw2equiv.conf (/etc/mhw2equiv.conf">
+	<ePixmap position="20,590" zPosition="1" size="170,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" alphatest="blend" />
+	<widget source="key_red" render="Label" position="20,560" zPosition="2" size="170,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+	<widget name="text" position="20,10" size="1130,542" font="Console;22" />
+</screen>"""
+
+	def __init__(self, session):
+		self.session = session
+		Screen.__init__(self, session)
+		self.setTitle(_("View mhw2equiv.conf (/tmp/mhw_Log.epg)"))
+		self["shortcuts"] = ActionMap(["ShortcutActions", "WizardActions"],
+		{
+			"cancel": self.exit,
+			"back": self.exit,
+			"red": self.exit,
+			})
+		self["key_red"] = StaticText(_("Close"))
+		self["text"] = ScrollLabel("")
+		self.viewmhw2()
+		
+	def exit(self):
+		self.close()
+		
+	def viewmhw2(self):
+		list = ''
+		if fileExists("/tmp/mhw_Log.epg"):
+			for line in open("/tmp/mhw_Log.epg"):
+				list += line
+		self["text"].setText(list)
+		self["actions"] = ActionMap(["OkCancelActions", "DirectionActions"],
+			{
+			"cancel": self.close,
+			"up": self["text"].pageUp,
+			"left": self["text"].pageUp,
+			"down": self["text"].pageDown,
+			"right": self["text"].pageDown,
+			},
+			-1)	
 class LdSetupOSD3(Screen, ConfigListScreen):
 	skin = """
 	<screen position="center,center" size="700,500" title="OpenLD - Opciones Osd">
