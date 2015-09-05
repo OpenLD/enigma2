@@ -10179,6 +10179,12 @@ msgstr "Umgekehrt Alphabetisch"
 msgid "alphabetic sort"
 msgstr "Aufnahmen alphabetisch sortieren"
 
+msgid "Show status messages when switch to live TV"
+msgstr "Zeige Statusmeldungen wenn zum Live-TV geschaltet wird"
+
+msgid "When enabled, show status or error messages."
+msgstr "Wenn 'Ja' ausgewählt wird, werden Status- oder Fehlermeldungen angezeigt."
+
 msgid ""
 "are you sure you want to restore\n"
 "following backup:\n"
