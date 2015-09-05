@@ -35,7 +35,8 @@ class ServiceName(Converter, object):
 
 	@cached
 	def getText(self):
-		service = self.source.service
+	   try:
+	   	service = self.source.service
 		info = None
 		if isinstance(service, eServiceReference):
 			info = self.source.info
@@ -98,9 +99,12 @@ class ServiceName(Converter, object):
 					return tmpref
 			else:
 				return 'N/A'			
-
+	   except:
+	   	return 'N/A'
+	   	
 	text = property(getText)
 
 	def changed(self, what):
 		if what[0] != self.CHANGED_SPECIFIC or what[1] in (iPlayableService.evStart,):
 			Converter.changed(self, what)
+
