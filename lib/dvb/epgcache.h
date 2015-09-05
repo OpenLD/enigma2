@@ -42,8 +42,8 @@
 
 #ifdef ENABLE_MHW_EPG
 
-#define FILE_EQUIV "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/epg/mhw_Equiv.epg"
-#define FILE_CHANNELS "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/epg/mhw_Chann.epg"
+#define FILE_EQUIV "/etc/mhw_Equiv.epg"
+#define FILE_CHANNELS "/etc/mhw_Chann.epg"
 #define FILE_LOG "/tmp/mhw_Log.epg"
 
 #define EPG_REPLAY_LEN 8
