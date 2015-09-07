@@ -51,7 +51,7 @@ def profile(id):
 				elif boxtype in ("marvel1", "enfinity"):
 					f = open("/dev/dbox/oled0", "w")
 					f.write("  %d " % perc)
-				elif boxtype() in ('gb800solo', 'gb800se', 'gb800seplus', 'gbultrase'):
+				elif boxtype in ('gb800solo', 'gb800se', 'gb800seplus', 'gbultrase'):
 					f = open("/dev/mcu", "w")
 					f.write("%d  \n" % perc)
 				elif boxtype in ("mixosf5", "gi9196m", "osmini"):
@@ -63,7 +63,7 @@ def profile(id):
 				elif boxtype in ("azboxhd", "azboxme"):
 					f = open("/proc/vfd", "w")
 					f.write("Loading %d%%" % perc)
-				elif boxtype() in ('amikomini', 'amiko8900', 'sognorevolution', 'arguspingulux', 'arguspinguluxmini', 'sparkreloaded', 'sabsolo', 'sparklx', 'gis8120'):
+				elif boxtype in ('amikomini', 'amiko8900', 'sognorevolution', 'arguspingulux', 'arguspinguluxmini', 'sparkreloaded', 'sabsolo', 'sparklx', 'gis8120'):
 					f = open("/proc/vfd", "w")
 					f.write("%d \n" % perc)
 				else:
