@@ -361,17 +361,16 @@ class LDepg(Screen, ConfigListScreen):
 	        rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
 	        mytime = time.time()
 	        try:
-	            if not recordings or (rec_time > 0 and rec_time - mytime() < 360):
-	                    channel = "1:0:1:75C6:422:1:C00000:0:0:0:"
-	                    self.zapTo(channel)
-	                    ## Crea y muestra la barra de dialogo
-	                    diag = runDialog()
-	                    diag.startDialog(self.session) 
-                        
-                else:
-                        self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
+	                if not recordings  or (rec_time > 0 and rec_time - mytime() < 360):
+	                        channel = "1:0:1:75C6:422:1:C00000:0:0:0:"
+	                        self.zapTo(channel)
+	                        ## Crea y muestra la barra de dialogo
+	                        diag = runDialog()
+	                        diag.startDialog(self.session)                        
+                        else:
+                                self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
                 except:
-                        print "Error download mhw2 epg, record active?"
+                        print ("Error download mhw2 epg, record active?")
 
 	def mhw(self):
 		self.session.open(Viewmhw)
