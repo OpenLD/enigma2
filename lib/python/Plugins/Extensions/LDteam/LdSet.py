@@ -44,9 +44,29 @@ config.plugins.LDteam.auto2 = ConfigSelection(default = "no", choices = [
                 ("no", _("no")),
 		("yes", _("yes")),
 		])
+config.plugins.LDteam.dropmode = ConfigSelection(default = '1', choices = [
+		('1', _("free pagecache")),
+		('2', _("free dentries and inodes")),
+		('3', _("free pagecache, dentries and inodes")),
+		])
 config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
 config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 240 ) # 240 seconds = 4 minutes
-		
+
+def mountp():
+	pathmp = []
+	if fileExists("/proc/mounts"):
+		for line in open("/proc/mounts"):
+			if line.find("/dev/sd") > -1:
+				pathmp.append(line.split()[1].replace('\\040', ' ') + "/")
+	pathmp.append("/usr/share/enigma2/")
+	return pathmp
+
+def _(txt):
+	t = gettext.dgettext("messages", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+	
 class LDSettings(Screen):
 	skin = """
 <screen name="LDSettings" position="70,35" size="1150,650">
@@ -123,6 +143,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 15:
 			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
 			self.session.open(RestartNetwork)
+		elif self.sel == 16:
+			self.session.open(LDmemoria)
 		else:
 			self.noYet()
 			
@@ -239,10 +261,16 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
+
+		mypixmap = mypath + "Module.png"
+		png = LoadPixmap(mypixmap)
+		name = "Liberar memoria"
+		idx = 16
+		res = (name, png, idx)
+		self.list.append(res)
 		
 		self["list"].list = self.list
 
-## Timer especific function for epg
 class Ttimer(Screen):
         
         skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
@@ -432,7 +460,90 @@ class Viewmhw(Screen):
 			"down": self["text"].pageDown,
 			"right": self["text"].pageDown,
 			},
-			-1)	
+			-1)
+
+class LDmemoria(ConfigListScreen, Screen):
+	skin = """
+<screen name="LDmemoria" position="center,160" size="750,370" title="Liberar Memoria">
+	<eLabel position="30,220" size="690,2" backgroundColor="#aaaaaa" />
+	<widget position="15,10" size="720,200" name="config" scrollbarMode="showOnDemand" />
+	<ePixmap position="10,358" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" alphatest="blend" />
+	<widget source="key_red" render="Label" position="10,328" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+	<ePixmap position="175,358" zPosition="1" size="165,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" alphatest="blend" />
+	<widget source="key_green" render="Label" position="175,328" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+	<ePixmap position="340,358" zPosition="1" size="195,2" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" alphatest="blend" />
+	<widget source="key_yellow" render="Label" position="340,328" zPosition="2" size="195,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+	<widget source="MemoryLabel" render="Label" position="55,235" size="150,22" font="Regular; 20" halign="right" foregroundColor="#aaaaaa" />
+	<widget source="memTotal" render="Label" position="220,235" zPosition="2" size="450,22" font="Regular;20" halign="left" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+	<widget source="bufCache" render="Label" position="220,260" zPosition="2" size="450,22" font="Regular;20" halign="left" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
+</screen>"""
+
+	def __init__(self, session):
+		self.session = session
+		Screen.__init__(self, session)
+		self.list = []
+		self.iConsole = iConsole()
+		self["key_red"] = StaticText(_("Close"))
+		self["key_green"] = StaticText(_("Save"))
+		self["key_yellow"] = StaticText(_("Liberar"))
+		self["memTotal"] = StaticText()
+		self["bufCache"] = StaticText()
+		self["MemoryLabel"] = StaticText(_("Memory:"))
+		self["setupActions"] = ActionMap(["SetupActions", "ColorActions", "EPGSelectActions"],
+		{
+			"red": self.cancel,
+			"cancel": self.cancel,
+			"green": self.save_values,
+			"yellow": self.ClearNow,
+			"ok": self.save_values
+		}, -2)
+		self.list.append(getConfigListEntry(_("Elija modo liberar memoria"), config.plugins.LDteam.dropmode))
+		ConfigListScreen.__init__(self, self.list)
+		self.onShow.append(self.Title)
+		
+	def Title(self):
+		self.setTitle(_("Liberar memoria"))
+		self.infomem()
+
+	def cancel(self):
+		for i in self["config"].list:
+			i[1].cancel()
+		self.close()
+		
+	def infomem(self):
+		memtotal = memfree = buffers = cached = ''
+		persent = 0
+		if fileExists('/proc/meminfo'):
+			for line in open('/proc/meminfo'):
+				if 'MemTotal:' in line:
+					memtotal = line.split()[1]
+				elif 'MemFree:' in line:
+					memfree = line.split()[1]
+				elif 'Buffers:' in line:
+					buffers = line.split()[1]
+				elif 'Cached:' in line:
+					cached = line.split()[1]
+			if '' is not memtotal and '' is not memfree:
+				persent = int(memfree) / (int(memtotal) / 100)
+			self["memTotal"].text = _("Total: %s Kb  Free: %s Kb (%s %%)") % (memtotal, memfree, persent)
+			self["bufCache"].text = _("Buffers: %s Kb  Cached: %s Kb") % (buffers, cached)
+	
+	def save_values(self):
+		for i in self["config"].list:
+			i[1].save()
+		configfile.save()
+		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
+
+	def ClearNow(self):
+		self.iConsole.ePopen("sync ; echo %s > /proc/sys/vm/drop_caches" % config.plugins.LDteam.dropmode.value, self.Finish)
+		
+	def Finish(self, result, retval, extra_args):
+		if retval is 0:
+			self.mbox = self.session.open(MessageBox,(_("Cache flushed")), MessageBox.TYPE_INFO, timeout = 4 )
+		else:
+			self.mbox = self.session.open(MessageBox,(_("error...")), MessageBox.TYPE_INFO, timeout = 4 )
+		self.infomem()
+
 class LdSetupOSD3(Screen, ConfigListScreen):
 	skin = """
 	<screen position="center,center" size="700,500" title="OpenLD - Opciones Osd">
