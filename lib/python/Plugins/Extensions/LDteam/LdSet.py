@@ -1,5 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
 
+from enigma import eTimer
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.InputBox import InputBox
@@ -9,25 +10,26 @@ from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.ConfigList import ConfigListScreen
 from Components.Harddisk import harddiskmanager
-from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigSubsection, ConfigClock, configfile
+from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigSubsection, ConfigClock, ConfigDateTime, ConfigInteger, configfile, NoSave
 from Components.Sources.List import List
 from Components.Sources.Progress import Progress
-from Screens.Console import Console
+from Components.Console import Console
 from Components.Network import iNetwork
 from Components.MenuList import MenuList
 from Components.ActionMap import ActionMap
 from Components.Language import language
 from ServiceReference import ServiceReference
 from enigma import eEPGCache
+from enigma import eDVBDB
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console as iConsole
 from time import *
 from types import *
 from enigma import *
-import sys, traceback, re, new, os, gettext, commands, time, datetime, _enigma, enigma, Screens.Standby
+import sys, traceback, re, new, os, gettext, commands, time, datetime, _enigma, enigma, Screens.Standby, subprocess, threading
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, pathExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
-from os import system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
+from os import system, listdir, path, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 
 count = 0
@@ -49,9 +51,10 @@ config.plugins.LDteam.dropmode = ConfigSelection(default = '1', choices = [
 		('2', _("free dentries and inodes")),
 		('3', _("free pagecache, dentries and inodes")),
 		])
-config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
+#config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
+config.plugins.LDteam.epgtime2 = ConfigClock(default = 7*60 * 60) # 7:00
 config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 240 ) # 240 seconds = 4 minutes
-
+			
 def mountp():
 	pathmp = []
 	if fileExists("/proc/mounts"):
@@ -294,7 +297,7 @@ class Ttimer(Screen):
                 count = 0
                 self.ctimer.callback.append(self.__run)
                 self.ctimer.start(1000,0)
-                                                                                                
+  
         def __run(self):
                 global count
                 count += 1
@@ -311,18 +314,18 @@ pdialog = ""
 class runDialog():
         def __init__(self):
                 self.dialog = None
-                        
+
         def startDialog(self, session):
                 global pdialog
                 pdialog = session.instantiateDialog(Ttimer)
                 pdialog.show()
-                                
+ 
         def stopDialog(self, session):
                 global pdialog
                 pdialog.hide()
-                                                                                                                                                                        
+
 rDialog = runDialog()
-		
+
 
 class LDepg(Screen, ConfigListScreen):
 	skin = """
@@ -352,7 +355,7 @@ class LDepg(Screen, ConfigListScreen):
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Update"))
-		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "ColorActions"],
+		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "TimerEditActions", "ColorActions"],
 		
 		{
 			"blue": self.mhw,
@@ -801,5 +804,4 @@ class LdNetBrowser(Screen):
 		if mysel:
 			inter = mysel[1]
 			self.session.open(NetworkBrowser, inter, "/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser")
-
 
