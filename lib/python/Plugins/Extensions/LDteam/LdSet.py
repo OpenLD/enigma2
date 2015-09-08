@@ -51,10 +51,9 @@ config.plugins.LDteam.dropmode = ConfigSelection(default = '1', choices = [
 		('2', _("free dentries and inodes")),
 		('3', _("free pagecache, dentries and inodes")),
 		])
-#config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
-config.plugins.LDteam.epgtime2 = ConfigClock(default = 7*60 * 60) # 7:00
+config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
 config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 240 ) # 240 seconds = 4 minutes
-			
+
 def mountp():
 	pathmp = []
 	if fileExists("/proc/mounts"):
