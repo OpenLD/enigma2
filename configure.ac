@@ -618,6 +618,9 @@ lib/python/Plugins/SystemPlugins/FrontprocessorUpgrade/meta/Makefile
 lib/python/Plugins/SystemPlugins/HdmiCEC/Makefile
 lib/python/Plugins/SystemPlugins/Hotplug/Makefile
 lib/python/Plugins/SystemPlugins/Hotplug/meta/Makefile
+lib/python/Plugins/Extensions/OpenIPTV/icons/Makefile
+lib/python/Plugins/Extensions/OpenIPTV/meta/Makefile
+lib/python/Plugins/Extensions/OpenIPTV/Makefile
 lib/python/Plugins/Extensions/LDteam/Makefile
 lib/python/Plugins/Extensions/LDteam/scripts/Makefile
 lib/python/Plugins/Extensions/LDteam/epg/Makefile

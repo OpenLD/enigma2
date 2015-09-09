@@ -1,0 +1,12 @@
+<default>
+	  <prerequisites>
+                    <tag type="Multimedia" />
+	  </prerequisites>
+          <info>
+                    <author>Javilonas</author>
+                    <name>OpenIPTV</name>
+                    <packagename>enigma2-plugin-extensions-openiptv</packagename>
+                    <shortdescription>IPTV Player</shortdescription>
+                    <description>IPTV free channels.</description>
+          </info>
+</default>

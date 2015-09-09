@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<stream>
+<iptv>
+	<name>TVE 1</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://iphonelive.rtve.es/LA1_LV3_IPH/LA1_LV3_IPH.m3u8</uri>
+</iptv>
+<iptv>
+	<name>TVE 2</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://iphonelive.rtve.es/LA2_LV3_IPH/bitrate_2.m3u8</uri>
+</iptv>
+<iptv>
+	<name>ANTENA 3</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://antena3-aos1-apple-live.adaptive.level3.net/apple/antena3/channel01/antena_3_hd_1548K_1280x720_main.m3u8</uri>
+</iptv>
+<iptv>
+	<name>CUATRO</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://mdsios2-lh.akamaihd.net/i/mitele/esmediaset_22@168474/index_0_av-p.m3u8</uri>
+</iptv>
+<iptv>
+	<name>LA SEXTA</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://antena3-aos1-apple-live.adaptive.level3.net/apple/antena3/channel02/la_sexta_hd_1548K_1280x720_main.m3u8</uri>
+</iptv>
+<iptv>
+	<name>ENERGY</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://mdsiosgeo0-lh.akamaihd.net/i/mitele/esmedia_01@175317/index_0_av-b.m3u8</uri>
+</iptv>
+<iptv>
+	<name>NEOX</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://antena3-aos1-apple-live.adaptive.level3.net/apple/antena3/channel03/index.m3u8</uri>
+</iptv>
+<iptv>
+	<name>ANDALUCIA TV</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://iphone-andaluciatelevision.rtva.stream.flumotion.com/rtva/andaluciatelevision-iphone-multi/main.m3u8</uri>
+</iptv>
+<iptv>
+	<name>TELEDEPORTE</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://iphonelive.rtve.es/TDP_LV3_IPH/TDP_LV3_IPH.m3u8</uri>
+</iptv>
+<iptv>
+	<name>TELEMADRID</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://iphone.telemadrid.es.edgesuite.net/telemadridsat_iphone.m3u8</uri>
+</iptv>
+<iptv>
+	<name>NOVA</name>
+	<icon>default.png</icon>
+	<type>rtsp:4097:512</type>
+	<uri>http://antena3-aos1-apple-live.adaptive.level3.net/apple/antena3/channel12/index.m3u8</uri>
+</iptv>
+</stream>
+
