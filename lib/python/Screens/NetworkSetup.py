@@ -30,7 +30,6 @@ from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_
 from Tools.LoadPixmap import LoadPixmap
 from Plugins.Plugin import PluginDescriptor
 
-basegroup = "packagegroup-base"
 class NetworkAdapterSelection(Screen,HelpableScreen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -2586,7 +2585,7 @@ class NetworkSamba(Screen):
 		self.my_Samba_active = False
 		self.my_Samba_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.SambaStartStop, 'yellow': self.activateSamba, 'blue': self.Sambashowlog})
-		self.service_name = basegroup + '-smbfs'
+		self.service_name = 'packagegroup-base-smbfs-server'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
