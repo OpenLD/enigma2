@@ -106,8 +106,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		self.sel = self.sel[2]
 		
 		if self.sel == 0:
-			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
-			self.session.open(DeviceManager)
+			from Plugins.Extensions.LDteam.LdHddSetup import HddSetup
+			self.session.open(HddSetup)
 		elif self.sel == 1:
 			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
 			self.session.open(SundtekControlCenter)
@@ -165,7 +165,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
-
+		
 		mypixmap = mypath + "Harddisk.png"
 		png = LoadPixmap(mypixmap)
 		name = "Admin Dispositivos"
@@ -803,4 +803,3 @@ class LdNetBrowser(Screen):
 		if mysel:
 			inter = mysel[1]
 			self.session.open(NetworkBrowser, inter, "/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser")
-
