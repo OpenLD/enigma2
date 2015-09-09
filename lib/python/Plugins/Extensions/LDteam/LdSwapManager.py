@@ -57,7 +57,7 @@ class StartSwap:
                                                         print "[SwapManager] Found a swapfile on ", swap_place
 
                 f = file('/proc/swaps').read()
-                if f.find(swap_place) == -1:
+                if '-1' in f: 		#if f.find(swap_place) == -1:
                         print "[SwapManager] Starting swapfile on ", swap_place
                         system('swapon ' + swap_place)
                 else:
@@ -170,7 +170,7 @@ class Swap(Screen):
                                                 self.swap_place = filename
                                                 self['key_green'].setText(_("Delete"))
                                                 info = mystat(self.swap_place)
-                                                self.swapsize = info[stat.ST_SIZE]
+                                                self.swapsize = info[stat.ST_SIZE]/1024
                                                 continue
 
                 if config.plugins.ldteam.swapautostart.value and self.swap_place:
@@ -197,15 +197,12 @@ class Swap(Screen):
                 f.close()
 
                 if self.swapsize > 0:
-                        if self.swapsize >= 1024:
-                                self.swapsize = int(self.swapsize) / 1024
-                                if self.swapsize >= 1024:
-                                        self.swapsize = int(self.swapsize) / 1024
-                                self.swapsize = str(self.swapsize) + ' ' + 'MB'
-                        else:
-                                self.swapsize = str(self.swapsize) + ' ' + 'KB'
+			unit = ' MB'
+			self.swapsize = float(self.swapsize)/1024
+			self.swapsize = "{:4.0f}".format(self.swapsize)
+			self.swapsize = str(self.swapsize) + unit
                 else:
-                        self.swapsize = ''
+                        self.swapsize =''
 
                 self['labsize'].setText(self.swapsize)
                 self['labsize'].show()
@@ -303,6 +300,6 @@ class Swap(Screen):
                                 config.plugins.ldteam.swapautostart.save()
                         configfile.save()
                 else:
-                        mybox = self.session.open(MessageBox, _("You have to create a Swap File before to activate the autostart."), MessageBox.TYPE_INFO)
+                        mybox = self.session.open(MessageBox, _("You have to create a Swap File before activating autostart"), MessageBox.TYPE_INFO)
                         mybox.setTitle(_("Info"))
                 self.updateSwap()
