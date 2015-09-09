@@ -158,49 +158,49 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 	def updateList(self):
 		self.list = [ ]
 		mypath = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/"
-		
+
 		mypixmap = mypath + "crond.png"
 		png = LoadPixmap(mypixmap)
 		name = "CronManager"
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Harddisk.png"
 		png = LoadPixmap(mypixmap)
 		name = "Admin Dispositivos"
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Usb.png"
 		png = LoadPixmap(mypixmap)
 		name = "Formatear USB"
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "SwapManager.png"
 		png = LoadPixmap(mypixmap)
 		name = "Memoria Swap"
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "SundtekControlCenter.png"
 		png = LoadPixmap(mypixmap)
 		name = "Soundtek Center"
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Epg_setup.png"
 		png = LoadPixmap(mypixmap)
 		name = "Opciones EPG"
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "AV_Setup.png"
 		png = LoadPixmap(mypixmap)
 		name = "Opciones Osd"
@@ -214,28 +214,28 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Ajustes_grabar.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes de grabacion"
 		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "folder.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ruta de grabacion"
 		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Conf_idiomas.png"
 		png = LoadPixmap(mypixmap)
 		name = "Auto configuracion idioma"
 		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		mypixmap = mypath + "Ajustes_http.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes Http stream"
@@ -270,11 +270,11 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 16
 		res = (name, png, idx)
 		self.list.append(res)
-		
+
 		self["list"].list = self.list
 
 class Ttimer(Screen):
-        
+
         skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
                         <widget name="srclabel" font="Regular; 15" position="424,614" zPosition="2" valign="center" halign="center" size="500,30" foregroundColor="white" backgroundColor="black" transparent="0" />
                         <widget source="progress" render="Progress" position="322,677" foregroundColor="white" size="700,20" borderWidth="1" borderColor="grey" backgroundColor="black" />
