@@ -19,7 +19,7 @@ from Components.config import config, getConfigListEntry, ConfigSubsection, Conf
 from os import system
 
 _default = {
-	"type"  :"ftp",
+	"type":"ftp",
 	"server":"",
 	"userid":"",
 	"passwd":"",
@@ -27,7 +27,7 @@ _default = {
 	"startup":False,
 }
 config.plugins.netdrivesetup = ConfigSubsection()
-config.plugins.netdrivesetup.type   = ConfigSelection(default=_default["type"], choices=[("ftp", _("FTP"))])
+config.plugins.netdrivesetup.type = ConfigSelection(default=_default["type"], choices=[("ftp", _("FTP"))])
 config.plugins.netdrivesetup.server = ConfigText(default=_default["server"], visible_width=60, fixed_size=False)
 config.plugins.netdrivesetup.userid = ConfigText(default=_default["userid"], visible_width=60, fixed_size=False)
 config.plugins.netdrivesetup.passwd = ConfigText(default=_default["passwd"], visible_width=60, fixed_size=False)
@@ -63,24 +63,24 @@ class NetDrivebrowser(Screen):
 		Screen.__init__(self, session)
 
 		self["actions"] = ActionMap(["OkCancelActions", "ShortcutActions", "WizardActions", "ColorActions", ], {
-			"red"   : self.OnKeyRed,
-			"green" : self.OnKeyGreen,
-			"ok"    : self.OnKeyOK,
+			"red": self.OnKeyRed,
+			"green": self.OnKeyGreen,
+			"ok": self.OnKeyOK,
 			"cancel": self.OnKeyCancel,
-			"up"    : self.OnKeyUp,
-			"down"  : self.OnKeyDown,
-			"left"  : self.OnKeyLeft,
-			"right" : self.OnKeyRight,
+			"up": self.OnKeyUp,
+			"down": self.OnKeyDown,
+			"left": self.OnKeyLeft,
+			"right": self.OnKeyRight,
 		}, -1)
 
 		inhibitdirs = ["/bin", "/boot", "/dev", "/etc", "/lib", "/proc", "/sbin", "/sys", "/usr", "/var"]
 		self["filelist"] = FileList("/", showDirectories=True, showFiles=False, inhibitMounts=[], inhibitDirs=inhibitdirs)
-		self["status"]   = StaticText(_(" "))
+		self["status"] = StaticText(_(" "))
 
-		self["key_red"]    = StaticText(_("Close"))
-		self["key_green"]  = StaticText(_("Select"))
+		self["key_red"] = StaticText(_("Close"))
+		self["key_green"] = StaticText(_("Select"))
 		self["key_yellow"] = StaticText(_(" "))
-		self["key_blue"]   = StaticText(_(" "))
+		self["key_blue"] = StaticText(_(" "))
 
 		self.OnKeyDown()
 
@@ -144,27 +144,27 @@ class NetDriveSetup(ConfigListScreen, Screen):
 		ConfigListScreen.__init__(self, self.configlist)
 
 		self["actions"]  = ActionMap(["OkCancelActions", "ColorActions", "WizardActions",], {
-			"ok"    : self.OnKeyOK2,
+			"ok": self.OnKeyOK2,
 			"cancel": self.OnKeyCancel,
-			"green" : self.OnKeyGreen,
-			"red"   : self.OnKeyRed,
+			"green": self.OnKeyGreen,
+			"red": self.OnKeyRed,
 			"yellow": self.OnKeyYellow,
-			"blue"  : self.OnKeyBlue,
+			"blue": self.OnKeyBlue,
 		}, -2)
 
 		self["VirtualKB"] = ActionMap(["VirtualKeyboardActions" ], {
 			"showVirtualKeyboard": self.KeyText,
 		}, -1)
 
-		self["VKeyIcon"]   = Pixmap()
-		self["key_red"]    = StaticText(_("Close"))
-		self["key_green"]  = StaticText(_("Mount"))
+		self["VKeyIcon"] = Pixmap()
+		self["key_red"] = StaticText(_("Close"))
+		self["key_green"] = StaticText(_("Mount"))
 		self["key_yellow"] = StaticText(_("Default"))
-		self["key_blue"]   = StaticText(_("Save"))
+		self["key_blue"] = StaticText(_("Save"))
 		self["introduction"] = Label(" ")
 
 		self.backup = {
-			"type"  :config.plugins.netdrivesetup.type.value,
+			"type":config.plugins.netdrivesetup.type.value,
 			"server":config.plugins.netdrivesetup.server.value,
 			"userid":config.plugins.netdrivesetup.userid.value,
 			"passwd":config.plugins.netdrivesetup.passwd.value,
@@ -287,7 +287,7 @@ class NetDriveSetup(ConfigListScreen, Screen):
 
 	def Restore(self):
 		print "[NetDriveSetup] Restore default setting..."
-		config.plugins.netdrivesetup.type.value   = self.backup["type"]
+		config.plugins.netdrivesetup.type.value = self.backup["type"]
 		config.plugins.netdrivesetup.server.value = self.backup["server"]
 		config.plugins.netdrivesetup.userid.value = self.backup["userid"]
 		config.plugins.netdrivesetup.passwd.value = self.backup["passwd"]
@@ -324,7 +324,7 @@ class NetDriveSetup(ConfigListScreen, Screen):
 
 	def OnKeyYellow(self):
 		print "[NetDriveSetup] Setting default values.."
-		config.plugins.netdrivesetup.type.value   = _default["type"]
+		config.plugins.netdrivesetup.type.value = _default["type"]
 		config.plugins.netdrivesetup.server.value = _default["server"]
 		config.plugins.netdrivesetup.userid.value = _default["userid"]
 		config.plugins.netdrivesetup.passwd.value = _default["passwd"]
