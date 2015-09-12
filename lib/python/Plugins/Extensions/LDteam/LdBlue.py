@@ -1,3 +1,4 @@
+from Screens.Console import Console
 from Screens.Screen import Screen
 from Screens.ChoiceBox import ChoiceBox
 from Screens.MessageBox import MessageBox
@@ -12,14 +13,19 @@ from Components.ScrollLabel import ScrollLabel
 from Components.MenuList import MenuList
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
+from Components.Pixmap import MultiPixmap
 from Components.Sources.Progress import Progress
 from Components.About import about
 from Tools.BoundFunction import boundFunction
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from ServiceReference import ServiceReference
-from os import system, listdir, remove as os_remove
-from enigma import iServiceInformation, eTimer, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent
+from Components.PluginList import * 
+from Plugins.Plugin import PluginDescriptor 
+from Components.PluginComponent import plugins 
+from Components.Console import Console
+from os import popen, system, listdir, remove as os_remove
+from enigma import iServiceInformation, eTimer, eDVBDB, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation
 
 import os
 import sys
@@ -27,6 +33,7 @@ import re
 import socket
 import time
 import datetime
+
 
 class LDBluePanel(Screen):
 	skin = """
@@ -42,7 +49,7 @@ class LDBluePanel(Screen):
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on"/>
 <eLabel text="Servicios" position="30,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
-<eLabel text="Scripts" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<eLabel text="Plugins" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <eLabel text="Info" position="370,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <eLabel text="Settings" position="543,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <widget name="lab1" position="195,43" size="230,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
@@ -194,15 +201,15 @@ class LDBluePanel(Screen):
 		client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		client_socket.connect("/tmp/OpenLD.socket")
 		client_socket.send(data)
-            	client_socket.close()
+		client_socket.close()
 				
 	def keyBlue(self):
 		from LdSet import LDSettings
 		self.session.open(LDSettings)
 			
 	def keyGreen(self):
-		from LdScripts import LDScripts
-		self.session.open(LDScripts)
+		from Plugins.Extensions.LDteam.LdPlugin import LDPluginPanel
+		self.session.open(LDPluginPanel)
 
 	def keyRed(self):
 		from LdServ import LDServices
@@ -224,8 +231,9 @@ class startstopCam(Screen):
 
 	def __init__(self, session, name, what):
 		Screen.__init__(self, session)
-		
-		msg = "Por favor, espere mientras %s\n %s ..." % (what, name)
+
+		msg = _("Por favor, espere ") + "%s\n %s ..." % (what, name)
+		self["connect"] = MultiPixmap()
 		self["lab1"] = Label(msg)
 		self.delay = 800
 		if what == "Iniciando":
@@ -234,9 +242,10 @@ class startstopCam(Screen):
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.end)
 		self.onShow.append(self.startShow)
-		
+
 	def startShow(self):
 		self.activityTimer.start(self.delay)
+
 	def end(self):
 		self.activityTimer.stop()
 		del self.activityTimer

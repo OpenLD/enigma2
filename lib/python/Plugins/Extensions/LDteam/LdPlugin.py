@@ -6,35 +6,58 @@ from Components.ActionMap import ActionMap
 from Components.config import config, ConfigText, configfile
 from Components.Sources.List import List
 from Components.Label import Label
-from Components.PluginComponent import plugins
 from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_SKIN_IMAGE, fileExists, pathExists, createDir
 from Tools.LoadPixmap import LoadPixmap
-from Plugins.Plugin import PluginDescriptor
-from os import system, listdir, chdir, getcwd, remove as os_remove
-from enigma import eDVBDB
+from Components.PluginList import * 
+from Plugins.Plugin import PluginDescriptor 
+from Components.PluginComponent import plugins 
+from Components.Console import Console
+from os import popen, system, listdir, chdir, getcwd, remove as os_remove
+from enigma import iServiceInformation, eTimer, eDVBDB, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation
+
+import os
+import sys
 
 config.misc.fast_plugin_button = ConfigText(default="")
 
 class LDPluginPanel(Screen):
 	skin = """
-	<screen name="LDPluginPanel" position="center,center" size="800,560" title="Plugins OpenLD">
-<ePixmap position="460,10" size="310,165" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
-<widget source="list" render="Listbox" position="10,10" size="750,540" scrollbarMode="showOnDemand">
-<convert type="TemplatedMultiContent">
-{"template": [
-MultiContentEntryText(pos = (60, 1), size = (300, 36), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
-],
-"fonts": [gFont("Regular", 24)],
-"itemHeight": 36
-}
-</convert>
-</widget>    
-</screen>"""
-		
+       <screen name="LDPluginPanel" position="center,center" size="1150,650">
+<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+<widget source="global.CurrentTime" render="Label" position="35,10" size="500,24" font="Regular;22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
+		<convert type="ClockToText">>Format%H:%M:%S</convert>
+	</widget>
+	<eLabel text="OpenLD Plugins Panel" position="45,40" size="800,38" font="Regular;32" halign="left" foregroundColor="#004c74" backgroundColor="transpBlack" transparent="1"/>
+               <widget source="list" render="Listbox" position="55,105" zPosition="1" size="590,450" scrollbarMode="showOnDemand"  transparent="1">
+             <convert type="TemplatedMultiContent">
+                 {"template": [
+                 MultiContentEntryText(pos = (125, 0), size = (550, 24), font=0, text = 0),
+                 MultiContentEntryText(pos = (125, 24), size = (550, 24), font=1, text = 1),
+                 MultiContentEntryPixmapAlphaTest(pos = (6, 5), size = (100, 40), png = 2),
+                 ],
+                 "fonts": [gFont("Regular", 24),gFont("Regular", 20)],
+                 "itemHeight": 50
+                 }
+             </convert>
+             </widget>
+               <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="30,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on"/>
+<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on"/>
+               <widget name="key_red" position="30,592" zPosition="2" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="transpBlack" transparent="1" />
+               <widget name="key_green" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="green" transparent="1" />
+               <widget name="key_yellow" position="370,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="yellow" transparent="1" />
+               <widget name="key_blue" position="543,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="blue" transparent="1" />
+ 
+ </screen>""" 
 	def __init__(self, session):
 		Screen.__init__(self, session)
 
+		self["key_green"] = Label(_("Addons"))
+		self["key_red"] = Label(_("Update"))
+		self["key_yellow"] = Label(_("Scripts"))
+		self["key_blue"] = Label(_("Mountpoints"))
+		
 		self.list = []
 		self["list"] = List(self.list)
 		self.updateList()
@@ -43,10 +66,10 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		{
 			"ok": self.runPlug,
 			"back": self.close,
-			#"red": self.keyRed,
-			#"green": self.keyGreen,
-			#"yellow": self.keyYellow,
-			#"blue": self.keyBlue
+			"red": self.keyRed,
+			"green": self.keyGreen,
+			"yellow": self.keyYellow,
+			"blue": self.keyBlue
 		}, -1)
 
 	def runPlug(self):
@@ -69,25 +92,20 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (36, 36), png = 1),
 		self["list"].list = self.list	
 
 	def keyYellow(self):
-		self.session.open(LDAddons)
+		from Plugins.Extensions.LDteam.LdScripts import LDScripts
+		self.session.open(LDScripts)
 
 	def keyRed(self):
-		self.session.open(LDSetupFp)
+		from Plugins.SystemPlugins.SoftwareManager.plugin import UpdatePluginMenu
+		self.session.open(UpdatePluginMenu)
 
 	def keyGreen(self):
-		runplug = None
-		for plugin in self.list:
-			if  plugin[3].name == config.misc.fast_plugin_button.value:
-				runplug = plugin[3]
-				break
-
-		if runplug is not None:
-			runplug(session=self.session)
-		else:
-			self.session.open(MessageBox, "Fast Plugin not found. You have to setup Fast Plugin before to use this shortcut.", MessageBox.TYPE_INFO)
+		from Screens.PluginBrowser import PluginDownloadBrowser
+		self.session.open(PluginDownloadBrowser)
 
 	def keyBlue(self):
-		self.session.open(LDScript)
+		from Plugins.Extensions.LDteam.LdDevice import LDDevicesPanel
+		self.session.open(LDDevicesPanel)
 
 class LDPl:
 	def __init__(self):

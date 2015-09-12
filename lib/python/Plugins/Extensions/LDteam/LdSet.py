@@ -106,8 +106,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		self.sel = self.sel[2]
 		
 		if self.sel == 0:
-			from Plugins.Extensions.LDteam.LdHddSetup import HddSetup
-			self.session.open(HddSetup)
+			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
+			self.session.open(DeviceManager)
 		elif self.sel == 1:
 			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
 			self.session.open(SundtekControlCenter)
@@ -137,16 +137,13 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 11:
 			self.session.open(LdSetupHttpStream)
 		elif self.sel == 13:
-			from Plugins.Extensions.LDteam.LdPlugin import LDPluginPanel
-			self.session.open(LDPluginPanel)
+			self.session.open(LDmemoria)
 		elif self.sel == 14:
 			from Screens.CronTimer import CronTimers
 			self.session.open(CronTimers)
 		elif self.sel == 15:
 			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
 			self.session.open(RestartNetwork)
-		elif self.sel == 16:
-			self.session.open(LDmemoria)
 		else:
 			self.noYet()
 			
@@ -208,13 +205,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
-		mypixmap = mypath + "Plugins.png"
-		png = LoadPixmap(mypixmap)
-		name = "Plugins Instalados"
-		idx = 13
-		res = (name, png, idx)
-		self.list.append(res)
-
 		mypixmap = mypath + "Ajustes_grabar.png"
 		png = LoadPixmap(mypixmap)
 		name = "Ajustes de grabacion"
@@ -243,6 +233,13 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
+		mypixmap = mypath + "Module.png"
+		png = LoadPixmap(mypixmap)
+		name = "Liberar memoria"
+		idx = 13
+		res = (name, png, idx)
+		self.list.append(res)
+
 		mypixmap = mypath + "Network.png"
 		png = LoadPixmap(mypixmap)
 		name = "Reiniciar RED"
@@ -261,13 +258,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		png = LoadPixmap(mypixmap)
 		name = "OScamInfo"
 		idx = 6
-		res = (name, png, idx)
-		self.list.append(res)
-
-		mypixmap = mypath + "Module.png"
-		png = LoadPixmap(mypixmap)
-		name = "Liberar memoria"
-		idx = 16
 		res = (name, png, idx)
 		self.list.append(res)
 
