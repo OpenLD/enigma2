@@ -1,11 +1,14 @@
 from boxbranding import getBoxType
+from sys import maxint
 
 from twisted.internet import threads
-from enigma import eDBoxLCD, eTimer
+from enigma import eDBoxLCD, eTimer, eActionMap
 
 from config import config, ConfigSubsection, ConfigSelection, ConfigSlider, ConfigYesNo, ConfigNothing
 from Components.SystemInfo import SystemInfo
 from Tools.Directories import fileExists
+from Screens.Screen import Screen
+import Screens.Standby
 import usb
 
 
@@ -76,14 +79,86 @@ class IconCheckPoller:
 
 class LCD:
 	def __init__(self):
-		pass
+		eActionMap.getInstance().bindAction('', -maxint -1, self.DimUpEvent)
+		self.autoDimDownLCDTimer = eTimer()
+		self.autoDimDownLCDTimer.callback.append(self.autoDimDownLCD)
+		self.autoDimUpLCDTimer = eTimer()
+		self.autoDimUpLCDTimer.callback.append(self.autoDimUpLCD)
+		self.currBrightness = self.dimBrightness = self.Brightness = None
+		self.dimDelay = 0
+		config.misc.standbyCounter.addNotifier(self.standbyCounterChanged, initial_call = False)
+
+	def standbyCounterChanged(self, configElement):
+		Screens.Standby.inStandby.onClose.append(self.leaveStandby)
+		self.autoDimDownLCDTimer.stop()
+		self.autoDimUpLCDTimer.stop()
+		eActionMap.getInstance().unbindAction('', self.DimUpEvent)
+
+	def leaveStandby(self):
+		eActionMap.getInstance().bindAction('', -maxint -1, self.DimUpEvent)
+
+	def DimUpEvent(self, key, flag):
+		self.autoDimDownLCDTimer.stop()
+		if not Screens.Standby.inTryQuitMainloop:
+			if self.Brightness is not None and not self.autoDimUpLCDTimer.isActive():
+				self.autoDimUpLCDTimer.start(10, True)
+
+	def autoDimDownLCD(self):
+		if not Screens.Standby.inTryQuitMainloop:
+			if self.dimBrightness is not None and  self.currBrightness > self.dimBrightness:
+				self.currBrightness = self.currBrightness - 1
+				eDBoxLCD.getInstance().setLCDBrightness(self.currBrightness)
+				self.autoDimDownLCDTimer.start(10, True)
+
+	def autoDimUpLCD(self):
+		if not Screens.Standby.inTryQuitMainloop:
+			self.autoDimDownLCDTimer.stop()
+			if self.currBrightness < self.Brightness:
+				self.currBrightness = self.currBrightness + 5
+				if self.currBrightness >= self.Brightness:
+					self.currBrightness = self.Brightness
+				eDBoxLCD.getInstance().setLCDBrightness(self.currBrightness)
+				self.autoDimUpLCDTimer.start(10, True)
+			else:
+				if self.dimBrightness is not None and self.currBrightness > self.dimBrightness and self.dimDelay is not None and self.dimDelay > 0:
+					self.autoDimDownLCDTimer.startLongTimer(self.dimDelay)
 
 	def setBright(self, value):
 		value *= 255
 		value /= 10
 		if value > 255:
 			value = 255
-		eDBoxLCD.getInstance().setLCDBrightness(value)
+		self.autoDimDownLCDTimer.stop()
+		self.autoDimUpLCDTimer.stop()
+		self.currBrightness = self.Brightness = value
+		eDBoxLCD.getInstance().setLCDBrightness(self.currBrightness)
+		if self.dimBrightness is not None and  self.currBrightness > self.dimBrightness:
+			if self.dimDelay is not None and self.dimDelay > 0:
+				self.autoDimDownLCDTimer.startLongTimer(self.dimDelay)
+
+	def setStandbyBright(self, value):
+		value *= 255
+		value /= 10
+		if value > 255:
+			value = 255
+		self.autoDimDownLCDTimer.stop()
+		self.autoDimUpLCDTimer.stop()
+		self.Brightness = value
+		if self.dimBrightness is None:
+			self.dimBrightness = value
+		if self.currBrightness is None:
+			self.currBrightness = value
+		eDBoxLCD.getInstance().setLCDBrightness(self.Brightness)
+
+	def setDimBright(self, value):
+		value *= 255
+		value /= 10
+		if value > 255:
+			value = 255
+		self.dimBrightness = value
+
+	def setDimDelay(self, value):
+		self.dimDelay = int(value)
 
 	def setContrast(self, value):
 		value *= 63
@@ -193,8 +268,7 @@ def leaveStandby():
 	config.lcd.ledbrightnessdeepstandby.apply()
 
 def standbyCounterChanged(configElement):
-	from Screens.Standby import inStandby
-	inStandby.onClose.append(leaveStandby)
+	Screens.Standby.inStandby.onClose.append(leaveStandby)
 	config.lcd.standby.apply()
 	config.lcd.ledbrightnessstandby.apply()
 	config.lcd.ledbrightnessdeepstandby.apply()
@@ -268,9 +342,28 @@ def InitLcd():
 			("60000", "1 " + _("minute")),
 			("300000", "5 " + _("minutes")),
 			("noscrolling", _("off"))])
+		config.lcd.dimdelay = ConfigSelection(default = 0, choices = [
+			(5, "5 " + _("seconds")),
+			(10, "10 " + _("seconds")),
+			(15, "15 " + _("seconds")),
+			(20, "20 " + _("seconds")),
+			(30, "30 " + _("seconds")),
+			(60, "1 " + _("minute")),
+			(120, "2 " + _("minutes")),
+			(300, "5 " + _("minutes")),
+			(0, _("off"))])
 	
 		def setLCDbright(configElement):
 			ilcd.setBright(configElement.value);
+			
+		def setLCDstandbybright(configElement):
+			ilcd.setStandbyBright(configElement.value);
+
+		def setLCDdimbright(configElement):
+			ilcd.setDimBright(configElement.value);
+
+		def setLCDdimdelay(configElement):
+			ilcd.setDimDelay(configElement.value);
 
 		def setLCDcontrast(configElement):
 			ilcd.setContrast(configElement.value);
@@ -339,12 +432,17 @@ def InitLcd():
 
 		if getBoxType() in ('mixosf5', 'mixosf5mini', 'gi9196m', 'gi9196lite', 'zgemmas2s', 'zgemmash1', 'zgemmash2'):
 			config.lcd.standby = ConfigSlider(default=standby_default, limits=(0, 4))
+			config.lcd.dimbright = ConfigSlider(default=standby_default, limits=(0, 4))
 			config.lcd.bright = ConfigSlider(default=4, limits=(0, 4))
 		else:
 			config.lcd.standby = ConfigSlider(default=standby_default, limits=(0, 10))
+			config.lcd.dimbright = ConfigSlider(default=standby_default, limits=(0, 10))
 			config.lcd.bright = ConfigSlider(default=5, limits=(0, 10))
-		config.lcd.standby.addNotifier(setLCDbright);
-		config.lcd.standby.apply = lambda : setLCDbright(config.lcd.standby)
+		config.lcd.dimbright.addNotifier(setLCDdimbright);
+		config.lcd.dimbright.apply = lambda : setLCDdimbright(config.lcd.dimbright)
+		config.lcd.dimdelay.addNotifier(setLCDdimdelay);
+		config.lcd.standby.addNotifier(setLCDstandbybright);
+		config.lcd.standby.apply = lambda : setLCDstandbybright(config.lcd.standby)
 		config.lcd.bright.addNotifier(setLCDbright);
 		config.lcd.bright.apply = lambda : setLCDbright(config.lcd.bright)
 		config.lcd.bright.callNotifiersOnSaveAndCancel = True
