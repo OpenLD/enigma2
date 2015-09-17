@@ -1971,7 +1971,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		self.session.open(NetworkSetup.NetworkMountsMenu)
 
 	def showDeviceMounts(self):
-		from Plugins.Extensions.LDteam.LdHddMount import HddMount
+		from Plugins.Extensions.LDteam.MountManager import HddMount
 		self.session.open(HddMount)
 
 	def showActionFeedback(self, text):
