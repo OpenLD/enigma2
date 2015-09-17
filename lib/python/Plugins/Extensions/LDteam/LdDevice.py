@@ -134,7 +134,7 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 			pixpath = "/usr/share/enigma2/skin_default/"
 		
 		name = "USB"
-		pix = pixpath + "icons/dev_usb.png"
+		pix = pixpath + "icons/dev_usbstick.png"
 		filename = "/sys/block/%s/removable" % (device)
 		if fileExists(filename):
 			if file(filename).read().strip() == "0":
