@@ -314,7 +314,10 @@ class ChannelContextMenu(Screen):
 	def removeBouquet(self, answer):
 		if answer:
 			self.csel.removeBouquet()
-			eDVBDB.getInstance().reloadBouquets()
+			eDVBDBInstance = eDVBDB.getInstance()
+			eDVBDBInstance.setLoadUnlinkedUserbouquets(True)
+			eDVBDBInstance.reloadBouquets()
+			eDVBDBInstance.setLoadUnlinkedUserbouquets(config.misc.load_unlinked_userbouquets.value)
 			self.close()
 
 	def playMain(self):
@@ -909,7 +912,7 @@ class ChannelSelectionEdit:
 				current = self.servicelist.getCurrent()
 				current.setName(name)
 				index = self.servicelist.getCurrentIndex()
-				mutableList.removeService(current)
+				mutableList.removeService(current, False)
 				mutableList.addService(current)
 				mutableList.moveService(current, index)
 				mutableList.flushChanges()

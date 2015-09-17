@@ -1287,6 +1287,7 @@ void eDVBScan::insertInto(iDVBChannelList *db, bool backgroundscanresult)
 //				eDebug("corrected freq for tsid %04x, onid %04x, ns %08x is %d, old was %d",
 //					ch->first.transport_stream_id.get(), ch->first.original_network_id.get(),
 //					ch->first.dvbnamespace.get(), freq, parm.frequency);
+				if (parm.system == eDVBFrontendParametersTerrestrial::System_DVB_T_T2) parm.system = eDVBFrontendParametersTerrestrial::System_DVB_T;
 				parm.frequency = freq;
 				p->setDVBT(parm);
 				break;
