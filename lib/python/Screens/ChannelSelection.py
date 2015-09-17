@@ -314,7 +314,10 @@ class ChannelContextMenu(Screen):
 	def removeBouquet(self, answer):
 		if answer:
 			self.csel.removeBouquet()
-			eDVBDB.getInstance().reloadBouquets()
+			eDVBDBInstance = eDVBDB.getInstance()
+			eDVBDBInstance.setLoadUnlinkedUserbouquets(True)
+			eDVBDBInstance.reloadBouquets()
+			eDVBDBInstance.setLoadUnlinkedUserbouquets(config.misc.load_unlinked_userbouquets.value)
 			self.close()
 
 	def playMain(self):
