@@ -642,7 +642,7 @@ class MovieList(GUIComponent):
 				# No tags? Auto tag!
 				this_tags = name.replace(',',' ').replace('.',' ').replace('_',' ').replace(':',' ').split()
 				# For auto tags, we are keeping a (tag, movies) dictionary.
-				# It will be used later to check if movies have a complete sentence in common.
+				#It will be used later to check if movies have a complete sentence in common.
 				for tag in this_tags:
 					if autotags.has_key(tag):
 						autotags[tag].append(name)
