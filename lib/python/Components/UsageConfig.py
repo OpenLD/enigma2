@@ -44,7 +44,7 @@ def InitUsageConfig():
 	# just merge note, config.usage.servicelist_column was allready there
 	choicelist = [("-1", _("Disable")), ("0", _("Eventname only"))]
 	for i in range(100,1300,100):
-		choicelist.append(("%d" % i, ngettext("%d pixel wide", "%d pixels wide", i) % i))
+		choicelist.append((str(i), ngettext("%d pixel wide", "%d pixels wide", i) % i))
 	config.usage.servicelist_column = ConfigSelection(default="0", choices=choicelist)
 	config.usage.servicelist_column.addNotifier(refreshServiceList)
 
@@ -66,7 +66,7 @@ def InitUsageConfig():
 
 	choicelist = []
 	for i in range(1, 21):
-		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
 	config.usage.infobar_timeout = ConfigSelection(default = "6", choices = [("0", _("No timeout"))] + choicelist)
 	config.usage.show_infobar_on_zap = ConfigYesNo(default = True)
 	config.usage.show_infobar_on_skip = ConfigYesNo(default = True)
@@ -99,13 +99,13 @@ def InitUsageConfig():
 
 	choicelist = []
 	for i in (10, 30):
-		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
 	for i in (60, 120, 300, 600, 1200, 1800):
 		m = i / 60
-		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	for i in (3600, 7200, 14400):
 		h = i / 3600
-		choicelist.append(("%d" % i, ngettext("%d hour", "%d hours", h) % h))
+		choicelist.append((str(i), ngettext("%d hour", "%d hours", h) % h))
 	config.usage.hdd_standby = ConfigSelection(default = "300", choices = [("0", _("No standby"))] + choicelist)
 	config.usage.hdd_standby_in_standby = ConfigSelection(default = "-1", choices = [("-1", _("Same as in active")), ("0", _("No standby"))] + choicelist)
 	config.usage.hdd_timer = ConfigYesNo(default = False)	
@@ -120,7 +120,7 @@ def InitUsageConfig():
 	choicelist = [("-1", _("Disabled")), ("0", _("No timeout"))]
 	for i in [60, 300, 600, 900, 1800, 2700, 3600]:
 		m = i/60
-		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	config.usage.pip_last_service_timeout = ConfigSelection(default = "0", choices = choicelist)
 	if not os.path.exists(resolveFilename(SCOPE_HDD)):
 		try:
@@ -490,10 +490,10 @@ def InitUsageConfig():
 	config.timeshift = ConfigSubsection()
 	choicelist = [("0", "Disabled")]
 	for i in (2, 3, 4, 5, 10, 20, 30):
-		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
 	for i in (60, 120, 300):
 		m = i / 60
-		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	config.timeshift.startdelay = ConfigSelection(default = "0", choices = choicelist)
 	config.timeshift.showinfobar = ConfigYesNo(default = True)
 	config.timeshift.stopwhilerecording = ConfigYesNo(default = False)
@@ -640,7 +640,7 @@ def InitUsageConfig():
 		if i == 0:
 			subtitle_delay_choicelist.append(("0", _("No delay")))
 		else:
-			subtitle_delay_choicelist.append(("%d" % i, "%2.1f sec" % (i / 90000.)))
+			subtitle_delay_choicelist.append((str(i), "%2.1f sec" % (i / 90000.)))
 	config.subtitles.subtitle_noPTSrecordingdelay = ConfigSelection(default = "315000", choices = subtitle_delay_choicelist)
 
 	config.subtitles.dvb_subtitles_yellow = ConfigYesNo(default = False)
