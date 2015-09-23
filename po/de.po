@@ -645,7 +645,7 @@ msgstr "Zur Zeit läuft eine Aufnahme. Bitte vor einem Scan-Versuch die Aufnahme
 
 #
 msgid "A recording is currently running. Please stop the recording before trying to start the satfinder."
-msgstr "Zur Zeit läuft eine Aufnahme. Bitte beenden Sie diese Aufnahme, bevor Sie den Sat-Finder starten."
+msgstr "Zur Zeit läuft eine Aufnahme. Bitte beenden Sie diese Aufnahme, bevor Sie den Signal-Finder starten."
 
 #
 #, python-format
@@ -2636,6 +2636,10 @@ msgstr "Spiegel"
 
 msgid "Disk space to reserve for recordings (in GB)"
 msgstr "Für Aufnahmen reservierter Speicher (in GB)"
+
+#: VideoMode.py:107
+msgid "Configure the aspect ratio of the screen."
+msgstr "Konfigurieren Sie das Seitenverhältnis des Bildschirms."
 
 #
 msgid "Display 16:9 content as"
@@ -5799,6 +5803,10 @@ msgstr "Bitte warten... Liste wird geladen..."
 msgid "Plugin browser"
 msgstr "Plugin Manager"
 
+#: PluginBrowser.py
+msgid "No new plugins found"
+msgstr "Keine neuen Plugins gefunden"
+
 #
 msgid "Plugin manager activity information"
 msgstr "Plugin Manager: geplante Aktionen"
@@ -5871,6 +5879,10 @@ msgstr "Schwellwert Stromverbrauch in mA"
 #
 msgid "Predefined transponder"
 msgstr "Vordefinierte Transponder"
+
+# ScanSetup.py
+msgid "Invalid transponder data"
+msgstr "Ungültige Transponder-Daten"
 
 #
 msgid "User defined transponder"
@@ -6534,9 +6546,9 @@ msgstr "Satelliten-Ausrüstung"
 msgid "Satellites"
 msgstr "Satelliten"
 
-#
-msgid "Satfinder"
-msgstr "Sat-Finder"
+#: SystemPlugins/Satfinder/plugin.py
+msgid "Signal Finder"
+msgstr "Signal-Finder"
 
 #
 msgid "Sats"
@@ -7991,6 +8003,10 @@ msgstr "Kabel-Dienste entfernen"
 
 msgid "Are you sure to remove all cable services?"
 msgstr "Sind Sie sicher, dass alle Kabel-Dienste entfernt werden sollen?"
+
+#: ChannelSelection.py:1176
+msgid "Are you sure to remove all %d.%d%s%s services?"
+msgstr "Sind Sie sicher, dass %d.%d%s%s entfernt werden soll?"
 
 #
 msgid "Test DiSEqC settings"
@@ -10050,7 +10066,7 @@ msgstr ""
 msgid "Zap back to service before satfinder?"
 msgstr ""
 "Zurückschalten zum Sender der vor dem\n"
-"Öffnen des Satfinders lief?"
+"Öffnen des Signalfinders lief?"
 
 #
 msgid "Zap back to service before tuner setup?"
@@ -10174,6 +10190,7 @@ msgstr "CI-Hauptmenü"
 #
 msgid "CIconfigMenu"
 msgstr "CI-Zuweisung"
+
 #
 msgid "Add provider"
 msgstr "Provider hinzufügen"
@@ -10245,6 +10262,14 @@ msgstr "Kanal zu Favoriten hinzufügen"
 #
 msgid "add to parental protection"
 msgstr "Zum Jugendschutz hinzufügen"
+
+#: ChannelSelection.py:250
+msgid "add bouquet to parental protection"
+msgstr "Bouquet zum Jugendschutz hinzufügen"
+
+#: ChannelSelection.py:252
+msgid "remove bouquet from parental protection"
+msgstr "Bouquet aus Jugendschutz entfernen"
 
 msgid "address:"
 msgstr "Adresse:"
@@ -12198,6 +12223,10 @@ msgstr "Zeige Merlin EPG Center"
 msgid "Show infobar picons"
 msgstr "Zeige Senderlogo in der Infoleiste"
 
+#: MountManager.py:475
+msgid "Please wait."
+msgstr "Bitte warten."
+
 #
 msgid "Mount Manager"
 msgstr "Mountverwaltung"
@@ -12520,9 +12549,27 @@ msgstr "Medien Wiedergabe verbleibende/verstrichene Zeit in"
 msgid "Setup Display"
 msgstr "Display Einstellungen"
 
+#: data/setup.xml
 msgid "Brightness (Normal)"
 msgstr "Helligkeit (Normal)"
 
+#: data/setup.xml
+msgid "Brightness (Dimmed)"
+msgstr "Helligkeit (gedimmt)"
+
+#: data/setup.xml
+msgid "Configure the brightness level of the front panel display for dimmed operation."
+msgstr "Konfigurieren Sie die Helligkeit des Displays für den gedimmten Zustand."
+
+#: data/setup.xml
+msgid "Dim delay"
+msgstr "Ausblendungs-Verzögerung"
+
+#: data/setup.xml
+msgid "Dim the LCD after specified time."
+msgstr "Das Display wird nach der angegebenen Zeit gedimmt."
+
+#: data/setup.xml
 msgid "Brightness (Standby)"
 msgstr "Helligkeit (Standby)"
 
@@ -13620,13 +13667,13 @@ msgstr "Papierkorb in der Filmliste benutzen"
 msgid "Display message before playing next movie"
 msgstr "Zeige Info bevor der nächste Film abgespielt wird."
 
-#
+#: gEPG
 msgid "Service font size"
-msgstr "Einstellung der Schriftgröße"
+msgstr "Schriftgröße für Sendernamen"
 
-#
+#: gEPG
 msgid "Event font size"
-msgstr "Ereignis Schriftgröße"
+msgstr "Schriftgröße für Ereignis"
 
 #
 msgid "When nonzero, a recording will start earlier than the starting time as indicated by the EPG."
@@ -16094,7 +16141,7 @@ msgstr "Schützen durch EPG-Altersangaben"
 
 #: ParentalControlSetup.py:76
 msgid "Reload blacklists"
-msgstr "\"scharze\" Liste neu laden"
+msgstr "\"Schwarze\" Liste neu laden"
 
 #: ParentalControlSetup.py:78
 msgid "Protect Screens"
