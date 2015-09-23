@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-07-29 09:43+0100\n"
+"PO-Revision-Date: 2015-09-23 15:19+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -2641,6 +2641,10 @@ msgstr "Antena"
 
 msgid "Disk space to reserve for recordings (in GB)"
 msgstr "Espacio en disco reservado para grabaciones (en GB)"
+
+#: VideoMode.py:107
+msgid "Configure the aspect ratio of the screen."
+msgstr "Configurar aspect ratio de la pantalla."
 
 #
 msgid "Display 16:9 content as"
@@ -5931,6 +5935,10 @@ msgstr "Umbral de potencia en mA"
 msgid "Predefined transponder"
 msgstr "Transpondedor predefinido"
 
+# ScanSetup.py
+msgid "Invalid transponder data"
+msgstr "Datos del transpondedor no válido"
+
 #
 msgid "User defined transponder"
 msgstr "Transpondedor definido por usuario"
@@ -6588,9 +6596,9 @@ msgstr "Equipo satélite"
 msgid "Satellites"
 msgstr "Satélites"
 
-#
-msgid "Satfinder"
-msgstr "Buscador de satélites"
+#: SystemPlugins/Satfinder/plugin.py
+msgid "Signal Finder"
+msgstr "Buscador de señal"
 
 #
 msgid "Sats"
@@ -8058,6 +8066,10 @@ msgstr "eliminar canales de cable"
 
 msgid "Are you sure to remove all cable services?"
 msgstr "¿Estás seguro que quieres eliminar los canales de cable?"
+
+#: ChannelSelection.py:1176
+msgid "Are you sure to remove all %d.%d%s%s services?"
+msgstr "¿Seguro de eliminar todos los %d.%d%s%s servicios?"
 
 #
 msgid "Test DiSEqC settings"
@@ -10251,6 +10263,14 @@ msgstr "Añadir canal a favoritos"
 msgid "add to parental protection"
 msgstr "Añadir a control paterno"
 
+#: ChannelSelection.py:250
+msgid "add bouquet to parental protection"
+msgstr "Añadir bouquet para control paterno"
+
+#: ChannelSelection.py:252
+msgid "remove bouquet from parental protection"
+msgstr "Eliminar bouquet para control paterno"
+
 msgid "address:"
 msgstr "Dirección:"
 
@@ -12207,6 +12227,10 @@ msgstr "Ver Merlin EPG Center"
 msgid "Show infobar picons"
 msgstr "Ver picon en la barra de información"
 
+#: MountManager.py:475
+msgid "Please wait."
+msgstr "Por favor espere."
+
 #
 msgid "Mount Manager"
 msgstr "Administrador de montajes"
@@ -12538,9 +12562,27 @@ msgstr "Reproducción restante/transcurrida de medios como"
 msgid "Setup Display"
 msgstr "Configurar LCD"
 
+#: data/setup.xml
 msgid "Brightness (Normal)"
 msgstr "Brillo (normal)"
 
+#: data/setup.xml
+msgid "Brightness (Dimmed)"
+msgstr "Brillo (atenuado)"
+
+#: data/setup.xml
+msgid "Configure the brightness level of the front panel display for dimmed operation."
+msgstr "Configurar el nivel de brillo de la pantalla del panel frontal para la operación atenuado."
+
+#: data/setup.xml
+msgid "Dim delay"
+msgstr "Retardar atenuado"
+
+#: data/setup.xml
+msgid "Dim the LCD after specified time."
+msgstr "Atenuar la pantalla LCD después de la hora especificada."
+
+#: data/setup.xml
 msgid "Brightness (Standby)"
 msgstr "Brillo (modo de espera)"
 
@@ -13017,6 +13059,10 @@ msgstr "Buscador de satélites"
 
 msgid "Plugin Browser"
 msgstr "Buscador de complementos"
+
+#: PluginBrowser.py
+msgid "No new plugins found"
+msgstr "No hay nuevos complementos encontrados"
 
 msgid "Plugin Filter"
 msgstr "Filtrar complementos"
@@ -13941,11 +13987,11 @@ msgstr "Usar la papelera en la lista de películas"
 msgid "Display message before playing next movie"
 msgstr "Mostrar un mensaje antes de reproducir la siguiente película"
 
-#
+#: gEPG
 msgid "Service font size"
 msgstr "Tamaño de fuente del canal"
 
-#
+#: gEPG
 msgid "Event font size"
 msgstr "Tamaño de fuente del programa"
 
