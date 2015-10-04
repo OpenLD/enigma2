@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-08-31 20:24+0100\n"
+"PO-Revision-Date: 2015-09-22 00:46+0100\n"
 "Last-Translator: mike99 <mike99@mail.to>\n"
-"Language-Team: openLD\n"
+"Language-Team: OpenLD\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -204,7 +204,7 @@ msgid ""
 " has been sent to the AAF beta team.\n"
 "please quote "
 msgstr ""
-"wurde an das openLD Beta Team gesendet.\n"
+"wurde an das OpenLD Beta Team gesendet.\n"
 "Bitte angeben"
 
 msgid " ms"
@@ -986,6 +986,10 @@ msgstr "Alternativer Radio-Modus"
 msgid "Alternative services tuner priority"
 msgstr "Tuner-Priorität bei alternativen Services"
 
+# UsageConfig.py:236
+msgid "No priority"
+msgstr "Keine Priorität"
+
 msgid "Always ask"
 msgstr "Immer nachfragen"
 
@@ -1404,8 +1408,8 @@ msgstr "Bus: "
 msgid "Button"
 msgstr "Taste"
 
-msgid "By openLD Image Team"
-msgstr "Vom openLD-Imageteam"
+msgid "By OpenLD Image Team"
+msgstr "Vom OpenLD-Imageteam"
 
 #
 msgid "By pressing the OK Button on your remote control, the info bar is being displayed."
@@ -2018,7 +2022,7 @@ msgid "Configure which tuner type will be preferred, when the same service is av
 msgstr "Konfigurieren der bevorzugten von mehreren für einen Sender verfügbaren Empfangsarten."
 
 msgid "Configure which tuner will be preferred, when more than one tuner is available. If set to 'auto' the system will give priority to the tuner having the lowest number of channels/satellites."
-msgstr "Konfigurieren, welcher von mehreren Tunern bevorzugt benutzt werden soll. Bei 'Auto' wird zuerst der Tuner mit den wenigsten Sendern/Satelliten genommen."
+msgstr "Konfigurieren, welcher von mehreren Tunern bevorzugt benutzt werden soll. Bei 'Automatisch' wird zuerst der Tuner mit den wenigsten Sendern/Satelliten genommen."
 
 msgid "Configure your internal LAN"
 msgstr "Internes Netzwerk konfigurieren"
@@ -7300,8 +7304,17 @@ msgstr "Netzwerkfreigaben"
 msgid "Sharpness"
 msgstr "Schärfe"
 
+# RecordingConfig.py:16
 msgid "Short filenames"
 msgstr "Kurze Dateinamen"
+
+# RecordingConfig.py:14
+msgid "Very very short filenames - Warning"
+msgstr "Extrem kurze Dateinamen - Warnung"
+
+# RecordingConfig.py:15
+msgid "Very short filenames"
+msgstr "Sehr kurze Dateinamen"
 
 msgid "Show /tmp/ecm.info"
 msgstr "Zeige /tmp/ecm.info"
@@ -8243,11 +8256,11 @@ msgstr "Die Ergebnisse des Tests wurden in der Datei %s gespeichert."
 
 #
 msgid "The sleep timer has been activated."
-msgstr "Der Ausschalt-Timer wurde aktiviert"
+msgstr "Der Ausschalt-Timer wurde aktiviert."
 
 #
 msgid "The sleep timer has been disabled."
-msgstr "Der Ausschalt-Timer wurde deaktiviert"
+msgstr "Der Ausschalt-Timer wurde deaktiviert."
 
 msgid "The status of the current beta image could not be checked because www.openpli.org could not be reached for some reason"
 msgstr "Der Status des derzeitigen Beta-Image konnte nicht überprüft werden da www.openpli.org nicht erreichbar ist"
@@ -9879,10 +9892,10 @@ msgstr "Sie müssen %s warten!"
 
 #
 msgid ""
-"You need a PC connected to your %s %s. If you need further instructions, please visit the website http://www.openld.es.\n"
+"You need a PC connected to your %s %s. If you need further instructions, please visit the website http://www.odisealinux.com.\n"
 "Your %s %s will now be halted. After you have performed the update instructions from the website, your new firmware will ask you to restore your settings."
 msgstr ""
-"Sie müssen einen PC mit Ihrer %s %s verbunden haben. Wenn Sie weiterführende Informationen benötigen, besuchen Sie die Webseite http://www.openld.es.\n"
+"Sie müssen einen PC mit Ihrer %s %s verbunden haben. Wenn Sie weiterführende Informationen benötigen, besuchen Sie die Webseite http://www.odisealinux.com.\n"
 "Die %s %s wird nun ausgeschaltet. Nachdem Sie das Update wie auf der Webseite beschrieben durchgeführt haben, wird Sie die neue Firmware fragen, ob Sie die Einstellungen wiederherstellen wollen."
 
 msgid ""
@@ -11457,6 +11470,10 @@ msgid "this service is protected by a parental control pin"
 msgstr "Dieser Kanal ist durch einen Jugendschutz-PIN-Code geschützt."
 
 #
+msgid "this bouquet is protected by a parental control pin"
+msgstr "Dieser Bouquet ist durch einen Jugendschutz-PIN-Code geschützt."
+
+#
 msgid "Toggle a cut mark at the current position"
 msgstr "Marker an der aktuellen Position setzen"
 
@@ -12336,11 +12353,11 @@ msgstr "Achtung Update nocht nicht Überprüft!!"
 msgid "Update at your own risk"
 msgstr "Update auf eigene Gefahr"
 
-msgid "For more information see http://www.openld.es"
-msgstr "Für weitere Information gehe auf http://www.openld.es"
+msgid "For more information see http://www.odisealinux.com"
+msgstr "Für weitere Information gehe auf http://www.odisealinux.com"
 
-msgid "The status of the current update could not be checked because http://www.openld.es could not be reached for some reason"
-msgstr "Der Update Status kann nicht überprüft werden da die Seite http://www.openld.es nicht erreichbar ist"
+msgid "The status of the current update could not be checked because http://www.odisealinux.com could not be reached for some reason"
+msgstr "Der Update Status kann nicht überprüft werden da die Seite http://www.odisealinux.com nicht erreichbar ist"
 
 msgid "Do you want to update your box?"
 msgstr "Update der Box durchführen?"
@@ -12353,6 +12370,14 @@ msgstr "Servicemodus*"
 
 msgid "Jump first press in channel selection"
 msgstr "Springe zuerst in Programmauswahl"
+
+# UsageConfig.py:297 
+msgid "Number"
+msgstr "Nummer"
+
+# UsageConfig.py:295 
+msgid "Quick Actions"
+msgstr "Nur Nummern"
 
 msgid "Show infobar lite *"
 msgstr "Zeige einfache Infoleiste *"
@@ -12377,6 +12402,10 @@ msgstr "Tonspur-Auswahl"
 
 msgid "Default (Timeshift)"
 msgstr "Standard (Timeshift)"
+
+#: Infopanel/plugin.py:74
+msgid "Toggle Pillarbox <> Pan&Scan"
+msgstr "Wechsel Pillarbox <> Pan&Scan"
 
 msgid "Yellow-Key-Action"
 msgstr "Gelbe Taste"
@@ -15074,12 +15103,12 @@ msgstr "HDMI IN Bild in Bild Wiedergabe beenden"
 #: BSOD
 msgid ""
 "We are really sorry. Your receiver encountered a software problem, and needs to be restarted.\n"
-"Please send the logfile %senigma2_crash_xxxxxx.log to www.openld.es.\n"
+"Please send the logfile %senigma2_crash_xxxxxx.log to www.odisealinux.com.\n"
 "Your receiver restarts in 10 seconds!\n"
 "Component: enigma2"
 msgstr ""
 "Es tut uns leid. Ihr Receiver hat ein Software-Problem und muss neu gestartet werden.\n"
-"Bitte senden Sie die Logdatei %senigma2_crash_xxxxxx.log an www.openld.es.\n"
+"Bitte senden Sie die Logdatei %senigma2_crash_xxxxxx.log an www.odisealinux.com.\n"
 "Ihr Receiver startet in 10 Sekunden neu!\n"
 "Komponente: enigma2"
 
@@ -15341,7 +15370,7 @@ msgid "URL of fallback remote receiver"
 msgstr "URL des Reservereceiver"
 
 msgid "Configure which tuner will be preferred for recordings, when more than one tuner is available. 'Disabled' would select a tuner based on preferred tuner in customise screen. 'Auto' would choose based on E2's default rules, ignoring preferred tuner in customise screen."
-msgstr "Konfiguriere welcher Tuner für Aufnahmen bevorzugt werden soll, wenn mehr als ein Tuner verfügbar ist. 'Deaktiviert' verwendet den bevorzugten Tuner der unter Anpassen eingestellt ist. 'Auto' wählt den Tuner nach E2-Regeln und ignoriert die Einstellung in Anpassen."
+msgstr "Konfiguriere welcher Tuner für Aufnahmen bevorzugt werden soll, wenn mehr als ein Tuner verfügbar ist. 'Deaktiviert' verwendet den bevorzugten Tuner der unter Anpassen eingestellt ist. 'Automatisch' wählt den Tuner nach E2-Regeln und ignoriert die Einstellung in Anpassen."
 
 #: ButtonSetup.py
 msgid "Show graphical multi EPG"
@@ -16380,3 +16409,46 @@ msgstr "Neue Beschreibung eingeben:"
 msgid "Select target folder"
 msgstr "Wählen Sie das Zielverzeichnis"
 
+#: UsageConfig.py
+msgid "Execute in "
+msgstr "Ausführen in "
+
+#: UsageConfig.py
+msgid "Execute after current event"
+msgstr "Ausführen nach der Sendung"
+
+#: SleepTimerEdit.py
+msgid "Timer is activated: +%d min"
+msgstr "Timer ist aktiviert:  +%d min"
+
+#: SleepTimerEdit.py
+msgid "Timer is not activated"
+msgstr "Timer ist nicht aktiviert"
+
+#: SleepTimerEdit.py
+msgid "Timer action"
+msgstr "Timer Aktion"
+
+#: SleepTimerEdit.py
+msgid "Configure the duration in minutes for the sleep timer."
+msgstr "Konfigurieren Sie die Dauer in Minuten für den Ausschalt-Timer."
+
+#: SleepTimerEdit.py
+msgid "Select the sleep timer action."
+msgstr "Wählen Sie die Ausschalt-Timer-Aktion."
+
+#: InfoBarGenerics.py
+msgid "A sleep timer wants to set your %s %s to standby.\nDo that now or set extend additional minutes?"
+msgstr "Ein Ausschalt-Timer möchte ihre %s %s in den Standby versetzen.\nJetzt ausführen oder zusätzliche Minuten einstellen?"
+
+#: InfoBarGenerics.py
+msgid "A sleep timer wants to shut down your %s %s.\nDo that now or set extend additional minutes?"
+msgstr "Ein Ausschalt-Timer möchte ihre %s %s ausschalten.\nJetzt ausführen oder zusätzliche Minuten einstellen?"
+
+#: InfoBarGenerics.py
+msgid "A Recording, RecordTimer or PowerTimer is running or begins in 15 minutes.\nExtend sleep timer 30 minutes. Your %s %s\nwill shut down after Recording or Powertimer event. Get in Standby now?"
+msgstr "Eine Aufnahme, Aufnahmetimer oder Powertimer ist aktiv oder beginnt in 15 Minuten.\nDer Ausschalt-Timer wird um 30 Minuten verlängert und schaltet ihre\n%s %s nach dem Aufnahme oder Powertimer Ereignis ab.\nJetzt in den Standby gehen?"
+
+#: InfoBarGenerics.py
+msgid "Extend"
+msgstr "Verlängern"
