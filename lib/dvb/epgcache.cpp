@@ -952,7 +952,7 @@ next:
 		}
 #endif
 		ptr += eit_event_size;
-		eit_event=(eit_event_struct*)(((__u8*)eit_event)+eit_event_size);
+		eit_event = (eit_event_struct*)(((uint8_t*)eit_event) + eit_event_size);
 	}
 }
 
