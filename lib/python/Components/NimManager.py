@@ -9,7 +9,7 @@ from enigma import eDVBSatelliteEquipmentControl as secClass, \
 	eDVBSatelliteDiseqcParameters as diseqcParam, \
 	eDVBSatelliteSwitchParameters as switchParam, \
 	eDVBSatelliteRotorParameters as rotorParam, \
-	eDVBResourceManager, eDVBDB, eEnv
+	eDVBResourceManager, eDVBDB, eEnv, iDVBFrontend
 
 from Tools.HardwareInfo import HardwareInfo
 from Tools.BoundFunction import boundFunction
@@ -371,7 +371,8 @@ class SecConfigure:
 						position_idx = (posnum - 1) % manufacturer_positions_value
 						if product_name in manufacturer_scr:
 							diction = manufacturer.diction[product_name].value
-							if diction !="EN50607" or (posnum <= manufacturer_positions_value and x <= maxFixedLnbPositions): #for every allowed position
+							positionsoffset = manufacturer.positionsoffset[product_name][0].value
+							if diction !="EN50607" or ((posnum <= (positionsoffset + manufacturer_positions_value) and (posnum > positionsoffset) and x <= maxFixedLnbPositions)): #for every allowed position
 								if diction =="EN50607":
 									sec.setLNBSatCRformat(1)	#JESS
 								else:
@@ -404,7 +405,7 @@ class SecConfigure:
 						sec.setLNBLOFL(currLnb.lofl.value * 1000)
 						sec.setLNBLOFH(currLnb.lofh.value * 1000)
 						sec.setLNBThreshold(currLnb.threshold.value * 1000)
-						sec.setLNBSatCRpositions(1)
+						sec.setLNBSatCRpositions(64)
 					elif currLnb.unicable.value == "unicable_matrix":
 						self.reconstructUnicableDate(currLnb.unicableMatrixManufacturer, currLnb.unicableMatrix, currLnb)
 						setupUnicable(currLnb.unicableMatrixManufacturer, currLnb.unicableMatrix)
@@ -1513,6 +1514,9 @@ def InitNimManager(nimmgr):
 				diction = "EN50494"
 			p_update({"diction":tuple([diction])})								#add diction to dict product
 
+			positionsoffset = product.get("positionsoffset",0)
+			p_update({"positionsoffset":tuple([positionsoffset])})						#add positionsoffset to dict product
+
 			positions=[]
 			positions_append = positions.append
 			positions_append(int(product.get("positions",1)))
@@ -1555,6 +1559,9 @@ def InitNimManager(nimmgr):
 			else:
 				diction = "EN50494"
 			p_update({"diction":tuple([diction])})								#add diction to dict product
+
+			positionsoffset = product.get("positionsoffset",0)
+			p_update({"positionsoffset":tuple([positionsoffset])})						#add positionsoffset to dict product
 
 			positions=[]
 			positions_append = positions.append
@@ -1667,13 +1674,18 @@ def InitNimManager(nimmgr):
 						tmp.lofl = ConfigSubDict()
 						tmp.lofh = ConfigSubDict()
 						tmp.loft = ConfigSubDict()
+						tmp.positionsoffset = ConfigSubDict()
 						tmp.positions = ConfigSubDict()
 						tmp.diction = ConfigSubDict()
 						for article in products:
 							positionslist = unicableproducts[manufacturer][article].get("positions")
+							positionsoffsetlist = unicableproducts[manufacturer][article].get("positionsoffset")
+							positionsoffset = int(positionsoffsetlist[0])
 							positions = int(positionslist[0])
 							dictionlist = [unicableproducts[manufacturer][article].get("diction")]
-							if lnb <= positions or dictionlist[0][0] !="EN50607":
+							if dictionlist[0][0] !="EN50607" or ((lnb > positionsoffset) and (lnb <= (positions + positionsoffset))):
+								tmp.positionsoffset[article] = ConfigSubList()
+								tmp.positionsoffset[article].append(ConfigInteger(default=positionsoffset, limits = (positionsoffset, positionsoffset)))
 								tmp.positions[article] = ConfigSubList()
 								tmp.positions[article].append(ConfigInteger(default=positions, limits = (positions, positions)))
 								tmp.diction[article] = ConfigSelection(choices = dictionlist, default = dictionlist[0][0])
@@ -2028,36 +2040,57 @@ def InitNimManager(nimmgr):
 	nimmgr.sec = SecConfigure(nimmgr)
 
 	def tunerTypeChanged(nimmgr, configElement):
+		print "dvb_api_version ",iDVBFrontend.dvb_api_version
 		fe_id = configElement.fe_id
 		eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[fe_id].frontend_id, nimmgr.nim_slots[fe_id].getType())
-		if path.exists("/proc/stb/frontend/%d/mode" % fe_id):
-			cur_type = int(open("/proc/stb/frontend/%d/mode" % fe_id, "r").read())
-			if cur_type != int(configElement.value):
-				print "tunerTypeChanged feid %d from %d to mode %d" % (fe_id, cur_type, int(configElement.value))
-
-				try:
-					oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
-					f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-					f.write("0")
-					f.close()
-				except:
-					print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-
-				frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
-				frontend.closeFrontend()
-				f = open("/proc/stb/frontend/%d/mode" % fe_id, "w")
-				f.write(configElement.value)
-				f.close()
-				frontend.reopenFrontend()
-				try:
-					f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-					f.write(oldvalue)
-					f.close()
-				except:
-					print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-				nimmgr.enumerateNIMs()
+		frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
+		if not path.exists("/proc/stb/frontend/%d/mode" % fe_id) and iDVBFrontend.dvb_api_version >= 5:
+			print "api >=5 and new style tuner driver"
+			if frontend:
+				system = configElement.getText()
+				if system == 'DVB-C':
+					ret = frontend.changeType(iDVBFrontend.feCable)
+				elif system in ('DVB-T','DVB-T2'):
+					ret = frontend.changeType(iDVBFrontend.feTerrestrial)
+				elif system in ('DVB-S','DVB-S2'):
+					ret = frontend.changeType(iDVBFrontend.feSatellite)
+				elif system == 'ATSC':
+					ret = frontend.changeType(iDVBFrontend.feATSC)
+				else:
+					ret = False
+				if not ret:
+					print "%d: tunerTypeChange to '%s' failed" %(fe_id, system)
 			else:
-				print "tuner type is already already %d" %cur_type
+				print "%d: tunerTypeChange to '%s' failed (BUSY)" %(fe_id, configElement.getText())
+		else:
+			print "api <5 or old style tuner driver"
+			if path.exists("/proc/stb/frontend/%d/mode" % fe_id):
+				cur_type = int(open("/proc/stb/frontend/%d/mode" % fe_id, "r").read())
+				if cur_type != int(configElement.value):
+					print "tunerTypeChanged feid %d from %d to mode %d" % (fe_id, cur_type, int(configElement.value))
+
+					try:
+						oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
+						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+						f.write("0")
+						f.close()
+					except:
+						print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+
+					frontend.closeFrontend()
+					f = open("/proc/stb/frontend/%d/mode" % fe_id, "w")
+					f.write(configElement.value)
+					f.close()
+					frontend.reopenFrontend()
+					try:
+						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+						f.write(oldvalue)
+						f.close()
+					except:
+						print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+					nimmgr.enumerateNIMs()
+				else:
+					print "tuner type is already already %d" %cur_type
 
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:

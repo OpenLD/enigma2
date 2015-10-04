@@ -406,8 +406,9 @@ class PowerKey:
 		globalActionMap.actions["power_long"]=self.powerlong
 		globalActionMap.actions["deepstandby"]=self.shutdown # frontpanel long power button press
 		globalActionMap.actions["discrete_off"]=self.standby
-		globalActionMap.actions["sleeptimer_standby"]=self.sleepStandby
-		globalActionMap.actions["sleeptimer_deepstandby"]=self.sleepDeepStandby
+		globalActionMap.actions["sleeptimer"]=self.openSleepTimer
+		globalActionMap.actions["powertimer_standby"]=self.sleepStandby
+		globalActionMap.actions["powertimer_deepstandby"]=self.sleepDeepStandby
 		self.standbyblocked = 1
 
 	def MenuClosed(self, *val):
@@ -465,12 +466,14 @@ class PowerKey:
 						return
 		elif action == "standby":
 			self.standby()
-		elif action == "sleeptimerStandby":
+		elif action == "powertimerStandby":
 			val = 3
 			self.setSleepTimer(val)
-		elif action == "sleeptimerDeepStandby":
+		elif action == "powertimerDeepStandby":
 			val = 4
 			self.setSleepTimer(val)
+		elif action == "sleeptimer":
+			self.openSleepTimer()
 
 	def powerdown(self):
 		self.standbyblocked = 0
@@ -485,6 +488,10 @@ class PowerKey:
 	def standby(self):
 		if not Screens.Standby.inStandby and self.session.current_dialog and self.session.current_dialog.ALLOW_SUSPEND and self.session.in_exec:
 			self.session.open(Screens.Standby.Standby)
+
+	def openSleepTimer(self):
+		from Screens.SleepTimerEdit import SleepTimerEdit
+		self.session.open(SleepTimerEdit)
 
 	def setSleepTimer(self, val):
 		from PowerTimer import PowerTimerEntry
@@ -502,10 +509,10 @@ class PowerKey:
 			simulTimerList = self.session.nav.PowerTimer.record(entry)
 
 	def sleepStandby(self):
-		self.doAction(action = "sleeptimerStandby")
+		self.doAction(action = "powertimerStandby")
 
 	def sleepDeepStandby(self):
-		self.doAction(action = "sleeptimerDeepStandby")
+		self.doAction(action = "powertimerDeepStandby")
 
 profile("Scart")
 from Screens.Scart import Scart
@@ -613,7 +620,7 @@ def runScreenTest():
 	profile("Init:PowerKey")
 	power = PowerKey(session)
 	
-	if boxtype in ('sf3038', 'spycat', 'e4hd', 'mbmicro', 'et7500', 'mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3') or getBrandOEM() in ('fulan'):
+	if boxtype in ('sf3038', 'spycat', 'e4hd', 'e4hdc', 'mbmicro', 'et7500', 'mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3') or getBrandOEM() in ('fulan'):
 		profile("VFDSYMBOLS")
 		import Components.VfdSymbols
 		Components.VfdSymbols.SymbolsCheck(session)
@@ -688,22 +695,26 @@ def runScreenTest():
 	tmp = plugins.getNextWakeupTime(getPluginIdent = True)
 	nextPluginTime = tmp[0]
 	nextPluginIdent = tmp[1] #"pluginname | pluginfolder"
+	tmp = tmp[1].lower()
 	#start in standby, depending on plugin type
-	if "EPGRefresh" in nextPluginIdent:
+	if "epgrefresh" in tmp:
 		nextPluginName = "EPGRefresh"
 		nextPluginTimeInStandby = 1
-	elif "vps" in nextPluginIdent or "VPS" in nextPluginIdent:
+	elif "vps" in tmp:
 		nextPluginName = "VPS"
 		nextPluginTimeInStandby = 1
-	elif "SerienRecorder" in nextPluginIdent or "serienrecorder" in nextPluginIdent:
+	elif "serienrecorder" in tmp:
 		nextPluginName = "SerienRecorder"
-		nextPluginTimeInStandby = 0
-	elif "Elektro" in nextPluginIdent:
+		nextPluginTimeInStandby = 1
+	elif "elektro" in tmp:
 		nextPluginName = "Elektro"
-		nextPluginTimeInStandby = 0
-	elif "EnhancedPowersave" in nextPluginIdent or "Enhanced Powersave" in nextPluginIdent:
+		nextPluginTimeInStandby = 1
+	elif "minipowersave" in tmp:
+		nextPluginName = "MiniPowersave"
+		nextPluginTimeInStandby = 1
+	elif "enhancedpowersave" in tmp:
 		nextPluginName = "EnhancedPowersave"
-		nextPluginTimeInStandby = 0
+		nextPluginTimeInStandby = 1
 	else:
 		#default for plugins
 		nextPluginName = nextPluginIdent
