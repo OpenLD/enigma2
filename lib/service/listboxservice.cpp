@@ -326,6 +326,13 @@ void eListboxServiceContent::cursorHome()
 	{
 		m_cursor = m_list.begin();
 		m_cursor_number = 0;
+		while (m_cursor != m_list.end())
+		{
+			if (!((m_hide_number_marker && (m_cursor->flags & eServiceReference::isNumberedMarker)) || (m_cursor->flags & eServiceReference::isInvisible)))
+				break;
+			m_cursor++;
+			m_cursor_number++;
+		}
 	}
 }
 
@@ -743,7 +750,7 @@ void eListboxServiceContent::paint(gPainter &painter, eWindowStyle &style, const
 						if (m_element_position[celServiceNumber].width() && m_element_position[celServiceEventProgressbar].left() == m_element_position[celServiceNumber].width() + 10)
 							area.setLeft(m_element_position[celServiceNumber].width() + 10);
 					}
-					if (isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
+					if (!(m_record_indicator_mode == 3 && isRecorded) && isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
 						painter.setForegroundColor(m_color[serviceSelectedFallback]);
 					break;
 				}
