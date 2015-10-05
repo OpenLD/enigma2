@@ -717,10 +717,10 @@ bool eEPGCache::FixOverlapping(std::pair<eventMap,timeMap> &servicemap, time_t T
 
 void eEPGCache::sectionRead(const __u8 *data, int source, channel_data *channel)
 {
-	eit_t *eit = (eit_t*) data;
+	const eit_t *eit = (const eit_t*) data;
 
-	int len=HILO(eit->section_length)-1;//+3-4;
-	int ptr=EIT_SIZE;
+	int len = HILO(eit->section_length) - 1;
+	int ptr = EIT_SIZE;
 	if ( ptr >= len )
 		return;
 
