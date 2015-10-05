@@ -13,7 +13,6 @@
 #include <time.h>
 #include <unistd.h>  // for usleep
 #include <sys/vfs.h> // for statfs
-// #include <libmd5sum.h>
 #include <lib/base/cfile.h>
 #include <lib/base/eerror.h>
 #include <lib/base/encoding.h>
@@ -33,8 +32,16 @@
 /* Time to wait after tuning in before EPG data capturing starts */
 #define ZAP_DELAY 2000          // 2 sec
 
-#define descriptorPair std::pair<int,__u8*>
-#define descriptorMap std::map<uint32_t, descriptorPair >
+struct DescriptorPair
+{
+	int reference_count;
+	__u8* data;
+
+	DescriptorPair() {}
+	DescriptorPair(int c, __u8* d): reference_count(c), data(d) {}
+};
+
+typedef std::map<uint32_t, DescriptorPair> DescriptorMap;
 
 struct eventData
 {
@@ -42,7 +49,7 @@ struct eventData
 	uint8_t n_crc;
 	uint8_t type;
 	uint32_t *crc_list;
-	static descriptorMap descriptors;
+	static DescriptorMap descriptors;
 	static uint8_t data[];
 	static unsigned int CacheSize;
 	static bool isCacheCorrupt;
@@ -68,7 +75,7 @@ struct eventData
 
 unsigned int eventData::CacheSize = 0;
 bool eventData::isCacheCorrupt = 0;
-descriptorMap eventData::descriptors;
+DescriptorMap eventData::descriptors;
 __u8 eventData::data[2 * 4096 + 12];
 extern const uint32_t crc32_table[256];
 
@@ -133,17 +140,17 @@ eventData::eventData(const eit_event_struct* e, int size, int _type, int tsidoni
 				case PDC_DESCRIPTOR:
 				{
 					uint32_t crc = calculate_crc_hash(descr, descr_len);
-					descriptorMap::iterator it = descriptors.find(crc);
+					DescriptorMap::iterator it = descriptors.find(crc);
 					if ( it == descriptors.end() )
 					{
 						CacheSize+=descr_len;
 						__u8 *d = new __u8[descr_len];
 						memcpy(d, descr, descr_len);
-						descriptors[crc] = descriptorPair(1, d);
+						descriptors[crc] = DescriptorPair(1, d);
 					}
 					else
-						++it->second.first;
-					*pdescr++=crc;
+						++it->second.reference_count;
+					*pdescr++ = crc;
 					break;
 				}
 				case SHORT_EVENT_DESCRIPTOR:
@@ -189,18 +196,18 @@ eventData::eventData(const eit_event_struct* e, int size, int _type, int tsidoni
 						title_len += 2; //add 2 the length to include the 2 bytes in the header
 						uint32_t title_crc = calculate_crc_hash(title_data, title_len);
 
-						descriptorMap::iterator it = descriptors.find(title_crc);
+						DescriptorMap::iterator it = descriptors.find(title_crc);
 						if ( it == descriptors.end() )
 						{
-							CacheSize+=title_len;
-							descriptors[title_crc] = descriptorPair(1, title_data);
+							CacheSize += title_len;
+							descriptors[title_crc] = DescriptorPair(1, title_data);
 						}
 						else
 						{
-							++it->second.first;
+							++it->second.reference_count;
 							delete [] title_data;
 						}
-						*pdescr++=title_crc;
+						*pdescr++ = title_crc;
 					}
 
 					//save the text
@@ -222,18 +229,18 @@ eventData::eventData(const eit_event_struct* e, int size, int _type, int tsidoni
 						text_len += 2; //add 2 the length to include the 2 bytes in the header
 						uint32_t text_crc = calculate_crc_hash(text_data, text_len);
 
-						descriptorMap::iterator it = descriptors.find(text_crc);
+						DescriptorMap::iterator it = descriptors.find(text_crc);
 						if ( it == descriptors.end() )
 						{
-							CacheSize+=text_len;
-							descriptors[text_crc] = descriptorPair(1, text_data);
+							CacheSize += text_len;
+							descriptors[text_crc] = DescriptorPair(1, text_data);
 						}
 						else
 						{
-							++it->second.first;
+							++it->second.reference_count;
 							delete [] text_data;
 						}
-						*pdescr++=text_crc;
+						*pdescr++ = text_crc;
 					}
 					break;
 				}
@@ -267,10 +274,10 @@ const eit_event_struct* eventData::get() const
 		DescriptorMap::iterator it = descriptors.find(crc_list[i]);
 		if (it != descriptors.end())
 		{
-			unsigned int b = it->second.second[1] + 2;
+			unsigned int b = it->second.data[1] + 2;
 			if (pos + b < sizeof(data))
 			{
-				memcpy(data + pos, it->second.second, b);
+				memcpy(data + pos, it->second.data, b);
 				pos += b;
 				descriptors_length += b;
 			}
@@ -312,21 +319,21 @@ void eventData::load(FILE *f)
 	int size=0;
 	int id=0;
 	__u8 header[2];
-	descriptorPair p;
+	DescriptorPair p;
 	fread(&size, sizeof(int), 1, f);
 	while(size)
 	{
 		fread(&id, sizeof(__u32), 1, f);
-		fread(&p.first, sizeof(int), 1, f);
+		fread(&p.reference_count, sizeof(int), 1, f);
 		fread(header, 2, 1, f);
 		int bytes = header[1]+2;
-		p.second = new __u8[bytes];
-		p.second[0] = header[0];
-		p.second[1] = header[1];
-		fread(p.second+2, bytes-2, 1, f);
-		descriptors[id]=p;
+		p.data = new uint8_t[bytes];
+		p.data[0] = header[0];
+		p.data[1] = header[1];
+		fread(p.data+2, bytes-2, 1, f);
+		descriptors[id] = p;
 		--size;
-		CacheSize+=bytes;
+		CacheSize += bytes;
 	}
 }
 
@@ -335,13 +342,13 @@ void eventData::save(FILE *f)
 	if (isCacheCorrupt)
 		return;
 	int size=descriptors.size();
-	descriptorMap::iterator it(descriptors.begin());
+	DescriptorMap::iterator it(descriptors.begin());
 	fwrite(&size, sizeof(int), 1, f);
 	while(size)
 	{
 		fwrite(&it->first, sizeof(__u32), 1, f);
-		fwrite(&it->second.first, sizeof(int), 1, f);
-		fwrite(it->second.second, it->second.second[1]+2, 1, f);
+		fwrite(&it->second.reference_count, sizeof(int), 1, f);
+		fwrite(it->second.data, it->second.data[1]+2, 1, f);
 		++it;
 		--size;
 	}
@@ -3162,15 +3169,16 @@ PyObject *eEPGCache::search(ePyObject arg)
 							for (uint8_t i = 0; i < evData->n_crc; ++i)
 							{
 								uint32_t crc = evData->crc_list[i];
-								descriptorMap::iterator it =
+								DescriptorMap::iterator it =
 									eventData::descriptors.find(crc);
 								if (it != eventData::descriptors.end())
 								{
-									__u8 *descr_data = it->second.second;
+									uint8_t *descr_data = it->second.data;
 									switch(descr_data[0])
 									{
 									case 0x4D ... 0x4E:
 										descr.push_back(crc);
+										break;
 									default:
 										break;
 									}
@@ -3221,10 +3229,10 @@ PyObject *eEPGCache::search(ePyObject arg)
 					Py_BEGIN_ALLOW_THREADS; /* No Python code in this section, so other threads can run */
 					singleLock s(cache_lock);
 					std::string title;
-					for (descriptorMap::iterator it(eventData::descriptors.begin());
+					for (DescriptorMap::iterator it(eventData::descriptors.begin());
 						it != eventData::descriptors.end(); ++it)
 					{
-						__u8 *data = it->second.second;
+						uint8_t *data = it->second.data;
 						if ( data[0] == 0x4D ) // short event descriptor
 						{
 							const char *titleptr = (const char*)&data[6];
