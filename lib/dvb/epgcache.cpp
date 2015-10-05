@@ -61,7 +61,7 @@ struct eventData
 	}
 	time_t getStartTime() const
 	{
-		return parseDVBtime(rawEITdata[2], rawEITdata[3], rawEITdata[4], rawEITdata[5], rawEITdata[6]);
+		return parseDVBtime(&rawEITdata[2]);
 	}
 	int getDuration() const
 	{
@@ -759,12 +759,7 @@ void eEPGCache::sectionRead(const __u8 *data, int source, channel_data *channel)
 	int eit_event_size;
 	int duration;
 
-	time_t TM = parseDVBtime(
-			eit_event->start_time_1,
-			eit_event->start_time_2,
-			eit_event->start_time_3,
-			eit_event->start_time_4,
-			eit_event->start_time_5);
+	time_t TM = parseDVBtime((const uint8_t*)eit_event + 2);
 	time_t now = ::time(0);
 
 	if ( TM != 3599 && TM > -1 && channel)
@@ -783,13 +778,7 @@ void eEPGCache::sectionRead(const __u8 *data, int source, channel_data *channel)
 		eit_event_size = HILO(eit_event->descriptors_loop_length)+EIT_LOOP_SIZE;
 
 		duration = fromBCD(eit_event->duration_1)*3600+fromBCD(eit_event->duration_2)*60+fromBCD(eit_event->duration_3);
-		TM = parseDVBtime(
-			eit_event->start_time_1,
-			eit_event->start_time_2,
-			eit_event->start_time_3,
-			eit_event->start_time_4,
-			eit_event->start_time_5,
-			&event_hash);
+		TM = parseDVBtime((const uint8_t*)eit_event + 2, &event_hash);
 
 		std::vector<int>::iterator m_it=find(onid_blacklist.begin(),onid_blacklist.end(),onid);
 		if (m_it != onid_blacklist.end())
@@ -3577,7 +3566,7 @@ struct date_time
 	date_time( const __u8 data[5])
 	{
 		memcpy(this->data, data, 5);
-		tm = parseDVBtime(data[0], data[1], data[2], data[3], data[4]);
+		tm = parseDVBtime(data);
 	}
 	date_time()
 	{
