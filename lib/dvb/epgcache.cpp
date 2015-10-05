@@ -35,17 +35,17 @@
 #define descriptorPair std::pair<int,__u8*>
 #define descriptorMap std::map<uint32_t, descriptorPair >
 
-class eventData
+struct eventData
 {
-	friend class eEPGCache;
-private:
 	uint8_t* EITdata;
 	uint8_t ByteSize;
 	uint8_t type;
 	static descriptorMap descriptors;
 	static uint8_t data[];
-	static int CacheSize;
+	static unsigned int CacheSize;
 	static bool isCacheCorrupt;
+	eventData(const eit_event_struct* e = NULL, int size = 0, int type = 0, int tsidonid = 0);
+	~eventData();
 	static void load(FILE *);
 	static void save(FILE *);
 	static void cacheCorrupt(const char* context);
@@ -54,9 +54,6 @@ private:
 	{
 		return get();
 	}
-public:
-	eventData(const eit_event_struct* e = NULL, int size = 0, int type = 0, int tsidonid = 0);
-	~eventData();
 	int getEventID()
 	{
 		return (EITdata[0] << 8) | EITdata[1];
@@ -71,7 +68,7 @@ public:
 	}
 };
 
-int eventData::CacheSize=0;
+unsigned int eventData::CacheSize = 0;
 bool eventData::isCacheCorrupt = 0;
 descriptorMap eventData::descriptors;
 __u8 eventData::data[2 * 4096 + 12];
@@ -254,7 +251,7 @@ eventData::eventData(const eit_event_struct* e, int size, int type, int tsidonid
 	ASSERT(pdescr <= &descr[65]);
 	ByteSize = 10+((pdescr-descr)*4);
 	EITdata = new __u8[ByteSize];
-	CacheSize+=ByteSize;
+	CacheSize += ByteSize;
 	memcpy(EITdata, (__u8*) e, 10);
 	memcpy(EITdata+10, descr, ByteSize-10);
 }
@@ -266,6 +263,8 @@ const eit_event_struct* eventData::get() const
 	memcpy(data, EITdata, 10);
 	unsigned int descriptors_length = 0;
 #ifndef __sh__
+	/* Alignment error: EITdata + 10 is NOT on a 32-bit boundary, this
+	 * will cause a CPU exception on ARM for example */
 	__u32 *p = (__u32*)(EITdata + 10);
 #else
 	// Dagobert: fix not aligned access
@@ -306,7 +305,7 @@ eventData::~eventData()
 	{
 		CacheSize -= ByteSize;
 #ifndef __sh__
-		__u32 *d = (__u32*)(EITdata+10);
+		__u32 *d = (__u32*)(EITdata+10); /* Alignment error! */
 #else	// Dagobert: fix not aligned access
 		__u8 *d = (__u8*)(EITdata+10);
 #endif
@@ -1329,7 +1328,7 @@ void eEPGCache::load()
 					fread( &len, sizeof(__u8), 1, f);
 					event = new eventData(0, len, type);
 					event->EITdata = new __u8[len];
-					eventData::CacheSize+=len;
+					eventData::CacheSize += len;
 					fread( event->EITdata, len, 1, f);
 					evMap[ event->getEventID() ]=event;
 					tmMap[ event->getStartTime() ]=event;
@@ -1439,7 +1438,7 @@ void eEPGCache::save()
 		tmp*=s.f_bsize;
 		if ( tmp < (eventData::CacheSize*12)/10 ) // 20% overhead
 		{
-			eDebug("[EPGC] not enough free space at path '%s' %lld bytes availd but %d needed", buf, tmp, (eventData::CacheSize*12)/10);
+			eDebug("[EPGC] not enough free space at '%s' %lld bytes available but %u needed", buf, tmp, (eventData::CacheSize*12)/10);
 			fclose(f);
 			return;
 		}
