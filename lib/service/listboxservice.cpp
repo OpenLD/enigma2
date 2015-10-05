@@ -416,7 +416,7 @@ int eListboxServiceContent::cursorMove(int count)
 					m_listbox->entryChanged(cursorResolve(m_cursor_number));
 			}
 			++m_cursor_number;
-			if (!(m_cursor->flags & eServiceReference::isInvisible))
+			if (!(m_hide_number_marker && m_cursor->flags & eServiceReference::isNumberedMarker) && !(m_cursor->flags & eServiceReference::isInvisible))
 				--count;
 		}
 	}
@@ -432,7 +432,7 @@ int eListboxServiceContent::cursorMove(int count)
 					m_listbox->entryChanged(cursorResolve(m_cursor_number));
 			}
 			--m_cursor_number;
-			if (!(m_cursor->flags & eServiceReference::isInvisible))
+			if (!(m_hide_number_marker && m_cursor->flags & eServiceReference::isNumberedMarker) && !(m_cursor->flags & eServiceReference::isInvisible))
 				++count;
 		}
 		while (m_cursor != m_list.end())
