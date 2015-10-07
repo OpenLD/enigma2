@@ -1,7 +1,7 @@
-from enigma import iPlayableService, eTimer, eSize
-
 from Screen import Screen
 from Screens.Setup import getConfigMenuItem, Setup
+from Screens.InputBox import PinInput
+from Screens.MessageBox import MessageBox
 from Components.ServiceEventTracker import ServiceEventTracker
 from Components.ActionMap import NumberActionMap
 from Components.ConfigList import ConfigListScreen
@@ -13,8 +13,11 @@ from Components.Sources.List import List
 from Components.Sources.Boolean import Boolean
 from Components.SystemInfo import SystemInfo
 from Components.VolumeControl import VolumeControl
-from Tools.ISO639 import LanguageCodes
 
+from enigma import iPlayableService, eTimer, eSize
+
+from Tools.ISO639 import LanguageCodes
+from Tools.BoundFunction import boundFunction
 FOCUS_CONFIG, FOCUS_STREAMS = range(2)
 [PAGE_AUDIO, PAGE_SUBTITLES] = ["audio", "subtitles"]
 
