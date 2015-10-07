@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#DESCRIPTION=This script will show you the free space of the box
-df -h
+#DESCRIPTION=This script Reload services bouquets
+wget -q -O - http://127.0.0.1/web/getservices > /dev/null
 echo ""
 exit 0
