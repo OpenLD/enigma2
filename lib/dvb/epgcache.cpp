@@ -1354,6 +1354,9 @@ void eEPGCache::load()
 
 void eEPGCache::save()
 {
+	bool save_epg = eConfigManager::getConfigBoolValue("config.epg.saveepg");
+	if (save_epg)
+	{
 	const char* EPGDAT = m_filename.c_str();
 	if (eventData::isCacheCorrupt)
 		return;
@@ -1439,7 +1442,7 @@ void eEPGCache::save()
 		fwrite( &a->first, sizeof(uniqueEPGKey), 1, f);
 		int size = content_time_table.size();
 		fwrite( &size, sizeof(int), 1, f);
-		for (contentMap::iterator i = content_time_table.begin(); i != content_time_table.end(); ++i )
+		for (contentMap::iterator i = content_time_table.begin(); i != content_time_table.end(); ++i)
 		{
 			int size = i->second.size();
 			fwrite( &i->first, sizeof(int), 1, f);
@@ -1450,6 +1453,7 @@ void eEPGCache::save()
 				fwrite( &it->first, sizeof(time_t), 1, f);
 				fwrite( &it->second.first, sizeof(time_t), 1, f);
 				fwrite( &it->second.second, sizeof(uint16_t), 1, f);
+				}
 			}
 		}
 #endif
@@ -1461,8 +1465,6 @@ void eEPGCache::save()
 	fclose(f);
 	}
 }
-
-
 
 eEPGCache::channel_data::channel_data(eEPGCache *ml)
 	:cache(ml)
@@ -2021,7 +2023,7 @@ void eEPGCache::channel_data::readData( const uint8_t *data, int source)
 #endif
 			default: eDebugNoNewLine("unknown");break;
 		}
-		eDebugNoNewLineEnd(" finished(%ld)", ::time(0));
+		eDebug(" finished(%ld)", ::time(0));
 		if ( reader )
 			reader->stop();
 		isRunning &= ~source;
