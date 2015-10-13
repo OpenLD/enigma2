@@ -1412,17 +1412,16 @@ void eEPGCache::save()
 	fwrite( &size, sizeof(int), 1, f );
 	for (eventCache::iterator service_it(eventDB.begin()); service_it != eventDB.end(); ++service_it)
 	{
-		timeMap &timemap = service_it->second.byTime;
+		timeMap &timemap = service_it->second.second;
 		fwrite( &service_it->first, sizeof(uniqueEPGKey), 1, f);
 		size = timemap.size();
 		fwrite( &size, sizeof(int), 1, f);
 		for (timeMap::iterator time_it(timemap.begin()); time_it != timemap.end(); ++time_it)
 		{
-			uint8_t len = time_it->second->n_crc * sizeof(uint32_t) + 10;
+			uint8_t len = time_it->second->ByteSize;
 			fwrite( &time_it->second->type, sizeof(uint8_t), 1, f );
 			fwrite( &len, sizeof(uint8_t), 1, f);
-			fwrite( time_it->second->rawEITdata, 10, 1, f);
-			fwrite( time_it->second->crc_list, time_it->second->n_crc, sizeof(uint32_t), f);
+			fwrite( time_it->second->EITdata, len, 1, f);
 			++cnt;
 		}
 	}
