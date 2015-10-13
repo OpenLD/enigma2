@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from boxbranding import getMachineBuild, getMachineBrand, getMachineName
+import os
 from Tools.Profile import profile
 
 from Screen import Screen
@@ -18,7 +19,7 @@ from Screens.TimerEdit import TimerSanityConflict
 profile("ChannelSelection.py 1")
 from EpgSelection import EPGSelection
 from enigma import eActionMap, eServiceReference, eEPGCache, eServiceCenter, eRCInput, eTimer, ePoint, eDVBDB, iPlayableService, iServiceInformation, getPrevAsciiCode, eEnv, loadPNG
-from Components.config import config, configfile, ConfigSubsection, ConfigText
+from Components.config import config, configfile, ConfigSubsection, ConfigText, ConfigYesNo
 from Tools.NumericalTextInput import NumericalTextInput
 profile("ChannelSelection.py 2")
 from Components.NimManager import nimmanager
@@ -48,7 +49,6 @@ from Plugins.Plugin import PluginDescriptor
 from Components.PluginComponent import plugins
 
 from time import localtime, time
-from os import remove
 try:
 	from Plugins.SystemPlugins.PiPServiceRelation.plugin import getRelationDict
 	plugin_PiPServiceRelation_installed = True
@@ -127,6 +127,12 @@ EDIT_ALTERNATIVES = 2
 def append_when_current_valid(current, menu, args, level=0, key=""):
 	if current and current.valid() and level <= config.usage.setup_level.index:
 		menu.append(ChoiceEntryComponent(key, args))
+
+def removed_userbouquets_available():
+	for file in os.listdir("/etc/enigma2/"):
+		if file.startswith("userbouquet") and file.endswith(".del"):
+			return True
+	return False
 
 class ChannelContextMenu(Screen):
 	def __init__(self, session, csel):
@@ -243,6 +249,9 @@ class ChannelContextMenu(Screen):
 					append_when_current_valid(current, menu, (_("rename entry"), self.renameEntry), level=0, key="2")
 					append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level=0, key="8")
 					self.removeFunction = self.removeBouquet
+					if removed_userbouquets_available():
+						append_when_current_valid(current, menu, (_("purge deleted userbouquets"), self.purgeDeletedBouquets), level=0)
+						append_when_current_valid(current, menu, (_("restore deleted userbouquets"), self.restoreDeletedBouquets), level=0)
 		if self.inBouquet: # current list is editable?
 			if csel.bouquet_mark_edit == OFF:
 				if csel.movemode:
@@ -287,12 +296,20 @@ class ChannelContextMenu(Screen):
 		else:
 			return 0
 
+	def getCurrentSelectionName(self):
+		cur = self.csel.getCurrentSelection()
+		if cur and cur.valid():
+			name = eServiceCenter.getInstance().info(cur).getName(cur) or ServiceReference(cur).getServiceName() or ""
+			name = name.replace('\xc2\x86', '').replace('\xc2\x87', '')
+			return name
+		return ""
+
 	def removeEntry(self):
 		currentPlayingService = (hasattr(self.csel, "dopipzap") and self.csel.dopipzap) and self.session.pip.getCurrentService() or self.session.nav.getCurrentlyPlayingServiceOrGroup()
 		if self.removeFunction and self.csel.servicelist.getCurrent() and self.csel.servicelist.getCurrent().valid() and (self.csel.servicelist.getCurrent() != currentPlayingService):
 			if self.csel.confirmRemove:
 				list = [(_("yes"), True), (_("no"), False), (_("yes") + " " + _("and never ask again this session again"), "never")]
-				self.session.openWithCallback(self.removeFunction, MessageBox, _("Are you sure to remove this entry?"), list=list)
+				self.session.openWithCallback(self.removeFunction, MessageBox, _("Are you sure to remove this entry?") + "\n%s" % self.getCurrentSelectionName(), list=list)
 			else:
 				self.removeFunction(True)
 		else:
@@ -313,13 +330,34 @@ class ChannelContextMenu(Screen):
 			self.close()
 
 	def removeBouquet(self, answer):
+ 		if answer:
+ 			self.csel.removeBouquet()
+ 			eDVBDB.getInstance().reloadBouquets()
+ 			self.close()
+
+	def purgeDeletedBouquets(self):
+		self.session.openWithCallback(self.purgeDeletedBouquetsCallback, MessageBox, _("Are you sure to purge all deleted userbouquets?"))
+
+	def purgeDeletedBouquetsCallback(self, answer):
 		if answer:
-			self.csel.removeBouquet()
-			eDVBDBInstance = eDVBDB.getInstance()
-			eDVBDBInstance.setLoadUnlinkedUserbouquets(True)
-			eDVBDBInstance.reloadBouquets()
-			eDVBDBInstance.setLoadUnlinkedUserbouquets(config.misc.load_unlinked_userbouquets.value)
+			for file in os.listdir("/etc/enigma2/"):
+				if file.startswith("userbouquet") and file.endswith(".del"):
+					print "permantly remove file ", file
+					os.remove(file)
 			self.close()
+
+	def restoreDeletedBouquets(self):
+		for file in os.listdir("/etc/enigma2/"):
+			if file.startswith("userbouquet") and file.endswith(".del"):
+				print "restore file ", file[:-4]
+				os.rename(file, file[:-4])
+		eDVBDBInstance = eDVBDB.getInstance()
+		eDVBDBInstance.setLoadUnlinkedUserbouquets(True)
+		eDVBDBInstance.reloadBouquets()
+		eDVBDBInstance.setLoadUnlinkedUserbouquets(config.misc.load_unlinked_userbouquets.value)
+		refreshServiceList()
+		self.csel.showFavourites()
+		self.close()
 
 	def playMain(self):
 		sel = self.csel.getCurrentSelection()
@@ -900,7 +938,7 @@ class ChannelSelectionEdit:
 		cur = self.getCurrentSelection()
 		if cur and cur.valid():
 			name = eServiceCenter.getInstance().info(cur).getName(cur) or ServiceReference(cur).getServiceName() or ""
-			name.replace('\xc2\x86', '').replace('\xc2\x87', '')
+			name = name.replace('\xc2\x86', '').replace('\xc2\x87', '')
 			if name:
 				self.session.openWithCallback(self.renameEntryCallback, VirtualKeyBoard, title=_("Please enter new name:"), text=name)
 		else:
@@ -1051,17 +1089,7 @@ class ChannelSelectionEdit:
 		refstr = self.getCurrentSelection().toString()
 		pos = refstr.find('FROM BOUQUET "')
 		filename = None
-		if pos != -1:
-			refstr = refstr[pos+14:]
-			pos = refstr.find('"')
-			if pos != -1:
-				filename = eEnv.resolve('${sysconfdir}/enigma2/') + refstr[:pos]
 		self.removeCurrentService(bouquet=True)
-		try:
-			if filename is not None:
-				remove(filename)
-		except OSError:
-			print "error during remove of", filename
 
 	def removeSatelliteService(self):
 		current = self.getCurrentSelection()
@@ -1088,6 +1116,7 @@ class ChannelSelectionEdit:
 
 	def removeSatelliteServicesCallback(self, answer):
 		if answer:
+			currentIndex = self.servicelist.getCurrentIndex()
 			current = self.getCurrentSelection()
 			unsigned_orbpos = current.getUnsignedData(4) >> 16
 			if unsigned_orbpos == 0xFFFF:
@@ -1104,7 +1133,11 @@ class ChannelSelectionEdit:
 						satpos = int(tmp[:idx])
 						eDVBDB.getInstance().removeServices(-1, -1, -1, satpos)
 			refreshServiceList()
-			hasattr(self.session, 'showSatellites') and self.showSatellites()
+			if hasattr(self, 'showSatellites'):
+				self.showSatellites()
+				self.servicelist.moveToIndex(currentIndex)
+				if currentIndex != self.servicelist.getCurrentIndex():
+					self.servicelist.instance.moveSelection(self.servicelist.instance.moveEnd)
 
 #  multiple marked entry stuff ( edit mode, later multiepg selection )
 	def startMarkedEdit(self, type):
@@ -1321,7 +1354,7 @@ class ChannelSelectionBase(Screen):
 				"showFavourites": self.showFavourites,
 				"showAllServices": self.showAllServices,
 				"showProviders": self.showProviders,
-				"showSatellites": self.showSatellites,
+				"showSatellites": boundFunction(self.showSatellites, changeMode=True),
 				"nextBouquet": self.nextBouquet,
 				"prevBouquet": self.prevBouquet,
 				"nextMarker": self.nextMarker,
@@ -1534,7 +1567,7 @@ class ChannelSelectionBase(Screen):
 					self.enterPath(ref)
 					self.setCurrentSelectionAlternative(self.session.nav.getCurrentlyPlayingServiceOrGroup())
 
-	def showSatellites(self):
+	def showSatellites(self, changeMode=False):
 		if not self.pathChangeDisabled:
 			refstr = '%s FROM SATELLITES ORDER BY satellitePosition' % self.service_types
 			if not self.preEnterPath(refstr):
@@ -1551,7 +1584,7 @@ class ChannelSelectionBase(Screen):
 						justSet = True
 						self.clearPath()
 						self.enterPath(ref, True)
-					if currentRoot and currentRoot == ref:
+					if changeMode and currentRoot and currentRoot == ref:
 						self.showSatDetails = not self.showSatDetails
 						justSet = True
 						self.clearPath()
@@ -1799,7 +1832,7 @@ class ChannelSelectionBase(Screen):
 					s = list.getNext()
 					if not s.valid():
 						break
-					if (s.flags and int(s.flags) != 519) & eServiceReference.isDirectory:
+					if s.flags & eServiceReference.isDirectory and not s.flags & eServiceReference.isInvisible:
 						info = serviceHandler.info(s)
 						if info:
 							bouquets.append((info.getName(s), s))
@@ -2197,7 +2230,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.setRoot(root)
 		self.servicelist.setCurrent(ref)
 		if doZap:
-			self.session.nav.playService(ref)
+			self.session.nav.playService(ref, adjust=False)
 		if self.dopipzap:
 			self.setCurrentSelection(self.session.pip.getCurrentService())
 		else:
@@ -2345,7 +2378,8 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.new_service_played = True
 			self.session.nav.playService(self.startServiceRef)
 			self.saveChannel(self.startServiceRef)
-		self.setStartRoot(self.startRoot)	
+		else:
+			self.restoreMode()
 		self.startServiceRef = None
 		self.startRoot = None
 		if self.dopipzap:
@@ -2363,6 +2397,13 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.revertMode = None
 			self.enterUserbouquet(root)
 
+	def restoreMode(self):
+		if self.revertMode == MODE_TV:
+			self.setModeTv()
+		elif self.revertMode == MODE_RADIO:
+			self.setModeRadio()
+		self.revertMode = None
+
 	def enterUserbouquet(self, root):
 		self.clearPath()
 		self.recallBouquetMode()
@@ -2371,7 +2412,6 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		self.enterPath(root)
 		self.startRoot = None
 		self.saveRoot()
-
 
 	def correctChannelNumber(self):
 		current_ref = self.session.nav.getCurrentlyPlayingServiceOrGroup()

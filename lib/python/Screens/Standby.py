@@ -5,7 +5,7 @@ from Components.AVSwitch import AVSwitch
 from Components.SystemInfo import SystemInfo
 from Components.Harddisk import harddiskmanager
 from GlobalActions import globalActionMap
-from enigma import eDVBVolumecontrol, eTimer, eServiceReference, pNavigation
+from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, pNavigation
 from boxbranding import getMachineBrand, getMachineName, getBoxType, getBrandOEM
 from Tools import Notifications
 from time import localtime, time
