@@ -34,14 +34,10 @@ from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 
 count = 0
 
+hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
+config.misc.epgcachepath = ConfigSelection(default = '/etc/enigma2/', choices = hddchoises)
 
 config.plugins.LDteam = ConfigSubsection()
-config.plugins.LDteam.direct = ConfigSelection(default = "/etc/enigma2/", choices = [
-		("/media/hdd/", _("/media/hdd/")),
-		("/media/usb/", _("/media/usb/")),
-		("/usr/share/enigma2/", _("/usr/share/enigma2/")),
-		("/etc/enigma2/", _("/etc/enigma2/")),
-		])
 config.plugins.LDteam.auto2 = ConfigSelection(default = "no", choices = [
                 ("no", _("no")),
 		("yes", _("yes")),
@@ -52,7 +48,7 @@ config.plugins.LDteam.dropmode = ConfigSelection(default = '1', choices = [
 		('3', _("free pagecache, dentries and inodes")),
 		])
 config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
-config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 240 ) # 240 seconds = 4 minutes
+config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 300 ) # 300 seconds = 5 minutes
 
 def mountp():
 	pathmp = []
@@ -361,11 +357,9 @@ class LDepg(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Enable ViaSat EPG"), config.epg.viasat))
 		self.list.append(getConfigListEntry(_("Enable Netmed EPG"), config.epg.netmed))
 		self.list.append(getConfigListEntry(_("Enable Virgin EPG"), config.epg.virgin))
-		self.list.append(getConfigListEntry(_("Ruta donde almacenar el epg.dat"), config.plugins.LDteam.direct))
+		self.list.append(getConfigListEntry(_("Ruta donde almacenar el epg.dat"), config.misc.epgcachepath))
 		self.list.append(getConfigListEntry(_("Maximum number of days in EPG"), config.epg.maxdays))
 		self.list.append(getConfigListEntry(_("Maintain old EPG data for"), config.epg.histminutes))
-		#self.list.append(getConfigListEntry(_("Auto Actualizacion EPG"), config.plugins.LDteam.auto2))
-		#self.list.append(getConfigListEntry(_("Horario Activacion Auto"), config.plugins.LDteam.epgtime2))
 		self.list.append(getConfigListEntry(_("Tiempo Duracion en Portada"), config.plugins.LDteam.epgmhw2wait))
 		
 		self["config"].list = self.list
@@ -401,11 +395,9 @@ class LDepg(Screen, ConfigListScreen):
 		self.close(False)
 		
 	def save(self):
-		config.misc.epgcache_filename.value = ("%sepg.dat" % config.plugins.LDteam.direct.value)
+		config.misc.epgcache_filename.value = ("%sepg.dat" % config.misc.epgcachepath.value)
 		config.misc.epgcache_filename.save()
-		config.plugins.LDteam.direct.save()
-		#config.plugins.LDteam.epgtime2.save()
-		#config.plugins.LDteam.auto2.save()
+		config.misc.epgcachepath.save()
 		config.plugins.LDteam.epgmhw2wait.save()
 		configfile.save()
 		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
