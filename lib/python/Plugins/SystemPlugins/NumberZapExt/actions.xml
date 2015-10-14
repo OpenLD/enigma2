@@ -1,0 +1,56 @@
+<actions>
+<!--
+	Synopsis:
+	
+	<action [weight="WEIGHT"] [title="TITLE"] id="ITEMID" type="TYPE" [target="TARGETID" \ module="MODULE" screen="SCREENCLASS"] >[SCREEN_ARGS \ CODE]</action>
+	
+	where:
+		WEIGHT      -  item weight number to sort items (optional attribute)
+		TITLE       -  item title string (optional attribute), if not exists, then will be used ITEMID value as title
+		ITEMID      -  item unique name (required attribute)
+		TYPE        -  type action (required attribute), value one of follows:
+				  code     - action exec CODE program  (for details see CODE below)
+				  menu     - action exec submenu  from enigma2 mainmenu, attribute 'target' must be set menu id value (for details see TARGETID below)
+				  menuitem - action exec menuitem from enigma2 mainmenu, attribute 'target' must be set entryID value (for details see TARGETID below)
+				  screen   - action exec SCREENCLASS from  MODULE ('screen' and 'module' attributes) with SCREEN_ARGS if any (for details see below)
+				  setup    - action exec setup enigma2 screen, attribute 'target' must be set setup key value (for details see TARGETID below)
+		TARGETID    -  if type is 'menu' or 'menuitem' or 'setup'. then set unique id for execute
+		               for type='menu'     TARGETID is menu id value      from /usr/share/enigma2/menu.xml  (<menu>...<id val="..."/>...</menu>)
+		               for type='menuitem' TARGETID is item entryID value from /usr/share/enigma2/menu.xml  (<item ... entryID="..." />)
+		               for type='setup'    TARGETID is setup key value    from /usr/share/enigma2/setup.xml (<setup ... key="..." ...>...</setup>)
+		MODULE      -  if type is 'screen', then set import module for execute SCREENCLASS
+		SCREENCLASS -  if type is 'screen', then set screen SCREENCLASS to execute
+		SCREEN_ARGS -  if type is 'screen', then set comma seperated arguments for SCREENCLASS
+		CODE        -  if type is 'code',   then set CODE program to execute (tag <![CDATA[ ...CODE... ]]> is available as well)
+	Examples: see examples below...
+-->
+	
+	<action weight="10" title="Extensions Menu" id="infobar_extensions" type="code"><![CDATA[self.showExtensionSelection()]]></action>
+	<action weight="11" title="Extended NumberZap Setup " id="open_setup_plugin" type="code"><![CDATA[self.OpenSetupPlugin()]]></action>
+
+	<action weight="40" title="Menu Mainmenu"          id="menu_mainmenu"    type="menu" target="mainmenu" />
+	<action weight="41" title="Menu Setup"             id="menu_setup"       type="menu" target="setup" />
+	<action weight="42" title="Menu System"            id="menu_system"      type="menu" target="system" />
+	<action weight="43" title="Menu Service Searching" id="menu_scan"        type="menu" target="scan" />
+	<action weight="44" title="Menu Information"       id="menu_information" type="menu" target="information" />
+	<action weight="45" title="Menu Harddisk"          id="menu_harddisk"    type="menu" target="harddisk" />
+	<action weight="46" title="Menu Standby/Restart"   id="menu_shutdown"    type="menu" target="shutdown" />
+	
+	<action weight="50" title="Menuitem About"       id="menuitem_about"    type="menuitem" target="about_screen" />
+	<action weight="51" title="Menuitem Manual Scan" id="menuitem_scan"     type="menuitem" target="manual_scan" />
+	<action weight="52" title="Menuitem Network"     id="menuitem_network"  type="menuitem" target="network_setup" />
+	<action weight="53" title="Menuitem Language"    id="menuitem_language" type="menuitem" target="language_setup" />
+	
+	<action weight="-1" title="Enigma Standby"  id="enigma_standby"  type="screen" module="Screens.Standby"       screen="Standby" />
+	<action weight="-2" title="Enigma Restart"  id="enigma_restart"  type="screen" module="Screens.Standby"       screen="TryQuitMainloop">3</action>
+	<action weight="-3" title="System Reboot"   id="system_reboot"   type="screen" module="Screens.Standby"       screen="TryQuitMainloop">2</action>
+	<action weight="-4" title="System Shutdown" id="system_shutdown" type="screen" module="Screens.Standby"       screen="TryQuitMainloop">1</action>
+	<action weight="0"  title="Service Info"    id="service_info"    type="screen" module="Screens.ServiceInfo"   screen="ServiceInfo" />
+	<action weight="1"  title="Timers List"     id="timer_edit"      type="screen" module="Screens.TimerEdit"     screen="TimerEditList" />
+	<action weight="2"  title="Plugin Browser"  id="plugin_browser"  type="screen" module="Screens.PluginBrowser" screen="PluginBrowser" />
+	
+	<action weight="61" title="Setup Customize"    id="setup_usage"    type="setup" target="usage" />
+	<action weight="63" title="Setup Timezone"     id="setup_timezone" type="setup" target="timezone" />
+	<action weight="60" title="Setup A/V Settings" id="setup_avsetup"  type="setup" target="avsetup" />
+	<action weight="62" title="Setup Network"      id="setup_network"  type="setup" target="network" />
+</actions>

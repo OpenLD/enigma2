@@ -1,0 +1,201 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: extnumzap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-12 22:55+0300\n"
+"PO-Revision-Date: 2015-09-10 02:28+0200\n"
+"Last-Translator: Joan González - Jglez3 <joan@gonzalezcrego.es>\n"
+"Language-Team: OpenLD\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "%s"
+msgstr "%s "
+
+msgid "<< Press colors keys (the first four bouquets) >>"
+msgstr "<< Pulse las teclas de colores (los primeros cuatro bouquets) >>"
+
+msgid "<< Press menu key (for priority bouquets) >>"
+msgstr "<< Pulse tecla Menú (para prioridad de bouquets) >>"
+
+msgid "Action:"
+msgstr "Acción:"
+
+msgid "Alternative service counter in bouquets"
+msgstr "Contador alternativo de canales en los bouquets"
+
+msgid "Behavior when timeshift is enabled"
+msgstr "Comportamiento cuando Timeshift está activado"
+
+msgid "Bouquet:"
+msgstr "Bouquet:"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Channel:"
+msgstr "Canal:"
+
+msgid "Check timeshift of 0 key in recall service"
+msgstr "Compruebe Timeshift boton 0 clave en el servicio de recordatorio"
+
+msgid "Confirmation on hotkey action"
+msgstr "Confirmación para teclas de acceso directo"
+
+msgid "Directory browser"
+msgstr "Navegador de directorio"
+
+msgid "Enable bouquets hotkeys"
+msgstr "Habilitar teclas de acceso rápido en bouquets"
+
+msgid "Enable extended number zap"
+msgstr "Activar extended number zap"
+
+msgid "Enable number hotkeys"
+msgstr "Habilitar teclas de acceso rápido de números"
+
+msgid "Enable picons"
+msgstr "Activar picons"
+
+msgid "Extended NumberZap"
+msgstr "Extended NumberZap"
+
+msgid "Extended NumberZap Setup"
+msgstr "Configuración de Extended NumberZap"
+
+msgid "Extended NumberZap addon"
+msgstr "Complemento Extended NumberZap"
+
+msgid ""
+"GUI needs a restart to apply changes 'Behavior when timeshift is enabled'.\n"
+"Restart the GUI now?"
+msgstr ""
+"GUI necesita reiniciarse para aplicar cambios en ’Comportamiento cuando Timeshift está activado’.\n"
+"¿Reiniciar GUI ahora?"
+
+msgid "Hotkey action have priority"
+msgstr "Las teclas de acceso rápido tienen prioridad"
+
+msgid "Hotkey bouquets have priority"
+msgstr "Las teclas de acceso rápido de bouquets tienen prioridad"
+
+msgid "No (close)"
+msgstr "No (cerrar)"
+
+msgid "No (do not remind)"
+msgstr "No (no recordar)"
+
+msgid "Number:"
+msgstr "Número:"
+
+msgid "Picons directory (press OK)"
+msgstr "Directorio Picons ( Pulse OK)"
+
+msgid "Really run %s now?"
+msgstr "¿Ejecutar %s ahora?"
+
+msgid "Restart GUI"
+msgstr "Reinicar GUI"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Service"
+msgstr "Canal"
+
+msgid "Time to wait next keypress (milliseconds)"
+msgstr "Tiempo de espera siguiente pulsación de tecla (milisegundos)"
+
+msgid "always number zap"
+msgstr "Siempre number zap"
+
+msgid "current:  %s"
+msgstr "Actual:  %s"
+
+msgid "invalid channel number"
+msgstr "Número canal inválido"
+
+msgid "only seek jump if available"
+msgstr "Solo busca salto si está disponible"
+
+msgid "service not found"
+msgstr "Canal no encontrado"
+
+msgid "standart"
+msgstr "Estándar"
+
+msgid "System Shutdown"
+msgstr "Apagar"
+
+msgid "System Reboot"
+msgstr "Reiniciar"
+
+msgid "Enigma Restart"
+msgstr "Reiniciar Enigma"
+
+msgid "Enigma Standby"
+msgstr "Modo de espera"
+
+msgid "Service Info"
+msgstr "Información de canal"
+
+msgid "Timers List"
+msgstr "Lista de temporizadores"
+
+msgid "Plugin Browser"
+msgstr "Navegador de complementos"
+
+msgid "Extensions Menu"
+msgstr "Menú de extensiones"
+
+msgid "Menu Mainmenu"
+msgstr "Menú principal"
+
+msgid "Menu Setup"
+msgstr "Menú configuración"
+
+msgid "Menu System"
+msgstr "Menú sistema"
+
+msgid "Menu Service Searching"
+msgstr "Menú búsqueda de canales"
+
+msgid "Menu Information"
+msgstr "Menú Información"
+
+msgid "Menu Harddisk"
+msgstr "Menú de disco duro"
+
+msgid "Menu Standby/Restart"
+msgstr "Menú de apagado"
+
+msgid "Menuitem About"
+msgstr "Acerca de"
+
+msgid "Menuitem Manual Scan"
+msgstr "Búsqueda manual"
+
+msgid "Menuitem Network"
+msgstr "Red"
+
+msgid "Menuitem Language"
+msgstr "Idioma"
+
+msgid "Setup A/V Settings"
+msgstr "Configurar ajustes A/V"
+
+msgid "Setup Customize"
+msgstr "Configurar personalización"
+
+msgid "Setup Network"
+msgstr "Configurar red"
+
+msgid "Setup Timezone"
+msgstr "Configurar zona horaria"
+
+msgid "Extended NumberZap Setup "
+msgstr "Configuración de Extended NumberZap"
