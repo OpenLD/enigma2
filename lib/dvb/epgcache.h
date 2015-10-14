@@ -241,6 +241,7 @@ class eEPGCache: public eMainloop, private eThread, public Object
 		void MHWTimeout() { m_MHWTimeoutet=true; }
 		void readMHWData(const uint8_t *data);
 		void readMHWData2(const uint8_t *data);
+		void readMHWData2_old(const uint8_t *data);
 		void startMHWReader(uint16_t pid, uint8_t tid);
 		void startMHWReader2(uint16_t pid, uint8_t tid, int ext=-1);
 		void startMHWTimeout(int msek);
@@ -437,6 +438,7 @@ public:
 	void setEpgHistorySeconds(time_t seconds);
 	void setEpgSources(unsigned int mask);
 	unsigned int getEpgSources();
+	unsigned int getEpgmaxdays();
 
 	void submitEventData(const std::vector<eServiceReferenceDVB>& serviceRefs, long start, long duration, const char* title, const char* short_summary, const char* long_description, char event_type);
 

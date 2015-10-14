@@ -55,6 +55,7 @@ def InitUsageConfig():
 		("keep", _("Keep service")),
 		("reverseB", _("Reverse bouquet buttons")),
 		("keep reverseB", _("Keep service") + " + " + _("Reverse bouquet buttons"))])
+
 	config.usage.multiepg_ask_bouquet = ConfigYesNo(default = False)
 	config.usage.showpicon = ConfigYesNo(default = True)
 	config.usage.show_dvdplayer = ConfigYesNo(default = False)
@@ -62,7 +63,7 @@ def InitUsageConfig():
 	config.usage.panicbutton = ConfigYesNo(default = False)
 	config.usage.panicchannel = ConfigInteger(default = 1, limits=(1,5000) )
 	config.usage.quickzap_bouquet_change = ConfigYesNo(default = False)
-	config.usage.e1like_radio_mode = ConfigYesNo(default = False)
+	config.usage.e1like_radio_mode = ConfigYesNo(default = True)
 
 	choicelist = []
 	for i in range(1, 21):
@@ -369,7 +370,7 @@ def InitUsageConfig():
 	config.epg.freesat = ConfigYesNo(default = True)
 	config.epg.viasat = ConfigYesNo(default = True)
 	config.epg.netmed = ConfigYesNo(default = True)
-	config.epg.virgin = ConfigYesNo(default = True)
+	config.epg.virgin = ConfigYesNo(default = False)
 	config.epg.saveepg = ConfigYesNo(default = True)
 	
 	config.misc.showradiopic = ConfigYesNo(default = True)

@@ -99,31 +99,6 @@ self.session.open(HdmiCECSetupScreen)
 				<menu level="2" text="EPG" entryID="epg_menu">
 					<id val="epg" />
 					<item level="0" entryID="epg_setup"><setup id="epgsettings" /></item>
-					<menu level="2" text="Load/Save" entryID="epgloadsave_menu">
-						<id val="epgloadsave_menu" />
-						<item level="0" entryID="saveepgcache" text="Save EPG">
-<code>
-from Components.EpgLoadSave import EpgSaveMsg
-def msgClosed(ret):
-	if ret:
-		from enigma import eEPGCache
-		epgcache = eEPGCache.getInstance()
-		epgcache.save()
-self.session.openWithCallback(msgClosed, EpgSaveMsg)
-</code>
-						</item>
-						<item level="0" entryID="loadepgcache" text="Load EPG">
-<code>
-from Components.EpgLoadSave import EpgLoadMsg
-def msgClosed(ret):
-	if ret:
-		from enigma import eEPGCache
-		epgcache = eEPGCache.getInstance()
-		epgcache.load()
-self.session.openWithCallback(msgClosed, EpgLoadMsg)
-</code>
-						</item>
-					</menu>
 					<item level="2" entryID="setup_epgmulti"><setup id="epgmulti" /></item>
 					<item level="2" entryID="setup_epgenhanced"><setup id="epgenhanced" /></item>
 					<item level="2" entryID="setup_epginfobar"><setup id="epginfobar" /></item>
