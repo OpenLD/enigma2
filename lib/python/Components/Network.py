@@ -317,7 +317,10 @@ class Network:
 		return self.ifaces.keys()
 
 	def getAdapterAttribute(self, iface, attribute):
-		return self.ifaces.get(iface, {}).get(attribute)
+		if self.ifaces.has_key(iface):
+			if self.ifaces[iface].has_key(attribute):
+				return self.ifaces[iface][attribute]
+		return None
 
 	def setAdapterAttribute(self, iface, attribute, value):
 # 		print "setting for adapter", iface, "attribute", attribute, " to value", value
@@ -507,8 +510,16 @@ class Network:
 			self.activateInterfaceConsole.killAll()
 			self.activateInterfaceConsole = None
 
-	def checkforInterface(self, iface):
-		return self.getAdapterAttribute(iface, 'up')
+	def checkforInterface(self,iface):
+		if self.getAdapterAttribute(iface, 'up') is True:
+			return True
+		else:
+			ret=os.system("ifconfig " + iface + " up")
+			os.system("ifconfig " + iface + " down")
+			if ret == 0:
+				return True
+			else:
+				return False
 
 	def checkDNSLookup(self,statecallback):
 		cmd1 = "nslookup www.opendns.com"
