@@ -8339,8 +8339,8 @@ msgstr "Urheilu"
 msgid "Standard"
 msgstr "Vakio"
 
-msgid "Standart list"
-msgstr "Peruslista"
+msgid "Standard list"
+msgstr "normaali lista"
 
 #
 msgid "Standby"
