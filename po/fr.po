@@ -7037,10 +7037,16 @@ msgid "Split preview mode"
 msgstr "Mode prévue séparée"
 
 msgid "Sports"
-msgstr ""
+msgstr "Sports"
 
 msgid "Standard"
-msgstr ""
+msgstr "Standard"
+
+msgid "Standard (always)"
+msgstr "Standard (toujours)"
+
+msgid "Standard list"
+msgstr "Liste standard"
 
 msgid "Standby"
 msgstr "Veille"
