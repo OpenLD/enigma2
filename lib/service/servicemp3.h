@@ -298,6 +298,7 @@ private:
 	int m_state;
 	GstElement *m_gst_playbin, *audioSink, *videoSink;
 	GstTagList *m_stream_tags;
+	guint m_bitrate;
 
 	class GstMessageContainer: public iObject
 	{
