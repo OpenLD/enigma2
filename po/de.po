@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-10-03 00:24+0100\n"
+"PO-Revision-Date: 2015-11-06 19:10+0100\n"
 "Last-Translator: mike99 <mike99@mail.to>\n"
-"Language-Team: OpenLD\n"
+"Language-Team: openLD\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -204,7 +204,7 @@ msgid ""
 " has been sent to the AAF beta team.\n"
 "please quote "
 msgstr ""
-"wurde an das OpenLD Beta Team gesendet.\n"
+"wurde an das openLD Beta Team gesendet.\n"
 "Bitte angeben"
 
 msgid " ms"
@@ -1231,6 +1231,9 @@ msgstr "Autostart aktiviert."
 msgid "Autostart:"
 msgstr "Autostart:"
 
+msgid "OscamInfo Mainmenu"
+msgstr "OscamInfo Hauptmenü"
+
 #
 msgid "Available format variables"
 msgstr "Verfügbare Formatierungsvariablen"
@@ -1408,8 +1411,8 @@ msgstr "Bus: "
 msgid "Button"
 msgstr "Taste"
 
-msgid "By OpenLD Image Team"
-msgstr "Vom OpenLD-Imageteam"
+msgid "By openLD Image Team"
+msgstr "Vom openLD-Imageteam"
 
 #
 msgid "By pressing the OK Button on your remote control, the info bar is being displayed."
@@ -10114,6 +10117,38 @@ msgstr "Fokus umschalten zum Hauptbildschirm"
 msgid "Zap mode"
 msgstr "Umschaltmodus"
 
+#: data/setup.xml
+msgid "Channel zap delay mode"
+msgstr "Umschaltverzögerung"
+
+#: data/setup.xml
+msgid "Setup delay mode to zap to channels."
+msgstr "Hier können Sie den Verzögerungsmodus beim Umschalten einstellen."
+
+#: data/setup.xml
+msgid "Channel zap delay first button"
+msgstr "Umschaltverzögerung der ersten Ziffer"
+
+#: data/setup.xml
+msgid "User defined delay when you press the first button to zap to the channel."
+msgstr "Hier können Sie die Umschaltverzögerung der ersten Zifferntaste einstellen."
+
+#: data/setup.xml
+msgid "Channel zap delay another button"
+msgstr "Umschaltverzögerung weiterer Ziffern"
+
+#: data/setup.xml
+msgid "User defined delay when you press another button to zap to the channel."
+msgstr "Hier können Sie die Umschaltverzögerung der weiteren Zifferntasten einstellen."
+
+#: data/setup.xml
+msgid "Number of digits in channel number"
+msgstr "Anzahl der Stellen in der Kanalnummer "
+
+#: data/setup.xml
+msgid "This allows you to set the number of digits to 5, if you have more than 9999 channels."
+msgstr "Hier können Sie die Anzahl der Stellen auf 5 setzen, wenn Sie mehr als 9999 Kanäle haben."
+
 msgid "[TimeShift] - Merging records failed!"
 msgstr "TimeShift - Zusammenführen der Aufnahmen fehlgeschlagen!"
 
@@ -10690,6 +10725,14 @@ msgstr "In Deep-Standby herunterfahren"
 #
 msgid "go to standby"
 msgstr "In Standby gehen"
+
+#: PowerTimerEntry.py:118
+msgid "auto standby"
+msgstr "Automatisch in Standby gehen"
+
+#: PowerTimerEntry.py:118
+msgid "auto deepstandby"
+msgstr "Automatisch in Deep-Standby gehen"
 
 #
 msgid "grab this frame as bitmap"
@@ -12072,8 +12115,8 @@ msgstr "Zeige Eventview"
 msgid "Show CoolSingleGuide"
 msgstr "Zeige CoolSingleGuide"
 
-#
-msgid "Show epg"
+#: UsageConfig.py:799
+msgid "Show EPG"
 msgstr "Zeige EPG"
 
 #
@@ -12323,6 +12366,10 @@ msgstr "Ändern"
 
 msgid "add Current"
 msgstr "Hinzufügen"
+
+#: Volume_adjust/plugin.py:L58
+msgid "add Service"
+msgstr "Kanal hinzufügen"
 
 msgid "press the menu button to set a general AC3/Dolby offset"
 msgstr "Drücke die MENU Taste, um einen allgemeinen AC3/Dolby Offset zu setzen."
@@ -12650,6 +12697,14 @@ msgstr "Beende Bild in Bild mit Exit"
 # /data/setup.xml
 msgid "When enabled the PiP can be closed by the exit button."
 msgstr "Wenn aktiviert, wird Bild in Bild beim Drücken der Exit-Taste beendet."
+
+# /data/setup.xml
+msgid "Remember last service in PiP"
+msgstr "Letzten Bild im Bild Service merken"
+
+# /data/setup.xml
+msgid "Configure if and how long the latest service in the PiP will be remembered."
+msgstr "Konfigurieren Sie, ob und wie lange der aktuelle Bild in Bild Service in Erinnerung bleiben soll."
 
 msgid "Show VCR scart on main menu"
 msgstr "Zeige Scart-Videorekorder im Hauptmenü"
@@ -13627,7 +13682,7 @@ msgstr "Einstellung, um die Kanalnamen, Picons oder beides im EPG anzuzeigen."
 
 #
 msgid "Configure the width allocated to the service name."
-msgstr "Legen Sie die Breite fest."
+msgstr "Legen Sie die Breite des Sendernamen fest."
 
 #
 msgid "Configure the amount of time that will be presented."
@@ -13651,7 +13706,7 @@ msgstr "Picon Breite"
 
 #
 msgid "Service width"
-msgstr "Breite"
+msgstr "Sendernamen Breite"
 
 #
 msgid "Timeline font size"
@@ -13953,7 +14008,7 @@ msgid "wakeup"
 msgstr "Aufwachen"
 
 msgid "restart GUI"
-msgstr "GUI Neustarten"
+msgstr "GUI neustarten"
 
 msgid "reboot system"
 msgstr "System neustarten"
@@ -14990,6 +15045,70 @@ msgstr "Myrestore Script wird ausgeführt..."
 msgid "Your %s %s will Reboot..."
 msgstr "%s %s startet neu..."
 
+#: BackupRestore.py
+msgid "Your %s %s will Restart..."
+msgstr "%s %s startet neu..."
+
+#: BackupRestore.py
+msgid "Restore MetrixHD Settings"
+msgstr "Wiederherstellen MetrixHD-Skin"
+
+#: BackupRestore.py
+msgid "Please wait while your skin setting is restoring..."
+msgstr "Bitte warten, ihre Einstellungen werden wiederhergestellt"
+
+#: BackupRestore.py
+msgid ""
+"Error creating MetrixHD-Skin.\n"
+"Please check after reboot MyMetrixLite-Plugin and apply your settings."
+msgstr ""
+"Fehler beim erstellen des MetrixHD-Skins.\n"
+"Bitte überprüfen und übernehmen Sie ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
+
+#: BackupRestore.py
+msgid ""
+"Unknown Error creating Skin.\n"
+"Please check after reboot MyMetrixLite-Plugin and apply your settings."
+msgstr ""
+"Unbekannter Fehler beim erstellen des Skins.\n"
+"Bitte überprüfen und übernehmen Sie ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
+
+#: BackupRestore.py
+msgid "Error creating HD-Skin. Not enough flash memory free."
+msgstr "Fehler beim erstellen des HD-Skins. Nicht genügend Flash-Speicher frei."
+
+#: BackupRestore.py
+msgid ""
+"Error creating FullHD-Skin. Not enough flash memory free.\n"
+"Using HD-Skin!"
+msgstr ""
+"Fehler beim erstellen des FullHD-Skins. Nicht genügend Flash-Speicher frei.\n"
+"Es wird der HD-Skin verwendet!"
+
+#: BackupRestore.py
+msgid ""
+"Error creating FullHD-Skin. Icon package download not available.\n"
+"Using HD-Skin!"
+msgstr ""
+"Fehler beim erstellen des FullHD-Skins. Der Download des Icon-Packets ist nicht verfügbar.\n"
+"Es wird der HD-Skin verwendet!"
+
+#: BackupRestore.py
+msgid ""
+"Error creating FullHD-Skin.\n"
+"Using HD-Skin!"
+msgstr ""
+"Fehler beim erstellen des FullHD-Skins.\n"
+"Es wird der HD-Skin verwendet!"
+
+#: BackupRestore.py
+msgid ""
+"Some FullHD-Icons are missing.\n"
+"Using HD-Icons!"
+msgstr ""
+"Einige FullHD-Icons fehlen.\n"
+"Es werden die HD-Icons verwendet!"
+
 #: MovieSelection.py
 msgid "Do you really want to permamently remove '%s' from trash can ?"
 msgstr ""
@@ -15681,6 +15800,30 @@ msgstr "Verzögerung:"
 # PowerTimerList.py
 msgid "Time range:"
 msgstr "Zeitbereich:"
+
+#: PowerTimerList.py:14
+msgid "Nothing"
+msgstr "Nichts"
+
+#: PowerTimerList.py:15
+msgid "Wake Up"
+msgstr "Aufwachen"
+
+#: PowerTimerList.py:16
+msgid "Wake Up To Standby"
+msgstr "In Standby aufwachen"
+
+#: PowerTimerList.py:18
+msgid "Auto Standby"
+msgstr "Automatisch in Standby"
+
+#: PowerTimerList.py:19
+msgid "Auto Deep Standby"
+msgstr "Automatisch in Deep-Standby"
+
+#: PowerTimerList.py:22
+msgid "Restart GUI"
+msgstr "GUI Neustart"
 
 msgid "Usage & GUI"
 msgstr "Bedienung & Oberfläche"
@@ -16595,3 +16738,16 @@ msgstr "Springe zur Prime-Time"
 #: EpgSelection.py:311
 msgid "Move to home of list"
 msgstr "Springe zum Anfang der Liste"
+
+#: SystemPlugins/VideoClippingSetup/plugin.py:30
+msgid "Video clipping setup"
+msgstr "VideoClipping Einstellungen"
+
+#: SystemPlugins/VideoClippingSetup/plugin.py:128 plugin.py:135
+msgid "Video clipping"
+msgstr "Video Clipping"
+
+#: SystemPlugins/VideoClippingSetup/plugin.py:135
+msgid "clip overscan / letterbox borders"
+msgstr ""
+
