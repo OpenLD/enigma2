@@ -903,12 +903,6 @@ RESULT eServiceMP3::seekToImpl(pts_t to)
 		m_seek_paused = true;
 		gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 	}
-#else
-	if (m_user_paused)
-	{
-		m_seek_paused = true;
-		gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
-	}
 #endif
 
 	return 0;
