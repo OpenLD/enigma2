@@ -29,6 +29,7 @@ config.pluginfilter = ConfigSubsection()
 config.pluginfilter.kernel = ConfigYesNo(default = False)
 config.pluginfilter.drivers = ConfigYesNo(default = True)
 config.pluginfilter.extensions = ConfigYesNo(default = True)
+config.pluginfilter.packagegroup = ConfigYesNo(default = True)
 config.pluginfilter.m2k = ConfigYesNo(default = True)
 config.pluginfilter.picons = ConfigYesNo(default = True)
 config.pluginfilter.security = ConfigYesNo(default = True)
@@ -330,6 +331,8 @@ class PluginDownloadBrowser(Screen):
 			self.PLUGIN_PREFIX2.append(self.PLUGIN_PREFIX + 'weblinks')
 		if config.pluginfilter.kernel.value:
 			self.PLUGIN_PREFIX2.append('kernel-module-')
+		if config.pluginfilter.packagegroup.value:
+			self.PLUGIN_PREFIX2.append('packagegroup-')
 		self.PLUGIN_PREFIX2.append('enigma2-locale-')
 
 	def go(self):
@@ -431,13 +434,13 @@ class PluginDownloadBrowser(Screen):
 					self.doRemove(self.installFinished, self["list"].l.getCurrentSelection()[0].name)
 
 	def doRemove(self, callback, pkgname):
-		if pkgname.startswith('kernel-module-') or pkgname.startswith('enigma2-locale-'):
+		if pkgname.startswith('kernel-module-') or pkgname.startswith('enigma2-locale-') or pkgname.startswith('packagegroup-'):
 			self.session.openWithCallback(callback, Console, cmdlist = [self.ipkg_remove + Ipkg.opkgExtraDestinations() + " " + pkgname, "sync"], closeOnSuccess = True)
 		else:
 			self.session.openWithCallback(callback, Console, cmdlist = [self.ipkg_remove + Ipkg.opkgExtraDestinations() + " " + self.PLUGIN_PREFIX + pkgname, "sync"], closeOnSuccess = True)
 
 	def doInstall(self, callback, pkgname):
-		if pkgname.startswith('kernel-module-') or pkgname.startswith('enigma2-locale-'):
+		if pkgname.startswith('kernel-module-') or pkgname.startswith('enigma2-locale-') or pkgname.startswith('packagegroup-'):
 			self.session.openWithCallback(callback, Console, cmdlist = [self.ipkg_install + " " + pkgname, "sync"], closeOnSuccess = True)
 		else:
 			self.session.openWithCallback(callback, Console, cmdlist = [self.ipkg_install + " " + self.PLUGIN_PREFIX + pkgname, "sync"], closeOnSuccess = True)
@@ -599,6 +602,9 @@ class PluginDownloadBrowser(Screen):
 			if x[0][0:14] == 'kernel-module-':
 				split[0] = "kernel modules"
 			elif x[0][0:15] == 'enigma2-locale-':
+			elif split[0] == "packagegroup":
+				self.plugins[split[0]].append((PluginDescriptor(name = x[0], description = x[2], icon = verticallineIcon), x[0][13:], x[1]))
+
 				split[0] = "languages"
 
 			if not self.plugins.has_key(split[0]):
@@ -679,6 +685,7 @@ class PluginFilter(ConfigListScreen, Screen):
 		self.list = []
 		self.list.append(getConfigListEntry(_("drivers"), config.pluginfilter.drivers, _("This allows you to show drivers modules in downloads")))
 		self.list.append(getConfigListEntry(_("extensions"), config.pluginfilter.extensions, _("This allows you to show extensions modules in downloads")))
+		self.list.append(getConfigListEntry(_("Packagegroup"), config.pluginfilter.packagegroup, _("This allows you to show packagegroups in downloads")))
 		self.list.append(getConfigListEntry(_("systemplugins"), config.pluginfilter.systemplugins, _("This allows you to show systemplugins modules in downloads")))
 		if Check_Softcam():
 			self.list.append(getConfigListEntry(_("softcams"), config.pluginfilter.softcams, _("This allows you to show softcams modules in downloads")))
