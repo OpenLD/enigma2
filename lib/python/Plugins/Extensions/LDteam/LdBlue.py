@@ -89,10 +89,7 @@ class LDBluePanel(Screen):
 			"up": self["Ecmtext"].pageUp,
 			"down": self["Ecmtext"].pageDown
 		}, -1)
-
-		if not fileExists("/usr/lib/libcrypto.so.0.9.7"):
-			system("ln -s /lib/libcrypto.so.0.9.8 /usr/lib/libcrypto.so.0.9.7")
-			system("ln -s /lib/libcrypto.so.0.9.8 /lib/libcrypto.so.0.9.7")
+		
 		self.emlist = []
 		self.populate_List()
 		self["list"] = MenuList(self.emlist)
