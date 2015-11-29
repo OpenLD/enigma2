@@ -37,8 +37,8 @@ echo "Iniciando Canal Portada"
 wget -q -O - http://127.0.0.1/web/zap?sRef=$CHANNEL&title=Actualizando%20EPG > /dev/null
 sleep 3 > /dev/null
 echo "Actualizando EPG..."
-wget -O /dev/null -q "http://127.0.0.1/web/message?text=Actualizando%20EPG%0APor%20Favor%20no%20toque%20nada%20y%20espere&type=2&timeout=300"
-sleep 300 > /dev/null
+wget -O /dev/null -q "http://127.0.0.1/web/message?text=Actualizando%20EPG%0APor%20Favor%20no%20toque%20nada%20y%20espere&type=2&timeout=490"
+sleep 490 > /dev/null
 echo "EPG Actualizado"
 echo "Cambio al Canal 1"
 wget -q -O - http://127.0.0.1/web/zap?sRef=$CHANNEL2 > /dev/null
