@@ -741,7 +741,6 @@ RESULT eServiceMP3::start()
 {
 	ASSERT(m_state == stIdle);
 
-	m_state = stRunning;
 	m_subtitles_paused = false;
 	if (m_gst_playbin)
 	{
@@ -1102,7 +1101,7 @@ RESULT eServiceMP3::isCurrentlySeekable()
 {
 	int ret = 3; /* just assume that seeking and fast/slow winding are possible */
 
-	if (!m_gst_playbin || m_state != stRunning)
+	if (!m_gst_playbin)
 		return 0;
 
 	return ret;
