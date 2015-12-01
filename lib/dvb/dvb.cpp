@@ -872,32 +872,31 @@ alloc_fe_by_id_not_possible:
 
 RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBAllocatedDemux> &demux, int &cap)
 {
-		/* find first unused demux which is on same adapter as frontend (or any, if PVR)
-		   never use the first one unless we need a decoding demux. */
+	/* find first unused demux which is on same adapter as frontend (or any, if PVR)
+	 * never use the first one unless we need a decoding demux.
+	 * look for a demux on the same adapter as the frontend, or the first adapter for dvr playback
+	 */
+	iDVBAdapter *adapter = fe ? fe->m_adapter : m_adapter.begin();
+	int source = fe ? fe->m_frontend->getDVBID() : -1;
+
+	/*
+	 * For pvr playback, start with the last demux.
+	 * On some hardware, we have less ca devices than demuxes,
+	 * so we should try to leave the first demuxes for live tv,
+	 * and start with the last for pvr playback
+	 */
+	bool use_decode_demux = (fe || (cap & iDVBChannel::capDecode));
 
 	eDebug("allocate demux");
-	eSmartPtrList<eDVBRegisteredDemux>::iterator i(m_demux.begin());
+	eSmartPtrList<eDVBRegisteredDemux>::iterator i(use_decode_demux ? m_demux.begin() :  m_demux.rbegin());
 
 	if (i == m_demux.end())
 		return -1;
 
 	ePtr<eDVBRegisteredDemux> unused;
+	uint8_t d, a;
 
 #if not defined(__sh__)
-	iDVBAdapter *adapter = fe ? fe->m_adapter : m_adapter.begin(); /* look for a demux on the same adapter as the frontend, or the first adapter for dvr playback */
-	int source = fe ? fe->m_frontend->getDVBID() : -1;
-	if (!fe && !(cap & iDVBChannel::capDecode))
-	{
-		eDebug("[eDVBResourceManager] pvr playback, start with last demux");
-		/*
-		 * For pvr playback, start with the last demux.
-		 * On some hardware, we have less ca devices than demuxes,
-		 * so we should try to leave the first demuxes for live tv,
-		 * and start with the last for pvr playback
-		 */
-		i = m_demux.end();
-		--i;
-	}
 	while (i != m_demux.end())
 	{
 		if (i->m_adapter == adapter)
@@ -906,7 +905,7 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 			{
 				/* mark the first unused demux, we'll use that when we do not find a better match */
 				if (!unused) unused = i;
-			}				else
+			}
 			else
 			{
 				/* demux is in use, see if we can share it */
@@ -920,16 +919,7 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 				}
 			}
 		}
-		if (fe || (cap & iDVBChannel::capDecode))
-		{
-			++i;
-		}
-		else
-		{
-			if (i == m_demux.begin())
-				break;
-			--i;
-		}
+		++i;
 	}
 #else // we use our own algo for demux detection
 	int n=0;
