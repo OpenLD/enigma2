@@ -185,7 +185,7 @@ void eDVBSectionReader::data(int)
 		unsigned int c;
 		if ((c = crc32((unsigned)-1, data, r)))
 		{
-			eDebug("crc32 failed! is %x\n", c);
+			//eDebug("[eDVBSectionReader] section crc32 failed! is %x\n", c);
 			return;
 		}
 	}
