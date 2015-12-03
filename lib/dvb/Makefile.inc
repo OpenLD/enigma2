@@ -65,5 +65,4 @@ dvbinclude_HEADERS = \
 	dvb/tstools.h \
 	dvb/volume.h \
 	dvb/streamserver.h \
-	dvb/pmtparse.h \
 	dvb/encoder.h
