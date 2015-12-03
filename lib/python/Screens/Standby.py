@@ -216,7 +216,7 @@ class TryQuitMainloop(MessageBox):
 #			reason = (ngettext("%d job is running in the background!", "%d jobs are running in the background!", jobs) % jobs) + '\n'
 #			if jobs == 1:
 #				job = job_manager.getPendingJobs()[0]
-#				if job.name == "VFD Checker":		
+#				if job.name == "VFD Checker":
 #					reason = ""
 #				else:
 #					reason += "%s: %s (%d%%)\n" % (job.getStatustext(), job.name, int(100*job.progress/float(job.end)))
@@ -239,7 +239,7 @@ class TryQuitMainloop(MessageBox):
 				3: _("Really restart now?"),
 				4: _("Really upgrade the frontprocessor and reboot now?"),
 				42: _("Really upgrade your %s %s and reboot now?") % (getMachineBrand(), getMachineName()),
-				43: _("Really reflash your %s %s and reboot now?") % (getMachineBrand(), getMachineName()),				
+				43: _("Really reflash your %s %s and reboot now?") % (getMachineBrand(), getMachineName()),
 				44: _("Really upgrade the front panel and reboot now?"),
 				45: _("Really WOL now?")}.get(retvalue)
 			if text:
