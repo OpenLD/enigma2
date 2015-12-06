@@ -81,7 +81,6 @@
 	</map>
 
 	<map context="InfobarEPGActions">
-		<key id="KEY_RED" mapto="RedPressed" flags="b" />
 		<key id="KEY_I" mapto="IPressed" flags="b" />
 		<key id="KEY_INFO" mapto="InfoPressed" flags="b" />
 		<key id="KEY_INFO" mapto="showEventInfoPlugin" flags="l" />
@@ -93,7 +92,6 @@
 		<key id="KEY_RECORD" mapto="instantRecord" flags="m" />
 		<key id="KEY_RECORD" mapto="ShortRecord" flags="b" />
 		<key id="KEY_RECORD" mapto="LongRecord" flags="l" />
-		<key id="KEY_RED" mapto="instantRecord" flags="b" />
 	</map>
 
 	<map context="InfobarExtensions">
@@ -249,8 +247,16 @@
 		<key id="KEY_PVR" mapto="showMovies" flags="m" />
 		<key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
 		<key id="KEY_OPEN" mapto="showMovies" flags="b" />
-		<key id="KEY_F1" mapto="showWWW" flags="b" />
-		<key id="KEY_F2" mapto="showMC" flags="b" />
+	</map>
+
+	<map context="WebBrowserActions">
+		<key id="KEY_HOMEPAGE" mapto="portal" flags="b" />
+		<key id="KEY_STOP" mapto="stop" flags="b" />
+		<key id="KEY_PLAY" mapto="play" flags="b" />
+		<key id="KEY_PAUSE" mapto="pause" flags="b" />
+		<key id="KEY_RECORD" mapto="record_s" flags="b" />
+		<key id="KEY_BACK" mapto="historyBack" flags="b" />
+		<key id="KEY_EXIT" mapto="exit_s" flags="b" />
 	</map>
 
 	<map context="InfobarAudioSelectionActions">
@@ -299,6 +305,7 @@
 
 	<map context="InfobarRedButtonActions">
 		<key id="KEY_RED" mapto="activateRedButton" flags="l" />
+	    <key id="KEY_RED" mapto="activateRedButton" flags="b" />
 	</map>
 
 	<map context="InfobarTimerButtonActions">
