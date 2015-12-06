@@ -125,10 +125,10 @@ class LDBluePanel(Screen):
 		except:
 			name = "N/A"; provider = "N/A"; aspect = "N/A"; videosize  = "N/A"	
 		
-		self["Ilab1"].setText("Nombre: " + name)
-		self["Ilab2"].setText("Provider: " + provider)
-		self["Ilab3"].setText("Aspect Ratio: " + aspect)
-		self["Ilab4"].setText("Videosize: " + videosize)
+		self["Ilab1"].setText(_("Nombre: ") + name)
+		self["Ilab2"].setText(_("Provider: ") + provider)
+		self["Ilab3"].setText(_("Aspect Ratio: ") + aspect)
+		self["Ilab4"].setText(_("Videosize: ") + videosize)
 	
 		self.defaultcam = "/usr/camscript/Ncam_Ci.sh"
 		if fileExists("/etc/LdCamConf"):
@@ -157,7 +157,7 @@ class LDBluePanel(Screen):
 				mytext = mytext + line.strip() + "\n"
  			f.close()
 		if len(mytext) < 5:
-			mytext = "\n\n    Ecm info no disponible."
+			mytext = "\n\n    " + _("Ecm info no disponible.")
 				
 		self["activecam"].setText(self.defCamname)
 		self["Ecmtext"].setText(mytext)
