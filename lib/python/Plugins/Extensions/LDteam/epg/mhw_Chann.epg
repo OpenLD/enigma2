@@ -1,7 +1,7 @@
 #########################################
 #                                       #
 #       Channels list in mhw EPG        #
-#    Generated at 14/10/2015 16:23:03   #
+#    Generated at 13/12/2015 22:29:24   #
 #                                       #
 #      Format: (NAME) SID:TSID:NID      #
 #                                       #
@@ -30,6 +30,7 @@
 (MTV) 74a2:41c:1
 (FDF) 77bc:40a:1
 (NEOX) 75fe:408:1
+(M+ STAR WARS) 757b:412:1
 (C+ESTRENOS) 76c0:40e:1
 (CANAL+ XTRA) 77c6:40a:1
 (C+ ACCIÓN) 746c:3f0:1

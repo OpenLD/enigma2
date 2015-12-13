@@ -456,7 +456,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 #endif
 #ifdef ENABLE_MHW_EPG
 		data->m_mhw2_channel_pid = 0x231; // defaults for astra 19.2 Movistar+
-		if (maxdays < 4){
+		if (maxdays < 7){
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
@@ -1546,7 +1546,7 @@ void eEPGCache::channel_data::startEPG()
 		mask.mask[0] = 0xFF;
 		mask.data[1] = 0;
 		mask.mask[1] = 0xFF;
-		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 7)
 		{
 			m_MHWReader2->connectRead(slot(*this, &eEPGCache::channel_data::readMHWData2_old), m_MHWConn2);
 		} else {
@@ -1758,7 +1758,7 @@ void eEPGCache::channel_data::abortNonAvail()
 		if ( isRunning & VIASAT )
 			abortTimer->start(300000, true);
 		else if ( isRunning & MHW )
-			abortTimer->start(400000, true);
+			abortTimer->start(500000, true);
 		else if ( isRunning )
 			abortTimer->start(90000, true);
 		else
@@ -4135,7 +4135,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 
 		u_char content_id = 0;
 
-		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 7)
 		{
 		   switch (itTitle->second.mhw2_theme)  // convert to standar theme
 		   {
@@ -4371,7 +4371,7 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 		eDebug("[EPGC] mhw %d themes found", m_themes.size());
 		// Themes table has been read, start reading the titles table.
 		startMHWReader(0xD2, 0x90);
-		startMHWTimeout(4000);
+		startMHWTimeout(5000);
 		return;
 	}
 	else if (m_MHWFilterMask.pid == 0xD2 && m_MHWFilterMask.data[0] == 0x90)
@@ -4394,7 +4394,7 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 
 			if ( m_titles.find( title_id ) == m_titles.end() )
 			{
-				startMHWTimeout(4000);
+				startMHWTimeout(5000);
 				title->mhw2_mjd_hi = 0;
 				title->mhw2_mjd_lo = 0;
 				title->mhw2_duration_hi = 0;
@@ -4418,7 +4418,7 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 				m_program_ids.size());
 			log_add("Titles Nbr.: %d",m_titles.size());
 			log_add("Titles Nbr. with summary: %d",m_program_ids.size());
-			startMHWTimeout(4000);
+			startMHWTimeout(5000);
 			return;
 		}
 	}
@@ -4458,7 +4458,7 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 			std::map<uint32_t, mhw_title_t>::iterator itTitle( m_titles.find( itProgid->second ) );
 			if ( itTitle != m_titles.end() )
 			{
-				startMHWTimeout(4000);
+				startMHWTimeout(5000);
 				storeMHWTitle( itTitle, the_text, data );
 				m_titles.erase( itTitle );
 			}
