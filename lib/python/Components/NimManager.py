@@ -133,8 +133,10 @@ class SecConfigure:
 
 	def linkNIMs(self, sec, nim1, nim2):
 		print "link tuner", nim1, "to tuner", nim2
-		# for internally connect tuner A to B
-		if getBoxType() == 'vusolo2' or nim2 == (nim1 - 1):
+		# for internally connect tuner A to B		
+		if getBoxType() == 'vusolo2' or '7356' not in about.getChipSetString() and nim2 == (nim1 - 1):
+			self.linkInternally(nim1)
+		elif 'vusolo2' or '7356' in about.getChipSetString():
 			self.linkInternally(nim1)
 		sec.setTunerLinked(nim1, nim2)
 
