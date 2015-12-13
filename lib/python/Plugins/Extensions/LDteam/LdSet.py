@@ -48,7 +48,7 @@ config.plugins.LDteam.dropmode = ConfigSelection(default = '1', choices = [
 		('3', _("free pagecache, dentries and inodes")),
 		])
 config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
-config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 490 ) # 490 seconds = 8,16 minutes
+config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 350 ) # 490 seconds = 5,83 minutes
 
 def mountp():
 	pathmp = []
