@@ -456,7 +456,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 #endif
 #ifdef ENABLE_MHW_EPG
 		data->m_mhw2_channel_pid = 0x231; // defaults for astra 19.2 Movistar+
-		if (maxdays < 7){
+		if (maxdays < 4){
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
@@ -645,7 +645,7 @@ bool eEPGCache::FixOverlapping(EventCacheItem &servicemap, time_t TM, int durati
 {
 	bool ret = false;
 	timeMap::iterator tmp = tm_it;
-	while ((tmp->first + tmp->second->getDuration() - 300) > TM)
+	while ((tmp->first + tmp->second->getDuration() - 360) > TM)
 	{
 		if(tmp->first != TM
 #ifdef ENABLE_PRIVATE_EPG
@@ -687,7 +687,7 @@ bool eEPGCache::FixOverlapping(EventCacheItem &servicemap, time_t TM, int durati
 	}
 
 	tmp = tm_it;
-	while(tmp->first < (TM+duration-300))
+	while(tmp->first < (TM+duration-360))
 	{
 		if (tmp->first != TM && tmp->second->type != PRIVATE)
 		{
@@ -1546,7 +1546,7 @@ void eEPGCache::channel_data::startEPG()
 		mask.mask[0] = 0xFF;
 		mask.data[1] = 0;
 		mask.mask[1] = 0xFF;
-		if (eEPGCache::getInstance()->getEpgmaxdays() < 7)
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
 		{
 			m_MHWReader2->connectRead(slot(*this, &eEPGCache::channel_data::readMHWData2_old), m_MHWConn2);
 		} else {
@@ -4135,7 +4135,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 
 		u_char content_id = 0;
 
-		if (eEPGCache::getInstance()->getEpgmaxdays() < 7)
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
 		{
 		   switch (itTitle->second.mhw2_theme)  // convert to standar theme
 		   {
