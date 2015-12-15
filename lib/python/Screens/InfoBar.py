@@ -579,6 +579,8 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 				self.session.openWithCallback(self.hidePipOnExitCallback, MessageBox, _("Disable Picture in Picture"), simple=True)
 			else:
 				self.hidePipOnExitCallback(True)
+		elif config.usage.leave_movieplayer_onExit.value == "movielist":
+			self.leavePlayer()
 		elif config.usage.leave_movieplayer_onExit.value == "popup":
 			self.session.openWithCallback(self.leavePlayerOnExitCallback, MessageBox, _("Exit movie player?"), simple=True)
 		elif config.usage.leave_movieplayer_onExit.value == "without popup":
