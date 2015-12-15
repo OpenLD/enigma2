@@ -1756,11 +1756,11 @@ void eEPGCache::channel_data::abortNonAvail()
 		}
 #endif
 		if ( isRunning & VIASAT )
-			abortTimer->start(300000, true);
+			abortTimer->start(400000, true);
 		else if ( isRunning & MHW )
 			abortTimer->start(500000, true);
 		else if ( isRunning )
-			abortTimer->start(90000, true);
+			abortTimer->start(120000, true);
 		else
 		{
 			++state;
@@ -4658,7 +4658,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 				   std::map<uint32_t, mhw_title_t>::iterator it = m_titles.find( title_id );
 				   if ( it == m_titles.end() )
 				   {
-					startMHWTimeout(30000);
+					startMHWTimeout(40000);
 					m_titles[ title_id ] = title;
 					m_titlesID[ title_id ] = title_id;
 					if (summary_id != 0xFFFF)
