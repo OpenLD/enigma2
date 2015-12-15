@@ -12,7 +12,7 @@ config.misc.pluginlist.eventinfo_order = ConfigText(default="")
 config.misc.pluginlist.extension_order = ConfigText(default="")
 
 class ChoiceBox(Screen):
-	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, reorderConfig="", windowTitle=None, text=""):
+	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, reorderConfig="", text=""):
 		self.setTitle(_("Choice Box"))
 		if not list: list = []
 		if not skin_name: skin_name = []
@@ -118,10 +118,6 @@ class ChoiceBox(Screen):
 		{
 			"back": self.cancel,
 		}, -1)
-
-		if windowTitle is None:
-			windowTitle = _("Select")
-		self.setTitle(windowTitle)
 
 	def autoResize(self):
 		desktop_w = enigma.getDesktop(0).size().width()
