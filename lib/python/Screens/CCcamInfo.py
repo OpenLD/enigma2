@@ -1,7 +1,12 @@
 # -*- coding: UTF-8 -*-
 # CCcam Info by AliAbdul
 from base64 import encodestring
-from os import listdir, remove, rename, system, popen, path
+from time import *
+from types import *
+import sys, commands, gettext, subprocess, threading, sys, traceback, time, datetime
+from os import system, listdir, remove, rename, remove as os_remove, rename as os_rename, popen, getcwd, chdir, path
+
+from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN
 
 from enigma import eListboxPythonMultiContent, eTimer, gFont, loadPNG, RT_HALIGN_RIGHT, getDesktop
 
@@ -270,8 +275,6 @@ def CCcamListEntry(name, idx):
 	elif idx == 15:
 		idx = "info"
 	if path.exists(resolveFilename(SCOPE_ACTIVE_SKIN, "buttons/key_%s.png" % str(idx))):
-		png = resolveFilename(SCOPE_ACTIVE_SKIN, "buttons/key_%s.png" % str(idx))
-	else:
 		png = "/usr/share/enigma2/skin_default/buttons/key_%s.png" % str(idx)
 	if screenwidth and screenwidth == 1920:
 		if fileExists(png):
