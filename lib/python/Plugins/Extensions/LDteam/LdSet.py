@@ -242,7 +242,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 
 		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
-		name = _("Free memory")
+		name = _("Liberate RAM")
 		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
@@ -347,7 +347,7 @@ class LDepg(Screen, ConfigListScreen):
 		self.setTitle(_("EPG Options"))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
-		self["key_blue"] = StaticText(_("Show Log"))
+		self["key_blue"] = StaticText(_("Show log"))
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Update"))
