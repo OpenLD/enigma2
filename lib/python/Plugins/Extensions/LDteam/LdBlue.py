@@ -69,7 +69,7 @@ class LDBluePanel(Screen):
 		Screen.__init__(self, session)
 		
 		self["lab1"] = Label()
-		self["lab2"] = Label(_("CAM por Defecto"))
+		self["lab2"] = Label(_("Set Default CAM"))
 		self["lab3"] = Label()
 		self["Ilab1"] = Label()
 		self["Ilab2"] = Label()
@@ -125,7 +125,7 @@ class LDBluePanel(Screen):
 		except:
 			name = "N/A"; provider = "N/A"; aspect = "N/A"; videosize  = "N/A"	
 		
-		self["Ilab1"].setText(_("Nombre: ") + name)
+		self["Ilab1"].setText(_("Name: ") + name)
 		self["Ilab2"].setText(_("Provider: ") + provider)
 		self["Ilab3"].setText(_("Aspect Ratio: ") + aspect)
 		self["Ilab4"].setText(_("Videosize: ") + videosize)
@@ -157,7 +157,7 @@ class LDBluePanel(Screen):
 				mytext = mytext + line.strip() + "\n"
  			f.close()
 		if len(mytext) < 5:
-			mytext = "\n\n    " + _("Ecm info no disponible.")
+			mytext = "\n\n    " + _("Ecm info not available.")
 				
 		self["activecam"].setText(self.defCamname)
 		self["Ecmtext"].setText(mytext)
@@ -187,14 +187,14 @@ class LDBluePanel(Screen):
 		system (cmd)
 		cmd = "STOP_CAMD," + self.defaultcam
 		self.sendtoLd_sock(cmd)
-		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, "Deteniendo")
+		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, _("Stopping"))
 		
 	def keyOk2(self):
 		os.system("/usr/bin/StartLdCam stop")
 		cmd = "NEW_CAMD," + self.newcam
 		self.sendtoLd_sock(cmd)
 		oldcam = self.camnames[self.sel]
-		self.session.openWithCallback(self.myclose, startstopCam, self.sel, "Iniciando")
+		self.session.openWithCallback(self.myclose, startstopCam, self.sel, _("Starting"))
 		
 		
 	def sendtoLd_sock(self, data):
@@ -232,11 +232,11 @@ class startstopCam(Screen):
 	def __init__(self, session, name, what):
 		Screen.__init__(self, session)
 
-		msg = _("Por favor, espere ") + "%s\n %s ..." % (what, name)
+		msg = _("Please wait ") + "%s\n %s ..." % (what, name)
 		self["connect"] = MultiPixmap()
 		self["lab1"] = Label(msg)
 		self.delay = 800
-		if what == "Iniciando":
+		if what == _("Starting"):
 			self.delay= 3000
 		
 		self.activityTimer = eTimer()

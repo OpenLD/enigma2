@@ -1,31 +1,46 @@
+from enigma import *
 from Screen import Screen
+from Components.config import config
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Sources.StaticText import StaticText
 from Components.Harddisk import Harddisk
 from Components.NimManager import nimmanager
-from Components.About import about
+from Components.About import about, getVersionString
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console
-from enigma import eTimer, getEnigmaVersionString
+from Tools.StbHardware import getFPVersion
+
+from ServiceReference import ServiceReference
+from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
 
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
 
+from Components.Label import Label
+from Components.ProgressBar import ProgressBar
+
+from os import popen
 from Tools.StbHardware import getFPVersion
 
 from os import path
 from re import search
 
+from Components.HTMLComponent import HTMLComponent
+from Components.GUIComponent import GUIComponent
+import skin
+
+boxtype = getBoxType()
+
 def getAboutText():
 	AboutText = ""
-	AboutText += _("Model:\t%s %s\n") % (getMachineBrand(), getMachineName())
+	AboutText += _("Model:\t %s %s\n") % (getMachineBrand(), getMachineName())
 
 	if path.exists('/proc/stb/info/chipset'):
-		AboutText += _("Chipset:\t%s") % about.getChipSetString() + "\n"
+		AboutText += _("Chipset:\t %s") % about.getChipSetString() + "\n"
 
-	cpuMHz = ""
+	bogoMIPS = ""
 	if path.exists('/proc/cpuinfo'):
 		f = open('/proc/cpuinfo', 'r')
 		temp = f.readlines()
@@ -33,28 +48,45 @@ def getAboutText():
 		try:
 			for lines in temp:
 				lisp = lines.split(': ')
-				if lisp[0].startswith('cpu MHz'):
-					#cpuMHz = "   (" +  lisp[1].replace('\n', '') + " MHz)"
-					cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n', '')))) + " MHz)"
+				if lisp[0].startswith('BogoMIPS'):
+					bogoMIPS = "" + str(int(float(lisp[1].replace('\n','')))) + ""
+					#bogoMIPS = "" + lisp[1].replace('\n','') + ""
 					break
 		except:
 			pass
 
-	AboutText += _("CPU:\t%s") % about.getCPUString() + cpuMHz + "\n"
-	AboutText += _("Cores:\t%s") % about.getCpuCoresString() + "\n"
+	#cpuMHz = ""
+	#if getBoxType() in ('formuler1, gbquad, gbquadplus, solo2'):
+	#	cpuMHz = "   (1,3 GHz)"
+	#else:
+		if path.exists('/proc/cpuinfo'):
+			f = open('/proc/cpuinfo', 'r')
+			temp = f.readlines()
+			f.close()
+			try:
+				for lines in temp:
+					lisp = lines.split(': ')
+					if lisp[0].startswith('cpu MHz'):
+						#cpuMHz = "   (" +  lisp[1].replace('\n','') + " MHz)"
+						cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n','')))) + " MHz)"
+						break
+			except:
+				pass
 
-	AboutText += _("Version:\t%s") % getImageVersion() + "\n"
-	AboutText += _("Build:\t%s") % getImageBuild() + "\n"
-	AboutText += _("Kernel:\t%s") % about.getKernelVersionString() + "\n"
+	AboutText += _("CPU:\t %s") % about.getCPUString() + cpuMHz + "\n"
+	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
+	AboutText += _("Cores:\t %s") % about.getCpuCoresString() + "\n"
 
-	string = getDriverDate()
-	year = string[0:4]
-	month = string[4:6]
-	day = string[6:8]
-	driversdate = '-'.join((year, month, day))
-	AboutText += _("Drivers:\t%s") % driversdate + "\n"
-	AboutText += _("Last update:\t%s") % getEnigmaVersionString() + "\n"
-	AboutText += _("GStreamer:\t%s") % about.getGStreamerVersionString() + "\n\n"
+	AboutText += _("Version:\t %s") % getImageVersion() + "\n"
+	AboutText += _("Build:\t %s") % getImageBuild() + "\n"
+	AboutText += _("Kernel:\t %s") % about.getKernelVersionString() + "\n"
+
+	AboutText += _("DVB drivers:\t %s") % about.getDriverInstalledDate() + "\n"
+	AboutText += _("Last update:\t %s") % getEnigmaVersionString() + "\n"
+	AboutText += _("GStreamer:\t%s") % about.getGStreamerVersionString().replace('GStreamer','') + "\n"
+	AboutText += _("Python:\t %s") % about.getPythonVersionString() + "\n"
+    #AboutText += _("Installed:\t ") + about.getFlashDateString() + "\n"
+	#AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n\n"
 
 	fp_version = getFPVersion()
 	if fp_version is None:
@@ -103,14 +135,14 @@ class About(Screen):
 				"log": self.showAboutReleaseNotes,
 				"up": self["AboutScrollLabel"].pageUp,
 				"down": self["AboutScrollLabel"].pageDown,
-				"green": self.showTranslationInfo,
+				#"green": self.showTranslationInfo,
 			})
 
 	def populate(self):
-		self["lab1"] = StaticText(_("Firmware: OpenLD"))
-		self["lab2"] = StaticText(_("Desarrollado por Javilonas"))
+		self["lab1"] = StaticText(_("Firmware:\t OpenLD"))
+		self["lab2"] = StaticText(_("Developer:\t Javilonas (Javier Sayago)"))
 		model = None
-		self["lab3"] = StaticText(_("Support at") + " www.lonasdigital.com")
+		self["lab3"] = StaticText(_("Support:\t www.lonasdigital.com"))
 
 		AboutText = getAboutText()[0]
 
@@ -255,8 +287,8 @@ class SystemMemoryInfo(Screen):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Memory Information"))
 		self.skinName = ["SystemMemoryInfo", "About"]
-		self["lab1"] = StaticText(_("Firmware: OpenLD"))
-		self["lab2"] = StaticText(_("Desarrollado por Javilonas"))
+		self["lab1"] = StaticText(_("Firmware:\t OpenLD"))
+		self["lab2"] = StaticText(_("Developer:\t Javilonas (Javier Sayago)"))
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],

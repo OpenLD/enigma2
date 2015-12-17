@@ -15725,8 +15725,89 @@ msgstr "Preguntar al usuario (con ‘sí’ como predeterminado)"
 msgid "Ask user (with default as 'no')"
 msgstr "Preguntar al usuario (con ‘no’ como predeterminado)"
 
+msgid "Developer:\t Javilonas (Javier Sayago)"
+msgstr "Desarrollador:\t Javilonas (Javier Sayago)"
+
+msgid "Support:\t www.lonasdigital.com"
+msgstr "Soporte:\t www.lonasdigital.com"
+
+msgid "Please wait "
+msgstr "Por favor, espere "
+
+msgid "Starting"
+msgstr "Iniciando"
+
+msgid "Stopping"
+msgstr "Deteniendo"
+
+msgid "Ecm info not available."
+msgstr "Ecm info no disponible."
+
+msgid "Name: "
+msgstr "Nombre: "
+
+msgid "Set Default CAM"
+msgstr "CAM por Defecto"
+
+msgid "%d  CAMs Installed"
+msgstr "%d  CAMs Instalada"
+
+msgid "Admin Devices"
+msgstr "Admin Dispositivos"
+
+msgid "Epg settings"
+msgstr "Opciones EPG"
+
+msgid "Osd settings"
+msgstr "Opciones Osd"
+
+msgid "Record settings"
+msgstr "Ajustes de grabacion"
+
+msgid "Auto language settings"
+msgstr "Auto configuracion idioma"
+
+msgid "Http stream settings"
+msgstr "Ajustes Http stream"
+
+msgid "Free memory"
+msgstr "Liberar memoria"
+
+msgid "Reset Network"
+msgstr "Reiniciar RED"
+
+msgid "Please wait, Updating Epg"
+msgstr "Por favor Espere, Actualizando Epg"
+
+msgid "Updated Epg"
+msgstr "Epg Actualizado"
+
+msgid "Show Log"
+msgstr "ver log"
+
+msgid "The path where stored epg.dat"
+msgstr "Ruta donde almacenar el epg.dat"
+
+msgid "Time at title page"
+msgstr "Tiempo Duracion en Portada"
+
+msgid "Please wait while the devices are scanned ..."
+msgstr "Por favor, espere mientras se escanean los dispositivos ..."
+
+msgid "Select free memory mode"
+msgstr "Elija modo liberar memoria"
+
+msgid "Usb Format Wizard"
+msgstr "Formatear USB"
+
+msgid "Swap File settings"
+msgstr "Memoria Swap"
+
 msgid "Model:\t%s %s\n"
 msgstr "Modelo:\t%s %s\n"
+
+msgid "Model:\t %s %s\n"
+msgstr "Modelo:\t %s %s\n"
 
 msgid "Chipset:\t%s"
 msgstr "Chipset:\t%s"
@@ -15735,13 +15816,22 @@ msgid "CPU:\t%s"
 msgstr "CPU:\t%s"
 
 msgid "Cores:\t%s"
+msgstr "Núcleos:\t%s"
+
+msgid "Cores:\t %s"
 msgstr "Núcleos:\t %s"
 
 msgid "Version:\t%s"
 msgstr "Versión:\t%s"
 
+msgid "Version:\t% s"
+msgstr "Versión:\t% s"
+
 msgid "Build:\t%s"
 msgstr "Compilación:\t%s"
+
+msgid "Build:\t %s"
+msgstr "Compilación:\t %s"
 
 msgid "Kernel:\t%s"
 msgstr "Kernel:\t%s"
@@ -15749,8 +15839,29 @@ msgstr "Kernel:\t%s"
 msgid "Last update:\t%s"
 msgstr "Último Update:\t%s"
 
+msgid "Last update:\t %s"
+msgstr "Último Update:\t %s"
+
 msgid "Drivers:\t%s"
 msgstr "Drivers:\t%s"
+
+msgid "DVB Drivers:\t %s"
+msgstr "Drivers DVB:\t %s"
+
+msgid "DVB Drivers:\t%s"
+msgstr "Drivers DVB:\t%s"
+
+msgid "Installed:\t%s"
+msgstr "Instalada:\t%s"
+
+msgid "Installed:\t %s"
+msgstr "Instalada:\t %s"
+
+msgid "Restarts:\t%s"
+msgstr "Reinicios:\t%s"
+
+msgid "Restarts:\t %s"
+msgstr "Reinicios:\t %s"
 
 msgid "Frontprocessor version: %s"
 msgstr "Versión del frontprocessor: %s"

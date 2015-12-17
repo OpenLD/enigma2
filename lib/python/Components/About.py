@@ -1,9 +1,29 @@
+# -*- coding: utf-8 -*-
 from boxbranding import getBoxType, getImageVersion
 from sys import modules
-import socket, fcntl, struct
+import sys, os, time, socket, fcntl, struct
 
 def getVersionString():
 	return getImageVersion()
+
+def getImageVersionString():
+ 	try:
+ 		if os.path.isfile('/var/lib/opkg/status'):
+ 			st = os.stat('/var/lib/opkg/status')
+ 		else:
+ 			st = os.stat('/usr/lib/ipkg/status')
+ 		tm = time.localtime(st.st_mtime)
+ 		if tm.tm_year >= 2011:
+ 			return time.strftime("%Y-%m-%d %H:%M:%S", tm)
+ 	except:
+ 		pass
+ 	return _("unavailable")
+
+def getFlashDateString():
+	try:
+		return time.strftime(_("%Y-%m-%d %H:%M"), time.localtime(os.stat("/boot").st_ctime))
+	except:
+		return _("unknown")
 
 def getEnigmaVersionString():
 	return getImageVersion()
@@ -133,6 +153,31 @@ def getIfTransferredData(ifname):
 			rx_bytes, tx_bytes = (data[0], data[8])
 			f.close()
 			return rx_bytes, tx_bytes
+
+def getDriverInstalledDate():
+	try:
+		from glob import glob
+		driver = [x.split("-")[-2:-1][0][-8:] for x in open(glob("/var/lib/opkg/info/*-dvb-modules-*.control")[0], "r") if x.startswith("Version:")][0]
+		return  "%s-%s-%s" % (driver[:4], driver[4:6], driver[6:])
+	except:
+		return _("unknown")
+
+def getPythonVersionString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("python -V")
+		return output.split(' ')[1]
+	except:
+		return _("unknown")
+
+def getCPUTempString():
+	try:
+		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
+			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
+			return _("%s°C") % temperature
+	except:
+		pass
+	return ""
 
 # For modules that do "from About import about"
 about = modules[__name__]

@@ -42,7 +42,7 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 		Screen.__init__(self, session)
 		self["key_red"] = Label(_("Mountpoints"))
 		self["key_yellow"] = Label(_("Cancel"))
-		self["lab1"] = Label("Por favor, espere mientras se escanean los dispositivos ...")
+		self["lab1"] = Label(_("Please wait while the devices are scanned ..."))
 		
 		self.list = []
 		self["list"] = List(self.list)
@@ -165,7 +165,7 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 		ConfigListScreen.__init__(self, self.list)
 		self["key_red"] = Label(_("Save"))
 		self["key_green"] = Label(_("Cancel"))
-		self["Linconn"] = Label("Por favor, espere mientras se escanean los dispositivos...")
+		self["Linconn"] = Label(_("Please wait while the devices are scanned ..."))
 		
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{

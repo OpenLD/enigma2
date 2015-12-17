@@ -165,28 +165,28 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 
 		mypixmap = mypath + "crond.png"
 		png = LoadPixmap(mypixmap)
-		name = "CronManager"
+		name = _("CronManager")
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Harddisk.png"
 		png = LoadPixmap(mypixmap)
-		name = "Admin Dispositivos"
+		name = _("Admin Devices")
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Usb.png"
 		png = LoadPixmap(mypixmap)
-		name = "Formatear USB"
+		name = _("Usb Format Wizard")
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "SwapManager.png"
 		png = LoadPixmap(mypixmap)
-		name = "Memoria Swap"
+		name = _("Swap File settings")
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
@@ -200,56 +200,56 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 
 		mypixmap = mypath + "Epg_setup.png"
 		png = LoadPixmap(mypixmap)
-		name = "Opciones EPG"
+		name = _("Epg settings")
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "AV_Setup.png"
 		png = LoadPixmap(mypixmap)
-		name = "Opciones Osd"
+		name = _("Osd settings")
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Ajustes_grabar.png"
 		png = LoadPixmap(mypixmap)
-		name = "Ajustes de grabacion"
+		name = _("Record settings")
 		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Tuner_Setup.png"
 		png = LoadPixmap(mypixmap)
-		name = "Satfinder"
+		name = _("Satfinder")
 		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Conf_idiomas.png"
 		png = LoadPixmap(mypixmap)
-		name = "Auto configuracion idioma"
+		name = _("Auto language settings")
 		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Ajustes_http.png"
 		png = LoadPixmap(mypixmap)
-		name = "Ajustes Http stream"
+		name = _("Http stream settings")
 		idx = 11
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
-		name = "Liberar memoria"
+		name = _("Free memory")
 		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Network.png"
 		png = LoadPixmap(mypixmap)
-		name = "Reiniciar RED"
+		name = _("Reset Network")
 		idx = 15
 		res = (name, png, idx)
 		self.list.append(res)
@@ -284,7 +284,7 @@ class Ttimer(Screen):
                 global count
                 self.skin = Ttimer.skin
                 Screen.__init__(self, session)
-                self['srclabel'] = Label(_("Por favor Espere, Actualizando Epg"))
+                self['srclabel'] = Label(_("Please wait, Updating Epg"))
                 self.setTitle(_("Update EPG"))
                 self["progress"] = Progress(int(count))
                 self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value-5))
@@ -303,7 +303,7 @@ class Ttimer(Screen):
                         self.ctimer.stop()
                         self.session.nav.playService(eServiceReference(config.tv.lastservice.value))
                         rDialog.stopDialog(self.session)
-                        self.mbox = self.session.open(MessageBox,(_("Epg Actualizado")), MessageBox.TYPE_INFO, timeout = 5 )
+                        self.mbox = self.session.open(MessageBox,(_("Updated Epg")), MessageBox.TYPE_INFO, timeout = 5 )
                         self.close()
 pdialog = ""
 
@@ -347,7 +347,7 @@ class LDepg(Screen, ConfigListScreen):
 		self.setTitle(_("EPG Options"))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
-		self["key_blue"] = StaticText(_("ver log"))
+		self["key_blue"] = StaticText(_("Show Log"))
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Update"))
@@ -368,10 +368,10 @@ class LDepg(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Enable ViaSat EPG"), config.epg.viasat))
 		self.list.append(getConfigListEntry(_("Enable Netmed EPG"), config.epg.netmed))
 		self.list.append(getConfigListEntry(_("Enable Virgin EPG"), config.epg.virgin))
-		self.list.append(getConfigListEntry(_("Ruta donde almacenar el epg.dat"), config.misc.epgcachepath))
+		self.list.append(getConfigListEntry(_("The path where stored epg.dat"), config.misc.epgcachepath))
 		self.list.append(getConfigListEntry(_("Maximum number of days in EPG"), config.epg.maxdays))
 		self.list.append(getConfigListEntry(_("Maintain old EPG data for"), config.epg.histminutes))
-		self.list.append(getConfigListEntry(_("Tiempo Duracion en Portada"), config.plugins.LDteam.epgmhw2wait))
+		self.list.append(getConfigListEntry(_("Time at title page"), config.plugins.LDteam.epgmhw2wait))
 		
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
@@ -492,12 +492,12 @@ class LDmemoria(ConfigListScreen, Screen):
 			"yellow": self.ClearNow,
 			"ok": self.save_values
 		}, -2)
-		self.list.append(getConfigListEntry(_("Elija modo liberar memoria"), config.plugins.LDteam.dropmode))
+		self.list.append(getConfigListEntry(_("Select free memory mode"), config.plugins.LDteam.dropmode))
 		ConfigListScreen.__init__(self, self.list)
 		self.onShow.append(self.Title)
 		
 	def Title(self):
-		self.setTitle(_("Liberar memoria"))
+		self.setTitle(_("Free memory"))
 		self.infomem()
 
 	def cancel(self):
