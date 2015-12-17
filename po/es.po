@@ -3513,6 +3513,9 @@ msgstr "Memoria libre"
 msgid "FreeSpace"
 msgstr "Espacio libre"
 
+msgid "Free memory:"
+msgstr "Memoria libre:"
+
 msgid "Free to Air"
 msgstr "FTA"
 
