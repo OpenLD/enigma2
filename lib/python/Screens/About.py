@@ -55,23 +55,20 @@ def getAboutText():
 		except:
 			pass
 
-	#cpuMHz = ""
-	#if getBoxType() in ('formuler1, gbquad, gbquadplus, solo2'):
-	#	cpuMHz = "   (1,3 GHz)"
-	#else:
-		if path.exists('/proc/cpuinfo'):
-			f = open('/proc/cpuinfo', 'r')
-			temp = f.readlines()
-			f.close()
-			try:
-				for lines in temp:
-					lisp = lines.split(': ')
-					if lisp[0].startswith('cpu MHz'):
-						#cpuMHz = "   (" +  lisp[1].replace('\n','') + " MHz)"
-						cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n','')))) + " MHz)"
-						break
-			except:
-				pass
+	cpuMHz = ""
+	if path.exists('/proc/cpuinfo'):
+		f = open('/proc/cpuinfo', 'r')
+		temp = f.readlines()
+		f.close()
+		try:
+			for lines in temp:
+				lisp = lines.split(': ')
+				if lisp[0].startswith('cpu MHz'):
+					#cpuMHz = "   (" +  lisp[1].replace('\n', '') + " MHz)"
+					cpuMHz = "   (" +  str(int(float(lisp[1].replace('\n', '')))) + " MHz)"
+					break
+		except:
+			pass
 
 	AboutText += _("CPU:\t %s") % about.getCPUString() + cpuMHz + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
@@ -678,3 +675,4 @@ class TranslationInfo(Screen):
 				"cancel": self.close,
 				"ok": self.close,
 			})
+
