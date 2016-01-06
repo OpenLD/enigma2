@@ -384,7 +384,7 @@ void eServiceMP3InfoContainer::setBuffer(GstBuffer *buffer)
 
 // eServiceMP3
 int eServiceMP3::ac3_delay = 0,
-    eServiceMP3::pcm_delay = 0;
+				eServiceMP3::pcm_delay = 0;
 
 eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_nownext_timer(eTimer::create(eApp)),
@@ -582,7 +582,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 				flags |= GST_PLAY_FLAG_DOWNLOAD;
 				g_signal_connect(G_OBJECT(m_gst_playbin), "element-added", G_CALLBACK(handleElementAdded), this);
 				/* limit file size */
-				g_object_set(m_gst_playbin, "ring-buffer-max-size", (guint64)(8LL * 1024LL * 1024LL), NULL);
+				g_object_set(m_gst_playbin, "ring-buffer-max-size", (guint64)(20LL * 1024LL * 1024LL), NULL);
 			}
 			/*
 			 * regardless whether or not we configured a progressive download file, use a buffer as well
