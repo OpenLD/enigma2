@@ -56,9 +56,9 @@ int eDVBAudio::startPid(int pid, int type)
 	{
 		dmx_pes_filter_params pes;
 
-		pes.pid      = pid;
-		pes.input    = DMX_IN_FRONTEND;
-		pes.output   = DMX_OUT_DECODER;
+		pes.pid = pid;
+		pes.input = DMX_IN_FRONTEND;
+		pes.output = DMX_OUT_DECODER;
 		switch (m_dev)
 		{
 		case 0:
@@ -75,9 +75,9 @@ int eDVBAudio::startPid(int pid, int type)
 			break;
 		}
 #if defined(__sh__) // increases zapping speed
-		pes.flags	= DMX_IMMEDIATE_START;
+		pes.flags = DMX_IMMEDIATE_START;
 #else
-		pes.flags	= 0;
+		pes.flags = 0;
 #endif
 		eDebugNoNewLineStart("DMX_SET_PES_FILTER(0x%02x) - audio - ", pid);
 		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
@@ -351,9 +351,9 @@ int eDVBVideo::startPid(int pid, int type)
 	if (m_fd_demux >= 0)
 	{
 		dmx_pes_filter_params pes;
-		pes.pid      = pid;
-		pes.input    = DMX_IN_FRONTEND;
-		pes.output   = DMX_OUT_DECODER;
+		pes.pid = pid;
+		pes.input = DMX_IN_FRONTEND;
+		pes.output = DMX_OUT_DECODER;
 		switch (m_dev)
 		{
 		case 0:
@@ -370,9 +370,9 @@ int eDVBVideo::startPid(int pid, int type)
 			break;
 		}
 #if defined(__sh__) // increases zapping speed
-		pes.flags    = DMX_IMMEDIATE_START;
+		pes.flags = DMX_IMMEDIATE_START;
 #else
-		pes.flags    = 0;
+		pes.flags = 0;
 #endif
 		eDebugNoNewLineStart("DMX_SET_PES_FILTER(0x%02x) - video - ", pid);
 		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
@@ -663,9 +663,9 @@ int eDVBPCR::startPid(int pid)
 		return -1;
 	dmx_pes_filter_params pes;
 
-	pes.pid      = pid;
-	pes.input    = DMX_IN_FRONTEND;
-	pes.output   = DMX_OUT_DECODER;
+	pes.pid = pid;
+	pes.input = DMX_IN_FRONTEND;
+	pes.output = DMX_OUT_DECODER;
 	switch (m_dev)
 	{
 	case 0:
@@ -682,9 +682,9 @@ int eDVBPCR::startPid(int pid)
 		break;
 	}
 #if defined(__sh__) // increases zapping speed
-	pes.flags    = DMX_IMMEDIATE_START;
+	pes.flags = DMX_IMMEDIATE_START;
 #else
-	pes.flags    = 0;
+	pes.flags = 0;
 #endif
 	eDebugNoNewLineStart("DMX_SET_PES_FILTER(0x%02x) - pcr - ", pid);
 	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
@@ -738,9 +738,9 @@ int eDVBTText::startPid(int pid)
 		return -1;
 	dmx_pes_filter_params pes;
 
-	pes.pid      = pid;
-	pes.input    = DMX_IN_FRONTEND;
-	pes.output   = DMX_OUT_DECODER;
+	pes.pid = pid;
+	pes.input = DMX_IN_FRONTEND;
+	pes.output = DMX_OUT_DECODER;
 	switch (m_dev)
 	{
 	case 0:
@@ -757,9 +757,9 @@ int eDVBTText::startPid(int pid)
 		break;
 	}
 #if defined(__sh__) // increases zapping speed
-	pes.flags    = DMX_IMMEDIATE_START;
+	pes.flags = DMX_IMMEDIATE_START;
 #else
- 	pes.flags    = 0;
+	pes.flags = 0;
 #endif
 
 	eDebugNoNewLineStart("DMX_SET_PES_FILTER(0x%02x) - ttx - ", pid);
