@@ -1,5 +1,6 @@
 from boxbranding import getMachineBrand, getMachineName, getBoxType
-from os import system
+
+import enigma
 
 from enigma import eTimer
 
@@ -133,7 +134,7 @@ class NetworkWizard(WizardLanguage, Rc):
 				if interface == self.selectedInterface:
 					if self.originalInterfaceState[interface]["up"] is False:
 						if iNetwork.checkforInterface(interface) is True:
-							system("ifconfig " + interface + " down")
+							enigma.eConsoleAppContainer().execute("ifconfig %s down" % interface)
 
 	def listInterfaces(self):
 		self.checkOldInterfaceState()

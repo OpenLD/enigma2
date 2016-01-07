@@ -1,9 +1,13 @@
-from os import system, path as os_path
-from string import maketrans, strip
-
 from Components.config import config, ConfigYesNo, NoSave, ConfigSubsection, ConfigText, ConfigSelection, ConfigPassword
 from Components.Console import Console
 from Components.Network import iNetwork
+import enigma
+
+import os
+import sys
+import types
+from string import maketrans, strip
+from re import compile as re_compile, search as re_search, escape as re_escape
 from pythonwifi.iwlibs import getNICnames, Wireless, Iwfreq, getWNICnames
 from pythonwifi import flags as wififlags
 
@@ -56,7 +60,7 @@ class Wlan:
 		if self.oldInterfaceState is False:
 			if iNetwork.getAdapterAttribute(self.iface, "up") is False:
 				iNetwork.setAdapterAttribute(self.iface, "up", True)
-				system("ifconfig "+self.iface+" up")
+				enigma.eConsoleAppContainer().execute("ifconfig %s up" % self.iface)
 
 		ifobj = Wireless(self.iface) # a Wireless NIC Object
 
@@ -114,7 +118,7 @@ class Wlan:
 		if self.oldInterfaceState is not None:
 			if self.oldInterfaceState is False:
 				iNetwork.setAdapterAttribute(self.iface, "up", False)
-				system("ifconfig "+self.iface+" down")
+				enigma.eConsoleAppContainer().execute("ifconfig %s down" % self.iface)
 				self.oldInterfaceState = None
 				self.iface = None
 
@@ -172,7 +176,7 @@ class wpaSupplicant:
 
 	def loadConfig(self,iface):
 		configfile = getWlanConfigName(iface)
-		if not os_path.exists(configfile):
+		if not os.path.exists(configfile):
 			configfile = '/etc/wpa_supplicant.conf'
 		try:
 			#parse the wpasupplicant configfile
