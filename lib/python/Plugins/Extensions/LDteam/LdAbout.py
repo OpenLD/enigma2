@@ -1,5 +1,27 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+##
+##
+## Copyright (c) 2012-2015 OpenLD
+##          Javier Sayago <admin@lonasdigital.com>
+## Contact: javilonas@esp-desarrolladores.com
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##    http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+##########################################################################
 from enigma import *
 from Screens.Screen import Screen
+from Screens.Console import Console
 from twisted.internet import threads
 from Components.config import config
 from Components.Button import Button
@@ -15,14 +37,26 @@ from Components.About import about, getVersionString
 from Components.Console import Console
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
+from Components.Language import language
+from Components.Sources.StaticText import StaticText
+from Components.PluginList import *
+from Components.VariableText import VariableText
+from Components.Element import cached
+from Plugins.Plugin import PluginDescriptor
+from Components.PluginComponent import plugins
 from Tools.Directories import fileExists
 from Tools.StbHardware import getFPVersion
+from Tools.LoadPixmap import LoadPixmap
 from ServiceReference import ServiceReference
-from os import path, popen, system, listdir, remove as os_remove
-from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString
+from enigma import eLabel, iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, RT_HALIGN_LEFT, eListboxPythonMultiContent, gFont, getDesktop, eSize, ePoint
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
+from time import *
+from types import *
+import sys, socket, commands, re, new, os, gettext, _enigma, enigma, subprocess, threading, traceback, time, datetime
+from os import path, popen, system, listdir, remove as os_remove, rename as os_rename, getcwd, chdir
 
 from re import search
+from time import time
 
 class LdsysInfo(Screen):
 	skin = """
@@ -69,9 +103,9 @@ class LdsysInfo(Screen):
 		if res2:
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
-		text += "CPU: \t" +  about.getCPUString() + cpuMHz + "\n"
+		text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
 		text += "BogoMIPS \t" + bogoMIPS + "\n"
- 		f.close()
+		f.close()
 		text += "\nMEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
@@ -86,9 +120,10 @@ class LdsysInfo(Screen):
 			elif key == "SwapFree":
 				swapFree = parts[1].strip()
 		text += "Total memory:\t%s\n" % memTotal
-		text += "Free memory:\t%s kB\n"  % memFree
-		text += "Swap total:\t%s \n"  % swapTotal
-		text += "Swap free:\t%s \n"  % swapFree
+		text += "Free memory:\t%s kB\n" % memFree
+		text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
+		text += "Swap total:\t%s \n" % swapTotal
+		text += "Swap free:\t%s \n" % swapFree
 		text += "\nSTORAGE\n"
 		f = open("/tmp/syinfo.tmp",'r')
 		line = f.readline()
@@ -97,7 +132,7 @@ class LdsysInfo(Screen):
 		line = f.readline()
 		parts = line.split()
 		text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
- 		for line in f.readlines():
+		for line in f.readlines():
 			if line.find('/media/') != -1:
 				line = line.replace('/media/', '   ')
 				parts = line.split()
@@ -110,7 +145,7 @@ class LdsysInfo(Screen):
 		f = open("/etc/ldversion",'r')
 		text += "Firmware: \t" + f.readline() + "\n"
 		f.close()
-		text += "Version: \t" +  about.getEnigmaVersionString() + "\n"
-		text += "Kernel: \t" +  about.getKernelVersionString() + "\n"
+		text += "Version: \t" + about.getEnigmaVersionString() + "\n"
+		text += "Kernel: \t" + about.getKernelVersionString() + "\n"
 
 		self["lab1"].setText(text)

@@ -1,4 +1,24 @@
-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+##
+##
+## Copyright (c) 2012-2015 OpenLD
+##          Javier Sayago <admin@lonasdigital.com>
+## Contact: javilonas@esp-desarrolladores.com
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##    http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+##########################################################################
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
@@ -59,7 +79,7 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 		self.gO()
 
 	def gO(self):
-		paths = ["/media/hdd","/media/usb","/media/downloads","/media/music","/media/personal","/media/photo","/media/video"]
+		paths = ["/media/hdd","/media/usb","/media/uSDextra","/media/downloads","/media/music","/media/personal","/media/photo","/media/video"]
 		for path in paths:
 			if not pathExists(path):
 				createDir(path)
@@ -192,7 +212,6 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 		self["Linconn"].hide()
 
 
-
 	def get_currentPoint(self, uuid):
 		point = "No mapeado"
 		f = open("/etc/fstab",'r')
@@ -213,7 +232,6 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 			c = "/media/" + f
 			choices.append((c,c))
 		return choices
-
 
 
 	def savePoints(self):
@@ -320,13 +338,11 @@ class LDSwap(Screen):
 			else:
 				self.session.openWithCallback(self.selectSize,ChoiceBox, title="Selecionar capacidad archivo Swap:", list=options)
 
-
 	def selectSize(self, device):
 		if device:
 			self.new_swap = device[1] + "/swapfile"
 			options = [['8 MB', '8192'], ['16 MB', '16384'], ['32 MB', '32768'], ['64 MB', '65536'], ['128 MB', '131072'], ['256 MB', '262144'], ['512 MB', '524288'], ['1024 MB', '1048576']]
 			self.session.openWithCallback(self.swapOn,ChoiceBox, title="Selecionar capacidad archivo Swap:", list=options)
-
 
 	def swapOn(self, size):
 		if size:

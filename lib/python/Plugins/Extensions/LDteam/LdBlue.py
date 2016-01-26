@@ -1,3 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+##
+##
+## Copyright (c) 2012-2015 OpenLD
+##          Javier Sayago <admin@lonasdigital.com>
+## Contact: javilonas@esp-desarrolladores.com
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##    http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+##########################################################################
 from Screens.Console import Console
 from Screens.Screen import Screen
 from Screens.ChoiceBox import ChoiceBox
@@ -10,10 +31,11 @@ from Components.Label import Label
 from Components.config import config, ConfigElement, ConfigSubsection, ConfigSelection, ConfigSubList, getConfigListEntry, KEY_LEFT, KEY_RIGHT, KEY_OK
 from Components.ConfigList import ConfigList
 from Components.ScrollLabel import ScrollLabel
+from Components.Language import language
 from Components.MenuList import MenuList
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
-from Components.Pixmap import MultiPixmap
+from Components.Pixmap import Pixmap, MultiPixmap
 from Components.Sources.Progress import Progress
 from Components.About import about
 from Tools.BoundFunction import boundFunction
@@ -23,16 +45,12 @@ from ServiceReference import ServiceReference
 from Components.PluginList import *
 from Plugins.Plugin import PluginDescriptor
 from Components.PluginComponent import plugins
-from Components.Console import Console
+from Components.Console import Console as iConsole
 from os import popen, system, listdir, remove as os_remove
+from time import *
+from types import *
+import sys, socket, commands, re, new, os, gettext, _enigma, enigma, subprocess, threading, sys, traceback, time, datetime
 from enigma import iServiceInformation, eTimer, eDVBDB, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation
-
-import os
-import sys
-import re
-import socket
-import time
-import datetime
 
 
 class LDBluePanel(Screen):
@@ -134,7 +152,7 @@ class LDBluePanel(Screen):
 		if fileExists("/etc/LdCamConf"):
 			f = open("/etc/LdCamConf",'r')
 			for line in f.readlines():
-   				parts = line.strip().split("|")
+				parts = line.strip().split("|")
 				if parts[0] == "deldefault":
 					self.defaultcam = parts[1]
 			f.close()
@@ -153,9 +171,9 @@ class LDBluePanel(Screen):
 		mytext = "";
 		if fileExists("/tmp/ecm.info"):
 			f = open("/tmp/ecm.info",'r')
- 			for line in f.readlines():
+			for line in f.readlines():
 				mytext = mytext + line.strip() + "\n"
- 			f.close()
+			f.close()
 		if len(mytext) < 5:
 			mytext = "\n\n    " + _("Ecm info not available.")
 
