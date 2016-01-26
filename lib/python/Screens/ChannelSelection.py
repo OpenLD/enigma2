@@ -13,6 +13,7 @@ from Components.MenuList import MenuList
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.Sources.List import List
 from Components.SystemInfo import SystemInfo
+
 from Components.UsageConfig import preferredTimerPath
 from Components.Renderer.Picon import getPiconName
 from Screens.TimerEdit import TimerSanityConflict
@@ -57,7 +58,8 @@ except:
 
 profile("ChannelSelection.py after imports")
 
-FLAG_SERVICE_NEW_FOUND = 64 #define in lib/dvb/idvb.h as dxNewFound = 64
+FLAG_SERVICE_NEW_FOUND = 64
+FLAG_IS_DEDICATED_3D = 128 #define in lib/dvb/idvb.h as dxNewFound = 64 and dxIsDedicated3D = 128
 
 class BouquetSelector(Screen):
 	def __init__(self, session, bouquets, selectedFunc, enableWrapAround=True):
@@ -195,6 +197,11 @@ class ChannelContextMenu(Screen):
 							append_when_current_valid(current, menu, (_("add to parental protection"), boundFunction(self.addParentalProtection, csel.getCurrentSelection())), level=0)
 						else:
 							append_when_current_valid(current, menu, (_("remove from parental protection"), boundFunction(self.removeParentalProtection, csel.getCurrentSelection())), level=0)
+					if SystemInfo["3DMode"]:
+						if eDVBDB.getInstance().getFlag(eServiceReference(current.toString())) & FLAG_IS_DEDICATED_3D:
+							append_when_current_valid(current, menu, (_("Unmark service as dedicated 3D service"), self.removeDedicated3DFlag), level=0)
+						else:
+							append_when_current_valid(current, menu, (_("Mark service as dedicated 3D service"), self.addDedicated3DFlag), level=0)
 					if haveBouquets:
 						bouquets = self.csel.getBouquetList()
 						if bouquets is None:
@@ -289,6 +296,24 @@ class ChannelContextMenu(Screen):
 					append_when_current_valid(current, menu, (_("abort alternatives edit"), self.bouquetMarkAbort), level=0)
 		menu.append(ChoiceEntryComponent(text = (_("Reload Services"), self.reloadServices)))
 		self["menu"] = ChoiceList(menu)
+
+	def set3DMode(self, value):
+		if config.osd.threeDmode.value == "auto" and self.session.nav.currentlyPlayingServiceReference == self.csel.getCurrentSelection():
+			from Screens.VideoMode import applySettings
+			applySettings(value and "sidebyside" or config.osd.threeDmode.value)
+
+	def addDedicated3DFlag(self):
+		eDVBDB.getInstance().addFlag(eServiceReference(self.csel.getCurrentSelection().toString()), FLAG_IS_DEDICATED_3D)
+		eDVBDB.getInstance().reloadBouquets()
+		self.set3DMode(True)
+		self.close()
+
+	def removeDedicated3DFlag(self):
+		eDVBDB.getInstance().removeFlag(eServiceReference(self.csel.getCurrentSelection().toString()), FLAG_IS_DEDICATED_3D)
+		eDVBDB.getInstance().reloadBouquets()
+		self.set3DMode(False)
+		self.close()
+
 
 	def addServiceToBouquetOrAlternative(self):
 		if self.addFunction:
