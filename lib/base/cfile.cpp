@@ -43,3 +43,11 @@ int CFile::write(const char *filename, const char *value)
 		return -1;
 	return fprintf(f, "%s", value);
 }
+
+int CFile::writeStr(const char *filename, std::string value)
+{
+	CFile f(filename, "w");
+	if (f)
+		fprintf(f, "%s", value.c_str());
+	return 0;
+}
