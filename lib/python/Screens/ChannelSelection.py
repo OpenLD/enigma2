@@ -215,7 +215,7 @@ class ChannelContextMenu(Screen):
 						if not self.parentalControlEnabled or self.parentalControl.getProtectionLevel(csel.getCurrentSelection().toCompareString()) == -1:
 							if self.csel.dopipzap:
 								append_when_current_valid(current, menu, (_("play in mainwindow"), self.playMain), level=0, key="red")
-							else:	
+							else:
 								append_when_current_valid(current, menu, (_("play as picture in picture"), self.showServiceInPiP), level=0, key="blue")
 					append_when_current_valid(current, menu, (_("find currently played service"), self.findCurrentlyPlayed), level=0, key="3")
 				else:
@@ -1612,10 +1612,10 @@ class ChannelSelectionBase(Screen):
 							if service_type:
 								if unsigned_orbpos == 0xFFFF: #Cable
 									service_name = _("Cable")
-									addCableAndTerrestrialLater.append(("%s - %s" % (service_name, service_type), service.toString()))			
+									addCableAndTerrestrialLater.append(("%s - %s" % (service_name, service_type), service.toString()))
 								elif unsigned_orbpos == 0xEEEE: #Terrestrial
 									service_name = _("Terrestrial")
-									addCableAndTerrestrialLater.append(("%s - %s" % (service_name, service_type), service.toString()))			
+									addCableAndTerrestrialLater.append(("%s - %s" % (service_name, service_type), service.toString()))
 								else:
 									try:
 										service_name = str(nimmanager.getSatDescription(orbpos))
@@ -1992,13 +1992,13 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		if lastservice.valid():
 			self.setCurrentSelection(lastservice)
 
-	def toogleTvRadio(self): 
+	def toogleTvRadio(self):
 		if self.radioTV == 1:
 			self.radioTV = 0
-			self.setModeTv() 
-		else: 
+			self.setModeTv()
+		else:
 			self.radioTV = 1
-			self.setModeRadio() 
+			self.setModeRadio()
 
 	def setModeTv(self):
 		if self.revertMode is None and config.servicelist.lastmode.value == 'radio':
@@ -2789,7 +2789,7 @@ class HistoryZapSelector(Screen):
 					if eventName is None:
 						eventName = ""
 					else:
-						eventName = eventName.replace('(18+)', '').replace('18+', '').replace('(16+)', '').replace('16+', '').replace('(12+)', '').replace('12+', '').replace('(7+)', '').replace('7+', '').replace('(6+)', '').replace('6+', '').replace('(0+)', '').replace('0+', '')	
+						eventName = eventName.replace('(18+)', '').replace('18+', '').replace('(16+)', '').replace('16+', '').replace('(12+)', '').replace('12+', '').replace('(7+)', '').replace('7+', '').replace('(6+)', '').replace('6+', '').replace('(0+)', '').replace('0+', '')
 					# if config.plugins.SetupZapSelector.event.value == "2":
 					descriptionName = event.getShortDescription()
 					if descriptionName is None or descriptionName == "":

@@ -258,7 +258,7 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 
 
 class RemoteControlType(Screen, ConfigListScreen):
-	
+
 	rcList = [
 			("0", _("Default")),
 			("3", _("MaraM9")),

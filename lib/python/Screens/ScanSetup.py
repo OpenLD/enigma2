@@ -517,7 +517,7 @@ class TerrestrialTransponderSearchSupport:
 
 	def terrestrialTransponderSearch(self, freq, bandWidth):
 		self.terrestrial_search_data = ""
-		cmd = "%s --freq %d --bw %d --bus %d --ds 2" % (self.terrestrial_search_binName, freq, bandWidth, self.terrestrial_search_bus)	
+		cmd = "%s --freq %d --bw %d --bus %d --ds 2" % (self.terrestrial_search_binName, freq, bandWidth, self.terrestrial_search_bus)
 		print "SCAN CMD : ",cmd
 		self.terrestrial_search_container.execute(cmd)
 

@@ -260,7 +260,7 @@ class AudioSetup(Screen, ConfigListScreen):
 		level = config.usage.setup_level.index
 
 		self.list = [ ]
-		
+
 		if level >= 1:
 			if SystemInfo["CanPcmMultichannel"]:
 				self.list.append(getConfigListEntry(_("PCM Multichannel"), config.av.pcm_multichannel, _("Choose whether multi channel sound tracks should be output as PCM.")))
@@ -470,7 +470,7 @@ class AutoVideoMode(Screen):
 			if video_rate != -1:
 				if video_rate == 25000 and video_pol == 'i':
 					new_rate = 50000
-				elif video_rate == 59940 or (video_rate == 29970 and video_pol == 'i') or (video_rate == 29970 and video_pol == 'p' and config.av.autores.value == 'disabled'): 
+				elif video_rate == 59940 or (video_rate == 29970 and video_pol == 'i') or (video_rate == 29970 and video_pol == 'p' and config.av.autores.value == 'disabled'):
 					new_rate = 60000
 				elif video_rate == 23976:
 					new_rate = 24000
@@ -577,10 +577,10 @@ class AutoVideoMode(Screen):
 				else:
 					print "DEBUG VIDEOMODE/ no path or no service reference, presumably live TV"
 					new_rate = '50' # for TV / or no service reference, then stay at 1080p50
-				
+
 				new_rate = new_rate.replace('25', '50')
 				new_rate = new_rate.replace('30', '60')
-				
+
 				if  (config.av.smart1080p.value == '1080p50') or (config.av.smart1080p.value == 'true'): # for compatibility with old ConfigEnableDisable
 					write_mode = '1080p' + new_rate
 				elif config.av.smart1080p.value == '2160p50':

@@ -33,7 +33,7 @@ class Standby2(Screen):
 		#restart last played service
 		#unmute adc
 		self.leaveMute()
-		# set LCDminiTV 
+		# set LCDminiTV
 		if SystemInfo["Display"] and SystemInfo["LCDMiniTV"]:
 			setLCDModeMinitTV(config.lcd.modeminitv.value)
 		#kill me
@@ -70,7 +70,7 @@ class Standby2(Screen):
 
 		#mute adc
 		self.setMute()
-	
+
 		if SystemInfo["Display"] and SystemInfo["LCDMiniTV"]:
 			# set LCDminiTV off
 			setLCDModeMinitTV("0")

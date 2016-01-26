@@ -894,7 +894,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 
 	def showCoolSingleGuide(self):
 		if self.servicelist is None:
-			return	
+			return
 		if COOLTVGUIDE:
 			for plugin in plugins.getPlugins([PluginDescriptor.WHERE_EXTENSIONSMENU, PluginDescriptor.WHERE_EVENTINFO]):
 				if plugin.name == _("Cool Single Guide"):
@@ -1126,7 +1126,7 @@ class InfoBarNumberZap:
 				rootbouquet = eServiceReference(bqrootstr)
 				bouquet = eServiceReference(bqrootstr)
 				bouquetlist = serviceHandler.list(bouquet)
-					
+
 				if not bouquetlist is None:
 					while True:
 						bouquet = bouquetlist.getNext()
@@ -1803,7 +1803,7 @@ class InfoBarEPG:
 			elif config.plisettings.PLIEPG_mode.value == "single":
 				self.openSingleServiceEPG()
 			elif config.plisettings.PLIEPG_mode.value == "merlinepgcenter":
-				self.openMerlinEPGCenter()	
+				self.openMerlinEPGCenter()
 			elif config.plisettings.PLIEPG_mode.value == "cooltvguide" and COOLTVGUIDE:
 				if self.isInfo:
 					self.showCoolTVGuide()
@@ -1992,10 +1992,10 @@ class InfoBarEPG:
 					break
 		else:
 			self.session.open(MessageBox, _("The Cool TV Guide plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
-	
+
 	def showCoolSingleGuide(self):
 		if self.servicelist is None:
-			return	
+			return
 		if COOLTVGUIDE:
 			for plugin in plugins.getPlugins([PluginDescriptor.WHERE_EXTENSIONSMENU, PluginDescriptor.WHERE_EVENTINFO]):
 				if plugin.name == _("Cool Single Guide"):
@@ -2331,8 +2331,8 @@ class InfoBarSeek:
 			if os.path.exists("/proc/stb/lcd/symbol_hdd"):
 				f = open("/proc/stb/lcd/symbol_hdd", "w")
 				f.write("0")
-				f.close()        
-			if os.path.exists("/proc/stb/lcd/symbol_hddprogress"):  
+				f.close()
+			if os.path.exists("/proc/stb/lcd/symbol_hddprogress"):
 				f = open("/proc/stb/lcd/symbol_hddprogress", "w")
 				f.write("0")
 				f.close()
@@ -2368,7 +2368,7 @@ class InfoBarSeek:
 					if config.lcd.hdd.value == "1":
 						file = open("/proc/stb/lcd/symbol_hddprogress", "w")
 						file.write('%d' % int(self.activity))
-						file.close() 
+						file.close()
 		else:
 			self.activityTimer.stop()
 			self.activity = 0
@@ -3224,7 +3224,7 @@ class LDBluePanel:
 		if config.workaround.blueswitch.value == "1":
 			self.showExtensionSelection()
 		else:
-			self.quickmenuStart()			
+			self.quickmenuStart()
 
 	def quickmenuStart(self):
 		try:
@@ -3713,15 +3713,15 @@ class InfoBarTimerButton:
 		from Screens.TimerEdit import TimerEditList
 		self.session.open(TimerEditList)
 
-class InfoBarAspectSelection: 
-	STATE_HIDDEN = 0 
-	STATE_ASPECT = 1 
-	STATE_RESOLUTION = 2 
-	def __init__(self): 
-		self["AspectSelectionAction"] = HelpableActionMap(self, "InfobarAspectSelectionActions", 
-			{ 
-				"aspectSelection": (self.ExGreen_toggleGreen, _("Aspect list...")), 
-			}) 
+class InfoBarAspectSelection:
+	STATE_HIDDEN = 0
+	STATE_ASPECT = 1
+	STATE_RESOLUTION = 2
+	def __init__(self):
+		self["AspectSelectionAction"] = HelpableActionMap(self, "InfobarAspectSelectionActions",
+			{
+				"aspectSelection": (self.ExGreen_toggleGreen, _("Aspect list...")),
+			})
 
 		self.__ExGreen_state = self.STATE_HIDDEN
 
@@ -3734,10 +3734,10 @@ class InfoBarAspectSelection:
 		print "do self.STATE_RESOLUTION"
 		self.__ExGreen_state = self.STATE_RESOLUTION
 		self.resolutionSelection()
-		
+
 	def ExGreen_doHide(self):
 		print "do self.STATE_HIDDEN"
-		self.__ExGreen_state = self.STATE_HIDDEN 
+		self.__ExGreen_state = self.STATE_HIDDEN
 
 	def ExGreen_toggleGreen(self, arg=""):
 		print self.__ExGreen_state
@@ -3815,7 +3815,7 @@ class InfoBarResolutionSelection:
 		f.close()
 		if getBoxType().startswith('azbox'):
 			fpsString = '50000'
-		else:	
+		else:
 			try:
 				f = open("/proc/stb/vmpeg/0/framerate", "r")
 				fpsString = f.read()
@@ -3823,7 +3823,7 @@ class InfoBarResolutionSelection:
 			except:
 				print"[InfoBarResolutionSelection] Error open /proc/stb/vmpeg/0/framerate !!"
 				fpsString = '50000'
-		
+
 		xres = int(xresString, 16)
 		yres = int(yresString, 16)
 		fps = int(fpsString)
@@ -3843,7 +3843,7 @@ class InfoBarResolutionSelection:
 
 		selection = 0
 		tlist = []
-		tlist.append((_("Exit"), "exit")) 
+		tlist.append((_("Exit"), "exit"))
 		tlist.append((_("Auto(not available)"), "auto"))
 		tlist.append(("Video: " + str(xres) + "x" + str(yres) + "@" + str(fpsFloat) + "hz", ""))
 		tlist.append(("--", ""))
@@ -4492,7 +4492,7 @@ class InfoBarHdmi:
 			return _("Turn on HDMI-IN Full screen mode")
 		else:
 			return _("Turn off HDMI-IN Full screen mode")
-	      
+
 	def getHDMIInPiPScreen(self):
 		if not self.hdmi_enabled_pip:
 			return _("Turn on HDMI-IN PiP mode")

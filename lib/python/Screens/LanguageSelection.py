@@ -76,7 +76,7 @@ class LanguageSelection(Screen):
 		language.updateLanguageCache()
 		self["languages"].setList(self.list)
 		self.selectActiveLanguage()
-		
+
 	def selectActiveLanguage(self):
 		activeLanguage = language.getActiveLanguage()
 		pos = 0

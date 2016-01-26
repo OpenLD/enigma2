@@ -8,9 +8,9 @@ from Components.Sources.List import List
 from Components.Label import Label
 from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_SKIN_IMAGE, fileExists, pathExists, createDir
 from Tools.LoadPixmap import LoadPixmap
-from Components.PluginList import * 
-from Plugins.Plugin import PluginDescriptor 
-from Components.PluginComponent import plugins 
+from Components.PluginList import *
+from Plugins.Plugin import PluginDescriptor
+from Components.PluginComponent import plugins
 from Components.Console import Console
 from os import popen, system, listdir, chdir, getcwd, remove as os_remove
 from enigma import iServiceInformation, eTimer, eDVBDB, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation
@@ -48,8 +48,8 @@ class LDPluginPanel(Screen):
                <widget name="key_green" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="green" transparent="1" />
                <widget name="key_yellow" position="370,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="yellow" transparent="1" />
                <widget name="key_blue" position="543,592" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="blue" transparent="1" />
- 
- </screen>""" 
+
+ </screen>"""
 	def __init__(self, session):
 		Screen.__init__(self, session)
 
@@ -57,7 +57,7 @@ class LDPluginPanel(Screen):
 		self["key_red"] = Label(_("Update"))
 		self["key_yellow"] = Label(_("Scripts"))
 		self["key_blue"] = Label(_("Mountpoints"))
-		
+
 		self.list = []
 		self["list"] = List(self.list)
 		self.updateList()
@@ -89,7 +89,7 @@ class LDPluginPanel(Screen):
 			res = (plugin.name, plugin.description, png, plugin)
 			self.list.append(res)
 
-		self["list"].list = self.list	
+		self["list"].list = self.list
 
 	def keyYellow(self):
 		from Plugins.Extensions.LDteam.LdScripts import LDScripts

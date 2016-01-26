@@ -12,7 +12,7 @@ def getFPVersion():
 			file.close()
 		elif getBoxType() in ('dm7080','dm820'):
 			ret = open("/proc/stb/fp/version", "r").read()
-		else:	
+		else:
 			ret = long(open("/proc/stb/fp/version", "r").read())
 	except IOError:
 		try:
@@ -54,7 +54,7 @@ def setRTCoffset():
 
 def setRTCtime(wutime):
 	if getBoxType() in ('gb800solo', 'gb800se', 'gb800ue') or getBrandOEM().startswith('ini') or getBrandOEM() in ('fulan'):
-		setRTCoffset() 
+		setRTCoffset()
 	try:
 		f = open("/proc/stb/fp/rtc", "w")
 		f.write(str(wutime))

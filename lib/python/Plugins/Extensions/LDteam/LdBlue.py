@@ -20,9 +20,9 @@ from Tools.BoundFunction import boundFunction
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from ServiceReference import ServiceReference
-from Components.PluginList import * 
-from Plugins.Plugin import PluginDescriptor 
-from Components.PluginComponent import plugins 
+from Components.PluginList import *
+from Plugins.Plugin import PluginDescriptor
+from Components.PluginComponent import plugins
 from Components.Console import Console
 from os import popen, system, listdir, remove as os_remove
 from enigma import iServiceInformation, eTimer, eDVBDB, eDVBCI_UI, eListboxPythonStringContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation
@@ -63,11 +63,11 @@ class LDBluePanel(Screen):
 <widget name="Ilab3" position="35,233" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="Ilab4" position="35,258" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="Ecmtext" position="40,293" size="505,380" font="Regular;18" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
- 
- </screen>""" 
+
+ </screen>"""
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self["lab1"] = Label()
 		self["lab2"] = Label(_("Set Default CAM"))
 		self["lab3"] = Label()
@@ -77,7 +77,7 @@ class LDBluePanel(Screen):
 		self["Ilab4"] = Label()
 		self["activecam"] = Label()
 		self["Ecmtext"] = ScrollLabel()
-		
+
 		self["actions"] = ActionMap(["ColorActions", "OkCancelActions", "DirectionActions"],
 		{
 			"ok": self.keyOk,
@@ -89,7 +89,7 @@ class LDBluePanel(Screen):
 			"up": self["Ecmtext"].pageUp,
 			"down": self["Ecmtext"].pageDown
 		}, -1)
-		
+
 		self.emlist = []
 		self.populate_List()
 		self["list"] = MenuList(self.emlist)
@@ -117,19 +117,19 @@ class LDBluePanel(Screen):
 			provider = self.getServiceInfoValue(iServiceInformation.sProvider, sinfo)
 			wide = self.getServiceInfoValue(iServiceInformation.sAspect, sinfo)
 			width = sinfo and sinfo.getInfo(iServiceInformation.sVideoWidth) or -1
-			height = sinfo and sinfo.getInfo(iServiceInformation.sVideoHeight) or -1	
+			height = sinfo and sinfo.getInfo(iServiceInformation.sVideoHeight) or -1
 			videosize = "%dx%d" %(width, height)
-			aspect = "16:9" 
+			aspect = "16:9"
 			if aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ):
 				aspect = "4:3"
 		except:
-			name = "N/A"; provider = "N/A"; aspect = "N/A"; videosize  = "N/A"	
-		
+			name = "N/A"; provider = "N/A"; aspect = "N/A"; videosize  = "N/A"
+
 		self["Ilab1"].setText(_("Name: ") + name)
 		self["Ilab2"].setText(_("Provider: ") + provider)
 		self["Ilab3"].setText(_("Aspect Ratio: ") + aspect)
 		self["Ilab4"].setText(_("Videosize: ") + videosize)
-	
+
 		self.defaultcam = "/usr/camscript/Ncam_Ci.sh"
 		if fileExists("/etc/LdCamConf"):
 			f = open("/etc/LdCamConf",'r')
@@ -138,8 +138,8 @@ class LDBluePanel(Screen):
 				if parts[0] == "deldefault":
 					self.defaultcam = parts[1]
 			f.close()
-			
-		self.defCamname =  "Common Interface"	
+
+		self.defCamname =  "Common Interface"
 		for c in self.camnames.keys():
 			if self.camnames[c] == self.defaultcam:
 				self.defCamname = c
@@ -158,7 +158,7 @@ class LDBluePanel(Screen):
  			f.close()
 		if len(mytext) < 5:
 			mytext = "\n\n    " + _("Ecm info not available.")
-				
+
 		self["activecam"].setText(self.defCamname)
 		self["Ecmtext"].setText(mytext)
 
@@ -175,11 +175,11 @@ class LDBluePanel(Screen):
 	def keyOk(self):
 		self.sel = self["list"].getCurrent()
 		self.newcam = self.camnames[self.sel]
-		
+
 		out = open("/etc/LdCamConf",'w')
 		out.write("deldefault|" + self.newcam + "\n")
 		out.close()
-		
+
 		out = open("/etc/CurrentLdCamName", "w")
 		out.write(self.sel)
 		out.close()
@@ -188,25 +188,25 @@ class LDBluePanel(Screen):
 		cmd = "STOP_CAMD," + self.defaultcam
 		self.sendtoLd_sock(cmd)
 		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, _("Stopping"))
-		
+
 	def keyOk2(self):
 		os.system("/usr/bin/StartLdCam stop")
 		cmd = "NEW_CAMD," + self.newcam
 		self.sendtoLd_sock(cmd)
 		oldcam = self.camnames[self.sel]
 		self.session.openWithCallback(self.myclose, startstopCam, self.sel, _("Starting"))
-		
-		
+
+
 	def sendtoLd_sock(self, data):
 		client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		client_socket.connect("/tmp/OpenLD.socket")
 		client_socket.send(data)
 		client_socket.close()
-				
+
 	def keyBlue(self):
 		from LdSet import LDSettings
 		self.session.open(LDSettings)
-			
+
 	def keyGreen(self):
 		from Plugins.Extensions.LDteam.LdPlugin import LDPluginPanel
 		self.session.open(LDPluginPanel)
@@ -221,7 +221,7 @@ class LDBluePanel(Screen):
 
 	def myclose(self):
 		self.close()
-	
+
 
 class startstopCam(Screen):
 	skin = """
@@ -238,7 +238,7 @@ class startstopCam(Screen):
 		self.delay = 800
 		if what == _("Starting"):
 			self.delay= 3000
-		
+
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.end)
 		self.onShow.append(self.startShow)
@@ -250,7 +250,7 @@ class startstopCam(Screen):
 		self.activityTimer.stop()
 		del self.activityTimer
 		self.close()
-		
+
 
 class LDBp:
 	def __init__(self):
@@ -266,4 +266,3 @@ class LDBp:
 		if len(args):
 			(actionmap, context, action) = args
 			actionmap.action(context, action)
-

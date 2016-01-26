@@ -133,7 +133,7 @@ class SecConfigure:
 
 	def linkNIMs(self, sec, nim1, nim2):
 		print "link tuner", nim1, "to tuner", nim2
-		# for internally connect tuner A to B		
+		# for internally connect tuner A to B
 		if getBoxType() == 'vusolo2' or '7356' not in about.getChipSetString() and nim2 == (nim1 - 1):
 			self.linkInternally(nim1)
 		elif 'vusolo2' or '7356' in about.getChipSetString():
@@ -228,7 +228,7 @@ class SecConfigure:
 						print "diseqcmode: ", nim.diseqcMode.value
 						if nim.diseqcMode.value == "single":			#single
 							currentCircular = False
-							if nim.diseqcA.value in ("360", "560"): 
+							if nim.diseqcA.value in ("360", "560"):
 								currentCircular = nim.simpleDiSEqCSetCircularLNB.value
 							if nim.simpleSingleSendDiSEqC.value:
 								self.addLNBSimple(sec, slotid = x, orbpos = nim.diseqcA.orbital_position, toneburstmode = diseqcParam.NO, diseqcmode = diseqcParam.V1_0, diseqcpos = diseqcParam.AA, diseqc13V = nim.diseqc13V.value, CircularLNB = currentCircular)
@@ -392,10 +392,10 @@ class SecConfigure:
 								print "positionnumber out of range"
 						else:
 							print "no product in list"
-							
+
 					if currLnb.unicable.value == "unicable_user":
 #TODO satpositions for satcruser
-						if currLnb.dictionuser.value == "EN50607": 
+						if currLnb.dictionuser.value == "EN50607":
 							sec.setLNBSatCRformat(1)
 							sec.setLNBSatCR(currLnb.satcruserEN50607.index)
 							sec.setLNBSatCRvco(currLnb.satcrvcouserEN50607[currLnb.satcruserEN50607.index].value*1000)
@@ -728,7 +728,7 @@ class NIM(object):
 		if name is None:
 			name = chr(ord('A') + self.slot)
 		return name
-	
+
 	slot_input_name = property(getSlotInputName)
 
 	def getSlotName(self):
@@ -1691,7 +1691,7 @@ def InitNimManager(nimmgr):
 								tmp.positions[article] = ConfigSubList()
 								tmp.positions[article].append(ConfigInteger(default=positions, limits = (positions, positions)))
 								tmp.diction[article] = ConfigSelection(choices = dictionlist, default = dictionlist[0][0])
-								
+
 								scrlist = []
 								scrlist_append = scrlist.append
 								vcolist=unicableproducts[manufacturer][article].get("frequencies")
@@ -1713,7 +1713,7 @@ def InitNimManager(nimmgr):
 								tmp_lofl_article_append = tmp.lofl[article].append
 								tmp_lofh_article_append = tmp.lofh[article].append
 								tmp_loft_article_append = tmp.loft[article].append
-								
+
 								for cnt in range(1,positions+1):
 									lofl = int(positionslist[cnt][0])
 									lofh = int(positionslist[cnt][1])
@@ -1753,7 +1753,7 @@ def InitNimManager(nimmgr):
 				tmp.append(ConfigInteger(default=1864, limits = (950, 2150)))
 				tmp.append(ConfigInteger(default=1980, limits = (950, 2150)))
 				tmp.append(ConfigInteger(default=2096, limits = (950, 2150)))
-				section.satcrvcouserEN50494 = tmp 
+				section.satcrvcouserEN50494 = tmp
 
 				tmp.append(ConfigInteger(default=1284, limits = (950, 2150)))
 				tmp.append(ConfigInteger(default=1400, limits = (950, 2150)))
@@ -1779,7 +1779,7 @@ def InitNimManager(nimmgr):
 				tmp.append(ConfigInteger(default=1864, limits = (950, 2150)))
 				tmp.append(ConfigInteger(default=1980, limits = (950, 2150)))
 				tmp.append(ConfigInteger(default=2096, limits = (950, 2150)))
-				section.satcrvcouserEN50607 = tmp 
+				section.satcrvcouserEN50607 = tmp
 
 				nim.advanced.unicableconnected = ConfigYesNo(default=False)
 				nim.advanced.unicableconnectedTo = ConfigSelection([(str(id), nimmgr.getNimDescription(id)) for id in nimmgr.getNimListOfType("DVB-S") if id != x])

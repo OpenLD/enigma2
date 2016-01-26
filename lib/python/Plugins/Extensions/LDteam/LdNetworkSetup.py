@@ -252,7 +252,7 @@ class IPv6Setup(Screen, ConfigListScreen, HelpableScreen):
 		<ePixmap pixmap="skin_default/div-h.png" position="0,340" zPosition="1" size="560,2" />
 		<widget source="introduction" render="Label" position="0,350" size="560,50" zPosition="10" font="Regular;21" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
 
- </screen>""" 
+ </screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -712,7 +712,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 				havewol = True
 			if getBoxType() == 'et10000' and self.iface == 'eth0':
 				havewol = False
-			if havewol:	
+			if havewol:
 				self.list.append(getConfigListEntry(_('Enable Wake On LAN'), config.network.wol))
 
 			self.extended = None
@@ -865,7 +865,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		if not result:
 			return
 		if SystemInfo["WakeOnLAN"]:
-			config.network.wol.setValue(self.wolstartvalue)	
+			config.network.wol.setValue(self.wolstartvalue)
 		if self.oldInterfaceState is False:
 			iNetwork.deactivateInterface(self.iface,self.keyCancelCB)
 		else:
@@ -2105,8 +2105,8 @@ class NetworkFtp(Screen):
 		self.Console.eBatch(commands, self.StartStopCallback, debug=True)
 
 	def updateService(self):
-		import process		
-		p = process.ProcessList()		
+		import process
+		p = process.ProcessList()
 		ftp_process = str(p.named('vsftpd')).strip('[]')
 		self['labrun'].hide()
 		self['labstop'].hide()
@@ -2409,7 +2409,7 @@ class RemoteTunerServer(Screen):
 
 		for cb in self.onChangedEntry:
 			cb(title, status_summary, autostartstatus_summary)
-			
+
 class NetworkOpenvpn(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -4125,19 +4125,19 @@ class InetdRecovery(Screen, ConfigListScreen):
 		<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;19" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
 		<widget name="key_blue" position="420,0" zPosition="1" size="140,40" font="Regular;19" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
 		<widget name="config" position="10,50" size="540,355" scrollbarMode="showOnDemand" />
-	</screen>""" 
+	</screen>"""
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Inetd recovery"))
-		
+
 		self["key_red"] = Label(_("Cancel"))
 		self["key_blue"] = Label(_("Recover"))
 
 		self.list = []
-		
+
 		self.ipv6 = NoSave(ConfigYesNo(default=False))
 		self.list.append(getConfigListEntry(_("IPv6"), self.ipv6))
-		
+
 		ConfigListScreen.__init__(self, self.list)
 
 		self["OkCancelActions"] = HelpableActionMap(self, "OkCancelActions", {

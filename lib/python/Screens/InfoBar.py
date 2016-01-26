@@ -70,7 +70,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 				"openSleepTimer": (self.openPowerTimerList, _("Show the Sleep Timer...")),
 				'ZoomInOut': (self.ZoomInOut, _('Zoom In/Out TV...')),
 				'ZoomOff': (self.ZoomOff, _('Zoom Off...')),
-				'HarddiskSetup': (self.HarddiskSetup, _('Select HDD')),	
+				'HarddiskSetup': (self.HarddiskSetup, _('Select HDD')),
 				"showWWW": (self.showPORTAL, _("Open MediaPortal...")),
 				"showSetup": (self.showSetup, _("Show setup...")),
 				"showFormat": (self.showFormat, _("Show Format Setup...")),
@@ -213,14 +213,14 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 			self.rds_display.hide() # in InfoBarRdsDecoder
 			from Screens.ChannelSelection import ChannelSelectionRadio
 			self.session.openWithCallback(self.ChannelSelectionRadioClosed, ChannelSelectionRadio, self)
-	
-	def toogleTvRadio(self): 
+
+	def toogleTvRadio(self):
 		if self.radioTV == 1:
 			self.radioTV = 0
-			self.showTv() 
-		else: 
+			self.showTv()
+		else:
 			self.radioTV = 1
-			self.showRadio() 
+			self.showRadio()
 
 	def ChannelSelectionRadioClosed(self, *arg):
 		self.rds_display.show()  # in InfoBarRdsDecoder
@@ -253,7 +253,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 			no_plugin = False
 		except Exception, e:
 			self.session.open(MessageBox, _("The MediaPlayer plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
-			
+
 	def showMediaCenter(self):
 		try:
 			from Plugins.Extensions.BMediaCenter.plugin import DMC_MainMenu
@@ -261,11 +261,11 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 			no_plugin = False
 		except Exception, e:
 			self.session.open(MessageBox, _("The MediaCenter plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
-			
+
 	def openSleepTimer(self):
 		from Screens.SleepTimerEdit import SleepTimerEdit
 		self.session.open(SleepTimerEdit)
-			
+
 	def openTimerList(self):
 		from Screens.TimerEdit import TimerEditList
 		self.session.open(TimerEditList)
@@ -333,7 +333,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 	def HarddiskSetup(self):
 		from Screens.HarddiskSetup import HarddiskSelection
 		self.session.open(HarddiskSelection)
-		
+
 	def showPORTAL(self):
 		try:
 			from Plugins.Extensions.MediaPortal.plugin import MPmain as MediaPortal
@@ -341,7 +341,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 			no_plugin = False
 		except Exception, e:
 			self.session.open(MessageBox, _("The MediaPortal plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
-			
+
 	def showSetup(self):
 		from Screens.Menu import MainMenu, mdom
 		root = mdom.getroot()
@@ -361,11 +361,11 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 			no_plugin = False
 		except Exception, e:
 			self.session.open(MessageBox, _("The VideoMode plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
-			
+
 	def showPluginBrowser(self):
 		from Screens.PluginBrowser import PluginBrowser
 		self.session.open(PluginBrowser)
-		
+
 	def showBoxPortal(self):
 		if getMachineBrand() == 'GI' or boxtype.startswith('azbox') or boxtype.startswith('ini') or boxtype.startswith('venton'):
 			from Screens.BoxPortal import BoxPortal
@@ -770,7 +770,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 			service = self.session.nav.getCurrentService()
 			info = service and service.info()
 			xres = str(info.getInfo(enigma.iServiceInformation.sVideoWidth))
-			if int(xres) <= 720 or not getMachineBuild() == 'blackbox7405':  
+			if int(xres) <= 720 or not getMachineBuild() == 'blackbox7405':
 				from Screens.PictureInPicture import PictureInPicture
 				self.session.pip = self.session.instantiateDialog(PictureInPicture)
 				self.session.pip.show()
@@ -782,7 +782,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 					del self.session.pip
 			else:
 				self.session.open(MessageBox, _("Your %s %s does not support PiP HD") % (getMachineBrand(), getMachineName()), type = MessageBox.TYPE_INFO,timeout = 5 )
-				
+
 	def movePiP(self):
 		if self.session.pipshown:
 			InfoBarPiP.movePiP(self)
@@ -815,7 +815,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 				if ref and not self.session.nav.getCurrentlyPlayingServiceOrGroup():
 					self.session.nav.playService(ref)
 			except:
-				pass		
+				pass
 
 	def getPlaylistServiceInfo(self, service):
 		from MovieSelection import playlist

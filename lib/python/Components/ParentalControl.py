@@ -311,5 +311,3 @@ class ParentalControl:
 				self.open()
 				return getattr(self, name)
 		raise AttributeError, name
-
-

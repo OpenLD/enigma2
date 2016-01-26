@@ -107,4 +107,3 @@ commands.getstatusoutput('killall -9 wget > /dev/null')
 print ("Liberando RAM")
 commands.getstatusoutput('sync ; echo 3 > /proc/sys/vm/drop_caches')
 print ("RAM Liberada Correctamente")
-

@@ -32,7 +32,7 @@ class EnigmaOutput:
 
 	def flush(self):
 		pass
-		
+
 	def isatty(self):
 		return True
 

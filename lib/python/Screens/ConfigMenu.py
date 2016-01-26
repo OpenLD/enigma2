@@ -33,4 +33,3 @@ class configTest(Screen):
 				"ok": self["config"].toggle,
 				"cancel": self.close
 			})
-

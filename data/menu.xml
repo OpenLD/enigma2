@@ -35,7 +35,7 @@
 	<!-- Menu / A/V Settings -->
 	<menu weight="0" level="0" text="A/V settings" entryID="av_setup">
 		<id val="av_setup" />
-		
+
 		<!-- Menu / Settings / Video Menu -->
 		<menu weight="0" level="0" text="Video Settings" entryID="video_menu">
 			<id val="video_menu" />

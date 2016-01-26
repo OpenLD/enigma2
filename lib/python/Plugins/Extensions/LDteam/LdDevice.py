@@ -37,27 +37,27 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 <widget name="key_red" position="200,522" zPosition="1" size="200,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1" />
 <widget name="key_yellow" position="450,522" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1" />
 </screen>"""
-	
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self["key_red"] = Label(_("Mountpoints"))
 		self["key_yellow"] = Label(_("Cancel"))
 		self["lab1"] = Label(_("Please wait while the devices are scanned ..."))
-		
+
 		self.list = []
 		self["list"] = List(self.list)
-		
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"back": self.close,
 			"red": self.mapSetup,
 			"yellow": self.close
 		})
-		
+
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.updateList)
 		self.gO()
-	
+
 	def gO(self):
 		paths = ["/media/hdd","/media/usb","/media/downloads","/media/music","/media/personal","/media/photo","/media/video"]
 		for path in paths:
@@ -65,13 +65,13 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 				createDir(path)
 # hack !
 		self.activityTimer.start(1)
-		
+
 	def updateList(self):
 		self.activityTimer.stop()
 		self.list = [ ]
 		self.conflist = [ ]
 		rc = system("blkid > /tmp/blkid.log")
-		
+
 		f = open("/tmp/blkid.log",'r')
 		for line in f.readlines():
 			parts = line.strip().split()
@@ -91,12 +91,12 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 			self.list.append((name, description, png))
 			description = "%s  %s  %s" % (name, size, partition)
 			self.conflist.append((description, uuid))
-			
+
 		self["list"].list = self.list
 		self["lab1"].hide()
 		os_remove("/tmp/blkid.log")
-		
-		
+
+
 	def get_Dpoint(self, uuid):
 		point = "NO MAPEADO"
 		f = open("/etc/fstab",'r')
@@ -107,7 +107,7 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 				break
 		f.close()
 		return point
-		
+
 	def get_Dmodel(self, device):
 		model = "Generico"
 		filename = "/sys/block/%s/device/vendor" % (device)
@@ -117,7 +117,7 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 			mod = file(filename).read().strip()
 			model = "%s %s" % (vendor, mod)
 		return model
-		
+
 	def get_Dsize(self, device, partition):
 		size = "0"
 		filename = "/sys/block/%s/%s/size" % (device, partition)
@@ -126,13 +126,13 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 			cap = size / 1000 * 512 / 1000
 			size = "%d.%03d GB" % (cap/1000, cap%1000)
 		return size
-		
-		
+
+
 	def get_Dtype(self, device):
 		pixpath = resolveFilename(SCOPE_CURRENT_SKIN, "")
 		if pixpath == "/usr/share/enigma2/" or pixpath == "/usr/share/enigma2/./":
 			pixpath = "/usr/share/enigma2/skin_default/"
-		
+
 		name = "USB"
 		pix = pixpath + "icons/dev_usbstick.png"
 		filename = "/sys/block/%s/removable" % (device)
@@ -140,13 +140,13 @@ MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (80, 80), png = 2),
 			if file(filename).read().strip() == "0":
 				name = "DISCO DURO"
 				pix = pixpath + "icons/dev_hdd.png"
-				
+
 		return name, pix
-		
-		
+
+
 	def mapSetup(self):
 		self.session.openWithCallback(self.close, LDSetupDevicePanelConf, self.conflist)
-						
+
 
 class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 	skin = """
@@ -160,13 +160,13 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 </screen>"""
 	def __init__(self, session, devices):
 		Screen.__init__(self, session)
-		
+
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
 		self["key_red"] = Label(_("Save"))
 		self["key_green"] = Label(_("Cancel"))
 		self["Linconn"] = Label(_("Please wait while the devices are scanned ..."))
-		
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"red": self.savePoints,
@@ -174,11 +174,11 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 			"back": self.close
 
 		})
-		
+
 		self.devices = devices
 		self.updateList()
-	
-	
+
+
 	def updateList(self):
 		self.list = []
 		for device in self.devices:
@@ -186,7 +186,7 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 			item.value = self.get_currentPoint(device[1])
 			res = getConfigListEntry(device[0], item, device[1])
 			self.list.append(res)
-		
+
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 		self["Linconn"].hide()
@@ -213,8 +213,8 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 			c = "/media/" + f
 			choices.append((c,c))
 		return choices
-			
-		
+
+
 
 	def savePoints(self):
 		f = open("/etc/fstab",'r')
@@ -234,14 +234,14 @@ class LDSetupDevicePanelConf(Screen, ConfigListScreen):
 		os_rename("/etc/fstab.tmp", "/etc/fstab")
 		message = "Cambios realizados al dispositivo, necesita reiniciar para tener efecto\nReiniciar su Receptor ahora?"
 		self.session.openWithCallback(self.restBo, MessageBox, message, MessageBox.TYPE_YESNO)
-			
+
 	def restBo(self, answer):
 		if answer is True:
 			self.session.open(TryQuitMainloop, 2)
 		else:
 			self.close()
-	
-	
+
+
 class LDSwap(Screen):
 	skin = """
 	<screen position="339,160" size="602,410" title="OpenLD - Swap File Manager">
@@ -253,15 +253,15 @@ class LDSwap(Screen):
 <widget name="key_green" position="225,362" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <widget name="key_yellow" position="405,362" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 	</screen>"""
-	
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self["lab1"] = Label(_("Estado Swap: desactivado"))
 		self["key_red"] = Label(_("Create"))
 		self["key_green"] = Label(_("Remove"))
 		self["key_yellow"] = Label(_("Close"))
-		
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"back": self.close,
@@ -271,8 +271,8 @@ class LDSwap(Screen):
 		})
 
 		self.onLayoutFinish.append(self.updateSwap)
-		
-	
+
+
 	def updateSwap(self):
 		self.swap_file = ""
 		swapinfo = "Estado Swap: desactivado"
@@ -286,8 +286,8 @@ class LDSwap(Screen):
 
 		f.close()
 		self["lab1"].setText(swapinfo)
-		
-		
+
+
 	def keyGreen(self):
 		if self.swap_file:
 			cmd = "swapoff %s" % self.swap_file
@@ -299,8 +299,8 @@ class LDSwap(Screen):
 				pass
 			self.updateSwap()
 		else:
-			self.session.open(MessageBox, "Swap desactivada.", MessageBox.TYPE_INFO)	
-	
+			self.session.open(MessageBox, "Swap desactivada.", MessageBox.TYPE_INFO)
+
 	def keyRed(self):
 		if self.swap_file:
 			self.session.open(MessageBox, "Swap activada.\nElimine el actual archivo swap antes de crear uno nuevo.", MessageBox.TYPE_INFO)
@@ -319,15 +319,15 @@ class LDSwap(Screen):
 				self.session.open(MessageBox, "Lo sentimos, no hay dispositivo valido encontrado.\nAsegurate de que tu dispositivo fue formateado bajo formato LINUX (ext2,ext3,ext4).\nPor favor, use  Formatear USB y Admin Dispositivos para preparar y planificar tu memoria USB.", MessageBox.TYPE_INFO)
 			else:
 				self.session.openWithCallback(self.selectSize,ChoiceBox, title="Selecionar capacidad archivo Swap:", list=options)
-	
+
 
 	def selectSize(self, device):
 		if device:
 			self.new_swap = device[1] + "/swapfile"
-			options = [['8 MB', '8192'], ['16 MB', '16384'], ['32 MB', '32768'], ['64 MB', '65536'], ['128 MB', '131072'], ['256 MB', '262144'], ['512 MB', '524288'], ['1024 MB', '1048576']]	
+			options = [['8 MB', '8192'], ['16 MB', '16384'], ['32 MB', '32768'], ['64 MB', '65536'], ['128 MB', '131072'], ['256 MB', '262144'], ['512 MB', '524288'], ['1024 MB', '1048576']]
 			self.session.openWithCallback(self.swapOn,ChoiceBox, title="Selecionar capacidad archivo Swap:", list=options)
-			
-		
+
+
 	def swapOn(self, size):
 		if size:
 			cmd = "dd if=/dev/zero of=%s bs=1024 count=%s 2>/dev/null" % (self.new_swap, size[1])
@@ -344,5 +344,3 @@ class LDSwap(Screen):
 				self.updateSwap()
 			else:
 				self.session.open(MessageBox, "La creacion de el archivo Swap ha fallado. Compruebe si hay espacio disponible.", MessageBox.TYPE_INFO)
-			
-

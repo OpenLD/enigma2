@@ -83,7 +83,7 @@ class GUISkin:
 		self.desktop = desktop
 
 	def applySkin(self):
-		self.skin_title = ""	
+		self.skin_title = ""
 		z = 0
 		baseres = (720, 576) # FIXME: a skin might have set another resolution, which should be the base res
 		idx = 0

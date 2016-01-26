@@ -38,13 +38,13 @@ class LdsysInfo(Screen):
 		self["lab1"] =  Label()
 
 		self.onShow.append(self.updateInfo)
-		
+
 		self["myactions"] = ActionMap(["OkCancelActions"],
 		{
 			"ok": self.close,
 			"cancel": self.close,
 		}, -1)
-		
+
 	def updateInfo(self):
 		rc = system("df -h > /tmp/syinfo.tmp")
 		text = "BOX\n"
@@ -63,7 +63,7 @@ class LdsysInfo(Screen):
 			res = ""
 			res2 = ""
 		cpuMHz = ""
-		bogoMIPS = ""		
+		bogoMIPS = ""
 		if res:
 			cpuMHz = "   \t(" + res.replace("\n", "") + " MHz)"
 		if res2:
@@ -105,13 +105,12 @@ class LdsysInfo(Screen):
 					text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
 		f.close()
 		os_remove("/tmp/syinfo.tmp")
-		
+
 		text += "\nSOFTWARE\n"
 		f = open("/etc/ldversion",'r')
 		text += "Firmware: \t" + f.readline() + "\n"
 		f.close()
 		text += "Version: \t" +  about.getEnigmaVersionString() + "\n"
 		text += "Kernel: \t" +  about.getKernelVersionString() + "\n"
-		
+
 		self["lab1"].setText(text)
-		

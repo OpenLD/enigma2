@@ -68,7 +68,7 @@ def _(txt):
 	if t == txt:
 		t = gettext.gettext(txt)
 	return t
-	
+
 class LDSettings(Screen):
 	skin = """
 <screen name="LDSettings" position="70,35" size="1150,650">
@@ -85,15 +85,15 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 	</convert>
 	</widget>
 </screen>"""
-	
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self.list = []
 		self["list"] = List(self.list)
 		self.updateList()
-		
-		
+
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"ok": self.KeyOk,
@@ -106,11 +106,11 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 
 	def menuClosed(self, *res):
 		pass
-				
+
 	def KeyOk(self):
 		self.sel = self["list"].getCurrent()
 		self.sel = self.sel[2]
-		
+
 		if self.sel == 0:
 			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
 			self.session.open(DeviceManager)
@@ -153,12 +153,12 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			self.session.open(RestartNetwork)
 		else:
 			self.noYet()
-			
+
 	def noYet(self):
 		nobox = self.session.open(MessageBox, "Funcion Todavia no disponible", MessageBox.TYPE_INFO)
 		nobox.setTitle(_("Info"))
-	
-		
+
+
 	def updateList(self):
 		self.list = [ ]
 		mypath = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/"
@@ -275,7 +275,7 @@ class Ttimer(Screen):
         skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
                         <widget name="srclabel" font="Regular; 15" position="424,614" zPosition="2" valign="center" halign="center" size="500,30" foregroundColor="white" backgroundColor="black" transparent="0" />
                         <widget source="progress" render="Progress" position="322,677" foregroundColor="white" size="700,20" borderWidth="1" borderColor="grey" backgroundColor="black" />
-			 
+
  <widget source="session.VideoPicture" render="Pig" position="center,center" size="975,475" backgroundColor="transparent" zPosition="-1" transparent="0" />
  <widget source="Title" transparent="1" render="Label" zPosition="2" valign="center" halign="left" position="100,70" size="800,50" font="Regular; 30" backgroundColor="black" foregroundColor="white" noWrap="1" />
 </screen>"""
@@ -293,7 +293,7 @@ class Ttimer(Screen):
                 count = 0
                 self.ctimer.callback.append(self.__run)
                 self.ctimer.start(1000,0)
-  
+
         def __run(self):
                 global count
                 count += 1
@@ -315,7 +315,7 @@ class runDialog():
                 global pdialog
                 pdialog = session.instantiateDialog(Ttimer)
                 pdialog.show()
- 
+
         def stopDialog(self, session):
                 global pdialog
                 pdialog.hide()
@@ -340,10 +340,10 @@ class LDepg(Screen, ConfigListScreen):
   <widget source="key_green" render="Label" position="200,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
 <widget source="key_yellow" render="Label" position="370,590" zPosition="2" size="165,30" font="Regular;20" halign="center" valign="center" backgroundColor="background" foregroundColor="foreground" transparent="1" />
   </screen>"""
- 
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self.setTitle(_("EPG Options"))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
@@ -352,7 +352,7 @@ class LDepg(Screen, ConfigListScreen):
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Update"))
 		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "TimerEditActions", "ColorActions"],
-		
+
 		{
 			"blue": self.mhw,
 			"red": self.cancel,
@@ -372,11 +372,11 @@ class LDepg(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Maximum number of days in EPG"), config.epg.maxdays))
 		self.list.append(getConfigListEntry(_("Maintain old EPG data for"), config.epg.histminutes))
 		self.list.append(getConfigListEntry(_("Time at title page"), config.plugins.LDteam.epgmhw2wait))
-		
+
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 
-	
+
 	def zapTo(self, reftozap):
 	        self.session.nav.playService(eServiceReference(reftozap))
 
@@ -391,7 +391,7 @@ class LDepg(Screen, ConfigListScreen):
 	                        self.zapTo(channel)
 	                        ## Crea y muestra la barra de dialogo
 	                        diag = runDialog()
-	                        diag.startDialog(self.session)                        
+	                        diag.startDialog(self.session)
                         else:
                                 self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
                 except:
@@ -404,7 +404,7 @@ class LDepg(Screen, ConfigListScreen):
 		for i in self["config"].list:
 			i[1].cancel()
 		self.close(False)
-		
+
 	def save(self):
 		config.misc.epgcache_filename.value = ("%sepg.dat" % config.misc.epgcachepath.value)
 		config.misc.epgcache_filename.save()
@@ -412,7 +412,7 @@ class LDepg(Screen, ConfigListScreen):
 		config.plugins.LDteam.epgmhw2wait.save()
 		configfile.save()
 		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
-		
+
 	def restart(self):
 		self.session.open(TryQuitMainloop, 3)
 
@@ -437,10 +437,10 @@ class Viewmhw(Screen):
 		self["key_red"] = StaticText(_("Close"))
 		self["text"] = ScrollLabel("")
 		self.viewmhw2()
-		
+
 	def exit(self):
 		self.close()
-		
+
 	def viewmhw2(self):
 		list = ''
 		if fileExists("/tmp/mhw_Log.epg"):
@@ -495,7 +495,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		self.list.append(getConfigListEntry(_("Select free memory mode"), config.plugins.LDteam.dropmode))
 		ConfigListScreen.__init__(self, self.list)
 		self.onShow.append(self.Title)
-		
+
 	def Title(self):
 		self.setTitle(_("Free memory"))
 		self.infomem()
@@ -504,7 +504,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		for i in self["config"].list:
 			i[1].cancel()
 		self.close()
-		
+
 	def infomem(self):
 		memtotal = memfree = buffers = cached = ''
 		persent = 0
@@ -522,7 +522,7 @@ class LDmemoria(ConfigListScreen, Screen):
 				persent = int(memfree) / (int(memtotal) / 100)
 			self["memTotal"].text = _("Total: %s Kb  Free: %s Kb (%s %%)") % (memtotal, memfree, persent)
 			self["bufCache"].text = _("Buffers: %s Kb  Cached: %s Kb") % (buffers, cached)
-	
+
 	def save_values(self):
 		for i in self["config"].list:
 			i[1].save()
@@ -531,14 +531,14 @@ class LDmemoria(ConfigListScreen, Screen):
 
 	def ClearNow(self):
 		self.iConsole.ePopen("sync ; echo %s > /proc/sys/vm/drop_caches" % config.plugins.LDteam.dropmode.value, self.Finish)
-		
+
 	def Finish(self, result, retval, extra_args):
 		if retval is 0:
 			self.mbox = self.session.open(MessageBox,(_("Cache flushed")), MessageBox.TYPE_INFO, timeout = 4 )
 		else:
 			self.mbox = self.session.open(MessageBox,(_("error...")), MessageBox.TYPE_INFO, timeout = 4 )
 		self.infomem()
-		
+
 
 class LdNetBrowser(Screen):
 	skin = """
@@ -551,16 +551,16 @@ class LdNetBrowser(Screen):
 		<widget name="key_red" position="200,482" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 		<widget name="key_yellow" position="440,482" zPosition="1" size="150,25" font="Regular;20" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
     	</screen>"""
-	
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self["key_red"] = Label(_("Select"))
 		self["key_yellow"] = Label(_("Close"))
-		
+
 		self.list = []
 		self["list"] = List(self.list)
-		
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"ok": self.selectInte,
@@ -568,7 +568,7 @@ class LdNetBrowser(Screen):
 			"red": self.selectInte,
 			"yellow": self.close
 		})
-		
+
 		self.list = [ ]
 		self.adapters = [(iNetwork.getFriendlyAdapterName(x),x) for x in iNetwork.getAdapterList()]
 		for x in self.adapters:
@@ -576,7 +576,7 @@ class LdNetBrowser(Screen):
 			self.list.append(res)
 
 		self["list"].list = self.list
-		
+
 	def selectInte(self):
 		mysel = self["list"].getCurrent()
 		if mysel:

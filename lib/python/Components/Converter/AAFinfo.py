@@ -8,7 +8,7 @@ class AAFinfo(Converter, object):
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		self.usedspace = self.Harddiskspace()
-	
+
 		if type == "Harddiskspace":
 			self.type = 1
 		elif type == "HarddiskspaceText":
@@ -80,4 +80,3 @@ class AAFinfo(Converter, object):
 				return Pused
 
 		return 0
-

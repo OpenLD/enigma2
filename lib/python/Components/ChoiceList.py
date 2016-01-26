@@ -20,7 +20,7 @@ def ChoiceEntryComponent(key="", text=None):
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 68, 5, 1200, 38, 0, RT_HALIGN_LEFT, text[0]))
 		else:
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 45, 00, 800, 25, 0, RT_HALIGN_LEFT, text[0]))
-		
+
 		if key:
 			if key == "expandable":
 				pngfile = resolveFilename(SCOPE_ACTIVE_SKIN, "icons/expandable.png")

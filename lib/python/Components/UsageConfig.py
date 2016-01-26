@@ -90,7 +90,7 @@ def InitUsageConfig():
 			SystemInfo["InfoBarEpg"] = False
 	config.usage.show_second_infobar.addNotifier(showsecondinfobarChanged, immediate_feedback = True)
 	config.usage.infobar_frontend_source = ConfigSelection(default = "tuner", choices = [("settings", _("Settings")), ("tuner", _("Tuner"))])
-	
+
 	config.usage.show_picon_bkgrn = ConfigSelection(default = "transparent", choices = [("none", _("Disabled")), ("transparent", _("Transparent")), ("blue", _("Blue")), ("red", _("Red")), ("black", _("Black")), ("white", _("White")), ("lightgrey", _("Light Grey")), ("grey", _("Grey"))])
 
 	config.usage.show_spinner = ConfigYesNo(default = True)
@@ -113,7 +113,7 @@ def InitUsageConfig():
 		choicelist.append((str(i), ngettext("%d hour", "%d hours", h) % h))
 	config.usage.hdd_standby = ConfigSelection(default = "300", choices = [("0", _("No standby"))] + choicelist)
 	config.usage.hdd_standby_in_standby = ConfigSelection(default = "-1", choices = [("-1", _("Same as in active")), ("0", _("No standby"))] + choicelist)
-	config.usage.hdd_timer = ConfigYesNo(default = False)	
+	config.usage.hdd_timer = ConfigYesNo(default = False)
 	config.usage.output_12V = ConfigSelection(default = "do not change", choices = [
 		("do not change", _("Do not change")), ("off", _("Off")), ("on", _("On")) ])
 
@@ -310,11 +310,11 @@ def InitUsageConfig():
 
 	config.usage.blinking_display_clock_during_recording = ConfigYesNo(default = False)
 
-	
+
 	if getBoxType() in ('et7000', 'et7500', 'et8000', 'triplex', 'formuler1', 'mutant1200', 'solo2'):
 		config.usage.blinking_rec_symbol_during_recording = ConfigSelection(default = "Channel", choices = [
-						("Rec", _("REC Symbol")), 
-						("RecBlink", _("Blinking REC Symbol")), 
+						("Rec", _("REC Symbol")),
+						("RecBlink", _("Blinking REC Symbol")),
 						("Channel", _("Channelname"))])
 	else:
 		config.usage.blinking_rec_symbol_during_recording = ConfigYesNo(default = False)
@@ -350,7 +350,7 @@ def InitUsageConfig():
 		("500", _("slow")),
 		("300", _("normal")),
 		("100", _("fast"))])
-	
+
 
 	def SpinnerOnOffChanged(configElement):
 		setSpinnerOnOff(int(configElement.value))
@@ -383,7 +383,7 @@ def InitUsageConfig():
 	config.epg.netmed = ConfigYesNo(default = True)
 	config.epg.virgin = ConfigYesNo(default = False)
 	config.epg.saveepg = ConfigYesNo(default = True)
-	
+
 	config.misc.showradiopic = ConfigYesNo(default = True)
 	config.misc.bootvideo = ConfigYesNo(default = True)
 	def EpgSettingsChanged(configElement):

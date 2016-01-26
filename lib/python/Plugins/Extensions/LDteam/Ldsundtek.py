@@ -3,8 +3,8 @@
 #  coded by giro77
 #
 #
-from Screens.Screen import Screen 
-from Screens.Console import Console 
+from Screens.Screen import Screen
+from Screens.Console import Console
 from Screens.MessageBox import MessageBox
 from Screens.InputBox import InputBox
 from Components.ActionMap import ActionMap
@@ -47,7 +47,7 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 			<widget name="btt_red" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 			<widget name="btt_green" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 			<widget name="btt_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-			<widget name="btt_blue" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" /> 
+			<widget name="btt_blue" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
 			<widget name="ok" position="10,292" zPosition="1" size="550,40" font="Regular;20" halign="left" valign="center" transparent="1" />
 			<widget name="infos" position="10,316" zPosition="1" size="450,40" font="Regular;20" halign="left" valign="center" transparent="1" />
 			<widget name="bouquets" position="10,340" zPosition="1" size="450,40" font="Regular;20" halign="left" valign="center" transparent="1" />
@@ -60,7 +60,7 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 		Screen.__init__(self, session)
 		ConfigListScreen.__init__(self, [])
 		self.updateSettingList()
-		
+
 		self["btt_red"] = Label(_("Exit"))
 		self["btt_green"] = Label(_("Setup"))
 		self["btt_yellow"] = Label(_("Stop Tuner"))
@@ -69,7 +69,7 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 		self["infos"] = Label(_("Info = show tuner informations"))
 		self["bouquets"] = Label(_("Bouquet + = install or update driver"))
 		self["netservers"] = Label(_("Bouquet - = scan for IPTV server addresses"))
-		self["actions"] = ActionMap(["OkCancelActions", "ChannelSelectBaseActions", "ColorActions","ChannelSelectEPGActions"], 
+		self["actions"] = ActionMap(["OkCancelActions", "ChannelSelectBaseActions", "ColorActions","ChannelSelectEPGActions"],
 		{
 			"ok": self.save,
 			"cancel": self.cancel,
@@ -81,9 +81,9 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 			"nextBouquet": self.fetchsundtekdriver,
 			"prevBouquet": self.scannetwork,
 		},-2)
-		
+
 		self.onLayoutFinish.append(self.layoutFinished)
-	
+
 	def keyLeft(self):
 		ConfigListScreen.keyLeft(self)
 		self.updateSettingList()
@@ -91,41 +91,41 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 	def keyRight(self):
 		ConfigListScreen.keyRight(self)
 		self.updateSettingList()
-		
+
 	def updateSettingList(self):
 		list = [] ### creating list
 		list.append(getConfigListEntry(_("DVB Transmission Way"), config.plugins.SundtekControlCenter.dvbtransmission))
 		list.append(getConfigListEntry(_("USB/Network"), config.plugins.SundtekControlCenter.usbnet.selection))
-		
+
 		if config.plugins.SundtekControlCenter.usbnet.selection.getValue() == "1": ## if networking then add ip mask to list
 			sublist = [
 				getConfigListEntry(_("Network IP"), config.plugins.SundtekControlCenter.usbnet.networkip)
 			]
-			
+
 			list.extend(sublist)
-		
+
 		list.append(getConfigListEntry(_("Autostart"), config.plugins.SundtekControlCenter.autostart))
-		
+
 		self["config"].list = list
 		self["config"].l.setList(list)
-		
+
 	def layoutFinished(self):
 		self.setTitle(_("Sundtek Control Center"))
-		
+
 	def fetchsundtekdriver(self):
 		self.session.openWithCallback(self.disclaimer, MessageBox, _("Sundtek legal notice:\nThis software comes without any warranty, use it at your own risk?"), MessageBox.TYPE_YESNO)
 
-	def disclaimer(self, result): 
+	def disclaimer(self, result):
 		if result:
 			self.prompt("/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts/sundtekinstall.sh")
 
 	def save(self):
 		for x in self["config"].list:
 			x[1].save()
-			
+
 		configfile.save()
 		self.setsettings()
-		
+
 	def cancel(self):
 		for x in self["config"].list:
 			x[1].cancel()
@@ -137,12 +137,12 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 		if (not os.path.exists("/usr/sundtek")):
 			#maybe the driver is not or installed incorrect.
 			self.session.openWithCallback(self.installdriverrequest, MessageBox, _("It seems the sundtek driver is not installed or not installed properly. Install the driver now?"), MessageBox.TYPE_YESNO)
-			
+
 		else: # driver is installed
 			### disable autostart
 			if config.plugins.SundtekControlCenter.autostart.getValue() == False:
 				self.prompt("/usr/sundtek/sun_dvb.sh noautostart")
-				
+
 			if config.plugins.SundtekControlCenter.usbnet.selection.getValue() == "1":
 				### save the IP for networking
 				f=open("/etc/sundtek.net", "w")
@@ -150,17 +150,17 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 				networkingip.lstrip().rstrip()
 				f.writelines('REMOTE_IPTV_SERVER='+networkingip)
 				f.close()
-				
+
 				if config.plugins.SundtekControlCenter.autostart.getValue() == True:
 					self.prompt("/usr/sundtek/sun_dvb.sh enable_net")
-				
+
 			else:
 				if config.plugins.SundtekControlCenter.dvbtransmission.getValue() == "0":
 					### dvb-s/ dvb-s2
 					if config.plugins.SundtekControlCenter.autostart.getValue() == True:
 						### enable autostart
 						self.prompt("/usr/sundtek/sun_dvb.sh enable_s2")
-						
+
 				elif config.plugins.SundtekControlCenter.dvbtransmission.getValue() == "1":
 					### dvb-c
 					if config.plugins.SundtekControlCenter.autostart.getValue() == True:
@@ -171,13 +171,13 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 					if config.plugins.SundtekControlCenter.autostart.getValue() == True:
 						### enable autostart
 						self.prompt("/usr/sundtek/sun_dvb.sh enable_t")
-	
+
 	def tunerstart(self):
 		for x in self["config"].list:
 			x[1].save()
 		configfile.save()
 		self.setsettings()
-		
+
 		if (os.path.exists("/usr/sundtek/mediasrv")) and (os.path.exists("/usr/sundtek/mediaclient")) and (os.path.exists("/usr/sundtek/sun_dvb.sh")):
 			if config.plugins.SundtekControlCenter.dvbtransmission.getValue() == "0":
 				### dvb-s/ dvb-s2
@@ -191,13 +191,13 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 			if config.plugins.SundtekControlCenter.usbnet.selection.getValue() == "1":
 				### networking
 				self.prompt("/usr/sundtek/sun_dvb.sh start_net")
-			
+
 	def tunerstop(self):
 		self.prompt("/usr/sundtek/sun_dvb.sh stop")
-		
+
 	def dvbinfo(self):
 		self.prompt("/usr/sundtek/sun_dvb.sh info")
-		
+
 	def scannetwork(self):
 		if os.path.exists("/usr/sundtek/mediaclient"):
 			networkingscan = os.popen("/usr/sundtek/mediaclient --scan-network", "r").read()
@@ -208,7 +208,7 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 			else:
 				self.session.openWithCallback(self.usenetip, MessageBox, networkingscan+_("\n\nUse following address as IPTV media server?\n")+networkingip, MessageBox.TYPE_YESNO)
 
-	def usenetip(self, result): 
+	def usenetip(self, result):
 		if result:
 			config.plugins.SundtekControlCenter.usbnet.selection.setValue("1")
 			config.plugins.SundtekControlCenter.usbnet.networkip.setValue(os.popen("/usr/sundtek/mediaclient --scan-network", "r").read().split()[20])
@@ -217,7 +217,7 @@ class SundtekControlCenter(Screen, ConfigListScreen):
 	def installdriverrequest(self, result):
 		if result:
 			self.session.openWithCallback(self.disclaimer, MessageBox, _("Sundtek legal notice:\nThis software comes without any warranty, use it at your own risk?"), MessageBox.TYPE_YESNO)
-			
+
 	def prompt(self, com):
 		self.session.open(Console,_("comand line: %s") % (com), ["%s" %com])
 #
@@ -227,7 +227,7 @@ def main(session, **kwargs):
 	session.open(SundtekControlCenter)
 
 def SundtekControlCenterStart(menuid):
-	if menuid != "scan": 
+	if menuid != "scan":
 		return [ ]
 	return [(_("Sundtek Control Center"), main, "Sundtek Control Center", 50)]
 

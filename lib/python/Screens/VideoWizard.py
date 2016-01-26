@@ -132,7 +132,7 @@ class VideoWizard(WizardLanguage, Rc):
 			if picname == 'HDMI' and has_dvi:
 				picname = "DVI"
 			if picname == 'Scart' and has_rca:
-				picname = "RCA"	
+				picname = "RCA"
 			self["portpic"].instance.setPixmapFromFile(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/" + picname + ".png"))
 
 	def inputSelect(self, port):

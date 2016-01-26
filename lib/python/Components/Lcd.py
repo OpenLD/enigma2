@@ -342,10 +342,10 @@ def InitLcd():
 			("60000", "1 " + _("minute")),
 			("300000", "5 " + _("minutes")),
 			("noscrolling", _("off"))])
-	
+
 		def setLCDbright(configElement):
 			ilcd.setBright(configElement.value);
-			
+
 		def setLCDstandbybright(configElement):
 			ilcd.setStandbyBright(configElement.value);
 
@@ -541,4 +541,3 @@ def InitLcd():
 		config.lcd.ledblinkingtime = ConfigNothing()
 
 	config.misc.standbyCounter.addNotifier(standbyCounterChanged, initial_call = False)
-

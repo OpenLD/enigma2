@@ -31,7 +31,7 @@ config.hdmicec.volume_forwarding = ConfigYesNo(default = False)
 config.hdmicec.control_receiver_wakeup = ConfigYesNo(default = False)
 config.hdmicec.control_receiver_standby = ConfigYesNo(default = False)
 config.hdmicec.handle_deepstandby_events = ConfigYesNo(default = False)
-config.hdmicec.preemphasis = ConfigYesNo(default = False)	
+config.hdmicec.preemphasis = ConfigYesNo(default = False)
 choicelist = []
 for i in (10, 50, 100, 150, 250, 500, 750, 1000, 1500, 2000):
 	choicelist.append(("%d" % i, "%d ms" % i))
@@ -63,7 +63,7 @@ class HdmiCec:
 				if not getFPWasTimerWakeup():
 					self.wakeupMessages()
 			dummy = self.checkifPowerupWithoutWakingTv() # initially write 'False' to file, see below
-#			if fileExists("/proc/stb/hdmi/preemphasis"):		
+#			if fileExists("/proc/stb/hdmi/preemphasis"):
 #				self.sethdmipreemphasis()
 
 	def getPhysicalAddress(self):
@@ -321,7 +321,7 @@ class HdmiCec:
 			return 1
 		else:
 			return 0
-			
+
 	def sethdmipreemphasis(self):
 		try:
 			if config.hdmicec.preemphasis.value == True:

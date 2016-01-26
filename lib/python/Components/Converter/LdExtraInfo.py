@@ -35,7 +35,7 @@ class LdExtraInfo(Poll, Converter, object):
 				d = line.split(':', 1)
 				if len(d) > 1:
 					info[d[0].strip()] = d[1].strip()
-			
+
 			data['caid'] = info.get('caid', '0')
 			data['provider'] = info.get('provider', '')
 			if data['provider'] == '':
@@ -59,9 +59,9 @@ class LdExtraInfo(Poll, Converter, object):
 			data['address_from'] = ''
 			data['hops'] = '0'
 			data['ecm_time'] = '0'
-			
+
 		return data
-	
+
 	def get_caName(self):
 		try:
 			f = open("/etc/CurrentLdCamName",'r')
@@ -70,7 +70,7 @@ class LdExtraInfo(Poll, Converter, object):
 		except:
 			name = "Common Interface"
 		return name
-		
+
 	@cached
 	def getText(self):
 		service = self.source.service
@@ -78,10 +78,10 @@ class LdExtraInfo(Poll, Converter, object):
 			return ""
 		info = service and service.info()
 		is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
-		
+
 		if self.type == "CamName":
 			return self.get_caName()
-		
+
 		elif self.type == "NetInfo":
 			if is_crypted != 1:
 				return ''
@@ -90,13 +90,13 @@ class LdExtraInfo(Poll, Converter, object):
 				return "Address: %s   Hops: %s   Ecm time: %ss" % (data['address'], data['hops'], data['ecm_time'])
 			elif data['reader']:
 				return "Address: %s   Hops: %s   Ecm time: %ss" % (data['address_from'], data['hops'], data['ecm_time'])
-				
+
 		elif self.type == "EcmInfo":
 			if is_crypted != 1:
 				return ''
 			data = self.GetEcmInfo()
 			return "CaId: %s     Provider: %s" % (data['caid'], data['provider'])
-			
+
 		elif self.type == "E-C-N":
 			if is_crypted != 1:
 				return 'Fta'
@@ -117,11 +117,11 @@ class LdExtraInfo(Poll, Converter, object):
 				else:
 					return "Card"
 			return ""
-		
+
 		elif self.type == "CryptoBar":
 			data = self.GetEcmInfo()
 			res = ""
-			available_caids = info.getInfoObject(iServiceInformation.sCAIDs)	
+			available_caids = info.getInfoObject(iServiceInformation.sCAIDs)
 			for caid_entry in self.caid_data:
 				if int(data['caid'], 16) >= int(caid_entry[0], 16) and int(data['caid'], 16) <= int(caid_entry[1], 16):
 					color="\c0000??00"
@@ -136,12 +136,12 @@ class LdExtraInfo(Poll, Converter, object):
 
 				if res: res += " "
 				res += color + caid_entry[3]
-		
+
 			res += "\c00??????"
 			return res
-				
+
 		return ""
-			
+
 	text = property(getText)
 
 	@cached
@@ -243,5 +243,3 @@ class LdExtraInfo(Poll, Converter, object):
 		return False
 
 	boolean = property(getBool)
-	
-	

@@ -15779,6 +15779,9 @@ msgstr "Reiniciar RED"
 msgid "Please wait, Updating Epg"
 msgstr "Por favor Espere, Actualizando Epg"
 
+msgid "EPG Options"
+msgstr "Opciones EPG"
+
 msgid "Updated Epg"
 msgstr "Epg Actualizado"
 

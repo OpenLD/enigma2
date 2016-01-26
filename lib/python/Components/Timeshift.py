@@ -179,8 +179,8 @@ class InfoBarTimeshift:
 		# Init Block-Zap Timer
 		self.pts_blockZap_timer = eTimer()
 
-		# Init PTS FileJump-Timer 
-		self.pts_FileJump_timer = eTimer() 
+		# Init PTS FileJump-Timer
+		self.pts_FileJump_timer = eTimer()
 
 		# Record Event Tracker
 		self.session.nav.RecordTimer.on_state_change.append(self.ptsTimerEntryStateChange)
@@ -319,7 +319,7 @@ class InfoBarTimeshift:
 		if not self.timeshiftEnabled() or self.pts_CheckFileChanged_timer.isActive() or self.pts_SeekBack_timer.isActive() or self.pts_StartSeekBackTimer.isActive() or self.pts_SeekToPos_timer.isActive():
 			return
 		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
-		
+
 		self.pts_switchtolive = False
 		self.pts_lastposition = self.ptsGetPosition()
 		self.pts_lastplaying = self.pts_currplaying
@@ -342,13 +342,13 @@ class InfoBarTimeshift:
 			self.posDiff = 0
 			self.pts_lastposition = 0
 			self.pts_currplaying -= 1
-			self.pts_switchtolive = True 
-			self.ptsSetNextPlaybackFile("") 
-			self.setSeekState(self.SEEK_STATE_PLAY) 
-			self.doSeek(3600 * 24 * 90000) 
+			self.pts_switchtolive = True
+			self.ptsSetNextPlaybackFile("")
+			self.setSeekState(self.SEEK_STATE_PLAY)
+			self.doSeek(3600 * 24 * 90000)
 			self.pts_CheckFileChanged_counter = 1
-			self.pts_CheckFileChanged_timer.start(1000, False) 
-			self.pts_file_changed = False 
+			self.pts_CheckFileChanged_timer.start(1000, False)
+			self.pts_file_changed = False
 
 		# print ('[TIMESHIFT] - pts_currplaying %s, pts_nextplaying %s, pts_eventcount %s, pts_firstplayable %s' % (self.pts_currplaying, self.pts_nextplaying, self.pts_eventcount, self.pts_firstplayable))
 
@@ -983,7 +983,7 @@ class InfoBarTimeshift:
 				self.stopTimeshiftAskUserCallback(True)
 				self.restartTimeshift()
 			elif answer == "nolivetv":
-				if self.pts_lastposition: 
+				if self.pts_lastposition:
 					self.setSeekState(self.SEEK_STATE_PLAY)
 					self.doSeek(self.pts_lastposition)
 
@@ -996,7 +996,7 @@ class InfoBarTimeshift:
 	def ptsEventCleanTimerSTOP(self, justStop = False):
 		if justStop is False:
 			self.pts_eventcount = 0
-		if self.pts_cleanEvent_timer.isActive(): 
+		if self.pts_cleanEvent_timer.isActive():
 			self.pts_cleanEvent_timer.stop()
 			print "[TIMESHIFT] - 'cleanEvent_timer' is stopped"
 
@@ -1096,7 +1096,7 @@ class InfoBarTimeshift:
 							filesize += os.path.getsize("%s%s"  % (config.usage.timeshift_path.value,filename))
 							self.BgFileEraser.erase("%s%s" % (config.usage.timeshift_path.value,filename))
 
-		if filecounter == 0: 
+		if filecounter == 0:
 			self.ptsEventCleanTimerSTOP()
 		else:
 			if timeshiftEnabled and not isSeekable:

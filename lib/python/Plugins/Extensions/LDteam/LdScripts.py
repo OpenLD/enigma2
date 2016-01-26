@@ -23,17 +23,17 @@ class LDScripts(Screen):
 	</widget>
 <widget name="statuslab" position="10,590" size="780,70" font="Regular;16" valign="center" noWrap="1" backgroundColor="#333f3f3f" foregroundColor="#FFC000" shadowOffset="-2,-2" shadowColor="black" />
 </screen>"""
-	
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+
 		self["statuslab"] = Label("N/A")
 		self["key_red"] = Label("Iniciar")
 		self.mlist = []
 		self.populateSL()
 		self["list"] = List(self.mlist)
 		self["list"].onSelectionChanged.append(self.schanged)
-		
+
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"ok": self.myGo,
@@ -41,11 +41,11 @@ class LDScripts(Screen):
 			"red": self.myGo
 		})
 		self.onLayoutFinish.append(self.refr_sel)
-		
+
 	def refr_sel(self):
 		self["list"].index = 1
 		self["list"].index = 0
-		
+
 	def populateSL(self):
 		myscripts = listdir("/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts")
 		for fil in myscripts:
@@ -59,7 +59,7 @@ class LDScripts(Screen):
 						desc = line[13:]
 				f.close()
 				res = (fil2, desc)
-				self.mlist.append(res)			
+				self.mlist.append(res)
 
 	def schanged(self):
 		mysel = self["list"].getCurrent()
@@ -67,7 +67,7 @@ class LDScripts(Screen):
 			mytext = " " + mysel[1]
 			self["statuslab"].setText(mytext)
 
-			
+
 	def myGo(self):
 		mysel = self["list"].getCurrent()
 		if mysel:

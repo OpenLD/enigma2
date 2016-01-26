@@ -20,7 +20,7 @@ class RestartNetwork(Screen):
 
     def restartLan(self):
         iNetwork.restartNetwork(self.restartLanDataAvail)
-  
+
     def restartLanDataAvail(self, data):
         if data is True:
             iNetwork.getInterfaces(self.getInterfacesDataAvail)

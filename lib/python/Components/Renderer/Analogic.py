@@ -1,10 +1,10 @@
 ## Now FTA-render ;)
-import math 
-from Renderer import Renderer 
-from skin import parseColor 
-from enigma import eCanvas, eSize, gRGB, eRect 
-from Components.VariableText import VariableText 
-from Components.config import config 
+import math
+from Renderer import Renderer
+from skin import parseColor
+from enigma import eCanvas, eSize, gRGB, eRect
+from Components.VariableText import VariableText
+from Components.config import config
 class Analogic(Renderer):
 	def __init__(self):
 		Renderer.__init__(self)
@@ -12,9 +12,9 @@ class Analogic(Renderer):
 		self.bColor = gRGB(0, 0, 0, 255)
 		self.numval = -1
 		self.linewidth = 1
-		
+
 	GUI_WIDGET = eCanvas
-	
+
 	def applySkin(self, desktop, parent):
 		attribs = []
 		for (attrib, what,) in self.skinAttributes:
@@ -28,21 +28,21 @@ class Analogic(Renderer):
 				attribs.append((attrib, what))
 		self.skinAttributes = attribs
 		return Renderer.applySkin(self, desktop, parent)
-		
+
 	def calculate(self, w, r, m):
 		a = (w * 6)
 		z = (math.pi / 180)
 		x = int(round((r * math.sin((a * z)))))
 		y = int(round((r * math.cos((a * z)))))
 		return ((m + x),(m - y))
-		
+
 	def hand(self):
 		width = self.instance.size().width()
 		height = self.instance.size().height()
 		r = (min(width, height) / 2)
 		(endX, endY,) = self.calculate(self.numval, r, r)
 		self.draw_line(r, r, endX, endY)
-		
+
 	def draw_line(self, x0, y0, x1, y1):
 		steep = (abs((y1 - y0)) > abs((x1 - x0)))
 		if steep:
@@ -68,13 +68,13 @@ class Analogic(Renderer):
 			if (error > 0):
 				y = (y + ystep)
 				error = (error - deltax)
-				
+
 	def changed(self, what):
 		try:
 			sss = int(self.source.text)
 		except Exception, e:
 			return
-			
+
 		if (what[0] == self.CHANGED_CLEAR):
 			pass
 		elif self.instance:
@@ -83,11 +83,11 @@ class Analogic(Renderer):
 				self.numval = sss
 				self.instance.clear(self.bColor)
 				self.hand()
-				
+
 	def parseSize(self, str):
 		(x, y,) = str.split(',')
 		return eSize(int(x), int(y))
-		
+
 	def postWidgetCreate(self, instance):
 		for (attrib, value,) in self.skinAttributes:
 			if ((attrib == 'size') and self.instance.setSize(self.parseSize(value))):

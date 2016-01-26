@@ -45,7 +45,7 @@ class ScriptRunner(Screen):
 
 		self["key_red"] = Button(_("Close"))
 		self["key_green"] = Button(_("Run"))
-		
+
 	def populate_List(self):
 		if not path.exists('/usr/script'):
 			mkdir('/usr/script', 0755)
@@ -57,7 +57,7 @@ class ScriptRunner(Screen):
 			pkg = parts[0]
 			if pkg.find('.sh') >= 0:
 				self.list.append(pkg)
-		self.list.sort()	
+		self.list.sort()
 
 	def runscript(self):
 		self.sel = self['list'].getCurrent()
@@ -73,8 +73,7 @@ class ScriptRunner(Screen):
 			if not access("/usr/script/" + self.sel, X_OK):
 				chmod("/usr/script/" + self.sel, 0755)
 			cmd1 = ". /usr/script/" + self.sel
-			self.session.open(Console, title=self.sel, cmdlist = [cmd1], closeOnSuccess = False)	
-					
+			self.session.open(Console, title=self.sel, cmdlist = [cmd1], closeOnSuccess = False)
+
 	def myclose(self):
 		self.close()
-		

@@ -67,7 +67,7 @@ class VideoHardware:
 									"24Hz":		{ 24: "1080p" },
 									"25Hz":		{ 25: "1080p" },
 									"30Hz":		{ 30: "1080p" },
-									"multi":	{ 50: "1080p50", 60: "1080p" } }									
+									"multi":	{ 50: "1080p50", 60: "1080p" } }
 
 	rates["PC"] = {
 		"1024x768": { 60: "1024x768" }, # not possible on DM7025
@@ -145,7 +145,7 @@ class VideoHardware:
 			del self.modes["DVI-PC"]
 		if getBoxType() in ('et4x00', 'xp1000', 'tm2t', 'tmsingle', 'odimm7', 'vusolo2', 'tmnano','iqonios300hd', 'odinm7', 'e3hd', 'dm500hdv2', 'dm500hd', 'dm800', 'ebox7358', 'ebox5100','ixusszero', 'optimussos1') or (about.getModelString() == 'ini-3000'):
 			del self.modes["YPbPr"]
-		if hw_type in ('elite', 'premium', 'premium+', 'ultra', "me", "minime") : self.readPreferredModes()	
+		if hw_type in ('elite', 'premium', 'premium+', 'ultra', "me", "minime") : self.readPreferredModes()
 
 		self.createConfig()
 		self.readPreferredModes()
@@ -198,7 +198,7 @@ class VideoHardware:
 					if mode not in self.modes_preferred and not config.av.edid_override.value:
 						print "no, not preferred"
 						return False
-			##### Only for test #####		
+			##### Only for test #####
 			if mode not in self.modes_available:
 				return False
 		return True
@@ -243,7 +243,7 @@ class VideoHardware:
 				# fallback if no possibility to setup 50/60 hz mode
 				f = open("/proc/stb/video/videomode", "w")
 				f.write(mode_50)
-				f.close()				
+				f.close()
 			except IOError:
 				print "setting videomode failed."
 
@@ -252,7 +252,7 @@ class VideoHardware:
 				mode_etc = modes.get(int(rate[:2]))
 				f = open("/proc/stb/video/videomode", "w")
 				f.write(mode_etc)
-				f.close()				
+				f.close()
 			else:
 				# fallback if no possibility to setup 50/60 hz mode
 				f = open("/proc/stb/video/videomode", "w")

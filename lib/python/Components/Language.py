@@ -174,7 +174,7 @@ class Language:
 					elif x == "pt":
 						if x != lang:
 							os.system("opkg remove --autoremove --force-depends " + Lpackagename + x)
-			
+
 			os.system("touch /etc/enigma2/.removelang")
 
 		self.InitLang()

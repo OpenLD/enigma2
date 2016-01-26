@@ -351,4 +351,3 @@ def Plugins(**kwargs):
 	l.append(PluginDescriptor(where=PluginDescriptor.WHERE_MENU, fnc=MenuSelected))
 	l.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=SessionStartMain))
 	return l
-

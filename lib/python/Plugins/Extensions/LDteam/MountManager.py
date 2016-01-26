@@ -70,7 +70,7 @@ class HddMount(Screen):
 			self["key_red"].setText(_("Use as HDD"))
 		else:
 			self["key_red"].setText(" ")
-			
+
 		if self.sel:
 			try:
 				name = str(self.sel[0])
@@ -198,7 +198,7 @@ class HddMount(Screen):
 		mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_usbstick.png'
 		if device2.startswith('mmcblk'):
 			model = file('/sys/block/' + device2 + '/device/name').read()
-			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/icons/dev_mmc.png'
+			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_mmc.png'
 			name = 'MMC: '
 		else:
 			model = file('/sys/block/' + device2 + '/device/model').read()
@@ -333,7 +333,7 @@ class HddMount(Screen):
 				self.Console.ePopen("/sbin/blkid | grep " + self.device, self.add_fstab, [self.device, self.mountp])
 			else:
 				self.session.open(MessageBox, _("This Device is already mounted as HDD."), MessageBox.TYPE_INFO, timeout = 10, close_on_any_key = True)
-			
+
 	def add_fstab(self, result = None, retval = None, extra_args = None):
 		self.device = extra_args[0]
 		self.mountp = extra_args[1]
@@ -505,13 +505,13 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_usbstick.png'
 		if device2.startswith('mmcblk'):
 			model = file('/sys/block/' + device2 + '/device/name').read()
-			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/icons/dev_mmc.png'
+			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_mmc.png'
 			name = 'MMC: '
 		else:
 			model = file('/sys/block/' + device2 + '/device/model').read()
 		model = str(model).replace('\n', '')
 		des = ''
-		print "test:" 
+		print "test:"
 		if devicetype.find('/devices/pci') != -1 or devicetype.find('ahci') != -1:
 			name = _("HARD DISK: ")
 			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_hdd.png'
@@ -632,7 +632,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 				self.device_type = self.device_type.replace('\n',"")
 		except:
 			self.device_type = 'auto'
-				
+
 		if self.device_type.startswith('ext'):
 			self.device_type = 'auto'
 
@@ -671,5 +671,3 @@ class DevicesPanelSummary(Screen):
 	def selectionChanged(self, name, desc):
 		self["entry"].text = name
 		self["desc"].text = desc
-
-

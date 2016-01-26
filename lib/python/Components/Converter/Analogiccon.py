@@ -32,10 +32,10 @@ class Analogiccon(Converter, object):
 	ANALOG_SEC = 11
 	ANALOG_MIN = 12
 	ANALOG_HOUR = 13
-	
-	# add: date, date as string, weekday, ... 
+
+	# add: date, date as string, weekday, ...
 	# (whatever you need!)
-	
+
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		if type == "WithSeconds":
@@ -46,7 +46,7 @@ class Analogiccon(Converter, object):
 			self.type = self.DATE
 		elif type == "AsLength":
 			self.type = self.AS_LENGTH
-		elif type == "Timestamp":	
+		elif type == "Timestamp":
 			self.type = self.TIMESTAMP
 		elif type == "Full":
 			self.type = self.FULL
@@ -83,9 +83,9 @@ class Analogiccon(Converter, object):
 			return "%d:%02d" % (time / 60, time % 60)
 		elif self.type == self.TIMESTAMP:
 			return str(time)
-		
+
 		t = localtime(time)
-		
+
 		if self.type == self.WITH_SECONDS:
 			return "%2d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
 		elif self.type == self.DEFAULT:
@@ -93,11 +93,11 @@ class Analogiccon(Converter, object):
 		elif self.type == self.DATE:
 			return _(strftime("%A",t)) + " " + str(t[2]) + " " + MONTHS[t[1]-1] + " " + str(t[0])
 		elif self.type == self.FULL:
-			return dayOfWeek[t[6]] + " %d/%d  %2d:%02d" % (t[2],t[1], t.tm_hour, t.tm_min)  
+			return dayOfWeek[t[6]] + " %d/%d  %2d:%02d" % (t[2],t[1], t.tm_hour, t.tm_min)
 		elif self.type == self.SHORT_DATE:
 			return dayOfWeek[t[6]] + " %d/%d" % (t[2], t[1])
 		elif self.type == self.LONG_DATE:
-			return dayOfWeek[t[6]] + " " + str(t[2]) + " " + MONTHS[t[1]-1]  
+			return dayOfWeek[t[6]] + " " + str(t[2]) + " " + MONTHS[t[1]-1]
 		elif self.type == self.VFD:
 			return "%2d:%02d %d/%d" % (t.tm_hour, t.tm_min, t[2], t[1])
 		elif self.type == self.FORMAT:

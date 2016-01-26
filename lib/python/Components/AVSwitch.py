@@ -64,9 +64,9 @@ class AVSwitch:
 
 	modes["Scart"] = ["PAL", "NTSC", "Multi"]
 	# modes["DVI-PC"] = ["PC"]
-	
+
 	if hw_type in ('elite', 'premium', 'premium+', 'ultra', "me", "minime") : config.av.edid_override = True
-	
+
 	if (about.getChipSetString() in ('7366', '7376', '5272s')):
 		modes["HDMI"] = ["720p", "1080p", "1080i", "2160p", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080p", "1080i", "2160p"}
@@ -88,7 +88,7 @@ class AVSwitch:
 		del modes["YPbPr"]
 	if modes.has_key("Scart") and getBoxType() in ('fusionhdse', 'fusionhd', 'force2', 'force2plus', 'optimussos', 'tmnanose', 'tmnanosecombo', 'gbx1', 'gbx3'):
 		del modes["Scart"]
-		
+
 	if getBoxType() in ('mutant2400'):
 		f = open("/proc/stb/info/board_revision", "r").read()
 		if f >= "2":
@@ -372,9 +372,9 @@ class AVSwitch:
 iAVSwitch = AVSwitch()
 
 def InitAVSwitch():
-	if getBoxType() == 'vuduo' or getBoxType().startswith('ixuss'):	
+	if getBoxType() == 'vuduo' or getBoxType().startswith('ixuss'):
 		config.av.yuvenabled = ConfigBoolean(default=False)
-	else:	
+	else:
 		config.av.yuvenabled = ConfigBoolean(default=True)
 	config.av.osd_alpha = ConfigSlider(default=255, increment = 5, limits=(20,255)) # Make openLD compatible with some plugins who still use config.av.osd_alpha
 	colorformat_choices = {"cvbs": _("CVBS"), "rgb": _("RGB"), "svideo": _("S-Video")}
@@ -424,7 +424,7 @@ def InitAVSwitch():
 		if "auto" in f.readline():
 			# TRANSLATORS: (aspect ratio policy: always try to display as fullscreen, when there is no content (black bars) on left/right, even if this breaks the aspect.
 			policy2_choices.update({"auto": _("Auto")})
-		f.close()	
+		f.close()
 	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "letterbox")
 	policy_choices = {
 	# TRANSLATORS: (aspect ratio policy: black bars on left/right) in doubt, keep english term.
@@ -461,7 +461,7 @@ def InitAVSwitch():
 			iAVSwitch.setColorFormat(0)
 		else:
 			if getBoxType() == 'et6x00':
-				map = {"cvbs": 3, "rgb": 3, "svideo": 2, "yuv": 3}	
+				map = {"cvbs": 3, "rgb": 3, "svideo": 2, "yuv": 3}
 			elif getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus' or getBoxType().startswith('et'):
 				map = {"cvbs": 0, "rgb": 3, "svideo": 2, "yuv": 3}
 			else:
@@ -472,13 +472,13 @@ def InitAVSwitch():
 	def setAspectRatio(configElement):
 		map = {"4_3_letterbox": 0, "4_3_panscan": 1, "16_9": 2, "16_9_always": 3, "16_10_letterbox": 4, "16_10_panscan": 5, "16_9_letterbox" : 6}
 		iAVSwitch.setAspectRatio(map[configElement.value])
-	
+
 	iAVSwitch.setInput("ENCODER") # init on startup
 	if (getBoxType() in ('gbquad', 'gbquadplus', 'et5x00', 'ixussone', 'ixusszero', 'axodin', 'axodinc', 'starsatlx', 'galaxym6', 'geniuse3hd', 'evoe3hd', 'axase3', 'axase3c', 'omtimussos1', 'omtimussos2', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue' , 'twinboxlcd' )) or about.getModelString() == 'et6000':
 		detected = False
 	else:
 		detected = eAVSwitch.getInstance().haveScartSwitch()
-	
+
 	SystemInfo["ScartSwitch"] = detected
 
 	if os.path.exists("/proc/stb/hdmi/bypass_edid_checking"):
@@ -530,7 +530,7 @@ def InitAVSwitch():
 		config.av.hdmicolorspace.addNotifier(setHDMIColorspace)
 	else:
 		config.av.hdmicolorspace = ConfigNothing()
-		
+
 	if os.path.exists("/proc/stb/hdmi/audio_source"):
 		f = open("/proc/stb/hdmi/audio_source", "r")
 		can_audiosource = f.read().strip().split(" ")
@@ -755,4 +755,3 @@ def stopHotplug():
 
 def InitiVideomodeHotplug(**kwargs):
 	startHotplug()
-

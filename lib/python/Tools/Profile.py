@@ -9,7 +9,7 @@ PERCENTAGE_START = 0
 PERCENTAGE_END = 100
 
 profile_start = time.time()
- 
+
 profile_data = {}
 total_time = 1
 profile_file = None

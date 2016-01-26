@@ -12,7 +12,7 @@ def PluginEntryComponent(plugin, width=540):
 		png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/plugin.png"))
 	else:
 		png = plugin.icon
-	
+
 	if screenwidth and screenwidth == 1920:
 		return [
 		plugin,
@@ -27,7 +27,7 @@ def PluginEntryComponent(plugin, width=540):
 		MultiContentEntryText(pos=(120, 26), size=(width-120, 17), font=1, text=plugin.description),
 		MultiContentEntryPixmapAlphaBlend(pos=(10, 5), size=(100, 40), png = png)
 		]
-	
+
 def PluginCategoryComponent(name, png, width=440):
 	screenwidth = getDesktop(0).size().width()
 	if screenwidth and screenwidth == 1920:

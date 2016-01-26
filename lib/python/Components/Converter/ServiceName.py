@@ -13,7 +13,7 @@ class ServiceName(Converter, object):
 	PROVIDER = 3
 	REFERENCE = 4
 	EDITREFERENCE = 5
-	SID = 6	
+	SID = 6
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -29,7 +29,7 @@ class ServiceName(Converter, object):
 		elif type == "NameAndEvent":
 			self.type = self.NAME_EVENT
 		elif type == "Sid":
-			self.type = self.SID			
+			self.type = self.SID
 		else:
 			self.type = self.NAME
 
@@ -93,18 +93,17 @@ class ServiceName(Converter, object):
 
 			if tmpref:
 				refsplit = tmpref.split(':')
-				if len(refsplit) >= 3: 
+				if len(refsplit) >= 3:
 					return refsplit[3]
 				else:
 					return tmpref
 			else:
-				return 'N/A'			
+				return 'N/A'
 	   except:
 	   	return 'N/A'
-	   	
+
 	text = property(getText)
 
 	def changed(self, what):
 		if what[0] != self.CHANGED_SPECIFIC or what[1] in (iPlayableService.evStart,):
 			Converter.changed(self, what)
-

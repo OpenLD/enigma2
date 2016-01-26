@@ -1,5 +1,5 @@
 #if 0
-# 
+#
 # Copyright (c) 2015 Javier Sayago <admin@lonasdigital.com>
 # Contact: javilonas@esp-desarrolladores.com
 #
@@ -7,17 +7,17 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of   
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with GNU gv; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
-# 
+#
 # Author: Javilonas (Javier Sayago)
 # Support: www.lonasdigital.com
 # based on original source the plugin StreamTV
@@ -100,7 +100,7 @@ class OpenIPTVPlayer(Screen, InfoBarNotifications):
 		self.state = self.PLAYER_PLAYING
 		self.lastseekstate = self.PLAYER_PLAYING
 		self.__seekableStatusChanged()
-	
+
 		self.onClose.append(self.__onClose)
 		self.doPlay()
 
@@ -122,7 +122,7 @@ class OpenIPTVPlayer(Screen, InfoBarNotifications):
 	def doCommand(self, cmd):
 		if cmd == 'bypass_exit':
 			self.bypassExit = True
-			
+
 	def cbDrawChannelIcon(self, picInfo=None):
 		ptr = self.picload.getData()
 		if ptr != None:
@@ -195,7 +195,7 @@ class OpenIPTVPlayer(Screen, InfoBarNotifications):
 	def doPlay(self):
 		if self.state == self.PLAYER_PAUSED:
 			if self.shown:
-				self.__setHideTimer()	
+				self.__setHideTimer()
 		self.state = self.PLAYER_PLAYING
 		self.session.nav.playService(self.service)
 		if self.shown:
@@ -240,7 +240,7 @@ def streamListEntry(entry):
 		(eListboxPythonMultiContent.TYPE_PIXMAP_ALPHATEST, 5, 1, 35, 35, loadPNG('%s/icons/%s' % (PLUGIN_PATH, str(entry[1].get('icon'))) )),
 		(eListboxPythonMultiContent.TYPE_TEXT,45,7,200,37,0,RT_HALIGN_LEFT,entry[0]),
 		(eListboxPythonMultiContent.TYPE_TEXT,250,7,310,37,1,RT_HALIGN_LEFT,str(uriInfo.get('URL')))
-	] 
+	]
 
 class OpenIPTVList(Screen):
 	skin = 	"""
@@ -269,7 +269,7 @@ class OpenIPTVList(Screen):
 		self.streamMenuList = MenuList([], enableWrapAround=True, content=eListboxPythonMultiContent)
 		self.streamMenuList.l.setFont(0, gFont('Regular', 22))
 		self.streamMenuList.l.setFont(1, gFont('Regular', 18))
-		self.streamMenuList.l.setItemHeight(37) 
+		self.streamMenuList.l.setItemHeight(37)
 		self['streamlist'] = self.streamMenuList
 		self.streamMenuList.setList(map(streamListEntry, self.streamList))
 
@@ -356,9 +356,9 @@ class OpenIPTVList(Screen):
 		streamInfo = self["streamlist"].getCurrent()[0][1]
 		uriInfo    = streamInfo.get('uri')
 		self.beforeService  = self.session.nav.getCurrentlyPlayingServiceReference()
-		self.currentService = self.session.openWithCallback(self.cbFinishedStream, 
-								    OpenIPTVPlayer, 
-								    service, 
+		self.currentService = self.session.openWithCallback(self.cbFinishedStream,
+								    OpenIPTVPlayer,
+								    service,
 								    cbServiceCommand=self.cbServiceCommand,
 								    chName=str(streamInfo.get('name')),
 								    chURL =str(uriInfo.get('URL')),
@@ -422,8 +422,6 @@ class OpenIPTVList(Screen):
 
 def main(session, **kwargs):
 	session.open(OpenIPTVList)
-                                                           
+
 def Plugins(**kwargs):
 	return PluginDescriptor(name=_("OpenIPTV Player"), description="IPTV free channels.", where = PluginDescriptor.WHERE_PLUGINMENU, icon = "plugin.png", fnc=main)
-
-
