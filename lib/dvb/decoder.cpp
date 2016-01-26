@@ -75,9 +75,9 @@ int eDVBAudio::startPid(int pid, int type)
 			break;
 		}
 #if defined(__sh__) // increases zapping speed
-		pes.flags    = DMX_IMMEDIATE_START;
+		pes.flags	= DMX_IMMEDIATE_START;
 #else
-	 	pes.flags    = 0;
+		pes.flags	= 0;
 #endif
 		eDebugNoNewLineStart("DMX_SET_PES_FILTER(0x%02x) - audio - ", pid);
 		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
@@ -723,7 +723,7 @@ eDVBPCR::~eDVBPCR()
 DEFINE_REF(eDVBTText);
 
 eDVBTText::eDVBTText(eDVBDemux *demux, int dev)
-    :m_demux(demux), m_dev(dev)
+	:m_demux(demux), m_dev(dev)
 {
 	char filename[128];
 	sprintf(filename, "/dev/dvb/adapter%d/demux%d", demux->adapter, demux->demux);

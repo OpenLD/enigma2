@@ -232,8 +232,8 @@ class Session:
 			if not os.path.exists(origwebifpath + "/WebChilds/External"):
 				os.makedirs(origwebifpath + "/WebChilds/External")
 			open(origwebifpath + "/__init__.py", "w").close()
- 			open(origwebifpath + "/WebChilds/__init__.py", "w").close()
- 			open(origwebifpath + "/WebChilds/External/__init__.py", "w").close()
+			open(origwebifpath + "/WebChilds/__init__.py", "w").close()
+			open(origwebifpath + "/WebChilds/External/__init__.py", "w").close()
 
 			os.symlink(hookpath, origwebifpath + "/WebChilds/Toplevel.py")
 		##########################################################
@@ -562,7 +562,7 @@ def autorestoreLoop():
 	f = open("/media/hdd/images/config/autorestore", "w")
 	f.write(str(count))
 	f.close()
-	return True		
+	return True
 
 def runScreenTest():
 	config.misc.startCounter.value += 1

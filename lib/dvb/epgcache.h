@@ -30,8 +30,8 @@
 
 #define MjdToEpochTime(x) (((x##_hi << 8 | x##_lo)-40587)*86400)
 #define BcdTimeToSeconds(x) ((3600 * ((10*((x##_h & 0xF0)>>4)) + (x##_h & 0xF))) + \
-                             (60 * ((10*((x##_m & 0xF0)>>4)) + (x##_m & 0xF))) + \
-                             ((10*((x##_s & 0xF0)>>4)) + (x##_s & 0xF)))
+							(60 * ((10*((x##_m & 0xF0)>>4)) + (x##_m & 0xF))) + \
+							((10*((x##_s & 0xF0)>>4)) + (x##_s & 0xF)))
 
 #ifdef ENABLE_MHW_EPG
 
@@ -42,27 +42,27 @@
 #define EPG_REPLAY_LEN 8
 
 typedef struct epg_replay {
-   u_char channel_id                             :8;
-   u_char replay_mjd_hi                          :8;
-   u_char replay_mjd_lo                          :8;
-   u_char replay_time_h                          :8;
-   u_char replay_time_m                          :8;
-   u_char replay_time_s                          :8;
-   u_char reserv1                                :8;
+	u_char channel_id							:8;
+	u_char replay_mjd_hi						:8;
+	u_char replay_mjd_lo						:8;
+	u_char replay_time_h						:8;
+	u_char replay_time_m						:8;
+	u_char replay_time_s						:8;
+	u_char reserv1								:8;
 #if BYTE_ORDER == BIG_ENDIAN
-   u_char last                                   :1;
-   u_char                                        :1;
-   u_char vo                                     :1;
-   u_char vm                                     :1;
-   u_char                                        :3;
-   u_char subtitles                              :1;
+	u_char last									:1;
+	u_char										:1;
+	u_char vo									:1;
+	u_char vm									:1;
+	u_char										:3;
+	u_char subtitles							:1;
 #else
-   u_char subtitles                              :1;
-   u_char                                        :3;
-   u_char vm                                     :1;
-   u_char vo                                     :1;
-   u_char                                        :1;
-   u_char last                                   :1;
+	u_char subtitles							:1;
+	u_char										:3;
+	u_char vm									:1;
+	u_char vo									:1;
+	u_char										:1;
+	u_char last									:1;
 #endif
 } epg_replay_t;
 

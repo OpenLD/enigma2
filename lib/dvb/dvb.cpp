@@ -463,7 +463,7 @@ void *eDVBUsbAdapter::vtunerPump()
 	int pidcount = 0;
 	if (vtunerFd < 0 || demuxFd < 0 || pipeFd[0] < 0) return NULL;
 
-#define MSG_PIDLIST         14
+#define MSG_PIDLIST			14
 	struct vtuner_message
 	{
 		int type;
