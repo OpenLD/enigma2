@@ -1350,7 +1350,7 @@ class ChannelSelectionBase(Screen):
 		Screen.__init__(self, session)
 
 		self["key_red"] = Button(_("All"))
-		self["key_green"] = Button(_("Satellites"))
+		self["key_green"] = Button(_("Reception lists"))
 		self["key_yellow"] = Button(_("Providers"))
 		self["key_blue"] = Button(_("Favourites"))
 
@@ -1495,7 +1495,7 @@ class ChannelSelectionBase(Screen):
 			if 'FROM PROVIDERS' in pathstr:
 				return _('Provider')
 			if 'FROM SATELLITES' in pathstr:
-				return _('Satellites')
+				return _('Reception lists')
 			if ') ORDER BY name' in pathstr:
 				return _('All')
 		return str
@@ -1583,8 +1583,9 @@ class ChannelSelectionBase(Screen):
 		return False
 
 	def showAllServices(self):
+		self["key_green"].setText(_("Reception lists"))
 		if not self.pathChangeDisabled:
-			refstr = '%s ORDER BY name'% self.service_types
+			refstr = '%s ORDER BY name'%(self.service_types)
 			if not self.preEnterPath(refstr):
 				ref = eServiceReference(refstr)
 				currentRoot = self.getRoot()
@@ -1595,7 +1596,11 @@ class ChannelSelectionBase(Screen):
 
 	def showSatellites(self, changeMode=False):
 		if not self.pathChangeDisabled:
-			refstr = '%s FROM SATELLITES ORDER BY satellitePosition' % self.service_types
+			refstr = '%s FROM SATELLITES ORDER BY satellitePosition'%(self.service_types)
+			if self.showSatDetails:
+				self["key_green"].setText(_("Simple"))
+			else:
+				self["key_green"].setText(_("Extended"))
 			if not self.preEnterPath(refstr):
 				ref = eServiceReference(refstr)
 				justSet = False
@@ -1615,6 +1620,10 @@ class ChannelSelectionBase(Screen):
 						justSet = True
 						self.clearPath()
 						self.enterPath(ref, True)
+						if self.showSatDetails:
+							self["key_green"].setText(_("Simple"))
+						else:
+							self["key_green"].setText(_("Extended"))
 				if justSet:
 					addCableAndTerrestrialLater = []
 					serviceHandler = eServiceCenter.getInstance()
@@ -1683,8 +1692,9 @@ class ChannelSelectionBase(Screen):
 								self.setCurrentSelectionAlternative(eServiceReference(refstr))
 
 	def showProviders(self):
+		self["key_green"].setText(_("Reception lists"))
 		if not self.pathChangeDisabled:
-			refstr = '%s FROM PROVIDERS ORDER BY name'% self.service_types
+			refstr = '%s FROM PROVIDERS ORDER BY name'%(self.service_types)
 			if not self.preEnterPath(refstr):
 				ref = eServiceReference(refstr)
 				if self.isBasePathEqual(ref):
@@ -1760,6 +1770,7 @@ class ChannelSelectionBase(Screen):
 				self.servicelist.moveDown()
 
 	def showFavourites(self):
+		self["key_green"].setText(_("Reception lists"))
 		if not self.pathChangeDisabled:
 			if not self.preEnterPath(self.bouquet_rootstr):
 				if self.isBasePathEqual(self.bouquet_root):
@@ -2090,6 +2101,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 					self.correctChannelNumber()
 					self.movemode and self.toggleMoveMode()
 					self.editMode = False
+					self["key_green"].setText(_("Reception lists"))
 					self.close(ref)
 
 	def bouquetParentalControlCallback(self, ref):
@@ -2842,9 +2854,9 @@ class HistoryZapSelector(Screen):
 			if picon != "":
 				png = loadPNG(picon)
 			if self.invertItems:
-				self.list.insert(0, (x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png))
+				self.list.insert(0, (x[1], cnt == mark_item and "B;" or "", x[0], eventName, descriptionName, durationTime, png))
 			else:
-				self.list.append((x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png))
+				self.list.append((x[1], cnt == mark_item and "B;" or "", x[0], eventName, descriptionName, durationTime, png))
 			cnt += 1
 		self["menu"] = List(self.list, enableWrapAround=wrap_around)
 		self.onShown.append(self.__onShown)
