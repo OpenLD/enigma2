@@ -35,14 +35,14 @@ class ServiceName(Converter, object):
 
 	@cached
 	def getText(self):
-	   try:
-	   	service = self.source.service
-		info = None
+		try:
+			service = self.source.service
+			info = None
 		if isinstance(service, eServiceReference):
 			info = self.source.info
 		elif isinstance(service, iPlayableServicePtr):
 			info = service and service.info()
-			service = None
+			ervice = None
 
 		if not info:
 			return ""
@@ -99,8 +99,8 @@ class ServiceName(Converter, object):
 					return tmpref
 			else:
 				return 'N/A'
-	   except:
-	   	return 'N/A'
+	except:
+		return 'N/A'
 
 	text = property(getText)
 
