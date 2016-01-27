@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ##
 ##
-## Copyright (c) 2012-2015 OpenLD
+## Copyright (c) 2012-2016 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
@@ -140,9 +140,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		if self.sel == 0:
 			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
 			self.session.open(DeviceManager)
-		elif self.sel == 1:
-			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
-			self.session.open(SundtekControlCenter)
 		elif self.sel == 2:
 			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
 			self.session.open(LD_UsbFormat)
@@ -226,16 +223,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		else:
 			name = _("Swap File settings")
 		idx = 3
-		res = (name, png, idx)
-		self.list.append(res)
-
-		mypixmap = mypath + "SundtekControlCenter.png"
-		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Sundtek Control Center")
-		else:
-			name = _("Soundtek Center")
-		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
 

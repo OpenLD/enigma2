@@ -3,7 +3,7 @@
 ##
 ## Epg_Auto for Enigma2
 ##
-## Copyright (c) 2012-2015 OpenLD
+## Copyright (c) 2012-2016 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
