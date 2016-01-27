@@ -140,40 +140,43 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		if self.sel == 0:
 			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
 			self.session.open(DeviceManager)
-		elif self.sel == 2:
+		elif self.sel == 1:
 			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
 			self.session.open(LD_UsbFormat)
-		elif self.sel == 3:
+		elif self.sel == 2:
 			from Plugins.Extensions.LDteam.LdSwapManager import Swap
 			self.session.open(Swap)
-		elif self.sel == 4:
+		elif self.sel == 3:
 			self.openSetup("userinterface")
-		elif self.sel == 5:
+		elif self.sel == 4:
 			from Screens.NcamInfo import NcamInfoMenu
 			self.session.open(NcamInfoMenu)
-		elif self.sel == 6:
+		elif self.sel == 5:
 			from Screens.OScamInfo import OscamInfoMenu
 			self.session.open(OscamInfoMenu)
-		elif self.sel == 7:
+		elif self.sel == 6:
 			self.session.open(LDepg)
-		elif self.sel == 8:
+		elif self.sel == 7:
 			from Screens.Recordings import RecordingSettings
 			self.session.open(RecordingSettings)
-		elif self.sel == 9:
+		elif self.sel == 8:
 			from Plugins.SystemPlugins.Satfinder.plugin import Satfinder
 			self.session.open(Satfinder)
-		elif self.sel == 10:
+		elif self.sel == 9:
 			self.openSetup("autolanguagesetup")
-		elif self.sel == 11:
+		elif self.sel == 10:
 			self.openSetup("usage")
-		elif self.sel == 13:
+		elif self.sel == 11:
 			self.session.open(LDmemoria)
-		elif self.sel == 14:
+		elif self.sel == 12:
 			from Screens.CronTimer import CronTimers
 			self.session.open(CronTimers)
-		elif self.sel == 15:
+		elif self.sel == 13:
 			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
 			self.session.open(RestartNetwork)
+		elif self.sel == 14:
+			from Screens.CCcamInfo import CCcamInfoMain
+			self.session.open(CCcamInfoMain)
 		else:
 			self.noYet()
 
@@ -192,7 +195,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Administrador Cron")
 		else:
 			name = _("CronManager")
-		idx = 14
+		idx = 12
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -212,7 +215,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Formatear USB")
 		else:
 			name = _("Usb Format Wizard")
-		idx = 2
+		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -222,7 +225,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Memoria Swap")
 		else:
 			name = _("Swap File settings")
-		idx = 3
+		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -232,7 +235,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Ajustes de EPG")
 		else:
 			name = _("Epg settings")
-		idx = 7
+		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -242,7 +245,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Opciones Osd")
 		else:
 			name = _("Osd settings")
-		idx = 4
+		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -252,14 +255,14 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Ajustes de grabacion")
 		else:
 			name = _("Record settings")
-		idx = 8
+		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Tuner_Setup.png"
 		png = LoadPixmap(mypixmap)
 		name = _("Satfinder")
-		idx = 9
+		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -269,7 +272,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Auto configuracion idioma")
 		else:
 			name = _("Auto language settings")
-		idx = 10
+		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -279,7 +282,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Ajustes Http stream")
 		else:
 			name = _("Http stream settings")
-		idx = 11
+		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -289,7 +292,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Liberar RAM")
 		else:
 			name = _("Liberate RAM")
-		idx = 13
+		idx = 11
 		res = (name, png, idx)
 		self.list.append(res)
 
@@ -299,21 +302,28 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			name = _("Reiniciar RED")
 		else:
 			name = _("Reset Network")
-		idx = 15
+		idx = 13
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "Module.png"
+		png = LoadPixmap(mypixmap)
+		name = "CCcamInfo"
+		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
 		name = "NcamInfo"
-		idx = 5
+		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Module.png"
 		png = LoadPixmap(mypixmap)
 		name = "OScamInfo"
-		idx = 6
+		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
 
