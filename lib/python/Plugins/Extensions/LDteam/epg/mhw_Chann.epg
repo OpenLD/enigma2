@@ -1,7 +1,7 @@
 #########################################
 #                                       #
 #       Channels list in mhw EPG        #
-#    Generated at 13/12/2015 22:29:24   #
+#    Generated at 28/01/2016 21:34:36   #
 #                                       #
 #      Format: (NAME) SID:TSID:NID      #
 #                                       #
@@ -30,7 +30,6 @@
 (MTV) 74a2:41c:1
 (FDF) 77bc:40a:1
 (NEOX) 75fe:408:1
-(M+ STAR WARS) 757b:412:1
 (C+ESTRENOS) 76c0:40e:1
 (CANAL+ XTRA) 77c6:40a:1
 (C+ ACCIÓN) 746c:3f0:1
@@ -45,6 +44,7 @@
 (C+ PARTIDAZO) 769c:41e:1
 (C+ LIGA 2) 7580:412:1
 (C+ FUTBOL) 778e:424:1
+(BEIN SPORTS) 757b:412:1
 (C+LIGA MULTI) 756b:412:1
 (R. MADRID TV) 7601:408:1
 (BARÇA TV) 74a0:41c:1
@@ -53,6 +53,8 @@
 (MOVISTAR F1) 74a4:41c:1
 (MOTO GP) 7739:416:1
 (C+ GOLF) 7789:424:1
+(EUROSPORT 1) 74a1:41c:1
+(EUROSPORT 2) 760e:408:1
 (MULTIDEP.1) 756c:412:1
 (TELEDEPORTE) 76cc:40e:1
 (CAZA Y PESCA) 772b:416:1
@@ -64,7 +66,6 @@
 (CANAL ODISEA) 778a:424:1
 (A&E) 772d:416:1
 (VIAJAR) 76c9:40e:1
-(DISCOVERYMAX) 760e:408:1
 (CANAL COCINA) 76ce:40e:1
 (CANAL DECASA) 7795:424:1
 (FASHIONTV) 772f:416:1
@@ -86,6 +87,7 @@
 (MTV ROCKS) 6ff3:42a:1
 (MEZZO) 7699:41e:1
 (MEZZO HD) 7823:428:1
+(CLASSICA) 7602:408:1
 (24 HORAS) 7738:416:1
 (BBC WORLD) 2742:402:1
 (CNN INT.) 1146:404:1
