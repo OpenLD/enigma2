@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-12-17 22:34+0100\n"
+"PO-Revision-Date: 2016-01-28 20:25+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -1960,6 +1960,9 @@ msgstr "Configurar como predeterminado"
 msgid "Reception Settings"
 msgstr "Ajustes de recepción"
 
+msgid "Reception lists"
+msgstr "Listas de recepción"
+
 msgid "Configure interface"
 msgstr "Configurar interfaz"
 
@@ -3318,6 +3321,9 @@ msgstr "Experimental"
 #
 msgid "Expert"
 msgstr "Experto"
+
+msgid "Extended"
+msgstr "Avanzada"
 
 #
 msgid "Extended Networksetup Plugin..."
@@ -4725,6 +4731,10 @@ msgstr "Falta "
 #
 msgid "Mkfs failed"
 msgstr "Mkfs fallido"
+
+#
+msgid "Mode"
+msgstr "Modo"
 
 #
 msgid "Mode "
@@ -8072,6 +8082,14 @@ msgid "Are you sure to remove all %d.%d%s%s services?"
 msgstr "¿Seguro de eliminar todos los %d.%d%s%s servicios?"
 
 #
+msgid "Mark service as dedicated 3D service"
+msgstr "Marcar como canal 3D"
+
+#
+msgid "Unmark service as dedicated 3D service"
+msgstr "Eliminar marcador 3D"
+
+#
 msgid "Test DiSEqC settings"
 msgstr "Configuración de Test DisEqC"
 
@@ -10119,6 +10137,18 @@ msgstr "Cambiar enfoque a la pantalla principal"
 
 msgid "Zap mode"
 msgstr "Modo zapeo"
+
+msgid "Channel zap delay mode"
+msgstr "Modo de retardo al zapear"
+
+msgid "Channel zap delay first button"
+msgstr "Primer botón de retardo al zapear"
+
+msgid "Channel zap delay another button"
+msgstr "Otro botón de retardo al zapear"
+
+msgid "Number of digits in channel number"
+msgstr "Dígitos en el número de canal"
 
 msgid "[TimeShift] - Merging records failed!"
 msgstr "[Timeshift] Ha fallado la fusión de grabaciones."
@@ -13090,6 +13120,9 @@ msgstr "Configura tus montajes en red"
 
 msgid "Setup Videomode"
 msgstr "Configurar el modo de vídeo"
+
+msgid "Setup VideoEnhancement"
+msgstr "Ajustes Avanzados de Vídeo"
 
 msgid "Setup your Video Mode, Video Output and other Video Settings"
 msgstr "Configura tu modo de vídeo, salida de vídeo y otros ajustes"
@@ -16248,3 +16281,19 @@ msgstr "Actualizando EPG"
 
 msgid "Por favor Espere, Actualizando Epg"
 msgstr "Por favor Espere, Actualizando Epg"
+
+msgid "Panic channel"
+msgstr "Canal del pánico"
+
+msgid "Show status messages when switch to live TV"
+msgstr "Ver mensajes de estado cuando cambias a TV en vivo"
+
+msgid "Include AIT in recordings"
+msgstr "Incluir AIT en grabaciones"
+
+# EPG
+msgid "Please wait while gathering data..."
+msgstr "Por favor, espere mientras se reorganizan los datos..."
+
+msgid "Load unlinked userbouquets"
+msgstr "Cargar bouquets no vinculados"
