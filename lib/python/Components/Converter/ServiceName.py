@@ -18,17 +18,17 @@ class ServiceName(Converter, object):
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		self.epgQuery = eEPGCache.getInstance().lookupEventTime
-		if type == "Provider":
+		if type == 'Provider':
 			self.type = self.PROVIDER
-		elif type == "Reference":
+		elif type == 'Reference':
 			self.type = self.REFERENCE
-		elif type == "EditReference":
+		elif type == 'EditReference':
 			self.type = self.EDITREFERENCE
-		elif type == "NameOnly":
+		elif type == 'NameOnly':
 			self.type = self.NAME_ONLY
-		elif type == "NameAndEvent":
+		elif type == 'NameAndEvent':
 			self.type = self.NAME_EVENT
-		elif type == "Sid":
+		elif type == 'Sid':
 			self.type = self.SID
 		else:
 			self.type = self.NAME
@@ -38,69 +38,69 @@ class ServiceName(Converter, object):
 		try:
 			service = self.source.service
 			info = None
-		if isinstance(service, eServiceReference):
-			info = self.source.info
-		elif isinstance(service, iPlayableServicePtr):
-			info = service and service.info()
-			ervice = None
-
-		if not info:
-			return ""
-
-		if self.type == self.NAME or self.type == self.NAME_ONLY or self.type == self.NAME_EVENT:
-			name = service and info.getName(service)
-			if name is None:
-				name = info.getName()
-			name = name.replace('\xc2\x86', '').replace('\xc2\x87', '')
-			if self.type == self.NAME_EVENT:
-				act_event = info and info.getEvent(0)
-				if not act_event and info:
-					refstr = info.getInfoString(iServiceInformation.sServiceref)
-					act_event = self.epgQuery(eServiceReference(refstr), -1, 0)
-				if act_event is None:
-					return "%s - " % name
-				else:
-					return "%s - %s" % (name, act_event.getEventName())
-			elif self.type != self.NAME_ONLY and config.usage.show_infobar_channel_number.value and hasattr(self.source, "serviceref") and '0:0:0:0:0:0:0:0:0' not in self.source.serviceref.toString():
-				numservice = self.source.serviceref
-				num = numservice and numservice.getChannelNum() or None
-				if num is not None:
-					return str(num) + '   ' + name
+			if isinstance(service, eServiceReference):
+				info = self.source.info
+			elif isinstance(service, iPlayableServicePtr):
+				info = service and service.info()
+				service = None
+			if not info:
+				return ''
+			if self.type == self.NAME or self.type == self.NAME_ONLY or self.type == self.NAME_EVENT:
+				name = service and info.getName(service)
+				if name is None:
+					name = info.getName()
+				name = name.replace('\xc2\x86', '').replace('\xc2\x87', '')
+				if self.type == self.NAME_EVENT:
+					act_event = info and info.getEvent(0)
+					if not act_event and info:
+						refstr = info.getInfoString(iServiceInformation.sServiceref)
+						act_event = self.epgQuery(eServiceReference(refstr), -1, 0)
+					if act_event is None:
+						return '%s - ' % name
+					else:
+						return '%s - %s' % (name, act_event.getEventName())
+				elif self.type != self.NAME_ONLY and config.usage.show_infobar_channel_number.value and hasattr(self.source, 'serviceref') and '0:0:0:0:0:0:0:0:0' not in self.source.serviceref.toString():
+					numservice = self.source.serviceref
+					num = numservice and numservice.getChannelNum() or None
+					if num is not None:
+						return str(num) + '   ' + name
+					else:
+						return name
 				else:
 					return name
 			else:
-				return name
-		elif self.type == self.PROVIDER:
-			return info.getInfoString(iServiceInformation.sProvider)
-		elif self.type == self.REFERENCE or self.type == self.EDITREFERENCE and hasattr(self.source, "editmode") and self.source.editmode:
-			if not service:
-				refstr = info.getInfoString(iServiceInformation.sServiceref)
-				path = refstr and eServiceReference(refstr).getPath()
-				if path and fileExists("%s.meta" % path):
-					fd = open("%s.meta" % path, "r")
-					refstr = fd.readline().strip()
-					fd.close()
-				return refstr
-			nref = resolveAlternate(service)
-			if nref:
-				service = nref
-			return service.toString()
-		elif self.type == self.SID:
-			if service is None:
-				tmpref = info.getInfoString(iServiceInformation.sServiceref)
-			else:
-				tmpref = service.toString()
+				if self.type == self.PROVIDER:
+					return info.getInfoString(iServiceInformation.sProvider)
+				if self.type == self.REFERENCE or self.type == self.EDITREFERENCE and hasattr(self.source, 'editmode') and self.source.editmode:
+					if not service:
+						refstr = info.getInfoString(iServiceInformation.sServiceref)
+						path = refstr and eServiceReference(refstr).getPath()
+						if path and fileExists('%s.meta' % path):
+							fd = open('%s.meta' % path, 'r')
+							refstr = fd.readline().strip()
+							fd.close()
+						return refstr
+					nref = resolveAlternate(service)
+					if nref:
+						service = nref
+					return service.toString()
+				if self.type == self.SID:
+					if service is None:
+						tmpref = info.getInfoString(iServiceInformation.sServiceref)
+					else:
+						tmpref = service.toString()
+					if tmpref:
+						refsplit = tmpref.split(':')
+						if len(refsplit) >= 3:
+							return refsplit[3]
+						else:
+							return tmpref
+					else:
+						return 'N/A'
+		except:
+			return 'N/A'
 
-			if tmpref:
-				refsplit = tmpref.split(':')
-				if len(refsplit) >= 3:
-					return refsplit[3]
-				else:
-					return tmpref
-			else:
-				return 'N/A'
-	except:
-		return 'N/A'
+		return
 
 	text = property(getText)
 
