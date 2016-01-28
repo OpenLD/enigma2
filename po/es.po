@@ -493,9 +493,6 @@ msgstr "30 segundos"
 msgid "3D Mode"
 msgstr "Modo 3D"
 
-msgid "Mode"
-msgstr "Modo"
-
 msgid "3D setup"
 msgstr "Configuración 3D"
 
