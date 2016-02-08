@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from boxbranding import getMachineBuild, getMachineBrand, getMachineName
-import os
+from Screens.EventView import EventViewEPGSelect
+import os, re, unicodedata
 from Tools.Profile import profile
 
 from Screen import Screen
@@ -948,15 +949,9 @@ class ChannelSelectionEdit:
 			return list.startEdit()
 		return None
 
-	def buildBouquetID(self, str):
-		tmp = str.lower()
-		name = ''
-		for c in tmp:
-			if ('a' <= c <= 'z') or ('0' <= c <= '9'):
-				name += c
-			else:
-				name += '_'
-		return name
+	def buildBouquetID(self, name):
+		name = unicodedata.normalize('NFKD', unicode(name, 'utf_8', errors='ignore')).encode('ASCII', 'ignore')
+		return re.sub('[^a-z0-9]', '', name.replace('&', 'and').replace('+', 'plus').replace('*', 'star').lower())
 
 	def renameEntry(self):
 		self.editMode = True
