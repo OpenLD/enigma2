@@ -409,7 +409,7 @@ def InitUsageConfig():
 	config.epg.netmed.addNotifier(EpgSettingsChanged)
 	config.epg.virgin.addNotifier(EpgSettingsChanged)
 
-	config.epg.maxdays = ConfigSelectionNumber(min = 1, max = 28, stepwidth = 1, default = 7, wraparound = True)
+	config.epg.maxdays = ConfigSelectionNumber(min = 1, max = 365, stepwidth = 1, default = 7, wraparound = True)
 	def EpgmaxdaysChanged(configElement):
 		from enigma import eEPGCache
 		eEPGCache.getInstance().setEpgmaxdays(config.epg.maxdays.getValue())
