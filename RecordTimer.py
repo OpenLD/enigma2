@@ -6,7 +6,8 @@ from bisect import insort
 from sys import maxint
 import os
 
-from enigma import eEPGCache, getBestPlayableServiceReference, eServiceReference, eServiceCenter, iRecordableService, quitMainloop, eActionMap, setPreferredTuner
+from enigma import eEPGCache, getBestPlayableServiceReference, eStreamServer, \
+	eServiceReference, eServiceCenter, iRecordableService, quitMainloop, eActionMap, setPreferredTuner
 
 from Components.config import config
 from Components import Harddisk
@@ -408,8 +409,10 @@ class RecordTimerEntry(timer.TimerEntry, object):
 				self.next_activation = self.begin
 				self.backoff = 0
 				return True
-
 			self.log(7, "prepare failed")
+			if eStreamServer.getInstance().getConnectedClients():
+				eStreamServer.getInstance().stopStream()
+				return False
 			if self.first_try_prepare == 0:
 				# (0) try to make a tuner available by disabling PIP
 				self.first_try_prepare += 1
