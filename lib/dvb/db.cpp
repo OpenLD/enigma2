@@ -1102,10 +1102,10 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 		return Py_False;
 	}
 	XMLTree tree;
-	std::string satellitesFilename = eEnv::resolve("${sysconfdir}/enigma2/satellites.xml").c_str();
+	std::string satellitesFilename = eEnv::resolve("${sysconfdir}/enigma2/satellites.xml");
 	if (::access(satellitesFilename.c_str(), R_OK) < 0)
 	{
-		satellitesFilename = eEnv::resolve("${sysconfdir}/tuxbox/satellites.xml").c_str();
+		satellitesFilename = eEnv::resolve("${sysconfdir}/tuxbox/satellites.xml");
 		if (::access(satellitesFilename.c_str(), R_OK) < 0)
 		{
 			eDebug("satellites.xml not found");
