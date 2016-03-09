@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2015-11-06 19:10+0100\n"
+"PO-Revision-Date: 2016-01-25 22:12+0100\n"
 "Last-Translator: mike99 <mike99@mail.to>\n"
 "Language-Team: openLD\n"
 "Language: de\n"
@@ -492,10 +492,6 @@ msgstr "3"
 msgid "30 Days"
 msgstr "30 Tage"
 
-#
-msgid "30 minutes"
-msgstr "30 Minuten"
-
 msgid "30 seconds"
 msgstr "30 Sekunden"
 
@@ -538,16 +534,8 @@ msgid "5"
 msgstr "5"
 
 #
-msgid "5 minutes"
-msgstr "5 Minuten"
-
-#
 msgid "6"
 msgstr "6"
-
-#
-msgid "60 minutes"
-msgstr "60 Minuten"
 
 #
 msgid "7"
@@ -1286,6 +1274,18 @@ msgstr "Optionen zum Löschen im Hintergrund "
 
 msgid "Background delete speed"
 msgstr "Geschwindigkeit beim Löschen im Hintergrund"
+
+msgid "Use the extended List"
+msgstr "Die erweiterte Liste verwenden"
+
+msgid "Update delay for Events in List. Scrolling in List is faster with higher delay, specialy on big Lists !"
+msgstr "Updateverzögerung für Events in der Liste. Das Scrollverhalten wird schneller mit einer höheren Verzögerung, speziell bei größeren Listen !"
+
+msgid "ServicePicon"
+msgstr "Sender-Picon"
+
+msgid "ServiceName"
+msgstr "Sender-Name"
 
 msgid "Backup completed."
 msgstr "Sicherung beendet."
@@ -3542,8 +3542,9 @@ msgstr "Freier Speicher: \t"
 msgid "Free to Air"
 msgstr "FreeTV (FTA)"
 
+#: About.py:312
 msgid "Free:"
-msgstr "Frei:"
+msgstr "Frei:\t"
 
 #
 msgid "Frequency"
@@ -3919,15 +3920,15 @@ msgstr "IMDb Suche"
 msgid "IP address"
 msgstr "IP-Adresse"
 
-#: About.py:374 : 383 : 392 : 401
+#: About.py:374:383:392:401
 msgid "IP:"
 msgstr "IP:\t"
 
-#: About.py:376 : 385 : 394 : 403
+#: About.py:376:385:394:403
 msgid "Netmask:"
 msgstr "Netmask:\t"
 
-#: About.py:378 : 387 : 396 : 405
+#: About.py:378:387:396:405
 msgid "MAC:"
 msgstr "MAC:\t"
 
@@ -4138,9 +4139,13 @@ msgstr "Erweiterungen installieren..."
 msgid "Install local extension"
 msgstr "Lokale Erweiterung installieren"
 
-#
+#: SoftwareManager/plugin.py
 msgid "Install or remove finished."
 msgstr "Installation oder Deinstallation beendet."
+
+#: SoftwareManager/plugin.py
+msgid "Do you want to reboot your receiver?"
+msgstr "Wollen Sie jetzt neu starten?"
 
 msgid "Install picons on"
 msgstr "Picons installieren auf"
@@ -4613,6 +4618,43 @@ msgstr ""
 msgid "May"
 msgstr "Mai"
 
+#: MediaPlayer/plugin.py:177
+msgid "Exit mediaplayer"
+msgstr "Mediaplayer beenden"
+
+#: MediaPlayer/plugin.py:184
+msgid "Stop entry"
+msgstr "Wiedergabe anhalten"
+
+#: MediaPlayer/plugin.py:188
+msgid "Jump to beginning of list"
+msgstr "Zum Anfang der Liste springen"
+
+#: MediaPlayer/plugin.py:189
+msgid "Jump to end of list"
+msgstr "Zum Ende der Liste springen"
+
+#: MediaPlayer/plugin.py:190 plugin.py:191
+msgid "Switch between filelist/playlist"
+msgstr "Wechseln zwischen Dateiliste und Playliste"
+
+#: MediaPlayer/plugin.py:341 plugin.py:347
+#, python-format
+msgid "This %s %s cannot decode %s streams!"
+msgstr "Die %s %s kann nicht entschüsseln %s streams!"
+
+#: MediaPlayer/plugin.py:621 plugin.py:1238
+msgid "Play audio-CD..."
+msgstr "Audio-CD wiedergeben..."
+
+#: MediaPlayer/plugin.py:626
+msgid "Add files to playlist"
+msgstr "Zur Playliste hinzufügen"
+
+#: MediaPlayer/plugin.py:1220
+msgid "View video CD..."
+msgstr "Video-CD wiedergeben..."
+
 #
 msgid "Media player"
 msgstr "Media Player"
@@ -4942,6 +4984,10 @@ msgstr "Netzwerkassistent"
 msgid "Network name (SSID)"
 msgstr "Netzwerkname (SSID)"
 
+#: NetworkSetup.py:578
+msgid "Enable Wake On LAN"
+msgstr "Aktiviere Wake On LAN"
+
 #
 msgid "New"
 msgstr "Neu"
@@ -4996,7 +5042,7 @@ msgid ""
 "(Timeout reading PAT)"
 msgstr ""
 "Keine Daten auf dem Transponder!\n"
-"(Timeout beim lesen von PAT)"
+"(Timeout beim Lesen von PAT)"
 
 #
 msgid "No description available."
@@ -5654,7 +5700,7 @@ msgid ""
 msgstr ""
 "Konfigurieren Sie Ihre DNS-Server durch Ausfüllen der entsprechenden Werte.\n"
 "\n"
-"OK drücken zum fortfahren"
+"OK drücken zum Fortfahren"
 
 #
 msgid ""
@@ -5663,7 +5709,7 @@ msgid ""
 msgstr ""
 "Netzwerk durch Ausfüllen der entsprechenden Werte konfigurieren.\n"
 "\n"
-"OK drücken zum fortfahren"
+"OK drücken zum Fortfahren"
 
 #
 msgid "Please do not change any values unless you know what you are doing!"
@@ -5722,7 +5768,7 @@ msgstr "Bitte OK drücken!"
 
 #
 msgid "Please select a playlist to delete..."
-msgstr "Wiedergabeliste zum löschen auswählen..."
+msgstr "Wiedergabeliste zum Löschen auswählen..."
 
 #
 msgid "Please select a playlist..."
@@ -5737,11 +5783,11 @@ msgid "Please select a subservice..."
 msgstr "Subservice auswählen..."
 
 msgid "Please select an NFI file and press green key to flash!"
-msgstr "NFI-Datei auswählen und zum flashen GRÜN drücken!"
+msgstr "NFI-Datei auswählen und zum Flashen GRÜN drücken!"
 
 #
 msgid "Please select an extension to remove."
-msgstr "Erweiterung zum deinstallieren auswählen."
+msgstr "Erweiterung zum Deinstallieren auswählen."
 
 #
 msgid "Please select an option below."
@@ -5753,7 +5799,7 @@ msgstr "Sicherungs-Speicherort auswählen"
 
 #
 msgid "Please select tag to filter..."
-msgstr "Bitte einen Tag zum filtern auswählen..."
+msgstr "Bitte einen Tag zum Filtern auswählen..."
 
 #
 msgid "Please select the movie path..."
@@ -5767,7 +5813,7 @@ msgid ""
 msgstr ""
 "Netzwerkschnittstelle für den Internetzugang auswählen.\n"
 "\n"
-"OK drücken zum fortfahren"
+"OK drücken zum Fortfahren"
 
 #
 msgid ""
@@ -5775,9 +5821,9 @@ msgid ""
 "\n"
 "Please press OK to continue."
 msgstr ""
-"WLAN-Netzwerk zum verbinden auswählen.\n"
+"WLAN-Netzwerk zum Verbinden auswählen.\n"
 "\n"
-"OK drücken zum fortfahren."
+"OK drücken zum Fortfahren."
 
 msgid "Please set up tuner A"
 msgstr "Bitte Tuner A konfigurieren"
@@ -5792,6 +5838,30 @@ msgstr "Tuner C einstellen."
 #
 msgid "Please set up tuner D"
 msgstr "Tuner D einstellen."
+
+#
+msgid "Please set up tuner E"
+msgstr "Tuner E einstellen."
+
+#
+msgid "Please set up tuner F"
+msgstr "Tuner F einstellen."
+
+#
+msgid "Please set up tuner G"
+msgstr "Tuner G einstellen."
+
+#
+msgid "Please set up tuner H"
+msgstr "Tuner H einstellen."
+
+#
+msgid "Please set up tuner I"
+msgstr "Tuner I einstellen."
+
+#
+msgid "Please set up tuner J"
+msgstr "Tuner J einstellen."
 
 msgid "Please setup your tuner configuration."
 msgstr "Bitte Tuner-Konfiguration festlegen."
@@ -6071,6 +6141,9 @@ msgid "Progress"
 msgstr "Fortschritt"
 
 msgid "Progress Small"
+msgstr "Fortschritt klein"
+
+msgid "Small progress"
 msgstr "Fortschritt klein"
 
 #
@@ -6654,7 +6727,7 @@ msgid ""
 "You have chosen to save the current timeshift event, but the event has not yet finished\n"
 "What do you want to do ?"
 msgstr ""
-"Sie haben die aktuelle Sendung zum speichern ausgewählt.\n"
+"Sie haben die aktuelle Sendung zum Speichern ausgewählt.\n"
 "Die Sendung ist aber noch nicht beendet.\n"
 "Was wollen Sie tun ?"
 
@@ -6958,7 +7031,7 @@ msgstr "Paket auswählen"
 
 #
 msgid "Select provider to add..."
-msgstr "Provider auswählen zum hinzufügen..."
+msgstr "Provider auswählen zum Hinzufügen..."
 
 #
 msgid "Select refresh rate"
@@ -6966,11 +7039,11 @@ msgstr "Bildwiederholrate wählen"
 
 #
 msgid "Select service to add..."
-msgstr "Programm wählen zum hinzufügen..."
+msgstr "Programm wählen zum Hinzufügen..."
 
 #
 msgid "Select upgrade source to edit."
-msgstr "Upgrade-Quelle zum bearbeiten auswählen"
+msgstr "Upgrade-Quelle zum Bearbeiten auswählen"
 
 #
 msgid "Select video input with up/down buttons"
@@ -8072,6 +8145,14 @@ msgid "Are you sure to remove all %d.%d%s%s services?"
 msgstr "Sind Sie sicher, dass %d.%d%s%s entfernt werden soll?"
 
 #
+msgid "Mark service as dedicated 3D service"
+msgstr "Als 3D Kanal markieren"
+
+#
+msgid "Unmark service as dedicated 3D service"
+msgstr "3D Markierung entfernen"
+
+#
 msgid "Test DiSEqC settings"
 msgstr "Teste DiSEqC-Einstellungen"
 
@@ -8103,7 +8184,7 @@ msgid ""
 "Please press OK to continue."
 msgstr ""
 "Vielen Dank, dass Sie den Assistenten benutzt haben.\n"
-"OK drücken  zum fortfahren."
+"OK drücken  zum Fortfahren."
 
 #
 msgid ""
@@ -8873,8 +8954,9 @@ msgstr "Insgesamt abgefertigte Client-ECMs"
 msgid "Total handled client emm's"
 msgstr "Insgesamt abgefertigte Client-EMMs"
 
+#: About.py:311
 msgid "Total:"
-msgstr "Insgesamt:"
+msgstr "Insgesamt:\t"
 
 #
 msgid "Track"
@@ -9930,10 +10012,10 @@ msgstr ""
 "Benutzerinfo eingeben, dann nochmals versuchen"
 
 msgid "You have selected no logs to delete."
-msgstr "Sie haben keine Logs zum löschen ausgewählt."
+msgstr "Sie haben keine Logs zum Löschen ausgewählt."
 
 msgid "You have selected no logs to send."
-msgstr "Sie haben keine Logs zum versenden ausgewählt."
+msgstr "Sie haben keine Logs zum Versenden ausgewählt."
 
 #
 #, python-format
@@ -10474,6 +10556,10 @@ msgstr "Gelb lang"
 msgid "Blue long"
 msgstr "Blau lang"
 
+#: ButtonSetup.py
+msgid "Subtitle long"
+msgstr "Untertitel lang"
+
 #
 #, python-format
 msgid "burn audio track (%s)"
@@ -10956,9 +11042,21 @@ msgstr "Filmliste"
 msgid "multinorm"
 msgstr "Multinorm"
 
-#
+#: ParentalControl.py
 msgid "never"
 msgstr "niemals"
+
+#: ParentalControl.py
+msgid "5 minutes"
+msgstr "5 Minuten"
+
+#: ParentalControl.py
+msgid "30 minutes"
+msgstr "30 Minuten"
+
+#: ParentalControl.py
+msgid "60 minutes"
+msgstr "60 Minuten"
 
 #
 msgid "next channel"
@@ -11968,9 +12066,12 @@ msgstr ""
 "backupstick oder backupstick.txt vorhanden sein."
 
 msgid ""
-"No USB-Device found for fullbackup !!\n\n\n"
+"No USB-Device found for fullbackup !!\n"
+"\n"
+"\n"
 "To back-up directly to the USB-stick, the USB-stick MUST\n"
-"contain a file with the name: \n\n"
+"contain a file with the name: \n"
+"\n"
 "backupstick or backupstick.txt"
 msgstr ""
 "Kein USB-Stick für das Fullbackup gefunden!!\n"
@@ -12021,6 +12122,10 @@ msgstr "abhängig vom System dauert das Backup\n"
 #
 msgid "will take about 3-12 minutes for this system\n"
 msgstr "zwischen 3-12 Minuten\n"
+
+#
+msgid "will take about 1-4 minutes for this system\n"
+msgstr "zwischen 1-4 Minuten\n"
 
 #
 msgid "this will take between 2 and 9 minutes\n"
@@ -12509,35 +12614,39 @@ msgstr "Gelbe Taste"
 msgid "RedPanel"
 msgstr "Rote Taste"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "Run how often ?"
 msgstr "Wie oft ausführen?"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "Time to execute command or script"
 msgstr "Startzeit für Befehls- / Script-Ausführung"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "Command To Run"
 msgstr "Befehl zum Ausführen"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "What Day of week ?"
 msgstr "An welchem Wochentag?"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "What Day of month ?"
 msgstr "An welchem Tag des Monats?"
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "Remove Confirmation"
 msgstr "Löschen bestätigen"
 
-#:CronTimer.py : CronManager.py
-msgid "Are you sure you want to delete this:\n "
-msgstr "Sicher das Sie löschen wollen:\n "
+#: CronTimer.py : CronManager.py
+msgid ""
+"Are you sure you want to delete this:\n"
+" "
+msgstr ""
+"Sicher das Sie löschen wollen:\n"
+" "
 
-#:CronTimer.py : CronManager.py
+#: CronTimer.py : CronManager.py
 msgid "You must set at least one Command"
 msgstr "Sie müssen mindestens einen Befehl setzen"
 
@@ -14591,7 +14700,7 @@ msgid "The standard wakeup time is 5 minutes (or box specific) before a timer st
 msgstr "Standard ist 5 min (oder Box spezifisch) vor einem Timer aufzuwachen. Ist die echte Aufwachzeit ausserhalb 10 min (einige Boxen starten nicht pünktlich) bis zum nächsten Timerstart wird nicht in den Standby geschaltet (Minus = Aufwachzeit bis zum Timer wird kürzer)"
 
 msgid "Check with an alternative method (some boxes gives no signal when starts from a timer) if there is a timer started in the next 10 mins (at bootup), then will put your box in standby."
-msgstr "Überprüfe mit einer alternativen Methode (einige Boxen geben kein Signal wenn durch einen Timer gestartet wurde) ob in den nächsten 10 min nach dem Booten ein Timer startet, und schaltet ihre Box dann in den Standby."
+msgstr "Überprüfe mit einer alternativen Methode (einige Boxen geben kein Signal wenn durch einen Timer gestartet wurde) ob in den nächsten 10 min nach dem Booten ein Timer startet, und schaltet Ihre Box dann in den Standby."
 
 #
 msgid "Reload Services"
@@ -14628,6 +14737,12 @@ msgstr ""
 
 msgid "show picons in service list"
 msgstr "Senderlogos anzeigen"
+
+msgid "Service picons downsize"
+msgstr "Senderlogos verkleinern"
+
+msgid "Reduce the size of the service picons for more line spacing between them."
+msgstr "Reduzieren Sie die Größe der Senderlogos für mehr Zeilenabstand zwischen ihnen."
 
 msgid "Configure if service picons will be shown in the servicelist."
 msgstr "Wenn aktiviert, werden die Picons in der Kanalliste angezeigt."
@@ -15056,7 +15171,7 @@ msgid "Info icon width"
 msgstr "Info-Icon anzeigen Breite"
 
 msgid "Do you want to backup your settings now?"
-msgstr "Wollen Sie ihre Einstellungen sichern?"
+msgstr "Wollen Sie Ihre Einstellungen sichern?"
 
 #: Flash_online.py
 msgid ""
@@ -15106,34 +15221,34 @@ msgstr "Wiederherstellen MetrixHD-Skin"
 
 #: BackupRestore.py
 msgid "Please wait while your skin setting is restoring..."
-msgstr "Bitte warten, ihre Einstellungen werden wiederhergestellt"
+msgstr "Bitte warten, Ihre Einstellungen werden wiederhergestellt"
 
 #: BackupRestore.py
 msgid ""
 "Error creating MetrixHD-Skin.\n"
 "Please check after reboot MyMetrixLite-Plugin and apply your settings."
 msgstr ""
-"Fehler beim erstellen des MetrixHD-Skins.\n"
-"Bitte überprüfen und übernehmen Sie ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
+"Fehler beim Erstellen des MetrixHD-Skins.\n"
+"Bitte überprüfen und übernehmen Sie Ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
 
 #: BackupRestore.py
 msgid ""
 "Unknown Error creating Skin.\n"
 "Please check after reboot MyMetrixLite-Plugin and apply your settings."
 msgstr ""
-"Unbekannter Fehler beim erstellen des Skins.\n"
-"Bitte überprüfen und übernehmen Sie ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
+"Unbekannter Fehler beim Erstellen des Skins.\n"
+"Bitte überprüfen und übernehmen Sie Ihre Einstellungen nach einem Neustart in dem MyMetrixLite-Plugin."
 
 #: BackupRestore.py
 msgid "Error creating HD-Skin. Not enough flash memory free."
-msgstr "Fehler beim erstellen des HD-Skins. Nicht genügend Flash-Speicher frei."
+msgstr "Fehler beim Erstellen des HD-Skins. Nicht genügend Flash-Speicher frei."
 
 #: BackupRestore.py
 msgid ""
 "Error creating FullHD-Skin. Not enough flash memory free.\n"
 "Using HD-Skin!"
 msgstr ""
-"Fehler beim erstellen des FullHD-Skins. Nicht genügend Flash-Speicher frei.\n"
+"Fehler beim Erstellen des FullHD-Skins. Nicht genügend Flash-Speicher frei.\n"
 "Es wird der HD-Skin verwendet!"
 
 #: BackupRestore.py
@@ -15141,7 +15256,7 @@ msgid ""
 "Error creating FullHD-Skin. Icon package download not available.\n"
 "Using HD-Skin!"
 msgstr ""
-"Fehler beim erstellen des FullHD-Skins. Der Download des Icon-Packets ist nicht verfügbar.\n"
+"Fehler beim Erstellen des FullHD-Skins. Der Download des Icon-Pakets ist nicht verfügbar.\n"
 "Es wird der HD-Skin verwendet!"
 
 #: BackupRestore.py
@@ -15149,7 +15264,7 @@ msgid ""
 "Error creating FullHD-Skin.\n"
 "Using HD-Skin!"
 msgstr ""
-"Fehler beim erstellen des FullHD-Skins.\n"
+"Fehler beim Erstellen des FullHD-Skins.\n"
 "Es wird der HD-Skin verwendet!"
 
 #: BackupRestore.py
@@ -15181,11 +15296,11 @@ msgid ""
 msgstr ""
 "Verschieben des 'Bild-in-Bild' über die Navigationstasten.\n"
 "Kanal +/- drücken, um die Größe zu ändern.\n"
-"OK zum speichern, Exit zum abbrechen."
+"OK zum Speichern, Exit zum Abbrechen."
 
 # PiPSetup.py
 msgid "Press '0' to toggle PiP mode"
-msgstr "Drücke '0' zum wechseln des 'Bild-in-Bild' Modus."
+msgstr "Drücke '0' zum Wechseln des 'Bild-in-Bild' Modus."
 
 # setup.xml
 msgid "Show Restart Network in Extensions list *"
@@ -15498,6 +15613,10 @@ msgstr "Aus-Taste lang"
 msgid "Context"
 msgstr "Kontext"
 
+#: ButtonSetup.py
+msgid "Context long"
+msgstr "Kontext lang"
+
 msgid "F1/F3"
 msgstr ""
 
@@ -15744,30 +15863,6 @@ msgstr "Flashen: "
 
 msgid "Setup EPG"
 msgstr "EPG Einstellungen"
-
-# MetrixHDSTBInfo.py
-msgid "Flash Memory free: %s MByte"
-msgstr "Freier Flash Speicher: %s MByte"
-
-# MetrixHDSTBInfo.py
-msgid "CPU-Load: %s"
-msgstr "CPU-Last: %s"
-
-# MetrixHDSTBInfo.py
-msgid "CPU-Temp: %s"
-msgstr "CPU-Temp: %s"
-
-# MetrixHDSTBInfo.py
-msgid "CPU-Speed: %s MHz"
-msgstr "CPU-Speed: %s MHz"
-
-# MetrixHDSTBInfo.py
-msgid "SYS-Temp: %s"
-msgstr "SYS-Temp: %s"
-
-# MetrixHDSTBInfo.py
-msgid "RAM-Free: %s MB"
-msgstr "RAM-Frei: %s MB"
 
 # AudioSelection.py
 msgid "Switch between Audio-, Subtitlepage"
@@ -16060,7 +16155,7 @@ msgstr ""
 
 #: ButtonSetup.py
 msgid "Hotkey Setup for"
-msgstr "Hotkey-Setup für"
+msgstr "Hotkey-Einstellung für"
 
 #: ButtonSetup.py
 msgid "are you sure to cancel all changes"
@@ -16656,7 +16751,7 @@ msgid ""
 "A sleep timer wants to set your %s %s to standby.\n"
 "Do that now or set extend additional minutes?"
 msgstr ""
-"Ein Ausschalt-Timer möchte ihre %s %s in den Standby versetzen.\n"
+"Ein Ausschalt-Timer möchte Ihre %s %s in den Standby versetzen.\n"
 "Jetzt ausführen oder zusätzliche Minuten einstellen?"
 
 #: InfoBarGenerics.py
@@ -16664,7 +16759,7 @@ msgid ""
 "A sleep timer wants to shut down your %s %s.\n"
 "Do that now or set extend additional minutes?"
 msgstr ""
-"Ein Ausschalt-Timer möchte ihre %s %s ausschalten.\n"
+"Ein Ausschalt-Timer möchte Ihre %s %s ausschalten.\n"
 "Jetzt ausführen oder zusätzliche Minuten einstellen?"
 
 #: InfoBarGenerics.py
@@ -16674,7 +16769,7 @@ msgid ""
 "will shut down after Recording or Powertimer event. Get in Standby now?"
 msgstr ""
 "Eine Aufnahme, Aufnahmetimer oder Powertimer ist aktiv oder beginnt in 15 Minuten.\n"
-"Der Ausschalt-Timer wird um 30 Minuten verlängert und schaltet ihre\n"
+"Der Ausschalt-Timer wird um 30 Minuten verlängert und schaltet Ihre\n"
 "%s %s nach dem Aufnahme oder Powertimer Ereignis ab.\n"
 "Jetzt in den Standby gehen?"
 
