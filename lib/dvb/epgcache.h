@@ -320,6 +320,7 @@ private:
 	unsigned int maxdays;
 
 	std::vector<int> onid_blacklist;
+	std::map<std::string,int> customeitpids;
 	eventCache eventDB;
 	updateMap channelLastUpdated;
 	static pthread_mutex_t cache_lock;
