@@ -3000,7 +3000,11 @@ eDVBRegisteredFrontend *eDVBFrontend::getLast(eDVBRegisteredFrontend *fe)
 
 bool eDVBFrontend::is_multistream()
 {
+#if DVB_API_VERSION >= 5
 	return fe_info.caps & FE_CAN_MULTISTREAM;
+#else //if DVB_API_VERSION < 5
+	return fe_info.caps & false;
+#endif
 }
 
 std::string eDVBFrontend::getCapabilities()
