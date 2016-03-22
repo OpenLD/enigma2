@@ -12,11 +12,11 @@ def enumFeeds():
 				pass
 
 def enumPlugins(filter_start=''):
+	list_dir = listsDirPath()
 	for feed in enumFeeds():
 		package = None
 		try:
-			file = open('/var/lib/opkg/%s' % feed, 'r')
-			for line in file:
+			for line in open(os.path.join(list_dir, feed), 'r'):
 				if line.startswith('Package:'):
 					package = line.split(":",1)[1].strip()
 					version = ''
@@ -42,9 +42,19 @@ def enumPlugins(filter_start=''):
 							description = description.split(' ',1)[1]
 					yield package, version, description.strip()
 					package = None
-			file.close()
 		except IOError:
 			pass
+
+def listsDirPath():
+	try:
+		for line in open('/etc/opkg/opkg.conf', "r"):
+			if line.startswith('option'):
+				line = line.split(' ', 2)
+				if len(line) > 2 and line[1] == ('lists_dir'):
+					return line[2].strip()
+	except Exception, ex:
+		print "[opkg]", ex
+	return '/var/lib/opkg/lists'
 
 if __name__ == '__main__':
 	for p in enumPlugins('enigma'):
