@@ -114,7 +114,6 @@ from Plugins.SystemPlugins.RemoteControlCode.plugin import RemoteControlCode
 self.session.open(RemoteControlCode)
 </code>
 				</item>
-				<item level="0" entryID="dvdplayer_setup"><setup id="dvdplayer" /></item>
 				</menu>
 				<item level="0" text="Language" entryID="language_setup"><screen module="LanguageSelection" /></item>
 				<menu level="0" text="Network" entryID="network_menu">
