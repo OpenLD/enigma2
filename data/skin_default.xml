@@ -594,6 +594,9 @@ self.instance.move(ePoint(orgpos.x() + (orgwidth - newwidth)/2, orgpos.y()))
 		<widget source="Statustext" render="Label" position="10,395" size="115,21" zPosition="10" font="Regular;20" halign="left" backgroundColor="#25062748" transparent="1"/>
 		<widget name="statuspic" pixmaps="skin_default/buttons/button_green.png,skin_default/buttons/button_green_off.png" position="130,400" zPosition="10" size="15,16" transparent="1" alphatest="on"/>
 	</screen>
+	<screen name="StreamingClientsInfo" position="center,center" size="540,490" title="Streaming Clients Info">
+		<widget name="ScrollLabel" font="Regular;20" position="0,00" size="540,490" zPosition="2" halign="left"/>
+	</screen>
 	<screen name="AudioSelection" position="center,center" size="560,460" title="Audio">
 		<panel name="BasicTemplate" />
 		<widget name="config" position="50,10" size="500,110" scrollbarMode="showOnDemand" />
