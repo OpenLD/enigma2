@@ -1,4 +1,4 @@
-from enigma import eDVBDB
+from enigma import eDVBDB, eDVBResourceManager
 from Screens.Screen import Screen
 from Components.SystemInfo import SystemInfo
 from Components.ActionMap import ActionMap
@@ -707,17 +707,30 @@ class NimSelection(Screen):
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Select"))
 
-		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
+		self["actions"] = ActionMap(["SetupActions", "ColorActions", "MenuActions", "ChannelSelectEPGActions"],
 		{
 			"ok": self.okbuttonClick,
+			"info": self.extraInfo,
+			"epg": self.extraInfo,
 			"cancel": self.close,
 			"red": self.close,
 			"green": self.okbuttonClick,
+			"menu": self.exit,
 		}, -2)
 		self.setTitle(_("Choose Tuner"))
 
+	def exit(self):
+		self.close(True)
+
 	def setResultClass(self):
 		self.resultclass = NimSetup
+
+	def extraInfo(self):
+		nim = self["nimlist"].getCurrent()
+		nim = nim and nim[3]
+		if config.usage.setup_level.index >= 2 and nim is not None:
+			text = _("Capabilities: ") + ",".join(eDVBResourceManager.getInstance().getFrontendCapabilities(nim.slot).splitlines())
+			self.session.open(MessageBox, text, MessageBox.TYPE_INFO, simple=True)
 
 	def okbuttonClick(self):
 		nim = self["nimlist"].getCurrent()
