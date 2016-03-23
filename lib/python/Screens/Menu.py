@@ -93,6 +93,8 @@ class Menu(Screen, ProtectedScreen):
 				return
 		MenuTitle = _(node.get("text", "??").encode("UTF-8"))
 		entryID = node.get("entryID", "undefined")
+		if entryID == "streaming_clients_info_screen" and not self.session.nav.getClientsStreaming():
+			return
 		weight = node.get("weight", 50)
 		x = node.get("flushConfigOnClose")
 		if x:
