@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-16 13:50+0100\n"
-"PO-Revision-Date: 2015-11-16 14:04+0100\n"
+"POT-Creation-Date: 2016-02-21 09:50+0100\n"
+"PO-Revision-Date: 2016-02-21 10:06+0100\n"
 "Last-Translator: Pr2 <dummy@dummy.com>\n"
 "Language-Team: french\n"
 "Language: fr\n"
@@ -11,17 +11,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-
-msgid ""
-"\n"
-"\n"
-"Use following address as IPTV media server?\n"
-msgstr ""
-"\n"
-"\n"
-"Utilisez l’adresse suivante comme serveur de média IPTV?\n"
 
 msgid ""
 "\n"
@@ -224,6 +215,9 @@ msgstr " et"
 msgid "%-H:%M"
 msgstr "%-H:%M"
 
+msgid "%-H:%M - "
+msgstr "%-H:%M - "
+
 #, python-format
 msgid "%.0f GB"
 msgstr "%.0f GB"
@@ -367,6 +361,9 @@ msgstr "%d-%m"
 
 msgid "%d.%B %Y"
 msgstr "%d.%B %Y"
+
+msgid "%d.%m.   "
+msgstr "%d.%m.   "
 
 #. TRANSLATORS: VFD hour:minute daynum short monthname in strftime() format! See 'man strftime'
 msgid "%k:%M %e/%m"
@@ -561,8 +558,8 @@ msgstr "1080i 60Hz"
 msgid "1080i50"
 msgstr "1080i50"
 
-msgid "1080i50: 24/50/60Hz"
-msgstr "1080i50: 24/50/60Hz"
+msgid "1080i50: 24p/50i/60i"
+msgstr "1080i50: 24p/50i/60i"
 
 msgid "1080p 24Hz"
 msgstr "1080p 24Hz"
@@ -579,8 +576,8 @@ msgstr "1080p 50Hz"
 msgid "1080p 60Hz"
 msgstr "1080p 60Hz"
 
-msgid "1080p50: 24/50/60Hz"
-msgstr "1080p50: 24/50/60Hz"
+msgid "1080p50: 24p/50p/60p"
+msgstr "1080p50: 24p/50p/60p"
 
 msgid "120"
 msgstr "120"
@@ -654,6 +651,9 @@ msgstr "20 secondes"
 msgid "2048 Mb"
 msgstr "2048 Mb"
 
+msgid "2160p50: 24p/50p/60p"
+msgstr "2160p50: 24p/50p/60p"
+
 msgid "23.976"
 msgstr "23.976"
 
@@ -714,6 +714,9 @@ msgstr "30"
 msgid "30 min."
 msgstr "30 min."
 
+msgid "30 minutes"
+msgstr "30 minutes"
+
 msgid "30 seconds"
 msgstr "30 secondes"
 
@@ -771,6 +774,9 @@ msgstr "5 (défaut)"
 msgid "5 min."
 msgstr "5 min."
 
+msgid "5 minutes"
+msgstr "5 minutes"
+
 msgid "5 seconds"
 msgstr "5 secondes"
 
@@ -785,6 +791,9 @@ msgstr "6"
 
 msgid "60"
 msgstr "60"
+
+msgid "60 minutes"
+msgstr "60 minutes"
 
 msgid "64 Mb"
 msgstr "64 Mb"
@@ -801,8 +810,8 @@ msgstr "720p 24Hz"
 msgid "720p50"
 msgstr "720p50"
 
-msgid "720p50: 24/50/60Hz"
-msgstr "720p50: 24/50/60Hz"
+msgid "720p50: 24p/50p/60p"
+msgstr "720p50: 24p/50p/60p"
 
 msgid "8"
 msgstr "8"
@@ -1144,6 +1153,9 @@ msgstr "Ajouter un zap pour l'évènement suivant"
 msgid "Add bookmark"
 msgstr "Ajouter un marque page"
 
+msgid "Add bouquet services"
+msgstr "Ajouter les services du bouquet"
+
 msgid "Add directory to playlist"
 msgstr "Ajouter le répertoire à la liste de lecture"
 
@@ -1194,6 +1206,9 @@ msgstr "Ajout des programmations…"
 
 msgid "Additional Info"
 msgstr "Info additionnelle"
+
+msgid "Additional files/folders to backup"
+msgstr "Fichiers/dossiers additionnels à sauvegarder"
 
 msgid "Address"
 msgstr "Adresse"
@@ -1828,6 +1843,9 @@ msgstr "Ecran noir"
 msgid "Black screen till locked"
 msgstr "Ecran noir jusqu'au vérouillage"
 
+msgid "Blinking REC Symbol"
+msgstr "Symbole REC clignotant"
+
 msgid "Block noise reduction"
 msgstr "Bloc réduction bruit"
 
@@ -1851,12 +1869,6 @@ msgstr "Augmenter vert"
 
 msgid "Boot-up action"
 msgstr "Action de démarrage"
-
-msgid "Bouquet + = install or update driver"
-msgstr "Bouquet + = installer ou mettre à jour les pilotes"
-
-msgid "Bouquet - = scan for IPTV server addresses"
-msgstr "Bouquet - = scanner pour les adresses des serveurs IPTV"
 
 msgid "Bouquet List"
 msgstr "Liste des bouquets"
@@ -1981,6 +1993,9 @@ msgstr "Info partages CCcam"
 msgid "CCcamInfo"
 msgstr "CCcamInfo"
 
+msgid "CCcamInfo Mainmenu"
+msgstr "Menu principal de CCcamInfo"
+
 msgid "CF Drive"
 msgstr "Lecteur CF"
 
@@ -1998,7 +2013,10 @@ msgid "CI (Common Interface) Setup"
 msgstr "Configuration CI (Interface Commune)"
 
 msgid "CI assignment"
-msgstr "Assignation CI"
+msgstr "Affectation CI"
+
+msgid "CI slot: "
+msgstr "Slot IC: "
 
 msgid "CIFS/Samba Setup"
 msgstr "Configuration CIFS/Samba"
@@ -2235,10 +2253,13 @@ msgid "Channel:"
 msgstr "Chaîne:"
 
 msgid "ChannelEPG settings"
-msgstr "Paramètres de la chaine EPG"
+msgstr "Paramètres de la chaîne EPG"
 
 msgid "Channellist menu"
 msgstr "Menu liste des chaînes"
+
+msgid "Channelname"
+msgstr "Nom de la chaîne"
 
 msgid "Chap."
 msgstr "Chap."
@@ -2316,14 +2337,8 @@ msgstr "Choisir le tuner"
 msgid "Choose a tag for easy finding a recording."
 msgstr "Choisir un tag pour retrouver facilement un enregistrement."
 
-msgid "Choose backup files"
-msgstr "Choisir les fichiers de sauvegarde"
-
 msgid "Choose between Daily, Weekly, Weekdays or user defined."
 msgstr "Choisir entre Journalier, Hebdomadaire, Jour de la semaine ou défini par l’utilisateur."
-
-msgid "Choose the files to backup"
-msgstr "Choisir les fichiers pour la sauvegarde."
 
 msgid "Choose the location for crash and debuglogs."
 msgstr "Choisir la localisation des logs de crash et débogage."
@@ -2470,16 +2485,13 @@ msgid "Common Interface"
 msgstr "Interface Commune"
 
 msgid "Common Interface Assignment"
-msgstr "Assignation Interface Commune"
+msgstr "Affectation Interface Commune"
 
 msgid "Common Interface assignment"
-msgstr "Assignation Interface Commune"
+msgstr "Affectation Interface Commune"
 
 msgid "Common interface"
 msgstr "Interface commune"
-
-msgid "Common interface PIN Setup"
-msgstr "Code PIN pour l’Interface Commune"
 
 msgid "Communication"
 msgstr "Communication"
@@ -2775,7 +2787,7 @@ msgid "Configure which tuner will be preferred for recordings, when more than on
 msgstr "Configure quel tuner sera préféré pour les enregistrements, lorsque plus d’un tuner est disponible. ‘Désactivé’ va choisir un tuner basé sur le tuner préféré dans l’écran personnalisé. ‘Auto’ va choisir en fonction des régles E2 par défaut, en ignorant le tuner préféré dans l’écran personnalisé."
 
 msgid "Configure which tuner will be preferred, when more than one tuner is available. If set to 'auto' the system will give priority to the tuner having the lowest number of channels/satellites."
-msgstr "Configure quel tuner sera préféré, lorsque plus d’un tuner est disponible. S’il est réglé sur «auto» le système accordera la priorité au tuner ayant le plus faible nombre de chaines/satellites."
+msgstr "Configure quel tuner sera préféré, lorsque plus d’un tuner est disponible. S’il est réglé sur «auto» le système accordera la priorité au tuner ayant le plus faible nombre de chaînes/satellites."
 
 msgid "Configure your NTP server."
 msgstr "Configurer votre serveur NTP."
@@ -2833,6 +2845,9 @@ msgstr "Le contenu ne tient pas sur le DVD!"
 
 msgid "Context"
 msgstr "Contexte"
+
+msgid "Context long"
+msgstr "Contexte long"
 
 msgid "Continue"
 msgstr "Continuer"
@@ -3084,9 +3099,6 @@ msgstr "DTS"
 msgid "DUAL LAYER DVD"
 msgstr "DVD DOUBLE COUCHE"
 
-msgid "DVB Transmission Way"
-msgstr "Mode de transmission DVB"
-
 msgid "DVB subtitle black transparency"
 msgstr "Transparence noire des sous-titres DVB"
 
@@ -3098,9 +3110,6 @@ msgstr "DVB-C ANNEX C"
 
 msgid "DVB-S"
 msgstr "DVB-S"
-
-msgid "DVB-S/SVB-S2"
-msgstr "DVB-S/DVB-S2"
 
 msgid "DVB-S2"
 msgstr "DVB-S2"
@@ -3162,8 +3171,8 @@ msgstr "Défaut (Enregistrement direct)"
 msgid "Default (Timeshift)"
 msgstr "Défaut (PauseDirect)"
 
-msgid "Default PIN for CI"
-msgstr "Code PIN par défaut pour IC (Interface Commune)"
+msgid "Default files/folders to backup"
+msgstr "Fichiers/dossiers par défaut à sauvegarder"
 
 msgid "Default movie location"
 msgstr "Emplacement standard films"
@@ -3430,9 +3439,6 @@ msgstr "Désactiver"
 msgid "Disable Animations"
 msgstr "Désactiver animations"
 
-msgid "Disable FastZapping"
-msgstr "Désactiver le zapping rapide"
-
 msgid "Disable MiniTV"
 msgstr "Désactiver MiniTV"
 
@@ -3444,6 +3450,9 @@ msgstr "Désactivé tous les symboles du VFD"
 
 msgid "Disable background scanning"
 msgstr "Désactiver l'analyse en arrière-plan"
+
+msgid "Disable intro screen"
+msgstr "Désactiver l’écran d’accueil"
 
 msgid "Disable the HDD Process on VFD"
 msgstr "Désactivé l’activité du disque dur sur le VFD"
@@ -3926,9 +3935,6 @@ msgstr "Activer CIHelper pour SLOT CI1"
 msgid "Enable EIT EPG"
 msgstr "Activer EPG EIT"
 
-msgid "Enable FastZapping"
-msgstr "Activer le zapping rapide"
-
 msgid "Enable MHW EPG"
 msgstr "Activer EPG MHW"
 
@@ -3959,9 +3965,6 @@ msgstr "Activer le réveil sur réseau (WOL)"
 msgid "Enable and set the duration of the second infobar (press OK twice) that may include more information on the current service."
 msgstr "Active et défini la durée en seconde de la seconde barre d’info (en appuyant 2 fois sur OK) cela peut inclure plus d’information sur le service en cours."
 
-msgid "Enable auto PIN"
-msgstr "Activer auto PIN"
-
 msgid "Enable auto cable scan"
 msgstr "Activer le scan auto du câble"
 
@@ -3985,6 +3988,9 @@ msgstr "Activer EPG freesat"
 
 msgid "Enable infobar fade-out"
 msgstr "Activer l’effacement progressif de la barre d’info"
+
+msgid "Enable intro screen"
+msgstr "Activer l’écran d’accueil"
 
 msgid "Enable multiple bouquets"
 msgstr "Activer bouquets multiples"
@@ -4055,8 +4061,14 @@ msgstr ""
 msgid "Enigma2 skin selector"
 msgstr "Sélectionneur de thème (skin) Enigma2"
 
+msgid "Enter PIN"
+msgstr "Saisir le PIN"
+
 msgid "Enter main menu..."
 msgstr "Entrer dans le menu principal..."
+
+msgid "Enter persistent PIN code"
+msgstr "Saisir code le PIN code persistant"
 
 msgid "Enter pin code"
 msgstr "Saisir code PIN"
@@ -4237,6 +4249,9 @@ msgstr "Expert"
 msgid "Extend"
 msgstr "Etendre"
 
+msgid "Extended"
+msgstr "Etendu"
+
 msgid "Extended GUI"
 msgstr "IGU étendue"
 
@@ -4295,6 +4310,9 @@ msgstr "Permutter les polices de caractères dans les sous-titres externes"
 msgid "Extra motor options"
 msgstr "Options supplémentaire du moteur"
 
+msgid "Extrude from left"
+msgstr "Apparaître de la gauche"
+
 msgid "F1"
 msgstr "F1"
 
@@ -4318,6 +4336,12 @@ msgstr "F3"
 
 msgid "F3 long"
 msgstr "F3 long"
+
+msgid "F4"
+msgstr "F4"
+
+msgid "F4 long"
+msgstr "F4 long"
 
 msgid "FEC"
 msgstr "FEC"
@@ -4401,6 +4425,9 @@ msgid ""
 msgstr ""
 "Fichier oscam.conf pas trouvé.\n"
 "Merci d’entrer le nom d’utilisateur et le mot de passe manuellement."
+
+msgid "Files/folders to exclude from backup"
+msgstr "Fichiers/dossiers à exclure de la sauvegarde"
 
 msgid "Filesystem Check"
 msgstr "Vérification du système de fichiers"
@@ -4834,23 +4861,23 @@ msgstr "Help long"
 msgid "Helps setting up your signal"
 msgstr "Aide au pointage de l’antenne"
 
-msgid "Here you can select which files should be added to backupfile. (default: E2-setup, channels, network"
-msgstr "Vous pouvez sélectionner quel fichiers seront ajoutés à votre fichier de sauvegarde. (défaut: configuration-E2, chaînes, réseau"
+msgid "Here you can browse (but not modify) the files that are added to the backupfile by default (E2-setup, channels, network)."
+msgstr "Vous pouvez sélectionner (mais pas modifier) quels fichiers seront ajoutés à votre fichier de sauvegarde par défaut. (configuration-E2, chaînes, réseau)."
+
+msgid "Here you can select which files should be excluded from the backup."
+msgstr "Vous pouvez choisir quels fichiers seront exclus de la sauvegarde."
 
 msgid "Here you can select which files should be updated with a online update"
 msgstr "Vous pouvez choisir quels fichiers seront mis-à-jour pendant une mise-à-jour en ligne"
 
+msgid "Here you can specify additional files that should be added to the backup file."
+msgstr "Vous pouvez choisir quels fichiers additionnels seront pris par la sauvegarde."
+
 msgid "Hidden network"
 msgstr "Réseau caché"
 
-msgid "Hide CI messages"
-msgstr "Masquer les messages CI"
-
 msgid "Hide any zap error messages."
 msgstr "Cacher n’importe quel message d’erreur de zap."
-
-msgid "Hide error messages from the Common Interface module."
-msgstr "Masquer les messages d'erreur du module d'Interface Commune."
 
 msgid "Hide known extensions"
 msgstr "Cacher les extensions connues"
@@ -4914,6 +4941,9 @@ msgstr "Nom d’hôte:"
 
 msgid "Hostname: "
 msgstr "Nom d’hôte: "
+
+msgid "Hotkey"
+msgstr "Hotkey"
 
 msgid "Hotkey Setup"
 msgstr "Configuration Hotkey"
@@ -5114,6 +5144,9 @@ msgstr "Inclure AIT dans les flux HTTP"
 msgid "Include AIT in recordings"
 msgstr "Inclure AIT dans les enregistrements"
 
+msgid "Include CI assignment"
+msgstr "Inclure l’affectation CI"
+
 msgid "Include ECM in http streams"
 msgstr "Inclure ECM dans les flux HTTP"
 
@@ -5143,9 +5176,6 @@ msgstr "Info (EPG)"
 
 msgid "Info (EPG) Long"
 msgstr "Info (EPG) Long"
-
-msgid "Info = show tuner informations"
-msgstr "Info = afficher les informations du tuner"
 
 msgid "Info Panel"
 msgstr "Panneau info"
@@ -5227,9 +5257,6 @@ msgstr "Surveillance Inotify"
 
 msgid "Input"
 msgstr "Entrée"
-
-msgid "Input device setup"
-msgstr "Paramètres du périphérique entrée"
 
 msgid "Input devices"
 msgstr "Périphériques d’entrée"
@@ -5367,9 +5394,6 @@ msgstr "Est-ce que ce paramètre est correct?"
 
 msgid "Is this video mode ok?"
 msgstr "Est-ce que ce mode vidéo est correct?"
-
-msgid "It seems the sundtek driver is not installed or not installed properly. Install the driver now?"
-msgstr "Il semble que le pilote sundtek n’est pas ou mal installé. Installer le pilote?"
 
 msgid "Italian"
 msgstr "Italien"
@@ -5626,11 +5650,11 @@ msgid_plural "List version %d, found %d channels"
 msgstr[0] "Liste version %d, %d chaîne trouvée"
 msgstr[1] "Liste version %d, %d chaînes trouvées"
 
-msgid "List/Fav/PVR"
-msgstr "List/Fav/PVR"
+msgid "List/Fav"
+msgstr "List/Fav"
 
-msgid "List/Fav/PVR long"
-msgstr "List/Fav/PVR long"
+msgid "List/Fav long"
+msgstr "List/Fav long"
 
 msgid "Listen to the radio..."
 msgstr "Ecouter la radio..."
@@ -5798,6 +5822,9 @@ msgstr "Marge après enregistrement (min)"
 msgid "Margin before recording (minutes)"
 msgstr "Marge avant enregistrement (min)"
 
+msgid "Mark service as dedicated 3D service"
+msgstr "Marquer le service comme un service dédié à la 3D"
+
 msgid "Mark/Portal/Playlist"
 msgstr "Mark/Portal/Playlist"
 
@@ -5909,6 +5936,14 @@ msgstr "Mins"
 
 msgid "Mins Secs"
 msgstr "Mins Secs"
+
+#, python-format
+msgid ""
+"Misconfigured unicable connection from tuner %s to tuner %s!\n"
+"Tuner %s option \"connected to\" are disabled now"
+msgstr ""
+"Connexion unicable mal configurée entre le tuner %s et le tuner %s!\n"
+"L’option « connecté à » du tuner %s est maintenant désactivée."
 
 msgid "Missing "
 msgstr "Manquant "
@@ -6173,9 +6208,6 @@ msgstr "Parcourir le réseau"
 msgid "Network ID"
 msgstr "ID Réseau"
 
-msgid "Network IP"
-msgstr "IP réseau"
-
 msgid "Network Information"
 msgstr "Information réseau"
 
@@ -6317,9 +6349,6 @@ msgstr "Pas d’info ECM"
 
 msgid "No HDD found or HDD not initialized!"
 msgstr "Aucun disque dur trouvé, ou disque dur non initialisé!"
-
-msgid "No IPTV media server found"
-msgstr "Pas de serveur de média IPTV trouvé"
 
 msgid "No Timeshift found to save as recording!"
 msgstr "Pas de PauseDirect trouvé a sauvegardé comme enregistrement!"
@@ -6654,9 +6683,6 @@ msgstr "OK long"
 msgid "OK, guide me through the upgrade process"
 msgstr "D'accord, guidez moi à travers la procédure de mise à jour"
 
-msgid "OK/ green = activate settings"
-msgstr "OK/verrt pour activer les paramètres."
-
 msgid "ONID"
 msgstr "ONID"
 
@@ -6862,7 +6888,7 @@ msgid "Overwrite picon files during software upgrade?"
 msgstr "Ecraser les picons pendant la mise à jour logicielle?"
 
 msgid "Overwrite setting files (channellist) during software upgrade?"
-msgstr "Ecraser les fichiers de configurations (liste des chaines) pendant la mise à jour logicielle?"
+msgstr "Ecraser les fichiers de configurations (liste des chaînes) pendant la mise à jour logicielle?"
 
 msgid "Overwrite softcam files during software upgrade?"
 msgstr "Ecraser les fichiers de softcam pendant la mise à jour logicielle?"
@@ -6908,6 +6934,12 @@ msgstr "PPanel"
 
 msgid "PRIMETIME"
 msgstr "PRIMETIME"
+
+msgid "PVR"
+msgstr "PVR"
+
+msgid "PVR long"
+msgstr "PVR long"
 
 msgid "Package list"
 msgstr "Liste des paquets"
@@ -7483,13 +7515,6 @@ msgstr "Entrée PowerManager"
 msgid "PowerManager log"
 msgstr "log du gestionnaire d’alimentation"
 
-msgid ""
-"PowerOff while Recording in progress!\n"
-"Entering standby, after recording the box will shutdown."
-msgstr ""
-"Extinction pendant qu’un enregistrement est en cours!\n"
-"Mise en veille, après l’enregistrement le récepteur sera éteind."
-
 msgid "PowerTimer"
 msgstr "Programmations d’alimentation"
 
@@ -7575,6 +7600,9 @@ msgstr "Pressez OK pour analyser"
 msgid "Press OK to select a provider."
 msgstr "Pressez OK pour sélectionner un opérateur."
 
+msgid "Press OK to select a service."
+msgstr "Pressez OK pour sélectionner un service."
+
 msgid "Press OK to select satellites"
 msgstr "Pressez OK pour sélectionner des satellites."
 
@@ -7606,7 +7634,7 @@ msgid "Preview menu"
 msgstr "Menu aperçu"
 
 msgid "Preview selected channel"
-msgstr "Prévisualiser la chaine sélectionnée"
+msgstr "Prévisualiser la chaîne sélectionnée"
 
 msgid "Previous"
 msgstr "Précédent"
@@ -7764,6 +7792,9 @@ msgstr "QuickMenu/Extensions"
 msgid "RAM"
 msgstr "RAM"
 
+msgid "REC Symbol"
+msgstr "Symbole REC"
+
 msgid "RF output"
 msgstr "Sortie RF"
 
@@ -7867,6 +7898,9 @@ msgstr "Enregistrer"
 msgid "Reception Settings"
 msgstr "Paramètres de réception"
 
+msgid "Reception lists"
+msgstr "Listes de réception"
+
 msgid "Reception settings"
 msgstr "Paramètres de réception"
 
@@ -7907,6 +7941,13 @@ msgstr "Type d’enregistrement"
 msgid "Recording(s) are in progress or coming up in few seconds!"
 msgstr "Des enregistrement(s) sont en cours ou se terminent dans quelques secondes!"
 
+msgid ""
+"Recording(s) are in progress or coming up in few seconds!\n"
+"Entering standby, after recording the box will shutdown."
+msgstr ""
+"Des enregistrements sont en cours ou vont démarrer dans quelques secondes!\n"
+"Mise en veille, après l’enregistrement le récepteur sera éteind."
+
 msgid "Recordings"
 msgstr "Enregistrements"
 
@@ -7937,8 +7978,14 @@ msgstr "Coloré en rouge"
 msgid "Red long"
 msgstr "Rouge long"
 
+msgid "Reduce the size of the service picons for more line spacing between them."
+msgstr "Réduire la taille des picons des services pour un interlignage plus grand entre eux."
+
 msgid "Reduce time scale"
 msgstr "Reduite l’échelle de temps"
+
+msgid "Reenter PIN"
+msgstr "Re-saisir le PIN"
 
 #, python-format
 msgid ""
@@ -8128,6 +8175,9 @@ msgstr "Réinitialiser"
 
 msgid "Reset and renumerate title names"
 msgstr "Réinitialiser et renuméroter les titres"
+
+msgid "Reset persistent PIN code"
+msgstr "Réinitialiser le code PIN persistante"
 
 msgid "Reset playback position"
 msgstr "Réinitialiser la position de reprise de lecture"
@@ -8365,9 +8415,6 @@ msgstr "Paramètres équipement satellite"
 msgid "Satellite longitude:"
 msgstr "Longitude satellite:"
 
-msgid "Satellites"
-msgstr "Satellites"
-
 msgid "Satfinder"
 msgstr "Pointeur satellites"
 
@@ -8575,9 +8622,6 @@ msgstr "Sensibilité de la barre de recherche"
 msgid "Select"
 msgstr "Sélectionner"
 
-msgid "Select Backup files"
-msgstr "Choisir les fichiers de sauvegarde"
-
 msgid "Select CAId"
 msgstr "Sélection CAId"
 
@@ -8633,6 +8677,12 @@ msgstr "Sélectionner un réseau sans fil"
 msgid "Select action for timer %s:"
 msgstr "Choisir une action pour le timer %s:"
 
+msgid "Select additional backup files"
+msgstr "Choisir les fichiers de sauvegarde additionnels"
+
+msgid "Select additional files to backup"
+msgstr "Choisir les fichiers additionnels à sauvegarder"
+
 msgid "Select all"
 msgstr "Sélectionner tout"
 
@@ -8641,9 +8691,6 @@ msgstr "Choisir l’image à télécharger"
 
 msgid "Select audio track"
 msgstr "Choisir la piste audio"
-
-msgid "Select backup files"
-msgstr "Choisir les fichiers de sauvegarde"
 
 msgid "Select backup location"
 msgstr "Choisir la destination de sauvegarde"
@@ -8663,8 +8710,11 @@ msgstr "Choisir l'image désirée depuis liste feed"
 msgid "Select destination for:"
 msgstr "Sélectionnez une destination pour:"
 
-msgid "Select files for backup."
-msgstr "Choisir fichiers pour la sauvegarde."
+msgid "Select excluded backup files"
+msgstr "Choisir les fichiers de sauvegarde exclus"
+
+msgid "Select files to exclude from backup"
+msgstr "Choisir les fichiers à exclure de la sauvegarde"
 
 msgid "Select files/folders to backup"
 msgstr "Choisir fichiers/dossiers pour sauvegarde"
@@ -8887,6 +8937,9 @@ msgstr ""
 msgid "Service number font size"
 msgstr "Taille de la police pour les nombres"
 
+msgid "Service picons downsize"
+msgstr "Réduire la taille des picons de service"
+
 msgid "Service reference"
 msgstr "Référence service"
 
@@ -8921,6 +8974,9 @@ msgstr "Services"
 msgid "Services may be grouped in bouquets. When enabled, you can use more than one bouquet."
 msgstr "Les services peuvent être regroupé en bouquets. Lorsque c’est activé, vous pouvez utiliser plus d’un bouquet."
 
+msgid "Set CI assignment for detection of available services."
+msgstr "Définir l’affectation VI pour la détection des services disponibles."
+
 msgid "Set Framerate for MiniTV"
 msgstr "Régler le fps pour MiniTV"
 
@@ -8944,6 +9000,9 @@ msgstr "Utiliser l’interface comme interface par défaut"
 
 msgid "Set limits"
 msgstr "Définir les limites"
+
+msgid "Set pin code persistent"
+msgstr "Définir le code PIN permanant"
 
 msgid "Set startup service"
 msgstr "Choisir comme service de démarrage"
@@ -9048,9 +9107,6 @@ msgstr "Définir voltage et 22 KHz"
 msgid "Sets the root folder of movie list, to remove the '..' from benign shown in that folder."
 msgstr "Définir le répertoire principal pour la liste des films, pour enlever le ‘..’ affiché dans ce répertoire."
 
-msgid "Setting"
-msgstr "Paramètres"
-
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -9083,6 +9139,9 @@ msgstr "Configure le disque dur"
 
 msgid "Setup Inadyn"
 msgstr "Configure Inadyn"
+
+msgid "Setup InputDevice"
+msgstr "Choisir le périphérique d’entrée"
 
 msgid "Setup Language"
 msgstr "Configure la langue"
@@ -9289,6 +9348,9 @@ msgstr "Afficher CCcam dans les extensions?"
 msgid "Show CCcamInfo in Extensions Menu"
 msgstr "Afficher CCcamInfo dans le menu extension"
 
+msgid "Show CI messages"
+msgstr "Afficher les messages CI"
+
 msgid "Show Clients"
 msgstr "Afficher les clients"
 
@@ -9466,6 +9528,9 @@ msgstr "Afficher l’icône de cryptage"
 msgid "Show crypto info in infobar"
 msgstr "Afficher infos de cryptage dans barre d'infos"
 
+msgid "Show default backup files"
+msgstr "Afficher les fichiers de sauvegarde par défaut"
+
 msgid "Show detailed event info"
 msgstr "Afficher les informations détaillées de l’évènement"
 
@@ -9495,6 +9560,9 @@ msgstr "Afficher extensions…"
 
 msgid "Show favourites list"
 msgstr "Afficher la liste des favoris"
+
+msgid "Show files backed up by default"
+msgstr "Afficher les fichiers sauvegardés par défaut"
 
 msgid "Show graphical multi EPG"
 msgstr "Afficher multi EPG graphique"
@@ -9745,6 +9813,9 @@ msgstr "Fondu simple"
 msgid "Simple titleset (compatibility for legacy players)"
 msgstr "Jeu titre simple (compatibilité descendante lecteurs)"
 
+msgid "Simple zoom"
+msgstr "Zoom simple"
+
 msgid "Simulate (no write)"
 msgstr "Simuler (pas d’écriture)"
 
@@ -9820,11 +9891,17 @@ msgstr "Programmation de mise en veille"
 msgid "Slide drop"
 msgstr "Diapo tombe"
 
+msgid "Slide from left"
+msgstr "Apparaître de la gauche"
+
 msgid "Slide left to right"
 msgstr "Diapo de gauche à droite"
 
 msgid "Slide picture in loop"
 msgstr "Afficher les diapositives en boucle"
+
+msgid "Slide right to left"
+msgstr "Apparaître de la droite vers la gauche"
 
 msgid "Slide show interval (sec.)"
 msgstr "Intervalle diaporama (sec.)"
@@ -9850,6 +9927,9 @@ msgstr "Vitesses du ralenti"
 
 msgid "Small progress"
 msgstr "Petit progrès"
+
+msgid "Smartcard PIN"
+msgstr "PIN de la carte à puce"
 
 msgid "Smooth"
 msgstr "Doux"
@@ -10070,9 +10150,6 @@ msgstr "Démarrer"
 msgid "Start Mode"
 msgstr "Mode de démarrage"
 
-msgid "Start Tuner"
-msgstr "Démarrer tuner"
-
 msgid "Start attempts"
 msgstr "Tentatives de démarrage"
 
@@ -10144,9 +10221,6 @@ msgstr "Stop"
 
 msgid "Stop PiP"
 msgstr "Arrêter PiP"
-
-msgid "Stop Tuner"
-msgstr "Arrêter tuner"
 
 msgid "Stop check when cam is running"
 msgstr "Arrêter la vérification lorsque la CAM est active"
@@ -10283,6 +10357,9 @@ msgstr "Sélection de la langue sous-titres 3"
 msgid "Subtitle language selection 4"
 msgstr "Sélection de la langue sous-titres 4"
 
+msgid "Subtitle long"
+msgstr "Sous-titres long"
+
 msgid "Subtitle position"
 msgstr "Position des sous-titres"
 
@@ -10306,19 +10383,6 @@ msgstr "Dim"
 
 msgid "Sunday"
 msgstr "Dimanche"
-
-msgid "Sundtek Control Center"
-msgstr "Sundtek Control Center"
-
-msgid ""
-"Sundtek legal notice:\n"
-"This software comes without any warranty, use it at your own risk?"
-msgstr ""
-"Sundtek mention légale:\n"
-"Ce logiciel est founi sans aucune garantie, l’utilisez à vos propres risques?"
-
-msgid "SundtekControlCenter"
-msgstr "SundtekControlCenter"
 
 msgid "Support at"
 msgstr "Support à"
@@ -10468,7 +10532,7 @@ msgstr ""
 "Traduction Française\n"
 "Enigma2 - openLD\n"
 "Support: www.lonasdigital.com\n"
-"Dernière MAJ: 16 novembre 2015"
+"Dernière MAJ: 21 février 2016"
 
 msgid "TS file is too large for ISO9660 level 1!"
 msgstr "Fichier TS trop grand pour le niveau 1 ISO9660!"
@@ -10648,6 +10712,9 @@ msgstr ""
 msgid "The PIN code has been changed successfully."
 msgstr "Le code PIN a été changé avec succès."
 
+msgid "The PIN code has been saved successfully."
+msgstr "Le code PIN a été sauvegardé avec succès."
+
 msgid "The PIN codes you entered are different."
 msgstr "Les codes PIN saisis sont différents."
 
@@ -10687,6 +10754,13 @@ msgstr ""
 
 msgid "The current update may be unstable"
 msgstr "Cette mise-à-jour pourrai être instable."
+
+msgid ""
+"The default backup selection cannot be changed.\n"
+"Please use the 'additional' and 'excluded' backup selection."
+msgstr ""
+"La sélection de sauvegarde par défaut ne peut pas être modifiée.\n"
+"Utilisez plutôt la sélection de sauvegarde ‘additionnelle’ ou ‘exclue’."
 
 #, python-format
 msgid ""
@@ -10752,6 +10826,9 @@ msgstr "Le code pin saisi est mauvais"
 msgid "The results have been written to %s."
 msgstr "Les résultats ont été écrit sur %s."
 
+msgid "The saved PIN was cleared."
+msgstr "Le PIN sauvegardé a été effacé."
+
 msgid "The servicelist is reloaded."
 msgstr "La liste des services a été rechargée."
 
@@ -10782,6 +10859,13 @@ msgstr "Le fichier programmation (timers.xml) est corrompu et ne peut-être char
 
 msgid "The timer file (timers.xml) is corrupt and could not be loaded."
 msgstr "Le fichier programmation (timers.xml) est corrompu et ne peut-être chargé."
+
+msgid ""
+"The unicable connection setting is wrong.\n"
+" Maybe recursive connection of tuners."
+msgstr ""
+"Le paramètre de connexion unicable est incorrect.\n"
+" Peut-être une connexion récursive des tuners."
 
 #, python-format
 msgid "The user interface of your %s %s is restarting"
@@ -11624,9 +11708,6 @@ msgstr "Clé USB"
 msgid "USB stick wizard"
 msgstr "Assistant clé USB"
 
-msgid "USB/Network"
-msgstr "USB/Réseau"
-
 msgid "Ukrainian"
 msgstr "Ukrainien"
 
@@ -11679,6 +11760,9 @@ msgstr ""
 "Erreur inconnue lors de la création du thème.\n"
 "Après le redémarrage merci de vérifier le plugin MyMetrixLite et d’appliquer vos paramètres."
 
+msgid "Unmark service as dedicated 3D service"
+msgstr "Démarquer le service comme un service dédié à la 3D"
+
 msgid "Unmount"
 msgstr "Démonter"
 
@@ -11711,6 +11795,12 @@ msgid "Update completed, %d package was installed."
 msgid_plural "Update completed, %d packages were installed."
 msgstr[0] "Mise-à-jour terminée, %d paquet installé."
 msgstr[1] "Mise-à-jour terminée, %d paquets installés."
+
+msgid "Update delay for Events in List"
+msgstr "Mise à jour du délai pour la liste des évènements"
+
+msgid "Update delay for Events in List. Scrolling in List is faster with higher delay, specialy on big Lists !"
+msgstr "Mise à jour du délai pour la liste des évènements. Parcourir la liste est plus rapide avec un délai plus grand, en particulier sur les longues listes!"
 
 #, python-format
 msgid "Update failed. Your %s %s does not have a working internet connection."
@@ -11831,6 +11921,9 @@ msgstr "Utiliser comme disque dur"
 msgid "Use circular LNB"
 msgstr "Utiliser un LNB circulaire"
 
+msgid "Use extended List"
+msgstr "Utiliser la liste étendue"
+
 msgid "Use fastscan channel names"
 msgstr "Utiliser le scan rapide des noms des chaînes"
 
@@ -11884,6 +11977,9 @@ msgstr "Utiliser le mode radio alternatif ou conventionnel."
 
 msgid "Use the alternative screen"
 msgstr "Utiliser l’écran alternatif"
+
+msgid "Use the extended List"
+msgstr "Utiliser la liste étendue"
 
 msgid "Use the network wizard to configure selected network adapter"
 msgstr "Utiliser l'asistant réseau pour configurer l'adaptateur réseau sélectionné"
@@ -12063,6 +12159,9 @@ msgstr "Mode vidéo: %s n’est pas disponible"
 
 msgid "Video mode: 1080p also not available"
 msgstr "Mode vidéo: 1080p n’est pas disponible"
+
+msgid "Video mode: 2160p also not available"
+msgstr "Mode vidéo: 2160p n’est pas disponible"
 
 msgid "Video output"
 msgstr "Sortie vidéo"
@@ -12594,6 +12693,10 @@ msgstr "Avec cette option vous pouvez cacher Job Tasks du menu des extensions (a
 msgid "Without popup"
 msgstr "sans message"
 
+#, python-format
+msgid "Would you save the entered PIN %s persistent?"
+msgstr "Voulez-vous sauvegarder le PIN persistant %s?"
+
 msgid "Write error while recording. Disk full?\n"
 msgstr "Erreur d'écriture lors de l'enregistrement. Disque plein?\n"
 
@@ -13073,6 +13176,12 @@ msgstr "Zoomer/dézoomer TV…"
 msgid "Zoom Off..."
 msgstr "Zoom Off…"
 
+msgid "Zoom from left"
+msgstr "Zoomer de la gauche"
+
+msgid "Zoom from right"
+msgstr "Zoom de droite"
+
 msgid "[Enigma2 Settings]\n"
 msgstr "[Paramètres Enigma2]\n"
 
@@ -13345,10 +13454,6 @@ msgstr "couper (clip) overscan / bandes noires (letterbox)"
 msgid "close share view"
 msgstr "fermer la vue des partages"
 
-#, python-format
-msgid "comand line: %s"
-msgstr "ligne de commande: %s"
-
 msgid "comedy"
 msgstr "comédie"
 
@@ -13540,6 +13645,9 @@ msgstr "et9000/et9100"
 msgid "et9200/9500/6500"
 msgstr "et9200/9500/6500"
 
+msgid "execute cuts (requires MovieCut plugin)"
+msgstr "exécuter les coupures (nécessite le plugin MovieCut)"
+
 msgid "exit DVD player or return to file browser"
 msgstr "quitter le lecteur DVD ou retourner au sélecteur fichiers"
 
@@ -13702,9 +13810,6 @@ msgstr "initialiser modules"
 
 msgid "insert mark here"
 msgstr "insérer marqueur ici"
-
-msgid "installs the sundtek driver and runs related shellscripts"
-msgstr "Installation des pilotes Suntek et exécution des scriptes associés."
 
 msgid "internally loopthrough to"
 msgstr "rebouclé en interne par"
@@ -14355,9 +14460,6 @@ msgstr "arrêter d'utiliser comme service de démarrage"
 msgid "stop using as startup service from standby"
 msgstr "arrêter d’utiliser comme service de démarrage"
 
-msgid "sundtek control center plugin"
-msgstr "Plugin Sundtek control center"
-
 msgid "switch to bookmarks"
 msgstr "basculer vers marque page"
 
@@ -14472,20 +14574,11 @@ msgstr "show de variété"
 msgid "vertical"
 msgstr "verticale"
 
-msgid "via Network"
-msgstr "par le réseau"
-
-msgid "via USB"
-msgstr "par USB"
-
 msgid "view extensions..."
 msgstr "voir les extensions..."
 
 msgid "vix"
 msgstr "vix"
-
-msgid "wait for ci..."
-msgstr "attente pour ci..."
 
 msgid "wait for mmi..."
 msgstr "attente pour mmi..."
@@ -14586,4 +14679,3 @@ msgstr "zapper et enregistrer"
 
 msgid "zapped"
 msgstr "zappé"
-
