@@ -245,6 +245,7 @@ def InitUsageConfig():
 		("127", "No priority") ])
 
 	config.usage.remote_fallback_enabled = ConfigYesNo(default = False)
+	config.usage.remote_fallback_recording_enabled = ConfigYesNo(default = False)
 	config.usage.remote_fallback = ConfigText(default = "http://IP-ADDRESS:8001", visible_width = 50, fixed_size = False)
 
 	nims = [("-1", _("auto"))]
