@@ -8196,7 +8196,7 @@ msgid "The PIN code has been changed successfully."
 msgstr "Der PIN-Code wurde erfolgreich geändert."
 
 msgid "The PIN codes you entered are different."
-msgstr "Die eingegebenen PIN-Codes sind unterschiedlich."
+msgstr "Die eingegebenen PIN-Codes unterscheiden sich."
 
 #
 msgid ""
@@ -14579,7 +14579,7 @@ msgid "Extensions/QuickMenu"
 msgstr "Erweiterungen/Schnellstartmenü"
 
 msgid "Use individual offset from waking up to starting a timer [min]"
-msgstr "Eigenen Offset vom Aufwachen bis zum Timerstart benutzen [min]"
+msgstr "Eigenen Offset vom Aufwachen bis zum Timerstart benutzen (min)"
 
 msgid "Use work-around for recordings from deep-standby"
 msgstr "Workaround für Aufnahmen aus dem Deep-Standby benutzen?"
@@ -16851,3 +16851,125 @@ msgstr "Zoom von links"
 
 msgid "Zoom from right"
 msgstr "Zoom von rechts"
+
+#: plugin.py:195
+msgid "Show default backup files"
+msgstr "Standardliste gesicherter Dateien zeigen"
+
+#: plugin.py:196
+msgid "Select additional backup files"
+msgstr "Zusätzlich zu sichernde Dateien wählen"
+
+#: plugin.py:197
+msgid "Select excluded backup files"
+msgstr "Nicht zu sichernde Dateien wählen"
+
+#: plugin.py:347
+msgid "Default files/folders to backup"
+msgstr "Standardliste gesicherter Dateien"
+
+#: plugin.py:349
+msgid "Additional files/folders to backup"
+msgstr "Zusätzlich zu sichernde Dateien"
+
+#: plugin.py:351
+msgid "Files/folders to exclude from backup"
+msgstr "Nicht zu sichernde Dateien"
+
+#: plugin.py:195
+msgid "Show files backed up by default"
+msgstr "Zeigt Dateien, die grundsätzlich gesichert werden"
+
+#: plugin.py:195
+msgid "Select additional files to backup"
+msgstr "Dateien wählen, die zusätzlich gesichert werden"
+
+#: plugin.py:195
+msgid "Select files to exclude from backup"
+msgstr "Dateien wählen, die ausgeschlossen werden"
+
+#: QuickMenu.py:340
+msgid "Here you can browse (but not modify) the files that are added to the backupfile by default (E2-setup, channels, network)."
+msgstr "Hier können die Dateien durchsucht (aber nicht verändert) werden, die standardmäßig gesichert werden (E2-Einstellungen, Kanäle, Netzwerk)."
+
+#: QuickMenu.py:341
+msgid "Here you can specify additional files that should be added to the backup file."
+msgstr "Hier kann festegelegt werden, welche Dateien zusätzlich zu denen der Standardliste gesichert werden."
+
+#: QuickMenu.py:342
+msgid "Here you can select which files should be excluded from the backup."
+msgstr "Hier kann festegelegt werden, welche Dateien aus der Standardliste von der Sicherung ausgeschlossen werden sollen."
+
+#: BackupRestore.py:243
+msgid ""
+"The default backup selection cannot be changed.\n"
+"Please use the 'additional' and 'excluded' backup selection."
+msgstr ""
+"Die Standardliste der zu sichernden Dateien kann nicht verändert werden.\n"
+"Bitte die 'Zusätze' und 'Ausschlüsse' verwenden."
+
+#: CutListEditor/plugin.py:87
+msgid "execute cuts (requires MovieCut plugin)"
+msgstr "Filmschnitt ausführen (benötigt MovieCut Plugin)"
+
+#: CutListEditor/plugin.py
+msgid "Enable intro screen"
+msgstr "Begrüßungsbildschirm aktivieren"
+
+#: CutListEditor/plugin.py
+msgid "Disable intro screen"
+msgstr "Begrüßungsbildschirm abschalten"
+
+msgid "Add bouquet services"
+msgstr "Fav-Sender +"
+
+msgid "The PIN code has been saved successfully."
+msgstr "Die PIN wurde erfolgreich gespeichert."
+
+msgid "Reenter PIN"
+msgstr "PIN-Eingabe wiederholen"
+
+msgid "Enter PIN"
+msgstr "PIN eingeben"
+
+msgid "The saved PIN was cleared."
+msgstr "Die PIN wurde zurückgesetzt."
+
+msgid "Set pin code persistent"
+msgstr "PIN dauerhaft speichern"
+
+msgid "Enter persistent PIN code"
+msgstr "PIN eingeben"
+
+msgid "Reset persistent PIN code"
+msgstr "PIN zurücksetzen"
+
+msgid "Show CI messages"
+msgstr "CI Meldungen anzeigen"
+
+msgid "CIHelper Setup"
+msgstr "CIHelper Einstellungen"
+
+msgid "CIHelper for SLOT CI0"
+msgstr "CIHelper für SLOT CI0"
+
+msgid "CIHelper for SLOT CI1"
+msgstr "CIHelper für SLOT CI1"
+
+msgid "Enable CIHelper for SLOT CI0"
+msgstr "Aktiviere CIHelper für SLOT CI0"
+
+msgid "Enable CIHelper for SLOT CI1"
+msgstr "Aktiviere CIHelper für SLOT CI1"
+
+msgid "Sorry CIHelper Config is Missing"
+msgstr "CIHelper Konfiguration nicht vorhanden."
+
+msgid "Would you save the entered PIN %s persistent?"
+msgstr "Möchten Sie die PIN %s dauerhaft speichern?"
+
+msgid "Set CI assignment for detection of available services."
+msgstr "Ermittlung verf. Kanäle inkl. Berücksichtigung der CI-Zuweisung"
+
+msgid "Include CI assignment"
+msgstr "Berücksichtigung der CI-Zuweisung"
