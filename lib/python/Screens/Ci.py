@@ -130,7 +130,7 @@ class MMIDialog(Screen):
 			cur = self["entries"].getCurrent()
 			answer = str(cur[1].value)
 			length = len(answer)
-			while length < cur[1].getLength()
+			while length < cur[1].getLength():
 				answer = '0'+answer
 				length+=1
 			self.answer = answer
