@@ -16294,3 +16294,10 @@ msgstr "Por favor, espere mientras se reorganizan los datos..."
 
 msgid "Load unlinked userbouquets"
 msgstr "Cargar bouquets no vinculados"
+
+msgid ""
+"\n"
+"%d.%d.%d, %2d:%02d  -  %s"
+msgstr ""
+"\n"
+"%02d/%02d/%02d, %2d:%02d en %s"
