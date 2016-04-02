@@ -148,26 +148,30 @@ void eAVSwitch::setColorFormat(int format)
 	1-RGB
 	2-S-Video
 	*/
-	const char *fmt = "";
+	const char *cvbs="cvbs";
+	const char *rgb="rgb";
+	const char *svideo="svideo";
+	const char *yuv="yuv";
 	int fd;
 
-	if (access("/proc/stb/avs/0/colorformat", W_OK))
-		return;  // no colorformat file...
-
-	switch (format) {
-		case 0: fmt = "cvbs";   break;
-		case 1: fmt = "rgb";    break;
-		case 2: fmt = "svideo"; break;
-		case 3: fmt = "yuv";    break;
-	}
-	if (*fmt == '\0')
-		return; // invalid format
-
-	if ((fd = open("/proc/stb/avs/0/colorformat", O_WRONLY)) < 0) {
-		eDebug("[eAVSwitch] cannot open /proc/stb/avs/0/colorformat: %m");
+	if((fd = open("/proc/stb/avs/0/colorformat", O_WRONLY)) < 0) {
+		printf("cannot open /proc/stb/avs/0/colorformat\n");
 		return;
 	}
-	write(fd, fmt, strlen(fmt));
+	switch(format) {
+		case 0:
+			write(fd, cvbs, strlen(cvbs));
+			break;
+		case 1:
+			write(fd, rgb, strlen(rgb));
+			break;
+		case 2:
+			write(fd, svideo, strlen(svideo));
+			break;
+		case 3:
+			write(fd, yuv, strlen(yuv));
+			break;
+	}
 	close(fd);
 }
 
