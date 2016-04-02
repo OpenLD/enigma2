@@ -564,7 +564,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 				fonts[name] = (font, size, height, width)
 			except Exception, ex:
 				print "[SKIN] bad font alias", ex
-				
+
 		for c in skin.findall("parameters"):
 			for parameter in c.findall("parameter"):
 				get = parameter.attrib.get

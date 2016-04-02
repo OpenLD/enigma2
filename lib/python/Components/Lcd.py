@@ -174,7 +174,7 @@ class LCD:
 
 	def setFlipped(self, value):
 		eDBoxLCD.getInstance().setFlipped(value)
-		
+
 	def setScreenShot(self, value):
  		eDBoxLCD.getInstance().setDump(value)
 
@@ -313,7 +313,7 @@ def InitLcd():
 				pass
 			def setLCDScreenshot(configElement):
  				ilcd.setScreenShot(configElement.value);
-				
+
 			config.lcd.modepip = ConfigSelection(choices={
 					"0": _("off"),
 					"5": _("PIP"),
@@ -323,9 +323,9 @@ def InitLcd():
 				config.lcd.modepip.addNotifier(setLCDModePiP)
 			else:
 				config.lcd.modepip = ConfigNothing()
-				
+
 			config.lcd.screenshot = ConfigYesNo(default=False)
- 			config.lcd.screenshot.addNotifier(setLCDScreenshot)	
+ 			config.lcd.screenshot.addNotifier(setLCDScreenshot)
 
 			config.lcd.modeminitv = ConfigSelection(choices={
 					"0": _("normal"),

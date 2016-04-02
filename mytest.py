@@ -529,7 +529,7 @@ from time import time, localtime, strftime
 from Tools.StbHardware import setFPWakeuptime, setRTCtime
 
 def autorestoreLoop():
-	# Check if auto restore settings fails, just start the wizard (avoid a endless loop) 
+	# Check if auto restore settings fails, just start the wizard (avoid a endless loop)
 	count = 0
 	if os.path.exists("/media/hdd/images/config/autorestore"):
 		f = open("/media/hdd/images/config/autorestore", "r")
@@ -571,7 +571,7 @@ def runScreenTest():
 			os.system('rm -f /media/hdd/images/config/autorestore')
 		screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
 		screensToRun += wizardManager.getWizards()
-	
+
 	screensToRun.append((100, InfoBar.InfoBar))
 	screensToRun.sort()
 	print screensToRun
@@ -598,7 +598,7 @@ def runScreenTest():
 	vol = VolumeControl(session)
 	profile("Init:PowerKey")
 	power = PowerKey(session)
-	
+
 	if boxtype in ('sf3038', 'spycat', 'e4hd', 'e4hdc', 'mbmicro', 'et7500', 'mixosf5', 'mixosf7', 'mixoslumi', 'gi9196m', 'maram9', 'ixussone', 'ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'sezam1000hd', 'mbmini', 'atemio5x00', 'beyonwizt3') or getBrandOEM() in ('fulan'):
 		profile("VFDSYMBOLS")
 		import Components.VfdSymbols

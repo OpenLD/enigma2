@@ -370,7 +370,7 @@ def applySettings(mode=config.osd.threeDmode.value, znorm=int(config.osd.threeDz
 			open(SystemInfo["3DZNorm"], "w").write('%d' % znorm)
 		except:
 			return
-			
+
 class AutoVideoMode(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)

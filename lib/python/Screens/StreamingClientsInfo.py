@@ -21,7 +21,7 @@ class StreamingClientsInfo(Screen):
 			else:
 				self["total"] = StaticText( _("Total Clients streaming: ") + ClientsStreaming("NUMBER").getText())
 				text =  ClientsStreaming("EXTRA_INFO").getText()
-			
+
 			self["liste"] = StaticText(text)
 			self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions"],
 			{

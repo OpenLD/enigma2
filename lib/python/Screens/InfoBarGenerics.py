@@ -4693,4 +4693,3 @@ class InfoBarOpenOnTopHelper:
 		except Exception, e:
 			print "[openInfoBarSession] Exception:", e
 #########################################################################################
-

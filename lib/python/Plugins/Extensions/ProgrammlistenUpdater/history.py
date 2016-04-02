@@ -38,7 +38,7 @@ class PU_History(Screen):
         self.skinName = "PU_History"
         self.setup_title = _("Programmlisten-Updater History")
         self.setTitle(self.setup_title)
-        
+
         self["key_red"] = StaticText(_("Exit"))
         self["History"] = ScrollLabel()
 
@@ -57,4 +57,3 @@ class PU_History(Screen):
 
     def keyOk(self):
         self.close()
-
