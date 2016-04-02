@@ -3656,7 +3656,7 @@ class InfoBarSubserviceSelection:
 
 	def addSubserviceToBouquetCallback(self, service):
 		if not service is None:
-			if len(service) > 1 and isinstance(service[1], eServiceReference):
+			if service and len(service) > 1 and isinstance(service[1], eServiceReference):
 				self.selectedSubservice = service
 				if self.bouquets is None:
 					cnt = 0
@@ -4344,7 +4344,7 @@ class InfoBarSubtitleSupport(object):
 	def __updatedInfo(self):
 		if not self.selected_subtitle:
 			subtitle = self.getCurrentServiceSubtitle()
-			cachedsubtitle = subtitle.getCachedSubtitle()
+			cachedsubtitle = subtitle and subtitle.getCachedSubtitle()
 			if cachedsubtitle:
 				self.enableSubtitle(cachedsubtitle)
 
