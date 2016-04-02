@@ -2090,6 +2090,10 @@ def InitNimManager(nimmgr):
 				print "%d: tunerTypeChange to '%s' failed (BUSY)" %(fe_id, configElement.getText())
 		else:
 			print "api <5 or old style tuner driver"
+			frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
+			if frontend.setDeliverySystem(nimmgr.nim_slots[fe_id].getType()):
+				print "tunerTypeChanged feid %d from %d to mode %d" % (fe_id, cur_type, int(configElement.value))
+				return
 			if path.exists("/proc/stb/frontend/%d/mode" % fe_id):
 				cur_type = int(open("/proc/stb/frontend/%d/mode" % fe_id, "r").read())
 				if cur_type != int(configElement.value):
@@ -2102,7 +2106,6 @@ def InitNimManager(nimmgr):
 						f.close()
 					except:
 						print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-
 					frontend.closeFrontend()
 					f = open("/proc/stb/frontend/%d/mode" % fe_id, "w")
 					f.write(configElement.value)
