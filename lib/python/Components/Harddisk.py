@@ -60,6 +60,7 @@ class Harddisk:
 			self.type = DEVTYPE_DEVFS
 		else:
 			print "Unable to determine structure of /dev"
+			self.card = False
 
 		self.max_idle_time = 0
 		self.idle_running = False
@@ -74,9 +75,18 @@ class Harddisk:
 		self.mount_device = None
 		self.phys_path = os.path.realpath(self.sysfsPath('device'))
 
+		self.removable = removable
+		self.internal = "pci" in self.phys_path or "ahci" in self.phys_path
+		try:
+			data = open("/sys/block/%s/queue/rotational" % device, "r").read().strip()
+			self.rotational = int(data)
+		except:
+			self.rotational = True
+
 		if self.type == DEVTYPE_UDEV:
 			self.dev_path = '/dev/' + self.device
 			self.disk_path = self.dev_path
+			self.card = "sdhci" in self.phys_path
 
 		elif self.type == DEVTYPE_DEVFS:
 			tmp = readFile(self.sysfsPath('dev')).split(':')
@@ -93,8 +103,8 @@ class Harddisk:
 					self.dev_path = dev_path
 					self.disk_path = disk_path
 					break
-
-		print "new Harddisk", self.device, '->', self.dev_path, '->', self.disk_path
+			self.card = self.device[:2] == "hd" and "host0" not in self.dev_path
+		print "new device", self.device, '->', self.dev_path, '->', self.disk_path
 		if not removable:
 			self.startIdle()
 
@@ -122,23 +132,18 @@ class Harddisk:
 		ret = _("External")
 		# SD/MMC(F1 specific)
 		if self.type == DEVTYPE_UDEV:
-			card = "sdhci" in self.phys_path
 			type_name = " (SD/MMC)"
 		# CF(7025 specific)
 		elif self.type == DEVTYPE_DEVFS:
-			card = self.device[:2] == "hd" and "host0" not in self.dev_path
 			type_name = " (CF)"
 
-		hw_type = HardwareInfo().get_device_name()
-		if hw_type == 'elite' or hw_type == 'premium' or hw_type == 'premium+' or hw_type == 'ultra' :
-			internal = "ide" in self.phys_path
-		else:
-			internal = ("pci" or "ahci") in self.phys_path
-
-		if card:
+		if self.card:
 			ret += type_name
-		elif internal:
-			ret = _("Internal")
+		else:
+			if self.internal:
+				ret = _("Internal")
+			if not self.rotational:
+				ret += " (SSD)"
 		return ret
 
 	def diskSize(self):
@@ -146,15 +151,17 @@ class Harddisk:
 		try:
 			line = readFile(self.sysfsPath('size'))
 			cap = int(line)
+			return cap / 1000 * 512 / 1000
 		except:
 			dev = self.findMount()
 			if dev:
-				stat = os.statvfs(dev)
-				cap = int(stat.f_blocks * stat.f_bsize)
-				return cap / 1000 / 1000
-			else:
-				return cap
-		return cap / 1000 * 512 / 1000
+				try:
+					stat = os.statvfs(dev)
+					cap = int(stat.f_blocks * stat.f_bsize)
+					return cap / 1000 / 1000
+				except:
+					pass
+		return cap
 
 	def capacity(self):
 		cap = self.diskSize()
@@ -216,6 +223,7 @@ class Harddisk:
 				self.mount_device = parts[0]
 				self.mount_path = parts[1]
 				return parts[1]
+		return None
 
 	def enumMountDevices(self):
 		for parts in getProcMounts():
