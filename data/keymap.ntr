@@ -276,6 +276,7 @@
 		</device>
 		<device name="gigablue remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
+			<key id="KEY_AUDIO" mapto="audioSelection" flags="m" />
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="l" />
 		</device>
 		<device name="OPTIMUSS OS2+ remote control (native)">
@@ -288,10 +289,14 @@
 		</device>
 		<device name="remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
+			<key id="KEY_AUDIO" mapto="audioSelection" flags="m" />
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="l" />
 		</device>
 		<key id="KEY_AUDIO" mapto="audio_key" flags="b" />
 		<key id="KEY_OPTION" mapto="audioSelection" flags="b" />
+		<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
+		<key id="KEY_AUDIO" mapto="audioSelection" flags="m" />
+		<key id="KEY_YELLOW" mapto="audioSelection" flags="l" />
 	</map>
 
 	<map context="InfobarAspectSelectionActions">
