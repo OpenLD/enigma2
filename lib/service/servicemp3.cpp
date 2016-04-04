@@ -66,7 +66,7 @@ typedef enum
  * see: https://bugzilla.gnome.org/show_bug.cgi?id=619434
  * As a workaround, we run the subsink in sync=false mode
  */
-#if GST_VERSION_MAJOR < 1 
+#if GST_VERSION_MAJOR < 1
 #define GSTREAMER_SUBTITLE_SYNC_MODE_BUG
 #else
 #undef GSTREAMER_SUBTITLE_SYNC_MODE_BUG
@@ -2171,7 +2171,7 @@ void eServiceMP3::HandleTocEntry(GstMessage *msg)
 			if (gst_toc_entry_get_entry_type (entry) == GST_TOC_ENTRY_TYPE_EDITION)
 			{
 				/* extra debug info for testing purposes CVR should_be_removed later on */
-				eDebug("[eServiceMP3] toc_type %s", gst_toc_entry_type_get_nick(gst_toc_entry_get_entry_type (entry)));
+				//eDebug("[eServiceMP3] toc_type %s", gst_toc_entry_type_get_nick(gst_toc_entry_get_entry_type (entry)));
 				gint y = 0;
 				for (GList* x = gst_toc_entry_get_sub_entries (entry); x; x = x->next)
 				{
@@ -2202,8 +2202,8 @@ void eServiceMP3::HandleTocEntry(GstMessage *msg)
 								m_cuesheet_changed = 1;
 								m_event((iPlayableService*)this, evCuesheetChanged);
 								/* extra debug info for testing purposes CVR should_be_removed later on */
-								eDebug("[eServiceMP3] toc_subtype %s,Nr = %d, start= %#"G_GINT64_MODIFIER "x",
-										gst_toc_entry_type_get_nick(gst_toc_entry_get_entry_type (sub_entry)), y + 1, pts);
+								//eDebug("[eServiceMP3] toc_subtype %s,Nr = %d, start= %#"G_GINT64_MODIFIER "x",
+										//gst_toc_entry_type_get_nick(gst_toc_entry_get_entry_type (sub_entry)), y + 1, pts);
 							}
 						}
 						y++;
@@ -2215,7 +2215,8 @@ void eServiceMP3::HandleTocEntry(GstMessage *msg)
 	}
 	else
 	{
-		eDebug("[eServiceMP3] TOC entry from source %s not used", GST_MESSAGE_SRC_NAME(msg));
+		//eDebug("[eServiceMP3] TOC entry from source %s not used", GST_MESSAGE_SRC_NAME(msg));
+		;
 	}
 }
 #endif
@@ -2813,7 +2814,7 @@ void eServiceMP3::setCutList(ePyObject list)
 		pts_t pts = PyLong_AsLongLong(ppts);
 		int type = PyInt_AsLong(ptype);
 		m_cue_entries.insert(cueEntry(pts, type));
-		eDebug("[eServiceMP3] adding %08llx, %d", pts, type);
+		//eDebug("[eServiceMP3] adding %08llx, %d", pts, type);
 	}
 	m_cuesheet_changed = 1;
 	m_event((iPlayableService*)this, evCuesheetChanged);
@@ -2912,7 +2913,7 @@ void eServiceMP3::loadCuesheet()
 	}
 	else
 	{
-		eDebug("[eServiceMP3] skip loading cuesheet multiple times");
+		//eDebug("[eServiceMP3] skip loading cuesheet multiple times");
 		return;
 	}
 
