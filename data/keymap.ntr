@@ -94,6 +94,7 @@
 	</map>
 
 	<map context="InfobarExtensions">
+		<key id="KEY_GREEN" mapto="showPluginBrowser" flags="b" />
 		<key id="KEY_RED" mapto="RedPressed" flags="b" />
 		<key id="KEY_F1" mapto="RedPressed" flags="b" />
 		<key id="KEY_F1" mapto="showEventInfo" flags="l" />
