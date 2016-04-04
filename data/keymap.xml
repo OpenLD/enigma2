@@ -136,13 +136,13 @@
 		<key id="BTN_1" mapto="zapDown" flags="mr" />
 		<!--key id="KEY_SAT" mapto="openSatellites" flags="m" /-->
 	</map>
-	
+
 	<map context="InfobarHDMIActions">
 		<key id="KEY_AUX" mapto="HDMIin" flags="b" />
 		<key id="KEY_AUX" mapto="HDMIinLong" flags="l" />
 		<key id="KEY_CONTEXT_MENU" mapto="HDMIin" flags="b" />
 		<key id="KEY_CONTEXT_MENU" mapto="HDMIinLong" flags="l" />
-	</map>	
+	</map>
 
 	<map context="MinuteInputActions">
 		<key id="KEY_UP" mapto="up" flags="mr" />
@@ -196,7 +196,7 @@
 		<key id="KEY_SPACE" mapto="mainMenu" flags="mr" />
 		<key id="KEY_PC" mapto="showNetworkSetup" flags="mr" />
 		<key id="KEY_LAN" mapto="showNetworkSetup" flags="mr" />
-		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" /> 
+		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" />
 		<key id="KEY_ANGLE" mapto="toggleAspectRatio" flags="b" />
 		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />
 	</map>
@@ -221,7 +221,7 @@
 		<key id="KEY_PLAY" mapto="showMovies" flags="m" />
 		<key id="KEY_RADIO" mapto="showRadio" flags="b" />
 		<key id="KEY_HOMEPAGE" mapto="showWWW" flags="b" />
-		<key id="KEY_BOOKMARKS" mapto="showWWW" flags="b" />
+		<key id="KEY_BOOKMARKS" mapto="showMovies" flags="b" />
 		<key id="KEY_RADIO" mapto="openBouquetList" flags="l" />
 		<key id="KEY_TV" mapto="showTv" flags="b" />
 		<key id="KEY_TV" mapto="openBouquetList" flags="l" />
@@ -247,6 +247,8 @@
 		<key id="KEY_PVR" mapto="showMovies" flags="b" />
 		<key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
 		<key id="KEY_OPEN" mapto="showMovies" flags="b" />
+		<key id="KEY_F1" mapto="showMovies" flags="b" />
+		<key id="KEY_F2" mapto="showWWW" flags="b" />
 	</map>
 
 	<map context="WebBrowserActions">
@@ -284,7 +286,7 @@
 		<device name="remote control">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="l" />
-		</device>		
+		</device>
 		<key id="KEY_AUDIO" mapto="audio_key" flags="b" />
 		<key id="KEY_OPTION" mapto="audioSelection" flags="m" />
 	</map>
@@ -540,7 +542,7 @@
 			<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 			<key id="KEY_TV" mapto="timeshiftStop" flags="m" />
 			<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />
-		</device>		
+		</device>
 		<key id="KEY_PLAYPAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />

@@ -129,13 +129,13 @@
 		<key id="BTN_1" mapto="zapDown" flags="mr" />
 		<!--key id="KEY_SAT" mapto="openSatellites" flags="m" /-->
 	</map>
-	
+
 	<map context="InfobarHDMIActions">
 		<key id="KEY_AUX" mapto="HDMIin" flags="b" />
 		<key id="KEY_AUX" mapto="HDMIinLong" flags="l" />
 		<key id="KEY_CONTEXT_MENU" mapto="HDMIin" flags="b" />
 		<key id="KEY_CONTEXT_MENU" mapto="HDMIinLong" flags="l" />
-	</map>	
+	</map>
 
 	<map context="MinuteInputActions">
 		<key id="KEY_UP" mapto="up" flags="mr" />
@@ -190,7 +190,7 @@
 		<key id="KEY_MENU" mapto="mainMenu" flags="mr" />
 		<key id="KEY_SPACE" mapto="mainMenu" flags="mr" />
 		<key id="KEY_PC" mapto="showNetworkSetup" flags="mr" />
-		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" /> 
+		<key id="KEY_ANGLE" mapto="showRFmod" flags="l" />
 		<key id="KEY_ANGLE" mapto="toggleAspectRatio" flags="b" />
 		<key id="KEY_VMODE" mapto="toggleAspectRatio" flags="b" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
@@ -221,36 +221,38 @@
 
 	<map context="InfobarActions">
 		<key id="KEY_VIDEO" mapto="showMovies" flags="b" />
-        <key id="KEY_VIDEO" mapto="showMediaPlayer" flags="l" />
-        <key id="KEY_PLAY" mapto="showMovies" flags="m" />
-        <key id="KEY_RADIO" mapto="showRadio" flags="b" />
-        <key id="KEY_HOMEPAGE" mapto="showWWW" flags="b" />
-        <key id="KEY_BOOKMARKS" mapto="showWWW" flags="b" />
-        <key id="KEY_RADIO" mapto="openBouquetList" flags="l" />
+		<key id="KEY_VIDEO" mapto="showMediaPlayer" flags="l" />
+		<key id="KEY_PLAY" mapto="showMovies" flags="m" />
+		<key id="KEY_RADIO" mapto="showRadio" flags="b" />
+		<key id="KEY_HOMEPAGE" mapto="showWWW" flags="b" />
+		<key id="KEY_BOOKMARKS" mapto="showMovies" flags="b" />
+		<key id="KEY_RADIO" mapto="openBouquetList" flags="l" />
+		<key id="KEY_TV" mapto="showTv" flags="b" />
+		<key id="KEY_TV" mapto="openBouquetList" flags="l" />
+		<key id="KEY_FAVORITES" mapto="openBouquetList" flags="b" />
 		<key id="KEY_AB" mapto="openBouquetList" flags="b" />
-        <key id="KEY_TV" mapto="showTv" flags="b" />
-        <key id="KEY_TV" mapto="openBouquetList" flags="l" />
-        <key id="KEY_FAVORITES" mapto="openBouquetList" flags="b" />
-        <key id="KEY_FILE" mapto="showMovies" flags="b" />
-        <key id="KEY_MEDIA" mapto="showMovies" flags="b" />
-        <key id="KEY_LIST" mapto="showMediaPlayer" flags="b" />
-        <key id="KEY_PROGRAM" mapto="openTimerList" flags="b" />
-        <key id="KEY_SLOW" mapto="openTimerList" flags="b" />
-        <key id="KEY_F5" mapto="openTimerList" flags="b" />
+		<key id="KEY_FILE" mapto="showMovies" flags="b" />
+		<key id="KEY_MEDIA" mapto="showMovies" flags="b" />
+		<key id="KEY_LIST" mapto="showMediaPlayer" flags="b" />
+		<key id="KEY_PROGRAM" mapto="openTimerList" flags="b" />
+		<key id="KEY_SLOW" mapto="openTimerList" flags="b" />
+		<key id="KEY_F5" mapto="openTimerList" flags="b" />
 		<key id="KEY_TIME" mapto="openTimerList" flags="b" />
-        <key id="KEY_PROGRAM" mapto="openAutoTimerList" flags="l" />
-        <key id="KEY_SEARCH" mapto="openEPGSearch" flags="b" />
-        <key id="KEY_SEARCH" mapto="openIMDB" flags="l" />
-        <key id="KEY_SLEEP" mapto="openSleepTimer" flags="b" />
-        <key id="KEY_ZOOM" mapto="ZoomInOut" flags="b" />
-        <key id="KEY_ZOOM" mapto="ZoomOff" flags="l" />
-        <key id="KEY_CONNECT" mapto="HarddiskSetup" flags="b" />
-        <key id="KEY_WWW" mapto="showWWW" flags="b" />
-        <key id="KEY_SETUP" mapto="showSetup" flags="m" />
-        <key id="KEY_DIRECTORY" mapto="showPluginBrowser" flags="b" />
-        <key id="KEY_PVR" mapto="showMovies" flags="b" />
-        <key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
-        <key id="KEY_OPEN" mapto="showMovies" flags="b" />
+		<key id="KEY_PROGRAM" mapto="openAutoTimerList" flags="l" />
+		<key id="KEY_SEARCH" mapto="openEPGSearch" flags="b" />
+		<key id="KEY_SEARCH" mapto="openIMDB" flags="l" />
+		<key id="KEY_SLEEP" mapto="openSleepTimer" flags="b" />
+		<key id="KEY_ZOOM" mapto="ZoomInOut" flags="b" />
+		<key id="KEY_ZOOM" mapto="ZoomOff" flags="l" />
+		<key id="KEY_CONNECT" mapto="HarddiskSetup" flags="b" />
+		<key id="KEY_WWW" mapto="showWWW" flags="b" />
+		<key id="KEY_SETUP" mapto="showSetup" flags="m" />
+		<key id="KEY_DIRECTORY" mapto="showPluginBrowser" flags="b" />
+		<key id="KEY_PVR" mapto="showMovies" flags="b" />
+		<key id="KEY_PROG1" mapto="HarddiskSetup" flags="b" />
+		<key id="KEY_OPEN" mapto="showMovies" flags="b" />
+		<key id="KEY_F1" mapto="showMovies" flags="b" />
+		<key id="KEY_F2" mapto="showWWW" flags="b" />
 	</map>
 
 	<map context="WebBrowserActions">
@@ -262,7 +264,7 @@
 		<key id="KEY_BACK" mapto="historyBack" flags="b" />
 		<key id="KEY_EXIT" mapto="exit_s" flags="b" />
 	</map>
-	
+
 	<map context="InfobarAudioSelectionActions">
 		<device name="dreambox advanced remote control (native)">
 			<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
@@ -615,7 +617,7 @@
 		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_FILE" mapto="transparent" flags="m" />
-		<key id="KEY_VIDEO" mapto="transparent" flags="m" />		
+		<key id="KEY_VIDEO" mapto="transparent" flags="m" />
 		<key id="KEY_MEDIA" mapto="transparent" flags="m" />
 		<key id="KEY_GREEN" mapto="green" flags="m" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
