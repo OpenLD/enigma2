@@ -256,7 +256,9 @@ int eMainloop::processOneEvent(unsigned int twisted_timeout, PyObject **res, ePy
 	if (this == eApp)
 	{
 		Py_BEGIN_ALLOW_THREADS
-		ret = ::poll(pfd, fdcount, poll_timeout);
+		{
+			ret = ::poll(pfd, fdcount, poll_timeout);
+		}
 		Py_END_ALLOW_THREADS
 	} else
 		ret = ::poll(pfd, fdcount, poll_timeout);

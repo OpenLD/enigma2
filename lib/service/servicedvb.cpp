@@ -630,7 +630,9 @@ RESULT eDVBPVRServiceOfflineOperations::reindex()
 	int result;
 	/* Release global interpreter lock */
 	Py_BEGIN_ALLOW_THREADS;
-	result = reindex_work(m_ref.path.c_str());
+	{
+		result = reindex_work(m_ref.path.c_str());
+	}
 	Py_END_ALLOW_THREADS;
 	return result;
 }
