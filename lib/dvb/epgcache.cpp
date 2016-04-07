@@ -3504,7 +3504,7 @@ PyObject *eEPGCache::search(ePyObject arg)
 				++cit;
 		}
 	}
-	eDebug("[EPGC] eEPGCache::search FINISHED!");
+
 	if (!ret)
 		Py_RETURN_NONE;
 
