@@ -410,8 +410,10 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 	ioctl(vtunerFd, VTUNER_SET_NAME, name);
 	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
 	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
+#if defined DTV_ENUM_DELSYS
 	if (prop[0].u.buffer.len > 0)
 		ioctl(vtunerFd, VTUNER_SET_DELSYS, prop[0].u.buffer.data);
+#endif
 	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
 	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
 
