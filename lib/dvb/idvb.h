@@ -533,7 +533,9 @@ public:
 	virtual int isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)=0;
 #endif
 	virtual bool changeType(int type)=0;
+#if defined DTV_ENUM_DELSYS
 	virtual bool setDeliverySystem(const char *type)=0;
+#endif
 };
 SWIG_TEMPLATE_TYPEDEF(ePtr<iDVBFrontend>, iDVBFrontendPtr);
 

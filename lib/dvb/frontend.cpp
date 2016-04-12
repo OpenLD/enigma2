@@ -1030,7 +1030,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		oparm.getSystem(type);
 		switch (type)
 		{
-		case feCable: 
+		case feCable:
 			eDVBFrontendParametersCable parm;
 			oparm.getDVBC(parm);
 			switch (parm.modulation)
@@ -1043,7 +1043,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 			case eDVBFrontendParametersCable::Modulation_QAM128: ret = (int)(-875 * log(((double)mse) / 650)); break;
 			}
 			break;
-		case feTerrestrial: 
+		case feTerrestrial:
 			ret = (mse * 25) / 2;
 			break;
 		default:
@@ -1068,7 +1068,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		switch (parm.system)
 		{
 			case eDVBFrontendParametersTerrestrial::System_DVB_T:
-			case eDVBFrontendParametersTerrestrial::System_DVB_T2: 
+			case eDVBFrontendParametersTerrestrial::System_DVB_T2:
 			case eDVBFrontendParametersTerrestrial::System_DVB_T_T2: ret = (int)(snr / 58); ter_max = 1700; break;
 			default: break;
 		}
@@ -2905,6 +2905,7 @@ void eDVBFrontend::setDeliverySystemWhitelist(const std::vector<fe_delivery_syst
 	}
 }
 
+#if defined DTV_ENUM_DELSYS
 bool eDVBFrontend::setDeliverySystem(const char *type)
 {
 	struct dtv_property p[1];
@@ -2960,6 +2961,7 @@ bool eDVBFrontend::setDeliverySystem(const char *type)
 	eDebug("[eDVBFrontend] setDeliverySystem succefully changed delivery system to %s", type);
 	return true;
 }
+#endif
 
 bool eDVBFrontend::setSlotInfo(int id, const char *descr, bool enabled, bool isDVBS2, int frontendid)
 {
