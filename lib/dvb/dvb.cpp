@@ -311,6 +311,7 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 		goto error;
 	}
 
+#if defined DTV_ENUM_DELSYS
 	struct dtv_properties props;
 	struct dtv_property prop[1];
 
@@ -322,6 +323,7 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 
 	if (ioctl(frontend, FE_GET_PROPERTY, &props) < 0)
 		eDebug("[eDVBUsbAdapter] FE_GET_PROPERTY DTV_ENUM_DELSYS failed %m");
+#endif
 
 	::close(frontend);
 	frontend = -1;
