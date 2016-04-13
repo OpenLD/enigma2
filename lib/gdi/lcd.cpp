@@ -84,8 +84,8 @@ eDBoxLCD::eDBoxLCD()
 	{
 		fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
 		fclose(boxtype_file);
-		
-		if((strcmp(boxtype_name, "7300S\n") == 0) || (strcmp(boxtype_name, "xp1000s\n") == 0) || (strcmp(boxtype_name, "odinm7\n") == 0) || (strcmp(boxtype_name, "ew7358\n") == 0) || (strcmp(boxtype_name, "ew7362\n") == 0) || (strcmp(boxtype_name, "formuler3\n") == 0) || (strcmp(boxtype_name, "hd1100\n") == 0) || (strcmp(boxtype_name, "hd1200\n") == 0) || (strcmp(boxtype_name, "hd1265\n") == 0) || (strcmp(boxtype_name, "hd500c\n") == 0) || (strcmp(boxtype_name, "vp7358ci\n") == 0) || (strcmp(boxtype_name, "vg2000\n") == 0) || (strcmp(boxtype_name, "vg5000\n") == 0) || (strcmp(boxtype_name, "sh1\n") == 0) || (strcmp(boxtype_name, "yhgd2580\n") == 0) || (strcmp(boxtype_name, "spycatmini\n") == 0) || (strcmp(boxtype_name, "fegasusx3\n") == 0) || (strcmp(boxtype_name, "fegasusx5s\n") == 0) || (strcmp(boxtype_name, "fegasusx5t\n") == 0) || (strcmp(boxtype_name, "ini-2000oc\n") == 0) || (strcmp(boxtype_name, "osmini\n") == 0) || (strcmp(boxtype_name, "jj7362\n") == 0) || (strcmp(boxtype_name, "h3\n") == 0))
+
+		if((strcmp(boxtype_name, "7300S\n") == 0) || (strcmp(boxtype_name, "7400S\n") == 0) || (strcmp(boxtype_name, "xp1000s\n") == 0) || (strcmp(boxtype_name, "odinm7\n") == 0) || (strcmp(boxtype_name, "ew7358\n") == 0) || (strcmp(boxtype_name, "ew7362\n") == 0) || (strcmp(boxtype_name, "formuler3\n") == 0) || (strcmp(boxtype_name, "hd1100\n") == 0) || (strcmp(boxtype_name, "hd1200\n") == 0) || (strcmp(boxtype_name, "hd1265\n") == 0) || (strcmp(boxtype_name, "hd500c\n") == 0) || (strcmp(boxtype_name, "vp7358ci\n") == 0) || (strcmp(boxtype_name, "vg2000\n") == 0) || (strcmp(boxtype_name, "vg5000\n") == 0) || (strcmp(boxtype_name, "sh1\n") == 0) || (strcmp(boxtype_name, "yhgd2580\n") == 0) || (strcmp(boxtype_name, "spycatmini\n") == 0) || (strcmp(boxtype_name, "fegasusx3\n") == 0) || (strcmp(boxtype_name, "fegasusx5s\n") == 0) || (strcmp(boxtype_name, "fegasusx5t\n") == 0) || (strcmp(boxtype_name, "ini-2000oc\n") == 0) || (strcmp(boxtype_name, "osmini\n") == 0) || (strcmp(boxtype_name, "jj7362\n") == 0) || (strcmp(boxtype_name, "h3\n") == 0) || (strcmp(boxtype_name, "9900lx\n") == 0) || (strcmp(boxtype_name, "lc\n") == 0) || (strcmp(boxtype_name, "hd1500\n") == 0))
 		{
 			lcdfd = open("/dev/null", O_RDWR);
 		}
@@ -96,7 +96,7 @@ eDBoxLCD::eDBoxLCD()
 					fgets(fp_version, sizeof(fp_version), fp_file);
 					fclose(fp_file);
 				}
-				if(strcmp(fp_version, "0\n") == 0) 
+				if(strcmp(fp_version, "0\n") == 0)
 				{
 					lcdfd = open("/dev/null", O_RDWR);
 				}
@@ -120,17 +120,17 @@ eDBoxLCD::eDBoxLCD()
 				{
 					lcdfd = open("/dev/dbox/oled0", O_RDWR);
 				}
-		}		
+		}
 		else
 		{
 			lcdfd = open("/dev/dbox/oled0", O_RDWR);
-		}		
-	}	
+		}
+	}
 	else
 	{
 		lcdfd = open("/dev/dbox/oled0", O_RDWR);
 	}
-	
+
 	if (lcdfd < 0)
 	{
 		if (!access("/proc/stb/lcd/oled_brightness", W_OK) || !access("/proc/stb/fp/oled_brightness", W_OK) )
@@ -208,7 +208,7 @@ void eDBoxLCD::setDump(bool onoff)
  	dump = onoff;
  	dumpLCD2PNG();
  }
- 
+
 int eDBoxLCD::setLCDContrast(int contrast)
 {
 #ifndef NO_LCD
@@ -309,7 +309,7 @@ void eDBoxLCD::dumpLCD2PNG(void)
  			pixmap32 = new gPixmap(eSize(lcd_width, lcd_hight), 32, gPixmap::accelAuto);
  			const uint8_t *srcptr = (uint8_t*)_buffer;
  			uint8_t *dstptr=(uint8_t*)pixmap32->surface->data;
- 
+
  			switch(bpp)
  			{
  				case 8:
@@ -317,7 +317,7 @@ void eDBoxLCD::dumpLCD2PNG(void)
  					break;
  				case 16:
  					{
- 
+
  						for (int y = lcd_hight; y != 0; --y)
  						{
  							gRGB pixel32;
@@ -352,7 +352,7 @@ void eDBoxLCD::dumpLCD2PNG(void)
  			}
  		}
  }
- 
+
 void eDBoxLCD::update()
 {
 #ifndef HAVE_TEXTLCD
