@@ -134,6 +134,7 @@ class VideoSetup(Screen, ConfigListScreen):
 		self["config"].l.setList(self.list)
 		if config.usage.sort_settings.value:
 			self["config"].list.sort()
+		return
 
 	def keyLeft(self):
 		ConfigListScreen.keyLeft(self)
@@ -716,9 +717,9 @@ class AutoVideoMode(Screen):
 		iAVSwitch.setWss(config.av.wss)
 		iAVSwitch.setPolicy43(config.av.policy_43)
 		iAVSwitch.setPolicy169(config.av.policy_169)
-
 		self.delay = False
 		self.detecttimer.stop()
+		return
 
 def autostart(session):
 	global resolutionlabel
@@ -730,3 +731,4 @@ def autostart(session):
 		config.av.autores.setValue(False)
 		config.av.autores.save()
 		configfile.save()
+	return
