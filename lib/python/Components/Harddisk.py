@@ -76,7 +76,11 @@ class Harddisk:
 		self.phys_path = os.path.realpath(self.sysfsPath('device'))
 
 		self.removable = removable
-		self.internal = "pci" in self.phys_path or "ahci" in self.phys_path
+		hw_type = HardwareInfo().get_device_name()
+		if hw_type == 'elite' or hw_type == 'premium' or hw_type == 'premium+' or hw_type == 'ultra' :
+			self.internal = "ide" in self.phys_path
+		else:
+			self.internal = "pci" in self.phys_path or "ahci" in self.phys_path
 		try:
 			data = open("/sys/block/%s/queue/rotational" % device, "r").read().strip()
 			self.rotational = int(data)

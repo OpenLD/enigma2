@@ -9,7 +9,7 @@ profile("PYTHON_START")
 
 import Tools.RedirectOutput
 import enigma
-from boxbranding import getBoxType, getBrandOEM
+from boxbranding import getBoxType, getBrandOEM, getMachineBuild
 import eConsoleImpl
 import eBaseImpl
 enigma.eTimer = eBaseImpl.eTimer
