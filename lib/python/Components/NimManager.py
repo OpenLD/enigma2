@@ -1903,13 +1903,13 @@ def InitNimManager(nimmgr):
 			f.close()
 
 	def ForceLNBPowerChanged(configElement):
-		if path.exists("/proc/stb/frontend/fbc/force_lnbon"):
+		if os.path.exists("/proc/stb/frontend/fbc/force_lnbon"):
 			f = open("/proc/stb/frontend/fbc/force_lnbon", "w")
 			f.write(configElement.value)
 			f.close()
 
 	def ForceToneBurstChanged(configElement):
-		if path.exists("/proc/stb/frontend/fbc/force_toneburst"):
+		if os.path.exists("/proc/stb/frontend/fbc/force_toneburst"):
 			f = open("/proc/stb/frontend/fbc/force_toneburst", "w")
 			f.write(configElement.value)
 			f.close()
