@@ -6,7 +6,7 @@ from Tools.Directories import fileExists
 from Components.ParentalControl import parentalControl
 from Components.ServiceEventTracker import ServiceEventTracker
 from Components.SystemInfo import SystemInfo
-from boxbranding import getBoxType
+from boxbranding import getBoxType, getMachineBuild
 import Components.RecordingConfig
 
 POLLTIME = 5 # seconds
@@ -96,6 +96,18 @@ class SymbolsCheckPoller:
 					self.led = "0"
 			elif self.led == "1":
 				open("/proc/stb/lcd/powerled", "w").write("1")
+		elif getMachineBuild() in ('dags7362' , 'dags5'):
+			recordings = len(NavigationInstance.instance.getRecordings(False,Components.RecordingConfig.recType(config.recording.show_rec_symbol_for_rec_types.getValue())))
+			self.blink = not self.blink
+			if recordings > 0:
+				if self.blink:
+					open("/proc/stb/lcd/symbol_rec", "w").write("1")
+					self.led = "1"
+				else:
+					open("/proc/stb/lcd/symbol_rec", "w").write("0")
+					self.led = "0"
+			elif self.led == "1":
+				open("/proc/stb/lcd/symbol_rec", "w").write("0")
 
 		else:
 			if not fileExists("/proc/stb/lcd/symbol_recording") or not fileExists("/proc/stb/lcd/symbol_record_1") or not fileExists("/proc/stb/lcd/symbol_record_2"):
