@@ -826,7 +826,7 @@ class NimSelection(Screen):
 						if len(x.input_name) > 1:
 							text += " " + _("Tuner") + " " + ["A1", "A2", "B", "C"][int(nimConfig.connectedTo.value)]
 						else:
-							text += " " + _("Tuner") + " " + chr(ord('A')+int(nimConfig.connectedTo.value)]
+							text += " " + _("Tuner") + " " + chr(ord('A')+int(nimConfig.connectedTo.value))
 					elif nimConfig.configMode.value == "nothing":
 						text = _("not configured")
 					elif nimConfig.configMode.value == "simple":
