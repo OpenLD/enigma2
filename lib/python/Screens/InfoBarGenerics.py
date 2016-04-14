@@ -2939,9 +2939,39 @@ class InfoBarExtensions:
 			{
 				"extensions": (self.showExtensionSelection, _("Show extensions...")),
 				"showPluginBrowser": (self.showPluginBrowser, _("Show the plugin browser..")),
+				"showEventInfo": (self.SelectopenEventView, _("Show the infomation on current event.")),
 			}, 1) # lower priority
 
+		self.addExtension(extension = self.getLogManager, type = InfoBarExtensions.EXTENSION_LIST)
+		self.addExtension(extension = self.getOsd3DSetup, type = InfoBarExtensions.EXTENSION_LIST)
 		self.addExtension(extension = self.getIpkUninstall, type = InfoBarExtensions.EXTENSION_LIST)
+
+		for p in plugins.getPlugins(PluginDescriptor.WHERE_EXTENSIONSINGLE):
+			p(self)
+
+	def SelectopenEventView(self):
+		try:
+			self.openEventView()
+		except:
+			pass
+
+	def getLMname(self):
+		return _("Log Manager")
+
+	def getLogManager(self):
+		if config.logmanager.showinextensions.value:
+			return [((boundFunction(self.getLMname), boundFunction(self.openLogManager), lambda: True), None)]
+		else:
+			return []
+
+	def get3DSetupname(self):
+		return _("OSD 3D Setup")
+
+	def getOsd3DSetup(self):
+		if config.osd.show3dextensions .value:
+			return [((boundFunction(self.get3DSetupname), boundFunction(self.open3DSetup), lambda: True), None)]
+		else:
+			return []
 
 	def getIpkUninstallname(self):
 		return _("Ipk Uninstall Tool")
@@ -2951,6 +2981,8 @@ class InfoBarExtensions:
 
 	def addExtension(self, extension, key = None, type = EXTENSION_SINGLE):
 		self.list.append((type, extension, key))
+		if config.usage.sort_extensionslist.value:
+			self.list.sort()
 
 	def updateExtension(self, extension, key = None):
 		self.extensionsList.append(extension)
@@ -2989,15 +3021,22 @@ class InfoBarExtensions:
 				extension = self.extensionsList[entry]
 				if extension[2]():
 					name = str(extension[0]())
-					list.append((extension[0](), extension))
+					if self.availableKeys.index(x) < 10:
+						list.append((extension[0](), extension))
+					else:
+						colorlist.append((extension[0](), extension))
 					keys.append(x)
 					extensionsList.remove(extension)
 				else:
 					extensionsList.remove(extension)
+		if config.usage.sort_extensionslist.value:
+			list.sort()
+		for x in colorlist:
+			list.append(x)
 		list.extend([(x[0](), x) for x in extensionsList])
 
 		keys += [""] * len(extensionsList)
-		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list=list, keys=keys, skin_name="ExtensionsList")
+		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list = list, keys = keys, skin_name = "ExtensionsList")
 
 	def extensionCallback(self, answer):
 		if answer is not None:

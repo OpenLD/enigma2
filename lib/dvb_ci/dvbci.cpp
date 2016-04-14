@@ -727,10 +727,16 @@ void eDVBCIInterfaces::recheckPMTHandlers()
 						data_source tuner_source = TUNER_A;
 						switch (tunernum)
 						{
+#ifdef TUNER_VUSOLO4K
+							case 0 ... 10:
+								tuner_source = (data_source)tunernum;
+								break;
+#else
 							case 0: tuner_source = TUNER_A; break;
 							case 1: tuner_source = TUNER_B; break;
 							case 2: tuner_source = TUNER_C; break;
 							case 3: tuner_source = TUNER_D; break;
+#endif
 							default:
 								eDebug("try to get source for tuner %d!!\n", tunernum);
 								break;
@@ -890,7 +896,7 @@ static char* readInputCI(const char *filename, int NimNumber)
 	FILE *f;
 
 	f = fopen(filename, "rt");
-	if (f) 
+	if (f)
 	{
 		while (fgets(buf, sizeof(buf), f))
 		{
@@ -934,6 +940,10 @@ static char* readInputCI(const char *filename, int NimNumber)
 }
 #endif
 
+#ifdef TUNER_VUSOLO4K
+static const char *tuner_source[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "CI0", "CI1", "CI2", "CI3"};
+#endif
+
 int eDVBCIInterfaces::setInputSource(int tuner_no, data_source source)
 {
 //	eDebug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -955,6 +965,11 @@ int eDVBCIInterfaces::setInputSource(int tuner_no, data_source source)
 
 		switch(source)
 		{
+#ifdef TUNER_VUSOLO4K
+			case TUNER_A ... CI_D:
+				fprintf(input, tuner_source[(int)source]);
+				break;
+#else
 			case CI_A:
 				fprintf(input, "CI0");
 				break;
@@ -992,6 +1007,7 @@ int eDVBCIInterfaces::setInputSource(int tuner_no, data_source source)
 			case TUNER_D:
 				fprintf(input, "D");
 				break;
+#endif
 #endif
 			default:
 				eDebug("setInputSource for input %d failed!!!\n", (int)source);
@@ -1425,7 +1441,7 @@ void eDVBCISlot::data(int what)
 			} /* data ready */
 			else if (status == eDataWrite)
 			{
-				if (!sendqueue.empty() && (tx_time.tv_sec == 0)) 
+				if (!sendqueue.empty() && (tx_time.tv_sec == 0))
 				{
 					const queueData &qe = sendqueue.top();
 					int res = write(fd, qe.data, qe.len);
@@ -1463,7 +1479,7 @@ void eDVBCISlot::data(int what)
 					application_manager = 0;
 					ca_manager = 0;
 					tx_time.tv_sec = 0;
-					eDVBCI_UI::getInstance()->setState(getSlotID(),1); 
+					eDVBCI_UI::getInstance()->setState(getSlotID(),1);
 				}
 				else if (!(info.flags & CA_CI_MODULE_READY))
 				{
@@ -1782,6 +1798,11 @@ int eDVBCISlot::setSource(data_source source)
 		char *srcCI = NULL;
 		switch(source)
 		{
+#ifdef TUNER_VUSOLO4K
+			case TUNER_A ... CI_D:
+				fprintf(ci, tuner_source[(int)source]);
+				break;
+#else
 			case CI_A:
 				fprintf(ci, "CI0");
 				break;
@@ -1819,6 +1840,7 @@ int eDVBCISlot::setSource(data_source source)
 			case TUNER_D:
 				fprintf(ci, "D");
 				break;
+#endif
 #endif
 			default:
 				eDebug("CI Slot %d: setSource %d failed!!!\n", getSlotID(), (int)source);

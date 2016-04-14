@@ -284,6 +284,8 @@ class TryQuitMainloop(MessageBox):
 			self.quitScreen.show()
 			print "[Standby] quitMainloop #1"
 			quitMainloopCode = self.retval
+			if getBoxType() == "vusolo4k":  #workaround for white display flash
+				open("/proc/stb/fp/oled_brightness", "w").write("0")
 			quitMainloop(self.retval)
 		else:
 			MessageBox.close(self, True)
