@@ -774,10 +774,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				self.hideTimer.stop()
 			elif isMoviePlayerInfoBar(self) and not self.EventViewIsShown and config.usage.show_second_infobar.value:
 				self.hide()
-				try:
-					self.openEventView(True)
-				except:
-					pass
+				self.openEventView(True)
 				self.EventViewIsShown = True
 				self.startHideTimer()
 			else:
@@ -3015,6 +3012,7 @@ class InfoBarExtensions:
 		extensionsList = self.extensionsList[:]
 		keys = []
 		list = []
+		colorlist = []
 		for x in self.availableKeys:
 			if self.extensionKeys.has_key(x):
 				entry = self.extensionKeys[x]
@@ -3049,6 +3047,14 @@ class InfoBarExtensions:
 	def openIpkUninstall(self):
 		from Screens.Ipkuninstall import Ipkuninstall
 		self.session.open(Ipkuninstall)
+
+	def openLogManager(self):
+		from Screens.LogManager import LogManager
+		self.session.open(LogManager)
+
+	def open3DSetup(self):
+		from Screens.UserInterfacePositioner import OSD3DSetupScreen
+		self.session.open(OSD3DSetupScreen)
 
 from Tools.BoundFunction import boundFunction
 import inspect

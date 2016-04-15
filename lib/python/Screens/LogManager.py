@@ -192,7 +192,7 @@ class LogManager(Screen):
 				'red': self.changelogtype,
 				'green': self.showLog,
 				'yellow': self.deletelog,
-				'blue': self.sendlog,
+				#'blue': self.sendlog,
 				"left": self.left,
 				"right": self.right,
 				"down": self.down,
@@ -202,7 +202,7 @@ class LogManager(Screen):
 		self["key_red"] = Button(_("Debug Logs"))
 		self["key_green"] = Button(_("View"))
 		self["key_yellow"] = Button(_("Delete"))
-		self["key_blue"] = Button(_("Send"))
+		#self["key_blue"] = Button(_("Send"))
 
 		self.onChangedEntry = [ ]
 		self.sentsingle = ""
@@ -458,7 +458,7 @@ class LogManager(Screen):
 			try:
 				print "connecting to server: mail.openld.es"
 				#socket.setdefaulttimeout(30)
-				s = smtplib.SMTP("mail.openld.es",25)
+				s = smtplib.SMTP("mail.openld.es",587)
 				s.login(wos_user, wos_pwd)
 				if config.logmanager.usersendcopy.value:
 					s.sendmail(fromlogman, [tocrashlogs, fromlogman], msg.as_string())
