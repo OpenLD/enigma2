@@ -59,14 +59,14 @@ class LDBluePanel(Screen):
 <ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
 <widget source="global.CurrentTime" render="Label" position="35,10" size="500,24" font="Regular;22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
 		<convert type="ClockToText">>Format%H:%M:%S</convert>
-	</widget>
+</widget>
 <ePixmap position="380,10" size="310,155" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
 <ePixmap position="25,55" size="510,255" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/bp_deko.png" zPosition="1" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="30,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on"/>
-<eLabel text="Servicios" position="30,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
+<eLabel text="Daemons" position="30,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <eLabel text="Plugins" position="200,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <eLabel text="Info" position="370,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
 <eLabel text="Settings" position="543,592" zPosition="1" size="150,25" font="Regular;20" halign="center" backgroundColor="transpBlack" transparent="1"/>
@@ -74,7 +74,7 @@ class LDBluePanel(Screen):
 <widget name="lab2" position="195,73" size="190,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="list" position="35,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1"/>
 <widget name="lab3" position="35,149" size="120,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<eLabel text="CAM Activa:" position="35,149" size="245,25" font="Regular;20" halign="left" zPosition="2" foregroundColor="white" backgroundColor="transpBlack" transparent="1"/>
+<widget name="Ilab0" position="35,149" size="245,25" font="Regular;20" halign="left" zPosition="2" foregroundColor="white" backgroundColor="transpBlack" transparent="1"/>
 <widget name="activecam" position="166,149" size="245,25" font="Regular;20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="Ilab1" position="35,183" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="Ilab2" position="35,208" size="340,25" font="Regular;20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
@@ -85,47 +85,49 @@ class LDBluePanel(Screen):
  </screen>"""
 	def __init__(self, session):
 		Screen.__init__(self, session)
-
-		self["lab1"] = Label()
-		self["lab2"] = Label(_("Set Default CAM"))
-		self["lab3"] = Label()
-		self["Ilab1"] = Label()
-		self["Ilab2"] = Label()
-		self["Ilab3"] = Label()
-		self["Ilab4"] = Label()
-		self["activecam"] = Label()
-		self["Ecmtext"] = ScrollLabel()
-
-		self["actions"] = ActionMap(["ColorActions", "OkCancelActions", "DirectionActions"],
-		{
-			"ok": self.keyOk,
-			"cancel": self.close,
-			"green": self.keyGreen,
-			"red": self.keyRed,
-			"yellow": self.keyYellow,
-			"blue": self.keyBlue,
-			"up": self["Ecmtext"].pageUp,
-			"down": self["Ecmtext"].pageDown
-		}, -1)
-
+		self['lab1'] = Label()
+		self['lab2'] = Label(_('Set Default CAM'))
+		self['lab3'] = Label()
+		if config.osd.language.value == 'es_ES':
+			self['Ilab0'] = Label(_('CAM Activa: '))
+		else:
+			self['Ilab0'] = Label(_('CAM Active: '))
+		self['Ilab1'] = Label()
+		self['Ilab2'] = Label()
+		self['Ilab3'] = Label()
+		self['Ilab4'] = Label()
+		self['activecam'] = Label()
+		self['Ecmtext'] = ScrollLabel()
+		self['actions'] = ActionMap(['ColorActions', 'OkCancelActions', 'DirectionActions'], {'ok': self.keyOk,
+		 'cancel': self.close,
+		 'green': self.keyGreen,
+		 'red': self.keyRed,
+		 'yellow': self.keyYellow,
+		 'blue': self.keyBlue,
+		 'up': self['Ecmtext'].pageUp,
+		 'down': self['Ecmtext'].pageDown}, -1)
 		self.emlist = []
 		self.populate_List()
-		self["list"] = MenuList(self.emlist)
-		self["lab1"].setText("%d  CAMs Instalada" % (len(self.emlist)))
+		self['list'] = MenuList(self.emlist)
+		if config.osd.language.value == 'es_ES':
+			self['lab1'].setText('%d  CAMs Instalada' % len(self.emlist))
+		else:
+			self['lab1'].setText('%d  CAMs Installed' % len(self.emlist))
 		self.onShow.append(self.updateBP)
 
 	def populate_List(self):
 		self.camnames = {}
-		cams = listdir("/usr/camscript")
+		cams = listdir('/usr/camscript')
 		for fil in cams:
 			if fil.find('Ncam_') != -1:
-				f = open("/usr/camscript/" + fil,'r')
+				f = open('/usr/camscript/' + fil, 'r')
 				for line in f.readlines():
 					line = line.strip()
 					if line.find('CAMNAME=') != -1:
 						name = line[9:-1]
 						self.emlist.append(name)
-						self.camnames[name] = "/usr/camscript/" + fil
+						self.camnames[name] = '/usr/camscript/' + fil
+
 				f.close()
 
 	def updateBP(self):
@@ -136,88 +138,86 @@ class LDBluePanel(Screen):
 			wide = self.getServiceInfoValue(iServiceInformation.sAspect, sinfo)
 			width = sinfo and sinfo.getInfo(iServiceInformation.sVideoWidth) or -1
 			height = sinfo and sinfo.getInfo(iServiceInformation.sVideoHeight) or -1
-			videosize = "%dx%d" %(width, height)
-			aspect = "16:9"
-			if aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ):
-				aspect = "4:3"
+			videosize = '%dx%d' % (width, height)
+			aspect = '16:9'
+			if aspect in (1, 2, 5, 6, 9, 10, 13, 14):
+				aspect = '4:3'
 		except:
-			name = "N/A"; provider = "N/A"; aspect = "N/A"; videosize  = "N/A"
+			name = 'N/A'
+			provider = 'N/A'
+			aspect = 'N/A'
+			videosize = 'N/A'
 
-		self["Ilab1"].setText(_("Name: ") + name)
-		self["Ilab2"].setText(_("Provider: ") + provider)
-		self["Ilab3"].setText(_("Aspect Ratio: ") + aspect)
-		self["Ilab4"].setText(_("Videosize: ") + videosize)
-
-		self.defaultcam = "/usr/camscript/Ncam_Ci.sh"
-		if fileExists("/etc/LdCamConf"):
-			f = open("/etc/LdCamConf",'r')
+		self['Ilab1'].setText(_('Name: ') + name)
+		self['Ilab2'].setText(_('Provider: ') + provider)
+		self['Ilab3'].setText(_('Aspect Ratio: ') + aspect)
+		self['Ilab4'].setText(_('Videosize: ') + videosize)
+		self.defaultcam = '/usr/camscript/Ncam_Ci.sh'
+		if fileExists('/etc/LdCamConf'):
+			f = open('/etc/LdCamConf', 'r')
 			for line in f.readlines():
-				parts = line.strip().split("|")
-				if parts[0] == "deldefault":
+				parts = line.strip().split('|')
+				if parts[0] == 'deldefault':
 					self.defaultcam = parts[1]
-			f.close()
 
-		self.defCamname =  "Common Interface"
+			f.close()
+		self.defCamname = 'Common Interface'
 		for c in self.camnames.keys():
 			if self.camnames[c] == self.defaultcam:
 				self.defCamname = c
+
 		pos = 0
 		for x in self.emlist:
 			if x == self.defCamname:
-				self["list"].moveToIndex(pos)
+				self['list'].moveToIndex(pos)
 				break
 			pos += 1
 
-		mytext = "";
-		if fileExists("/tmp/ecm.info"):
-			f = open("/tmp/ecm.info",'r')
+		mytext = ''
+		if fileExists('/tmp/ecm.info'):
+			f = open('/tmp/ecm.info', 'r')
 			for line in f.readlines():
-				mytext = mytext + line.strip() + "\n"
+				mytext = mytext + line.strip() + '\n'
+
 			f.close()
 		if len(mytext) < 5:
-			mytext = "\n\n    " + _("Ecm info not available.")
-
-		self["activecam"].setText(self.defCamname)
-		self["Ecmtext"].setText(mytext)
-
+			mytext = '\n\n	' + _('Ecm info not available.')
+		self['activecam'].setText(self.defCamname)
+		self['Ecmtext'].setText(mytext)
 
 	def getServiceInfoValue(self, what, myserviceinfo):
 		v = myserviceinfo.getInfo(what)
 		if v == -2:
 			v = myserviceinfo.getInfoString(what)
 		elif v == -1:
-			v = "N/A"
+			v = 'N/A'
 		return v
 
-
 	def keyOk(self):
-		self.sel = self["list"].getCurrent()
+		self.sel = self['list'].getCurrent()
 		self.newcam = self.camnames[self.sel]
-
-		out = open("/etc/LdCamConf",'w')
-		out.write("deldefault|" + self.newcam + "\n")
+		out = open('/etc/LdCamConf', 'w')
+		out.write('deldefault|' + self.newcam + '\n')
 		out.close()
-
-		out = open("/etc/CurrentLdCamName", "w")
+		out = open('/etc/CurrentLdCamName', 'w')
 		out.write(self.sel)
 		out.close()
-		cmd = "cp -f " + self.newcam + " /usr/bin/StartLdCam"
-		system (cmd)
-		cmd = "STOP_CAMD," + self.defaultcam
+		cmd = 'cp -f ' + self.newcam + ' /usr/bin/StartLdCam'
+		system(cmd)
+		cmd = 'STOP_CAMD,' + self.defaultcam
 		self.sendtoLd_sock(cmd)
-		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, _("Stopping"))
+		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, _('Stopping'))
 
 	def keyOk2(self):
-		os.system("/usr/bin/StartLdCam stop")
-		cmd = "NEW_CAMD," + self.newcam
+		os.system('/usr/bin/StartLdCam stop')
+		cmd = 'NEW_CAMD,' + self.newcam
 		self.sendtoLd_sock(cmd)
 		oldcam = self.camnames[self.sel]
-		self.session.openWithCallback(self.myclose, startstopCam, self.sel, _("Starting"))
-
+		self.session.openWithCallback(self.myclose, startstopCam, self.sel, _('Starting'))
 
 	def sendtoLd_sock(self, data):
 		client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		client_socket.connect("/tmp/OpenLD.socket")
+		client_socket.connect('/tmp/OpenLD.socket')
 		client_socket.send(data)
 		client_socket.close()
 
@@ -249,14 +249,12 @@ class startstopCam(Screen):
 
 	def __init__(self, session, name, what):
 		Screen.__init__(self, session)
-
-		msg = _("Please wait ") + "%s\n %s ..." % (what, name)
-		self["connect"] = MultiPixmap()
-		self["lab1"] = Label(msg)
+		msg = _('Please wait ') + '%s\n %s ...' % (what, name)
+		self['connect'] = MultiPixmap()
+		self['lab1'] = Label(msg)
 		self.delay = 800
-		if what == _("Starting"):
-			self.delay= 3000
-
+		if what == _('Starting'):
+			self.delay = 3000
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.end)
 		self.onShow.append(self.startShow)
@@ -271,16 +269,14 @@ class startstopCam(Screen):
 
 
 class LDBp:
+
 	def __init__(self):
-		self["LDBp"] = ActionMap( [ "InfobarExtensions" ],
-			{
-				"LDBpshow": (self.showLDBp),
-			})
+		self['LDBp'] = ActionMap(['InfobarExtensions'], {'LDBpshow': self.showLDBp})
 
 	def showLDBp(self):
 		self.session.openWithCallback(self.callNabAction, LDBluePanel)
 
 	def callNabAction(self, *args):
 		if len(args):
-			(actionmap, context, action) = args
+			actionmap, context, action = args
 			actionmap.action(context, action)

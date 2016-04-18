@@ -27,7 +27,6 @@ from Screens.ChoiceBox import ChoiceBox
 from Screens.InputBox import InputBox
 from Components.FileList import FileEntryComponent, FileList
 from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
 from Components.Label import Label
@@ -40,7 +39,7 @@ from Components.Sources.Progress import Progress
 from Components.About import about
 from Components.Network import iNetwork
 from Components.MenuList import MenuList
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaBlend
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaBlend, MultiContentEntryPixmapAlphaTest
 from Screens.Setup import Setup, getSetupTitle
 from Components.Language import language
 from ServiceReference import ServiceReference
@@ -60,39 +59,36 @@ from Tools.Directories import fileExists, pathExists, resolveFilename, SCOPE_CUR
 from os import system, listdir, path, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 import NavigationInstance
-
 count = 0
-
-hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/media/uSDextra/', '/media/uSDextra/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
-config.misc.epgcachepath = ConfigSelection(default = '/etc/enigma2/', choices = hddchoises)
-
+hddchoises = [('/media/hdd/', '/media/hdd/'),
+ ('/media/usb/', '/media/usb/'),
+ ('/media/uSDextra/', '/media/uSDextra/'),
+ ('/usr/share/enigma2/', '/usr/share/enigma2/'),
+ ('/etc/enigma2/', '/etc/enigma2/')]
+config.misc.epgcachepath = ConfigSelection(default='/etc/enigma2/', choices=hddchoises)
 config.plugins.LDteam = ConfigSubsection()
-config.plugins.LDteam.auto2 = ConfigSelection(default = "no", choices = [
-		("no", _("no")),
-		("yes", _("yes")),
-		])
-config.plugins.LDteam.dropmode = ConfigSelection(default = '3', choices = [
-		('1', _("free pagecache")),
-		('2', _("free dentries and inodes")),
-		('3', _("free pagecache, dentries and inodes")),
-		])
-config.plugins.LDteam.epgtime2 = ConfigClock(default = ((16*60) + 15) * 60)
-config.plugins.LDteam.epgmhw2wait = ConfigNumber(default = 350 ) # 350 seconds = 5,83 minutes
+config.plugins.LDteam.auto2 = ConfigSelection(default='no', choices=[('no', _('no')), ('yes', _('yes'))])
+config.plugins.LDteam.dropmode = ConfigSelection(default='3', choices=[('1', _('free pagecache')), ('2', _('free dentries and inodes')), ('3', _('free pagecache, dentries and inodes'))])
+config.plugins.LDteam.epgtime2 = ConfigClock(default=58500)
+config.plugins.LDteam.epgmhw2wait = ConfigNumber(default=350) # 350 seconds = 5,83 minutes
 
 def mountp():
 	pathmp = []
-	if fileExists("/proc/mounts"):
-		for line in open("/proc/mounts"):
-			if line.find("/dev/sd") > -1:
-				pathmp.append(line.split()[1].replace('\\040', ' ') + "/")
-	pathmp.append("/usr/share/enigma2/")
+	if fileExists('/proc/mounts'):
+		for line in open('/proc/mounts'):
+			if line.find('/dev/sd') > -1:
+				pathmp.append(line.split()[1].replace('\\040', ' ') + '/')
+
+	pathmp.append('/usr/share/enigma2/')
 	return pathmp
 
+
 def _(txt):
-	t = gettext.dgettext("messages", txt)
+	t = gettext.dgettext('messages', txt)
 	if t == txt:
 		t = gettext.gettext(txt)
 	return t
+
 
 class LDSettings(Screen):
 	skin = """
@@ -107,39 +103,30 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 "fonts": [gFont("Regular", 24)],
 "itemHeight": 40
 }
-	</convert>
-	</widget>
+</convert>
+</widget>
 </screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-
 		self.list = []
-		self["list"] = List(self.list)
+		self['list'] = List(self.list)
 		self.updateList()
-
-
-		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
-		{
-			"ok": self.KeyOk,
-			"back": self.close
-
-		})
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.KeyOk,
+		 'back': self.close})
 
 	def openSetup(self, dialog):
 		self.session.openWithCallback(self.menuClosed, Setup, dialog)
-
 
 	def menuClosed(self, *res):
 		pass
 
 	def KeyOk(self):
-		self.sel = self["list"].getCurrent()
+		self.sel = self['list'].getCurrent()
 		self.sel = self.sel[2]
-
 		if self.sel == 0:
-			from Plugins.Extensions.LDteam.LdDeviceManager import DeviceManager
-			self.session.open(DeviceManager)
+			from Plugins.Extensions.LDteam.MountManager import HddMount
+			self.session.open(HddMount)
 		elif self.sel == 1:
 			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
 			self.session.open(LD_UsbFormat)
@@ -147,7 +134,7 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			from Plugins.Extensions.LDteam.LdSwapManager import Swap
 			self.session.open(Swap)
 		elif self.sel == 3:
-			self.openSetup("userinterface")
+			self.openSetup('userinterface')
 		elif self.sel == 4:
 			from Screens.NcamInfo import NcamInfoMenu
 			self.session.open(NcamInfoMenu)
@@ -163,9 +150,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			from Plugins.SystemPlugins.Satfinder.plugin import Satfinder
 			self.session.open(Satfinder)
 		elif self.sel == 9:
-			self.openSetup("autolanguagesetup")
+			self.openSetup('autolanguagesetup')
 		elif self.sel == 10:
-			self.openSetup("usage")
+			self.openSetup('usage')
 		elif self.sel == 11:
 			self.session.open(LDmemoria)
 		elif self.sel == 12:
@@ -181,220 +168,207 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			self.noYet()
 
 	def noYet(self):
-		nobox = self.session.open(MessageBox, "Funcion Todavia no disponible", MessageBox.TYPE_INFO)
-		nobox.setTitle(_("Info"))
-
+		nobox = self.session.open(MessageBox, 'Funcion Todavia no disponible', MessageBox.TYPE_INFO)
+		nobox.setTitle(_('Info'))
 
 	def updateList(self):
-		self.list = [ ]
-		mypath = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/"
-
-		mypixmap = mypath + "crond.png"
+		self.list = []
+		mypath = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/'
+		mypixmap = mypath + 'crond.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Administrador Cron")
+		if config.osd.language.value == 'es_ES':
+			name = _('Administrador Cron')
 		else:
-			name = _("CronManager")
+			name = _('CronManager')
 		idx = 12
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Harddisk.png"
+		mypixmap = mypath + 'Harddisk.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Admin Dispositivos")
+		if config.osd.language.value == 'es_ES':
+			name = _('Admin de montajes')
 		else:
-			name = _("Admin Devices")
+			name = _('Mount Manager')
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Usb.png"
+		mypixmap = mypath + 'Usb.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Formatear USB")
+		if config.osd.language.value == 'es_ES':
+			name = _('Formatear USB')
 		else:
-			name = _("Usb Format Wizard")
+			name = _('Usb Format Wizard')
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "SwapManager.png"
+		mypixmap = mypath + 'SwapManager.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Memoria Swap")
+		if config.osd.language.value == 'es_ES':
+			name = _('Memoria Swap')
 		else:
-			name = _("Swap File settings")
+			name = _('Swap File settings')
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Epg_setup.png"
+		mypixmap = mypath + 'Epg_setup.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Ajustes de EPG")
+		if config.osd.language.value == 'es_ES':
+			name = _('Ajustes de EPG')
 		else:
-			name = _("Epg settings")
+			name = _('Epg settings')
 		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "AV_Setup.png"
+		mypixmap = mypath + 'AV_Setup.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Opciones Osd")
+		if config.osd.language.value == 'es_ES':
+			name = _('Opciones Osd')
 		else:
-			name = _("Osd settings")
+			name = _('Osd settings')
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Ajustes_grabar.png"
+		mypixmap = mypath + 'Ajustes_grabar.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Ajustes de grabacion")
+		if config.osd.language.value == 'es_ES':
+			name = _('Ajustes de grabacion')
 		else:
-			name = _("Record settings")
+			name = _('Record settings')
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Tuner_Setup.png"
+		mypixmap = mypath + 'Tuner_Setup.png'
 		png = LoadPixmap(mypixmap)
-		name = _("Satfinder")
+		name = _('Satfinder')
 		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Conf_idiomas.png"
+		mypixmap = mypath + 'Conf_idiomas.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Auto configuracion idioma")
+		if config.osd.language.value == 'es_ES':
+			name = _('Auto configuracion idioma')
 		else:
-			name = _("Auto language settings")
+			name = _('Auto language settings')
 		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Ajustes_http.png"
+		mypixmap = mypath + 'Ajustes_http.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Ajustes Http stream")
+		if config.osd.language.value == 'es_ES':
+			name = _('Ajustes Http stream')
 		else:
-			name = _("Http stream settings")
+			name = _('Http stream settings')
 		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Module.png"
+		mypixmap = mypath + 'Module.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Liberar RAM")
+		if config.osd.language.value == 'es_ES':
+			name = _('Liberar RAM')
 		else:
-			name = _("Liberate RAM")
+			name = _('Liberate RAM')
 		idx = 11
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Network.png"
+		mypixmap = mypath + 'Network.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == "es_ES":
-			name = _("Reiniciar RED")
+		if config.osd.language.value == 'es_ES':
+			name = _('Reiniciar RED')
 		else:
-			name = _("Reset Network")
+			name = _('Reset Network')
 		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Module.png"
+		mypixmap = mypath + 'Module.png'
 		png = LoadPixmap(mypixmap)
-		name = "CCcamInfo"
+		name = 'CCcamInfo'
 		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Module.png"
+		mypixmap = mypath + 'Module.png'
 		png = LoadPixmap(mypixmap)
-		name = "NcamInfo"
+		name = 'NcamInfo'
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
-
-		mypixmap = mypath + "Module.png"
+		mypixmap = mypath + 'Module.png'
 		png = LoadPixmap(mypixmap)
-		name = "OScamInfo"
+		name = 'OScamInfo'
 		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
+		self['list'].list = self.list
 
-		self["list"].list = self.list
 
 class Ttimer(Screen):
-
-		skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
-						<widget name="srclabel" font="Regular; 15" position="424,614" zPosition="2" valign="center" halign="center" size="500,30" foregroundColor="white" backgroundColor="black" transparent="0" />
-						<widget source="progress" render="Progress" position="322,677" foregroundColor="white" size="700,20" borderWidth="1" borderColor="grey" backgroundColor="black" />
+	skin = """<screen name="Ttimer" position="center,center" zPosition="10" size="1280,720" title="Actualizacion EPG" backgroundColor="black" flags="wfNoBorder">
+					<widget name="srclabel" font="Regular; 15" position="424,614" zPosition="2" valign="center" halign="center" size="500,30" foregroundColor="white" backgroundColor="black" transparent="0" />
+					<widget source="progress" render="Progress" position="322,677" foregroundColor="white" size="700,20" borderWidth="1" borderColor="grey" backgroundColor="black" />
 
  <widget source="session.VideoPicture" render="Pig" position="center,center" size="975,475" backgroundColor="transparent" zPosition="-1" transparent="0" />
  <widget source="Title" transparent="1" render="Label" zPosition="2" valign="center" halign="left" position="100,70" size="800,50" font="Regular; 30" backgroundColor="black" foregroundColor="white" noWrap="1" />
 </screen>"""
 
-		def __init__(self, session):
-				global count
-				self.skin = Ttimer.skin
-				Screen.__init__(self, session)
-				if config.osd.language.value == "es_ES":
-					self['srclabel'] = Label(_("Por favor Espere, Actualizando Epg"))
-				else:
-					self['srclabel'] = Label(_("Please wait, Updating Epg"))
-				if config.osd.language.value == "es_ES":
-					self.setTitle(_("Actualizando EPG"))
-				else:
-					self.setTitle(_("Update EPG"))
-				self["progress"] = Progress(int(count))
-				self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value-5))
-				self.session = session
-				self.ctimer = enigma.eTimer()
-				count = 0
-				self.ctimer.callback.append(self.__run)
-				self.ctimer.start(1000,0)
+	def __init__(self, session):
+		global count
+		self.skin = Ttimer.skin
+		Screen.__init__(self, session)
+		if config.osd.language.value == 'es_ES':
+			self['srclabel'] = Label(_('Por favor Espere, Actualizando Epg'))
+		else:
+			self['srclabel'] = Label(_('Please wait, Updating Epg'))
+		if config.osd.language.value == 'es_ES':
+			self.setTitle(_('Actualizando EPG'))
+		else:
+			self.setTitle(_('Update EPG'))
+		self['progress'] = Progress(int(count))
+		self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value - 5))
+		self.session = session
+		self.ctimer = enigma.eTimer()
+		count = 0
+		self.ctimer.callback.append(self.__run)
+		self.ctimer.start(1000, 0)
 
-		def __run(self):
-				global count
-				count += 1
-				print ("%s Epg Downloaded") % count
-				self['progress'].setValue(count)
-				if count > config.plugins.LDteam.epgmhw2wait.value:
-						self.ctimer.stop()
-						self.session.nav.playService(eServiceReference(config.tv.lastservice.value))
-						rDialog.stopDialog(self.session)
-						epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
-						epgcache = eEPGCache.getInstance().save()
-						if config.osd.language.value == "es_ES":
-							self.mbox = self.session.open(MessageBox,(_("Epg Actualizado")), MessageBox.TYPE_INFO, timeout = 5 )
-						else:
-							self.mbox = self.session.open(MessageBox,(_("Updated Epg")), MessageBox.TYPE_INFO, timeout = 5 )
-						from Screens.Standby import inStandby
-						if inStandby:
-							   self.session.nav.stopService()
-						self.close()
-pdialog = ""
+	def __run(self):
+		global count
+		count += 1
+		print '%s Epg Downloaded' % count
+		self['progress'].setValue(count)
+		if count > config.plugins.LDteam.epgmhw2wait.value:
+			self.ctimer.stop()
+			self.session.nav.playService(eServiceReference(config.tv.lastservice.value))
+			rDialog.stopDialog(self.session)
+			epgcache = new.instancemethod(_enigma.eEPGCache_load, None, eEPGCache)
+			epgcache = eEPGCache.getInstance().save()
+			if config.osd.language.value == 'es_ES':
+				self.mbox = self.session.open(MessageBox, _('Epg Actualizado'), MessageBox.TYPE_INFO, timeout=5)
+			else:
+				self.mbox = self.session.open(MessageBox, _('Updated Epg'), MessageBox.TYPE_INFO, timeout=5)
+			from Screens.Standby import inStandby
+			if inStandby:
+				self.session.nav.stopService()
+			self.close()
+		return
 
-class runDialog():
-		def __init__(self):
-				self.dialog = None
 
-		def startDialog(self, session):
-				global pdialog
-				pdialog = session.instantiateDialog(Ttimer)
-				pdialog.show()
+pdialog = ''
 
-		def stopDialog(self, session):
-				global pdialog
-				pdialog.hide()
+class runDialog:
+
+	def __init__(self):
+		self.dialog = None
+		return
+
+	def startDialog(self, session):
+		global pdialog
+		pdialog = session.instantiateDialog(Ttimer)
+		pdialog.show()
+
+	def stopDialog(self, session):
+		pdialog.hide()
+
 
 rDialog = runDialog()
-
 
 class LDepg(Screen, ConfigListScreen):
 	skin = """
@@ -416,124 +390,121 @@ class LDepg(Screen, ConfigListScreen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if config.osd.language.value == "es_ES":
-			self.setTitle(_("Opciones EPG"))
+		if config.osd.language.value == 'es_ES':
+			self.setTitle(_('Opciones EPG'))
 		else:
-			self.setTitle(_("EPG Options"))
+			self.setTitle(_('EPG Options'))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
-		if config.osd.language.value == "es_ES":
-			self["key_blue"] = StaticText(_("Ver log"))
+		if config.osd.language.value == 'es_ES':
+			self['key_blue'] = StaticText(_('Ver log'))
 		else:
-			self["key_blue"] = StaticText(_("Show log"))
-		if config.osd.language.value == "es_ES":
-			self["key_red"] = StaticText(_("Cerrar"))
+			self['key_blue'] = StaticText(_('Show log'))
+		if config.osd.language.value == 'es_ES':
+			self['key_red'] = StaticText(_('Cerrar'))
 		else:
-			self["key_red"] = StaticText(_("Close"))
-		if config.osd.language.value == "es_ES":
-			self["key_green"] = StaticText(_("Guardar"))
+			self['key_red'] = StaticText(_('Close'))
+		if config.osd.language.value == 'es_ES':
+			self['key_green'] = StaticText(_('Guardar'))
 		else:
-			self["key_green"] = StaticText(_("Save"))
-		if config.osd.language.value == "es_ES":
-			self["key_yellow"] = StaticText(_("Actualizar"))
+			self['key_green'] = StaticText(_('Save'))
+		if config.osd.language.value == 'es_ES':
+			self['key_yellow'] = StaticText(_('Actualizar'))
 		else:
-			self["key_yellow"] = StaticText(_("Update"))
-		self["setupActions"] = ActionMap(["SetupActions", "WizardActions", "TimerEditActions", "ColorActions"],
-		{
-		"blue": self.mhw,
-		"red": self.cancel,
-		"cancel": self.cancel,
-		"yellow": self.downepg,
-		"green": self.save,
-		"ok": self.save
-		},
-		-2)
-
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Ruta donde almacenar el epg.dat"), config.misc.epgcachepath))
+			self['key_yellow'] = StaticText(_('Update'))
+		self['setupActions'] = ActionMap(['SetupActions',
+		 'WizardActions',
+		 'TimerEditActions',
+		 'ColorActions'], {'blue': self.mhw,
+		 'red': self.cancel,
+		 'cancel': self.cancel,
+		 'yellow': self.downepg,
+		 'green': self.save,
+		 'ok': self.save}, -2)
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Ruta donde almacenar el epg.dat'), config.misc.epgcachepath))
 		else:
-			self.list.append(getConfigListEntry(_("The path where stored epg.dat"), config.misc.epgcachepath))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar EIT EPG"), config.epg.eit))
+			self.list.append(getConfigListEntry(_('The path where stored epg.dat'), config.misc.epgcachepath))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar EIT EPG'), config.epg.eit))
 		else:
-			self.list.append(getConfigListEntry(_("Enable EIT EPG"), config.epg.eit))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar MHW EPG"), config.epg.mhw))
+			self.list.append(getConfigListEntry(_('Enable EIT EPG'), config.epg.eit))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar MHW EPG'), config.epg.mhw))
 		else:
-			self.list.append(getConfigListEntry(_("Enable MHW EPG"), config.epg.mhw))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar Freesat EPG"), config.epg.freesat))
+			self.list.append(getConfigListEntry(_('Enable MHW EPG'), config.epg.mhw))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar Freesat EPG'), config.epg.freesat))
 		else:
-			self.list.append(getConfigListEntry(_("Enable freesat EPG"), config.epg.freesat))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar ViaSat EPG"), config.epg.viasat))
+			self.list.append(getConfigListEntry(_('Enable freesat EPG'), config.epg.freesat))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar ViaSat EPG'), config.epg.viasat))
 		else:
-			self.list.append(getConfigListEntry(_("Enable ViaSat EPG"), config.epg.viasat))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar Netmed EPG"), config.epg.netmed))
+			self.list.append(getConfigListEntry(_('Enable ViaSat EPG'), config.epg.viasat))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar Netmed EPG'), config.epg.netmed))
 		else:
-			self.list.append(getConfigListEntry(_("Enable Netmed EPG"), config.epg.netmed))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Habilitar Virgin EPG"), config.epg.virgin))
+			self.list.append(getConfigListEntry(_('Enable Netmed EPG'), config.epg.netmed))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Habilitar Virgin EPG'), config.epg.virgin))
 		else:
-			self.list.append(getConfigListEntry(_("Enable Virgin EPG"), config.epg.virgin))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Numero Maximo de dias en EPG"), config.epg.maxdays))
+			self.list.append(getConfigListEntry(_('Enable Virgin EPG'), config.epg.virgin))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Numero Maximo de dias en EPG'), config.epg.maxdays))
 		else:
-			self.list.append(getConfigListEntry(_("Maximum number of days in EPG"), config.epg.maxdays))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Conservar los datos antiguos del EPG"), config.epg.histminutes))
+			self.list.append(getConfigListEntry(_('Maximum number of days in EPG'), config.epg.maxdays))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Conservar los datos antiguos del EPG'), config.epg.histminutes))
 		else:
-			self.list.append(getConfigListEntry(_("Maintain old EPG data for"), config.epg.histminutes))
-		if config.osd.language.value == "es_ES":
-			self.list.append(getConfigListEntry(_("Tiempo Duracion en Portada"), config.plugins.LDteam.epgmhw2wait))
+			self.list.append(getConfigListEntry(_('Maintain old EPG data for'), config.epg.histminutes))
+		if config.osd.language.value == 'es_ES':
+			self.list.append(getConfigListEntry(_('Tiempo Duracion en Portada'), config.plugins.LDteam.epgmhw2wait))
 		else:
-			self.list.append(getConfigListEntry(_("Time at title page"), config.plugins.LDteam.epgmhw2wait))
-
-		self["config"].list = self.list
-		self["config"].l.setList(self.list)
-
+			self.list.append(getConfigListEntry(_('Time at title page'), config.plugins.LDteam.epgmhw2wait))
+		self['config'].list = self.list
+		self['config'].l.setList(self.list)
 
 	def zapTo(self, reftozap):
-			self.session.nav.playService(eServiceReference(reftozap))
+		self.session.nav.playService(eServiceReference(reftozap))
 
 	def downepg(self):
-			global count
-			recordings = self.session.nav.getRecordings()
-			rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
-			mytime = time.time()
-			try:
-					if not recordings  or (rec_time > 0 and rec_time - mytime() < 360):
-						channel = "1:0:1:75C6:422:1:C00000:0:0:0:"
-						self.zapTo(channel)
-						## Crea y muestra la barra de dialogo
-						diag = runDialog()
-						diag.startDialog(self.session)
-					else:
-						self.mbox = self.session.open(MessageBox,(_("EPG Download Cancelled - Recording active")), MessageBox.TYPE_INFO, timeout = 5 )
-			except:
-				print ("Error download mhw2 epg, record active?")
+		recordings = self.session.nav.getRecordings()
+		rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
+		mytime = time.time()
+		try:
+			if not recordings or rec_time > 0 and rec_time - mytime() < 360:
+				channel = '1:0:1:75C6:422:1:C00000:0:0:0:'
+				self.zapTo(channel)
+				diag = runDialog()
+				diag.startDialog(self.session)
+			else:
+				self.mbox = self.session.open(MessageBox, _('EPG Download Cancelled - Recording active'), MessageBox.TYPE_INFO, timeout=5)
+		except:
+			print 'Error download mhw2 epg, record active?'
 
 	def mhw(self):
 		self.session.open(Viewmhw)
 
 	def cancel(self):
-		for i in self["config"].list:
+		for i in self['config'].list:
 			i[1].cancel()
+
 		self.close(False)
 
 	def save(self):
-		config.misc.epgcache_filename.value = ("%sepg.dat" % config.misc.epgcachepath.value)
+		config.misc.epgcache_filename.value = '%sepg.dat' % config.misc.epgcachepath.value
 		config.misc.epgcache_filename.save()
 		config.misc.epgcachepath.save()
-		epgcache = new.instancemethod(_enigma.eEPGCache_save,None,eEPGCache)
+		epgcache = new.instancemethod(_enigma.eEPGCache_save, None, eEPGCache)
 		epgcache = eEPGCache.getInstance().save()
 		config.plugins.LDteam.epgmhw2wait.save()
 		configfile.save()
-		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
+		self.mbox = self.session.open(MessageBox, _('configuration is saved'), MessageBox.TYPE_INFO, timeout=4)
+		return
 
 	def restart(self):
 		self.session.open(TryQuitMainloop, 3)
+
 
 class Viewmhw(Screen):
 	skin = """
@@ -546,15 +517,12 @@ class Viewmhw(Screen):
 	def __init__(self, session):
 		self.session = session
 		Screen.__init__(self, session)
-		self.setTitle(_("View mhw2equiv.conf (/tmp/mhw_Log.epg)"))
-		self["shortcuts"] = ActionMap(["ShortcutActions", "WizardActions"],
-		{
-			"cancel": self.exit,
-			"back": self.exit,
-			"red": self.exit,
-			})
-		self["key_red"] = StaticText(_("Close"))
-		self["text"] = ScrollLabel("")
+		self.setTitle(_('View mhw2equiv.conf (/tmp/mhw_Log.epg)'))
+		self['shortcuts'] = ActionMap(['ShortcutActions', 'WizardActions'], {'cancel': self.exit,
+		 'back': self.exit,
+		 'red': self.exit})
+		self['key_red'] = StaticText(_('Close'))
+		self['text'] = ScrollLabel('')
 		self.viewmhw2()
 
 	def exit(self):
@@ -562,19 +530,17 @@ class Viewmhw(Screen):
 
 	def viewmhw2(self):
 		list = ''
-		if fileExists("/tmp/mhw_Log.epg"):
-			for line in open("/tmp/mhw_Log.epg"):
+		if fileExists('/tmp/mhw_Log.epg'):
+			for line in open('/tmp/mhw_Log.epg'):
 				list += line
-		self["text"].setText(list)
-		self["actions"] = ActionMap(["OkCancelActions", "DirectionActions"],
-			{
-			"cancel": self.close,
-			"up": self["text"].pageUp,
-			"left": self["text"].pageUp,
-			"down": self["text"].pageDown,
-			"right": self["text"].pageDown,
-			},
-			-1)
+
+		self['text'].setText(list)
+		self['actions'] = ActionMap(['OkCancelActions', 'DirectionActions'], {'cancel': self.close,
+		 'up': self['text'].pageUp,
+		 'left': self['text'].pageUp,
+		 'down': self['text'].pageDown,
+		 'right': self['text'].pageDown}, -1)
+
 
 class LDmemoria(ConfigListScreen, Screen):
 	skin = """
@@ -597,31 +563,29 @@ class LDmemoria(ConfigListScreen, Screen):
 		Screen.__init__(self, session)
 		self.list = []
 		self.iConsole = iConsole()
-		self["key_red"] = StaticText(_("Close"))
-		self["key_green"] = StaticText(_("Save"))
-		self["key_yellow"] = StaticText(_("Liberar"))
-		self["memTotal"] = StaticText()
-		self["bufCache"] = StaticText()
-		self["MemoryLabel"] = StaticText(_("Memory:"))
-		self["setupActions"] = ActionMap(["SetupActions", "ColorActions", "EPGSelectActions"],
-		{
-			"red": self.cancel,
-			"cancel": self.cancel,
-			"green": self.save_values,
-			"yellow": self.ClearNow,
-			"ok": self.save_values
-		}, -2)
-		self.list.append(getConfigListEntry(_("Select free memory mode"), config.plugins.LDteam.dropmode))
+		self['key_red'] = StaticText(_('Close'))
+		self['key_green'] = StaticText(_('Save'))
+		self['key_yellow'] = StaticText(_('Liberar'))
+		self['memTotal'] = StaticText()
+		self['bufCache'] = StaticText()
+		self['MemoryLabel'] = StaticText(_('Memory:'))
+		self['setupActions'] = ActionMap(['SetupActions', 'ColorActions', 'EPGSelectActions'], {'red': self.cancel,
+		 'cancel': self.cancel,
+		 'green': self.save_values,
+		 'yellow': self.ClearNow,
+		 'ok': self.save_values}, -2)
+		self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.LDteam.dropmode))
 		ConfigListScreen.__init__(self, self.list)
 		self.onShow.append(self.Title)
 
 	def Title(self):
-		self.setTitle(_("Free memory"))
+		self.setTitle(_('Free memory'))
 		self.infomem()
 
 	def cancel(self):
-		for i in self["config"].list:
+		for i in self['config'].list:
 			i[1].cancel()
+
 		self.close()
 
 	def infomem(self):
@@ -637,25 +601,27 @@ class LDmemoria(ConfigListScreen, Screen):
 					buffers = line.split()[1]
 				elif 'Cached:' in line:
 					cached = line.split()[1]
+
 			if '' is not memtotal and '' is not memfree:
 				persent = int(memfree) / (int(memtotal) / 100)
-			self["memTotal"].text = _("Total: %s Kb  Free: %s Kb (%s %%)") % (memtotal, memfree, persent)
-			self["bufCache"].text = _("Buffers: %s Kb  Cached: %s Kb") % (buffers, cached)
+			self['memTotal'].text = _('Total: %s Kb  Free: %s Kb (%s %%)') % (memtotal, memfree, persent)
+			self['bufCache'].text = _('Buffers: %s Kb  Cached: %s Kb') % (buffers, cached)
 
 	def save_values(self):
-		for i in self["config"].list:
+		for i in self['config'].list:
 			i[1].save()
+
 		configfile.save()
-		self.mbox = self.session.open(MessageBox,(_("configuration is saved")), MessageBox.TYPE_INFO, timeout = 4 )
+		self.mbox = self.session.open(MessageBox, _('configuration is saved'), MessageBox.TYPE_INFO, timeout=4)
 
 	def ClearNow(self):
-		self.iConsole.ePopen("sync ; echo %s > /proc/sys/vm/drop_caches" % config.plugins.LDteam.dropmode.value, self.Finish)
+		self.iConsole.ePopen('sync ; echo %s > /proc/sys/vm/drop_caches' % config.plugins.LDteam.dropmode.value, self.Finish)
 
 	def Finish(self, result, retval, extra_args):
 		if retval is 0:
-			self.mbox = self.session.open(MessageBox,(_("Cache flushed")), MessageBox.TYPE_INFO, timeout = 4 )
+			self.mbox = self.session.open(MessageBox, _('Cache flushed'), MessageBox.TYPE_INFO, timeout=4)
 		else:
-			self.mbox = self.session.open(MessageBox,(_("error...")), MessageBox.TYPE_INFO, timeout = 4 )
+			self.mbox = self.session.open(MessageBox, _('error...'), MessageBox.TYPE_INFO, timeout=4)
 		self.infomem()
 
 
@@ -673,31 +639,24 @@ class LdNetBrowser(Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-
-		self["key_red"] = Label(_("Select"))
-		self["key_yellow"] = Label(_("Close"))
-
+		self['key_red'] = Label(_('Select'))
+		self['key_yellow'] = Label(_('Close'))
 		self.list = []
-		self["list"] = List(self.list)
-
-		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
-		{
-			"ok": self.selectInte,
-			"back": self.close,
-			"red": self.selectInte,
-			"yellow": self.close
-		})
-
-		self.list = [ ]
-		self.adapters = [(iNetwork.getFriendlyAdapterName(x),x) for x in iNetwork.getAdapterList()]
+		self['list'] = List(self.list)
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.selectInte,
+		 'back': self.close,
+		 'red': self.selectInte,
+		 'yellow': self.close})
+		self.list = []
+		self.adapters = [ (iNetwork.getFriendlyAdapterName(x), x) for x in iNetwork.getAdapterList() ]
 		for x in self.adapters:
 			res = (x[0], x[1])
 			self.list.append(res)
 
-		self["list"].list = self.list
+		self['list'].list = self.list
 
 	def selectInte(self):
-		mysel = self["list"].getCurrent()
+		mysel = self['list'].getCurrent()
 		if mysel:
 			inter = mysel[1]
-			self.session.open(NetworkBrowser, inter, "/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser")
+			self.session.open(NetworkBrowser, inter, '/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser')

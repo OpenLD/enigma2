@@ -33,9 +33,11 @@ from Components.Console import Console
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
 from Tools.LoadPixmap import LoadPixmap
-from os import system, rename, path, mkdir, remove
+from Tools.Directories import fileExists, pathExists, createDir, resolveFilename, SCOPE_CURRENT_SKIN
+from os import system, listdir, path, mkdir, remove, rename, stat
 from time import sleep
 from re import search
+import stat
 
 class HddMount(Screen):
 	skin = """
@@ -65,7 +67,7 @@ class HddMount(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Mount Manager"))
-		self['key_red'] = Label(" ")
+		self['key_red'] = Label(_("Save"))
 		self['key_green'] = Label(_("Setup Mounts"))
 		self['key_yellow'] = Label("Unmount")
 		self['key_blue'] = Label("Mount")
@@ -74,7 +76,7 @@ class HddMount(Screen):
 		self.list = []
 		self['list'] = List(self.list)
 		self["list"].onSelectionChanged.append(self.selectionChanged)
-		self['actions'] = ActionMap(['WizardActions', 'ColorActions', "MenuActions"], {'back': self.close, 'green': self.SetupMounts, 'red': self.saveMypoints, 'yellow': self.Unmount, 'blue': self.Mount, "menu": self.close})
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions', "MenuActions"], {'back': self.close, 'green': self.SetupMounts, 'ok': self.SetupMounts, 'red': self.saveMypoints, 'yellow': self.Unmount, 'blue': self.Mount, "menu": self.close})
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.updateList2)
 		self.updateList()
@@ -406,7 +408,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		self['key_green'] = Label(_("Save"))
 		self['key_red'] = Label(_("Cancel"))
 		self['Linconn'] = Label(_("Wait please while scanning your %s %s devices...") % (getMachineBrand(), getMachineName()))
-		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'green': self.saveMypoints, 'red': self.close, 'back': self.close})
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'green': self.saveMypoints, 'ok': self.saveMypoints, 'red': self.close, 'back': self.close})
 		self.updateList()
 
 	def updateList(self):
@@ -588,6 +590,13 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/media/mmc', '/media/mmc'),
 		('/media/mmc2', '/media/mmc2'),
 		('/media/mmc3', '/media/mmc3'),
+		('/media/uSDextra', '/media/uSDextra'),
+		('/media/net', '/media/net'),
+		('/media/downloads', '/media/downloads'),
+		('/media/music', '/media/music'),
+		('/media/personal', '/media/personal'),
+		('/media/photo', '/media/photo'),
+		('/media/video', '/media/video'),
 		('/usr', '/usr')]))
 		if dtype == 'Linux':
 			dtype = 'ext3'

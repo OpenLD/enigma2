@@ -1,7 +1,12 @@
 import os
-import time
+
+from os import system, listdir, statvfs, popen, makedirs, stat, major, minor, path, access
+
+from Tools.Directories import SCOPE_HDD, resolveFilename, fileExists
+
 from Tools.CList import CList
 from SystemInfo import SystemInfo
+import time
 from Components.Console import Console
 from Tools.HardwareInfo import HardwareInfo
 from boxbranding import getBoxType
