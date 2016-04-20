@@ -62,7 +62,7 @@ class LdsysInfo(Screen):
 	skin = """
 <screen name="LdsysInfo" position="70,35" size="1150,650">
 <ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
-<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;20" scrollbarMode="showOnDemand">
+<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;17" scrollbarMode="showOnDemand">
 </widget>
 </screen>"""
 
@@ -81,12 +81,18 @@ class LdsysInfo(Screen):
 
 	def updateInfo(self):
 		rc = system("df -h > /tmp/syinfo.tmp")
-		text = "BOX\n"
+		if config.osd.language.value == 'es_ES':
+			text = "RECEPTOR\n"
+		else:
+			text = "BOX\n"
 		f = open("/proc/stb/info/model",'r')
-		text += "Model:\t" + about.getBoxType() + "\n"
- 		f.close()
+		if config.osd.language.value == 'es_ES':
+			text += "Modelo:\t" + about.getBoxType() + "\n"
+		else:
+			text += "Model:\t" + about.getBoxType() + "\n"
+		f.close()
 		#f = open("/proc/stb/info/chipset",'r')
- 		#text += "Chipset:\t" + about.getChipSetString() + "\n"
+		#text += "Chipset:\t" + about.getChipSetString() + "\n"
 		#f.close()
 		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
 		cmd2 = 'cat /proc/cpuinfo | grep "BogoMIPS" -m 1 | awk -F ": " ' + "'{print $2}'"
@@ -104,27 +110,58 @@ class LdsysInfo(Screen):
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
 		text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
+		text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
 		text += "BogoMIPS \t" + bogoMIPS + "\n"
 		f.close()
-		text += "\nMEMORY\n"
+		if config.osd.language.value == 'es_ES':
+			text += "\nMEMORIA\n"
+		else:
+			text += "\nMEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
 			parts = line.split(':')
 			key = parts[0].strip()
 			if key == "MemTotal":
 				memTotal = parts[1].strip()
-			elif key in ("MemFree", "Buffers", "Cached"):
-				memFree += int(parts[1].strip().split(' ',1)[0])
+			elif key in ("MemFree"):
+				memFree = parts[1].strip()
 			elif key == "SwapTotal":
 				swapTotal = parts[1].strip()
 			elif key == "SwapFree":
 				swapFree = parts[1].strip()
-		text += "Total memory:\t%s\n" % memTotal
-		text += "Free memory:\t%s kB\n" % memFree
-		text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
-		text += "Swap total:\t%s \n" % swapTotal
-		text += "Swap free:\t%s \n" % swapFree
-		text += "\nSTORAGE\n"
+		if config.osd.language.value == 'es_ES':
+			text += "Memoria Total:\t%s\n" % memTotal
+		else:
+			text += "Total memory:\t%s\n" % memTotal
+		if config.osd.language.value == 'es_ES':
+			text += "Memoria Libre:\t%s \n" % memFree
+		else:
+			text += "Free memory:\t%s \n" % memFree
+		if config.osd.language.value == 'es_ES':
+			text += "Memoria Usada:\t%s" % str(about.getRAMusageString()) + "\n"
+		else:
+			text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
+		out_lines = file("/proc/meminfo").readlines()
+		for lidx in range(len(out_lines) - 1):
+			tstLine = out_lines[lidx].split()
+			if "Buffers:" in tstLine:
+				Buffers = out_lines[lidx].split()
+				text += _("Buffers:") + "\t" + Buffers[1] + ' kB'"\n"
+			if "Cached:" in tstLine:
+				Cached = out_lines[lidx].split()
+				text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
+		if config.osd.language.value == 'es_ES':
+			text += "Swap total:\t%s \n" % swapTotal
+		else:
+			text += "Swap total:\t%s \n" % swapTotal
+		if config.osd.language.value == 'es_ES':
+			text += "Swap libre:\t%s \n" % swapFree
+		else:
+			text += "Swap free:\t%s \n" % swapFree
+		if config.osd.language.value == 'es_ES':
+			text += "\nALMACENAMIENTO\n"
+		else:
+			text += "\nSTORAGE\n"
 		f = open("/tmp/syinfo.tmp",'r')
 		line = f.readline()
 		parts = line.split()
@@ -142,10 +179,12 @@ class LdsysInfo(Screen):
 		os_remove("/tmp/syinfo.tmp")
 
 		text += "\nSOFTWARE\n"
-		f = open("/etc/ldversion",'r')
-		text += "Firmware: \t" + f.readline() + "\n"
-		f.close()
-		text += "Version: \t" + about.getEnigmaVersionString() + "\n"
-		text += "Kernel: \t" + about.getKernelVersionString() + "\n"
+		openLD = "OpenLD "
+		text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + "\n"
+		text += "Kernel: \t " + about.getKernelVersionString() + "\n"
+		text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
+		text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
+		text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
+		text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
 
 		self["lab1"].setText(text)

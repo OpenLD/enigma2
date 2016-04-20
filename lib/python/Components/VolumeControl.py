@@ -58,7 +58,7 @@ class VolumeControl:
 			if step > 3: step = 3
 		elif vol < 30:
 			if step > 4: step = 4
-		self.setVolume(vol+step)
+		self.setVolume(int(vol) + int(step))
 
 	def volDown(self):
 		vol = self.volctrl.getVolume()
@@ -71,7 +71,7 @@ class VolumeControl:
 			if step > 3: step = 3
 		elif vol <= 30:
 			if step > 4: step = 4
-		self.setVolume(vol-step)
+		self.setVolume(int(vol) - int(step))
 
 	def stepVolume(self):
 		if self.stepVolTimer.isActive():

@@ -13,7 +13,7 @@ from Tools.StbHardware import getFPVersion
 
 from ServiceReference import ServiceReference
 from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel
-from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
+from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
 
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
@@ -81,6 +81,7 @@ def getAboutText():
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
 	AboutText += _("Firmware:\t %s") % openLD + str(about.getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
+	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
 	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
@@ -207,7 +208,7 @@ class Devices(Screen):
 			if not parts:
 				continue
 			device = parts[3]
-			if not search('sd[a-z][1-9]', device):
+			if not search('[a-z][1-9]', device):
 				continue
 			if device in list2:
 				continue
@@ -243,8 +244,9 @@ class Devices(Screen):
 				else:
 					freeline = _("Free: ") + _("full")
 				self.list.append(mount + '\t' + sizeline + ' \t' + freeline)
-			else:
-				self.list.append(mount + '\t' + _('Not mounted'))
+#			else:
+#				self.list.append(mount + '\t' + _('Not mounted'))
+# A hdd/usb/mmc is not displayed until it is mapped.
 
 			list2.append(device)
 		self.list = '\n'.join(self.list)
@@ -300,7 +302,7 @@ class SystemMemoryInfo(Screen):
 			})
 
 		out_lines = file("/proc/meminfo").readlines()
-		self.AboutText = _("RAM") + '\n\n'
+		self.AboutText = _("RAM") + '\n'
 		RamTotal = "-"
 		RamFree = "-"
 		for lidx in range(len(out_lines) - 1):
@@ -311,7 +313,10 @@ class SystemMemoryInfo(Screen):
 			if "MemFree:" in tstLine:
 				MemFree = out_lines[lidx].split()
 				self.AboutText += _("Free Memory:") + "\t" + MemFree[1] + "\n"
-				self.AboutText += _("Memory Usage:\t%s") % str(about.getRAMusageString()) + "\n"
+				if config.osd.language.value == 'es_ES':
+					self.AboutText += _("Memoria Usada:\t%s") % str(about.getRAMusageString()) + "\n"
+				else:
+					self.AboutText += _("Memory Usage:\t%s") % str(about.getRAMusageString()) + "\n"
 			if "Buffers:" in tstLine:
 				Buffers = out_lines[lidx].split()
 				self.AboutText += _("Buffers:") + "\t" + Buffers[1] + "\n"
@@ -332,12 +337,15 @@ class SystemMemoryInfo(Screen):
 	def Stage1Complete(self, result, retval, extra_args=None):
 		flash = str(result).replace('\n', '')
 		flash = flash.split()
-		RamTotal = flash[1]
-		RamFree = flash[3]
+		FlashTotal = flash[1]
+		FlashFree = flash[3]
+		FlashUsed = flash[2]
+		FlashUse = flash[4]
 
-		self.AboutText += _("FLASH") + '\n\n'
-		self.AboutText += _("Total:") + "\t" + RamTotal + "\n"
-		self.AboutText += _("Free:") + "\t" + RamFree + "\n\n"
+		self.AboutText += _("FLASH") + '\n'
+		self.AboutText += _("Total:") + "\t" + FlashTotal + "\n"
+		self.AboutText += _("Free:") + "\t" + FlashFree + "\n"
+		self.AboutText += _("Used:") + "\t" + FlashUsed + ' (' + FlashUse + ')'"\n\n"
 
 		self["AboutScrollLabel"].setText(self.AboutText)
 		self["actions"].setEnabled(True)
