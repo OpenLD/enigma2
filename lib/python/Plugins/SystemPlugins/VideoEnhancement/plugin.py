@@ -13,7 +13,6 @@ import VideoEnhancement
 import os
 
 class VideoEnhancementSetup(Screen, ConfigListScreen):
-
 	skin = """
 		<screen name="VideoEnhancementSetup" position="center,center" size="560,440" title="VideoEnhancementSetup">
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
@@ -32,35 +31,28 @@ class VideoEnhancementSetup(Screen, ConfigListScreen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.session = session
-		self.onChangedEntry = [ ]
-		self.setup_title = _("Video enhancement setup")
-		self["HelpWindow"] = Pixmap()
-		self["HelpWindow"].hide()
-		self["VKeyIcon"] = Boolean(False)
+		self.onChangedEntry = []
+		self.setup_title = _('Video enhancement setup')
+		self['HelpWindow'] = Pixmap()
+		self['HelpWindow'].hide()
+		self['VKeyIcon'] = Boolean(False)
 		self['footnote'] = Label()
-		self["description"] = Label(_(""))
-
-		self.list = [ ]
-		self.xtdlist = [ ]
-		ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
+		self['description'] = Label(_(''))
+		self.list = []
+		self.xtdlist = []
+		ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
 		self.createSetup()
-
-		self["actions"] = ActionMap(["SetupActions", "ColorActions", "MenuActions"],
-			{
-				"cancel": self.keyCancel,
-				"save": self.apply,
-				"yellow": self.keyYellow,
-				"blue": self.keyBlue,
-				"menu": self.closeRecursive,
-			}, -2)
-
-		self["key_red"] = StaticText(_("Cancel"))
-		self["key_green"] = StaticText(_("OK"))
-		self["key_yellow"] = StaticText(_("Last config"))
-		self["key_blue"] = StaticText(_("Default"))
-
-		if not self.SelectionChanged in self["config"].onSelectionChanged:
-			self["config"].onSelectionChanged.append(self.SelectionChanged)
+		self['actions'] = ActionMap(['SetupActions', 'ColorActions', 'MenuActions'], {'cancel': self.keyCancel,
+		 'save': self.apply,
+		 'yellow': self.keyYellow,
+		 'blue': self.keyBlue,
+		 'menu': self.closeRecursive}, -2)
+		self['key_red'] = StaticText(_('Cancel'))
+		self['key_green'] = StaticText(_('OK'))
+		self['key_yellow'] = StaticText(_('Last config'))
+		self['key_blue'] = StaticText(_('Default'))
+		if self.SelectionChanged not in self['config'].onSelectionChanged:
+			self['config'].onSelectionChanged.append(self.SelectionChanged)
 		self.rememberOldSettings()
 		self.changedEntry()
 		self.onLayoutFinish.append(self.layoutFinished)
@@ -87,99 +79,94 @@ class VideoEnhancementSetup(Screen, ConfigListScreen):
 		self.oldDynamic_contrast = config.pep.dynamic_contrast.value
 		self.oldColor_space = config.pep.color_space.value
 
-	def addToConfigList(self, description, configEntry, hinttext, add_to_xtdlist=False):
+	def addToConfigList(self, description, configEntry, hinttext, add_to_xtdlist = False):
 		if isinstance(configEntry, ConfigNothing):
 			return None
-		entry = getConfigListEntry(description, configEntry, hinttext)
-		self.list.append(entry)
-		if add_to_xtdlist:
-			self.xtdlist.append(entry)
-		return entry
+		else:
+			entry = getConfigListEntry(description, configEntry, hinttext)
+			self.list.append(entry)
+			if add_to_xtdlist:
+				self.xtdlist.append(entry)
+			return entry
 
 	def createSetup(self):
 		self.list = []
 		self.xtdlist = []
 		addToConfigList = self.addToConfigList
-		self.splitEntry = addToConfigList(_("Split preview mode"), config.pep.split, _("This option allows you to view the old and new settings side by side."), True)
+		self.splitEntry = addToConfigList(_('Split preview mode'), config.pep.split, _('This option allows you to view the old and new settings side by side.'), True)
 		add_to_xtdlist = self.splitEntry is not None
-		self.auto_fleshEntry = addToConfigList(_("Auto flesh"), config.pep.auto_flesh, _("This option sets the picture flesh tones."), add_to_xtdlist)
-		self.block_noise_reductionEntry = addToConfigList(_("Block noise reduction"), config.pep.block_noise_reduction, _("This option allows to reduce the block-noise in the picture. Obviously this is at the cost of the picture's sharpness."), add_to_xtdlist)
-		self.brightnessEntry = addToConfigList(_("Brightness"), config.pep.brightness, _("This option sets the picture brightness."))
-		self.blue_boostEntry = addToConfigList(_("Boost blue"), config.pep.blue_boost, _("This option allows you to boost the blue tones in the picture."), add_to_xtdlist)
-		self.green_boostEntry = addToConfigList(_("Boost green"), config.pep.green_boost, _("This option allows you to boost the green tones in the picture."), add_to_xtdlist)
-		self.contrastEntry = addToConfigList(_("Contrast"), config.pep.contrast, _("This option sets  the picture contrast."))
-		self.digital_contour_removalEntry = addToConfigList(_("Digital contour removal"), config.pep.digital_contour_removal, _("This option sets the surpression of false digital contours, that are the result of a limited number of discrete values."), add_to_xtdlist)
-		self.dynamic_contrastEntry = addToConfigList(_("Dynamic contrast"), config.pep.dynamic_contrast, _("This option allows to set the level of dynamic contrast of the picture."), add_to_xtdlist)
-		self.hueEntry = addToConfigList(_("Hue"), config.pep.hue, _("This option sets the picture hue."))
-		self.mosquito_noise_reductionEntry = addToConfigList(_("Mosquito noise reduction"), config.pep.mosquito_noise_reduction, _("This option set the level of surpression of musquito noise (Musquito Noise is random aliasing as a result of strong compression). Obviously this goes at the cost of picture details."), add_to_xtdlist)
-		self.scaler_sharpnessEntry = addToConfigList(_("Scaler sharpness"), config.av.scaler_sharpness, _("This option sets the scaler sharpness, used when stretching picture from 4:3 to 16:9."))
-		self.scaler_vertical_dejaggingEntry = addToConfigList(_("Scaler vertical dejagging"), config.pep.scaler_vertical_dejagging, _("This option allows you enable the vertical scaler dejagging."))
-		self.smoothEntry = addToConfigList(_("Smooth"), config.pep.smooth, _("This option allows you enable smoothing filter to control the dithering process."))
-		self.sharpnessEntry = addToConfigList(_("Sharpness"), config.pep.sharpness, _("This option sets up the picture sharpness, used when the picture is being upscaled."), add_to_xtdlist)
-		self.saturationEntry = addToConfigList(_("Saturation"), config.pep.saturation, _("This option sets the picture saturation."))
-		self.color_spaceEntry = addToConfigList(_("Color space"), config.pep.color_space, _("This option sets the picture color space."))
-		self["config"].list = self.list
-		self["config"].l.setList(self.list)
+		self.auto_fleshEntry = addToConfigList(_('Auto flesh'), config.pep.auto_flesh, _('This option sets the picture flesh tones.'), add_to_xtdlist)
+		self.block_noise_reductionEntry = addToConfigList(_('Block noise reduction'), config.pep.block_noise_reduction, _("This option allows to reduce the block-noise in the picture. Obviously this is at the cost of the picture's sharpness."), add_to_xtdlist)
+		self.brightnessEntry = addToConfigList(_('Brightness'), config.pep.brightness, _('This option sets the picture brightness.'))
+		self.blue_boostEntry = addToConfigList(_('Boost blue'), config.pep.blue_boost, _('This option allows you to boost the blue tones in the picture.'), add_to_xtdlist)
+		self.green_boostEntry = addToConfigList(_('Boost green'), config.pep.green_boost, _('This option allows you to boost the green tones in the picture.'), add_to_xtdlist)
+		self.contrastEntry = addToConfigList(_('Contrast'), config.pep.contrast, _('This option sets  the picture contrast.'))
+		self.digital_contour_removalEntry = addToConfigList(_('Digital contour removal'), config.pep.digital_contour_removal, _('This option sets the surpression of false digital contours, that are the result of a limited number of discrete values.'), add_to_xtdlist)
+		self.dynamic_contrastEntry = addToConfigList(_('Dynamic contrast'), config.pep.dynamic_contrast, _('This option allows to set the level of dynamic contrast of the picture.'), add_to_xtdlist)
+		self.hueEntry = addToConfigList(_('Hue'), config.pep.hue, _('This option sets the picture hue.'))
+		self.mosquito_noise_reductionEntry = addToConfigList(_('Mosquito noise reduction'), config.pep.mosquito_noise_reduction, _('This option set the level of surpression of musquito noise (Musquito Noise is random aliasing as a result of strong compression). Obviously this goes at the cost of picture details.'), add_to_xtdlist)
+		self.scaler_sharpnessEntry = addToConfigList(_('Scaler sharpness'), config.av.scaler_sharpness, _('This option sets the scaler sharpness, used when stretching picture from 4:3 to 16:9.'))
+		self.scaler_vertical_dejaggingEntry = addToConfigList(_('Scaler vertical dejagging'), config.pep.scaler_vertical_dejagging, _('This option allows you enable the vertical scaler dejagging.'))
+		self.smoothEntry = addToConfigList(_('Smooth'), config.pep.smooth, _('This option allows you enable smoothing filter to control the dithering process.'))
+		self.sharpnessEntry = addToConfigList(_('Sharpness'), config.pep.sharpness, _('This option sets up the picture sharpness, used when the picture is being upscaled.'), add_to_xtdlist)
+		self.saturationEntry = addToConfigList(_('Saturation'), config.pep.saturation, _('This option sets the picture saturation.'))
+		self.color_spaceEntry = addToConfigList(_('Color space'), config.pep.color_space, _('This option sets the picture color space.'))
+		self['config'].list = self.list
+		self['config'].l.setList(self.list)
 		if config.usage.sort_settings.value:
-			self["config"].list.sort()
+			self['config'].list.sort()
+		return
 
 	def SelectionChanged(self):
-		self["description"].setText(self["config"].getCurrent()[2])
+		self['description'].setText(self['config'].getCurrent()[2])
 
 	def PreviewClosed(self):
-		self["config"].invalidate(self["config"].getCurrent())
+		self['config'].invalidate(self['config'].getCurrent())
 		self.createSetup()
 
 	def keyLeft(self):
-		current = self["config"].getCurrent()
+		current = self['config'].getCurrent()
 		if current == self.splitEntry or current == self.color_spaceEntry:
 			ConfigListScreen.keyLeft(self)
-		elif (current == self.scaler_vertical_dejaggingEntry) or (current == self.smoothEntry):
+		elif current == self.scaler_vertical_dejaggingEntry or current == self.smoothEntry:
 			ConfigListScreen.keyLeft(self)
 		elif current != self.splitEntry and current in self.xtdlist:
-			self.previewlist = [
-				current,
-				self.splitEntry
-			]
+			self.previewlist = [current, self.splitEntry]
 			maxvalue = current[1].max
-			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry = self.previewlist, oldSplitMode = config.pep.split.value, maxValue = maxvalue)
+			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry=self.previewlist, oldSplitMode=config.pep.split.value, maxValue=maxvalue)
 		else:
-			self.previewlist = [
-				current
-			]
+			self.previewlist = [current]
 			maxvalue = current[1].max
-			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry = self.previewlist, oldSplitMode = None, maxValue = maxvalue)
+			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry=self.previewlist, oldSplitMode=None, maxValue=maxvalue)
+		return
 
 	def keyRight(self):
-		current = self["config"].getCurrent()
+		current = self['config'].getCurrent()
 		if current == self.splitEntry or current == self.color_spaceEntry:
 			ConfigListScreen.keyRight(self)
-		elif (current == self.scaler_vertical_dejaggingEntry) or (current == self.smoothEntry):
+		elif current == self.scaler_vertical_dejaggingEntry or current == self.smoothEntry:
 			ConfigListScreen.keyRight(self)
 		elif current != self.splitEntry and current in self.xtdlist:
-			self.previewlist = [
-				current,
-				self.splitEntry
-			]
+			self.previewlist = [current, self.splitEntry]
 			maxvalue = current[1].max
-			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry = self.previewlist, oldSplitMode = config.pep.split.value, maxValue = maxvalue )
+			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry=self.previewlist, oldSplitMode=config.pep.split.value, maxValue=maxvalue)
 		else:
-			self.previewlist = [
-				current
-			]
+			self.previewlist = [current]
 			maxvalue = current[1].max
-			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry = self.previewlist, oldSplitMode = None, maxValue = maxvalue)
+			self.session.openWithCallback(self.PreviewClosed, VideoEnhancementPreview, configEntry=self.previewlist, oldSplitMode=None, maxValue=maxvalue)
+		return
 
 	def confirm(self, confirmed):
 		if not confirmed:
-			print "not confirmed"
+			print 'not confirmed'
 		else:
 			if self.splitEntry is not None:
 				config.pep.split.setValue('off')
 			self.keySave()
+		return
 
 	def apply(self):
-		self.session.openWithCallback(self.confirm, MessageBox, _("Use this video enhancement settings?"), MessageBox.TYPE_YESNO, timeout = 20, default = True)
+		self.session.openWithCallback(self.confirm, MessageBox, _('Use this video enhancement settings?'), MessageBox.TYPE_YESNO, timeout=20, default=True)
 
 	def cancelConfirm(self, result):
 		if not result:
@@ -188,14 +175,14 @@ class VideoEnhancementSetup(Screen, ConfigListScreen):
 		self.close()
 
 	def keyCancel(self):
-		if self["config"].isChanged():
-			self.session.openWithCallback(self.cancelConfirm, MessageBox, _("Really close without saving settings?"), default = False)
+		if self['config'].isChanged():
+			self.session.openWithCallback(self.cancelConfirm, MessageBox, _('Really close without saving settings?'), default=False)
 		else:
 			self.close()
 
 	def keyYellowConfirm(self, confirmed):
 		if not confirmed:
-			print "not confirmed"
+			print 'not confirmed'
 		else:
 			if self.contrastEntry is not None:
 				config.pep.contrast.setValue(self.oldContrast)
@@ -232,13 +219,14 @@ class VideoEnhancementSetup(Screen, ConfigListScreen):
 			if self.color_spaceEntry is not None:
 				config.pep.color_space.setValue(self.oldColor_space)
 			self.keySave()
+		return
 
 	def keyYellow(self):
-		self.session.openWithCallback(self.keyYellowConfirm, MessageBox, _("Reset video enhancement settings to your last configuration?"), MessageBox.TYPE_YESNO, timeout = 20, default = False)
+		self.session.openWithCallback(self.keyYellowConfirm, MessageBox, _('Reset video enhancement settings to your last configuration?'), MessageBox.TYPE_YESNO, timeout=20, default=False)
 
 	def keyBlueConfirm(self, confirmed):
 		if not confirmed:
-			print "not confirmed"
+			print 'not confirmed'
 		else:
 			if self.contrastEntry is not None:
 				config.pep.contrast.setValue(128)
@@ -273,25 +261,25 @@ class VideoEnhancementSetup(Screen, ConfigListScreen):
 			if self.dynamic_contrastEntry is not None:
 				config.pep.dynamic_contrast.setValue(0)
 			if self.color_spaceEntry is not None:
-				file = open("/proc/stb/video/hdmi_colorspace_choices", "r")
+				file = open('/proc/stb/video/hdmi_colorspace_choices', 'r')
 				modes = file.readline().split()
 				file.close()
 				config.pep.color_space.setValue(modes[0])
 			self.keySave()
+		return
 
 	def keyBlue(self):
-		self.session.openWithCallback(self.keyBlueConfirm, MessageBox, _("Reset video enhancement settings to system defaults?"), MessageBox.TYPE_YESNO, timeout = 20, default = False)
+		self.session.openWithCallback(self.keyBlueConfirm, MessageBox, _('Reset video enhancement settings to system defaults?'), MessageBox.TYPE_YESNO, timeout=20, default=False)
 
-	# for summary:
 	def changedEntry(self):
 		for x in self.onChangedEntry:
 			x()
 
 	def getCurrentEntry(self):
-		return self["config"].getCurrent()[0]
+		return self['config'].getCurrent()[0]
 
 	def getCurrentValue(self):
-		return str(self["config"].getCurrent()[1].getText())
+		return str(self['config'].getCurrent()[1].getText())
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
@@ -312,70 +300,62 @@ class VideoEnhancementPreview(Screen, ConfigListScreen):
 
 	def __init__(self, session, configEntry = None, oldSplitMode = None, maxValue = None):
 		Screen.__init__(self, session)
-
-		self.onChangedEntry = [ ]
-		self.setup_title = "Videoenhancement"
+		self.onChangedEntry = []
+		self.setup_title = 'Videoenhancement'
 		self.oldSplitMode = oldSplitMode
 		self.maxValue = maxValue
 		self.configStepsEntry = None
 		self.isStepSlider = None
-
-		self.list = [ ]
+		self.list = []
 		self.configEntry = configEntry
-		ConfigListScreen.__init__(self, self.list, session = session, on_change = self.changedEntry)
-
-		self["actions"] = ActionMap(["SetupActions"],
-			{
-				"cancel": self.keyCancel,
-				"save": self.keySave,
-			}, -2)
-
-		self["key_red"] = StaticText(_("Cancel"))
-		self["key_green"] = StaticText(_("OK"))
-		self["introduction"] = StaticText()
-
+		ConfigListScreen.__init__(self, self.list, session=session, on_change=self.changedEntry)
+		self['actions'] = ActionMap(['SetupActions'], {'cancel': self.keyCancel,
+		 'save': self.keySave}, -2)
+		self['key_red'] = StaticText(_('Cancel'))
+		self['key_green'] = StaticText(_('OK'))
+		self['introduction'] = StaticText()
 		self.createSetup()
 		self.onLayoutFinish.append(self.layoutFinished)
+		return
 
 	def layoutFinished(self):
-		self.setTitle(_("Video enhancement preview"))
+		self.setTitle(_('Video enhancement preview'))
 
 	def createSetup(self):
-		self.list = [ ]
+		self.list = []
 		if self.maxValue == 256:
-			self.configStepsEntry = getConfigListEntry(_("Change step size"), config.pep.configsteps)
-
+			self.configStepsEntry = getConfigListEntry(_('Change step size'), config.pep.configsteps)
 		if self.configEntry is not None:
 			self.list = self.configEntry
 		if self.maxValue == 256:
 			self.list.append(self.configStepsEntry)
-
-		self["config"].list = self.list
-		self["config"].l.setSeperation(300)
-		self["config"].l.setList(self.list)
-		if not self.selectionChanged in self["config"].onSelectionChanged:
-			self["config"].onSelectionChanged.append(self.selectionChanged)
+		self['config'].list = self.list
+		self['config'].l.setSeperation(300)
+		self['config'].l.setList(self.list)
+		if self.selectionChanged not in self['config'].onSelectionChanged:
+			self['config'].onSelectionChanged.append(self.selectionChanged)
 		self.selectionChanged()
+		return
 
 	def selectionChanged(self):
-		self["introduction"].setText(_("Current value: ") + self.getCurrentValue())
+		self['introduction'].setText(_('Current value: ') + self.getCurrentValue())
 		try:
-			max_avail=self["config"].getCurrent()[1].max
+			max_avail = self['config'].getCurrent()[1].max
 			if max_avail == 256:
 				self.isStepSlider = True
 			else:
 				self.isStepSlider = False
 		except AttributeError:
-			print "no max value"
+			print 'no max value'
 
 	def keyLeft(self):
 		if self.isStepSlider is True:
-			self["config"].getCurrent()[1].increment = config.pep.configsteps.value
+			self['config'].getCurrent()[1].increment = config.pep.configsteps.value
 		ConfigListScreen.keyLeft(self)
 
 	def keyRight(self):
 		if self.isStepSlider is True:
-			self["config"].getCurrent()[1].increment = config.pep.configsteps.value
+			self['config'].getCurrent()[1].increment = config.pep.configsteps.value
 		ConfigListScreen.keyRight(self)
 
 	def keySave(self):
@@ -383,47 +363,52 @@ class VideoEnhancementPreview(Screen, ConfigListScreen):
 			currentSplitMode = config.pep.split.value
 			if self.oldSplitMode == 'off' and currentSplitMode != 'off':
 				config.pep.split.setValue('off')
-			else:
-				pass
 		self.close()
+		return
 
 	def keyCancel(self):
-		for x in self["config"].list:
+		for x in self['config'].list:
 			x[1].cancel()
+
 		if self.oldSplitMode is not None:
 			currentSplitMode = config.pep.split.value
 			if self.oldSplitMode == 'off' and currentSplitMode != 'off':
 				config.pep.split.setValue('off')
-			else:
-				pass
 		self.close()
+		return
 
-	# for summary:
 	def changedEntry(self):
 		for x in self.onChangedEntry:
 			x()
+
 		self.selectionChanged()
 
 	def getCurrentEntry(self):
-		return self["config"].getCurrent()[0]
+		return self['config'].getCurrent()[0]
 
 	def getCurrentValue(self):
-		return str(self["config"].getCurrent()[1].getText())
+		return str(self['config'].getCurrent()[1].getText())
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
 		return SetupSummary
 
+
 def videoEnhancementSetupMain(session, **kwargs):
 	session.open(VideoEnhancementSetup)
 
+
 def startSetup(menuid):
-	if menuid != "video_menu":
-		return [ ]
-	return [(_("Extended settings") , videoEnhancementSetupMain, "videoenhancement_setup", 5)]
+	if menuid != 'video_menu':
+		return []
+	return [(_('Extended settings'),
+	 videoEnhancementSetupMain,
+	 'videoenhancement_setup',
+	 5)]
+
 
 def Plugins(**kwargs):
 	list = []
-	if config.usage.setup_level.index >= 2 and os.path.exists("/proc/stb/vmpeg/0/pep_apply"):
-		list.append(PluginDescriptor(name=_("Video enhancement setup"), description=_("Advanced video enhancement setup"), where = PluginDescriptor.WHERE_MENU, needsRestart = False, fnc=startSetup))
+	if config.usage.setup_level.index >= 2 and os.path.exists('/proc/stb/vmpeg/0/pep_apply'):
+		list.append(PluginDescriptor(name=_('Video enhancement setup'), description=_('Advanced video enhancement setup'), where=PluginDescriptor.WHERE_MENU, needsRestart=False, fnc=startSetup))
 	return list
