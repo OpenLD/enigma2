@@ -599,7 +599,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/media/video', '/media/video'),
 		('/usr', '/usr')]))
 		if dtype == 'Linux':
-			dtype = 'ext3'
+			dtype = 'ext2' or 'ext3'
 		else:
 			dtype = 'auto'
 		item.value = d1.strip()
