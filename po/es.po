@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-01-28 20:25+0100\n"
+"PO-Revision-Date: 2016-04-22 01:25+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -11251,18 +11251,18 @@ msgid "service PIN"
 msgstr "PIN del canal"
 
 msgid "set as startup service"
-msgstr "Configurar como canal de inicio"
+msgstr "Añadir como canal de inicio"
 
 msgid "stop using as startup service"
-msgstr "Dejar de usar como canal de inicio"
+msgstr "Anular como canal de inicio"
 
 # Screens/ChannelSelection.py
 msgid "set as startup service from standby"
-msgstr "Configurar como canal de inicio desde modo de espera"
+msgstr "Añadir como canal de inicio desde Standby"
 
 # Screens/ChannelSelection.py
 msgid "stop using as startup service from standby"
-msgstr "Dejar de usar como canal de inicio desde modo de espera"
+msgstr "Anular como canal de inicio desde Standby"
 
 msgid "setup PIN"
 msgstr "Configurar PIN"
@@ -12638,6 +12638,14 @@ msgstr "Cerrar PiP al salir"
 # /data/setup.xml
 msgid "When enabled the PiP can be closed by the exit button."
 msgstr "Cuando está activado, PiP puede cerrarse con la tecla EXIT."
+
+# /data/setup.xml
+msgid "Remember last service in PiP"
+msgstr "Recordar último servicio en PiP"
+
+# /data/setup.xml
+msgid "Configure if and how long the latest service in the PiP will be remembered."
+msgstr "Configurar si y en cuánto tiempo el último servicio en PiP será recordado."
 
 msgid "Show VCR scart on main menu"
 msgstr "Ver euroconector VCR en el menú principal"
@@ -15692,6 +15700,21 @@ msgstr "Activar receptor remoto de reserva"
 msgid "Enable remote enigma2 receiver to be tried to tune into services that cannot be tuned into locally (e.g. tuner is occupied or service type is unavailable on the local tuner. Specify complete URL including http:// and port number (normally ...:8001), e.g. http://second_box:8001."
 msgstr "Habilitar receptor enigma2 remoto para tratar de sintonizar canales que no se pueden sintonizar de forma local (por ejemplo, el sintonizador está ocupado o el tipo de canal no está disponible para el sintonizador local). Especifica la URL completa incluyendo http:// y el puerto (normalmente …:8001), por ejemplo http://segundo_receptor:8001."
 
+msgid "Enable fallback remote receiver for recordings"
+msgstr "Habilitar receptor remoto de reserva para grabaciones"
+
+msgid ""
+"Enable remote enigma2 receiver to be tried to tune into services that "
+"cannot be tuned into locally for recordings (e.g. tuner is occupied or "
+"service type is unavailable on the local tuner.) Specify complete URL "
+"including http:// and port number (normally ...:8001), e.g. http://"
+"second_box:8001."
+msgstr ""
+"Activar receptor enigma2 remoto para tratar de sintonizar con los servicios que "
+"no se puede sintonizar de forma local para las grabaciones (por ejemplo, el sintonizador está ocupada o "
+"servicio no está disponible en el sintonizador local.) Especificar URL completa "
+"incluyendo http:// y número de puerto (normalmente ...: 8001), ejemplo: http://ip_segundo_deco:8001."
+
 msgid "Fallback remote receiver URL"
 msgstr "Receptor remoto reserva URL"
 
@@ -16293,7 +16316,25 @@ msgid "Please wait while gathering data..."
 msgstr "Por favor, espere mientras se reorganizan los datos..."
 
 msgid "Load unlinked userbouquets"
-msgstr "Cargar bouquets no vinculados"
+msgstr "Cargar userbouquets no vinculados"
+
+msgid "When enabled enigma2 will load unlinked userbouquets. This means that userbouquets that are available, but not included in the bouquets.tv or bouquets.radio files, will still be loaded. This allows you for example to keep your own user bouquet while installed settings are upgraded"
+msgstr "Si se selecciona esta opción, todos los userbouquets existentes son cargados, incluso si no están incluidas en el bouquets.tv o bouquets.radio. Esto le permite, por ejemplo, mantener su propio userbouquets mientras los ajustes instalados se actualizan"
+
+msgid "Include CI assignment"
+msgstr "Incluir CI assignment"
+
+msgid "Set pin code persistent"
+msgstr "Guardar PIN de forma permanente"
+
+msgid "Enter persistent PIN code"
+msgstr "Introducir el PIN"
+
+msgid "Reset persistent PIN code"
+msgstr "Restablecer PIN"
+
+msgid "Show CI messages"
+msgstr "Ver mensajes CI"
 
 msgid ""
 "\n"
