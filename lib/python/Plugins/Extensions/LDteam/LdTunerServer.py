@@ -58,9 +58,9 @@ class TunerServer(Screen):
 			Screen.setTitle(self, _('Tuner Server OpenLD'))
 			mytext = """
 Este plugin va a crear un servidor del sintonizador incluido (vTuner). Podremos compartir los sintonizadores de este receptor con otro STB, PC u otro dispositivo compatible existente dentro de su red local.
-El servidor va a construir una lista de canales virtuales en el directorio /media/hdd/tuner de este receptor (necesita estar mapeada la ruta /media/hdd/tuner para que funcione).
+El servidor va a construir una lista de canales virtuales en el directorio /media/hdd/tuner de este receptor (necesita estar mapeada la ruta /media/hdd para que funcione).
 Una vez construido el servidor, podremos acceder al/los sintonizador/es de este receptor desde los clientes existentes en la LAN interna utilizando NFS, CIFS, UPnP o cualquier otro punto de montaje de red.\n
-IMPORTANTE!! El sintonizador del servidor (este receptor) tiene que estar disponible. Esto significa que si usted sólo tiene un sintonizador en su receptor, solo vas a transmitir el canal que está viendo (o cualquier canal que elijas si el receptor lo tienes en standby).
+IMPORTANTE!! El sintonizador del servidor (este receptor) tiene que estar disponible. Esto significa que si usted solo tiene un sintonizador en su receptor, tan solo vas a transmitir el canal que visualizas en esos momentos (o cualquier canal que elijas si el receptor lo tienes en standby).
 Recuerde seleccionar la pista de audio correcta en los ajustes de audio si no hay audio o el idioma no es el correcto en el streaming.\n
 NOTA: El servidor se construye, sobre la base de su IP interna actual y la lista de canales actual de este receptor. Si cambia de IP (DHCP ACTIVO) o la lista de canales se actualiza, vas a tener que reconstruir la base de datos del servidor nuevamente.\n
 			"""
