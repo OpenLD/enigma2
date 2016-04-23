@@ -106,6 +106,7 @@ eServiceFactoryMP3::eServiceFactoryMP3()
 		extensions.push_back("asf");
 		extensions.push_back("wmv");
 		extensions.push_back("wma");
+		extensions.push_back("webm");
 		sc->addServiceFactory(eServiceFactoryMP3::id, this, extensions);
 	}
 
@@ -489,6 +490,11 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	else if ( strcasecmp(ext, ".asf") == 0 || strcasecmp(ext, ".wmv") == 0)
 	{
 		m_sourceinfo.containertype = ctASF;
+		m_sourceinfo.is_video = TRUE;
+	}
+	else if ( strcasecmp(ext, ".webm") == 0)
+	{
+		m_sourceinfo.containertype = ctWEBM;
 		m_sourceinfo.is_video = TRUE;
 	}
 	else if ( strcasecmp(ext, ".m4a") == 0 )
