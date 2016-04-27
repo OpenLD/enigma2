@@ -495,7 +495,7 @@ void eDVBTSTools::calcBegin()
 			if (m_streaminfo.fixupPTS(begin, pts) == 0)
 			{
 				eDebug("[@ML] m_streaminfo.getLastFrame returned %llu, %llu (%us), fixup to: %llu, %llu (%us)",
-					   m_offset_begin, m_pts_begin, (unsigned int)(m_pts_begin/90000), begin, pts, (unsigned int)(pts/90000));
+					m_offset_begin, m_pts_begin, (unsigned int)(m_pts_begin/90000), begin, pts, (unsigned int)(pts/90000));
 			}
 			m_begin_valid = 1;
 		}
@@ -787,19 +787,19 @@ int eDVBTSTools::findPMT(eDVBPMTParser::program &program)
 }
 
 /* Changed so that findFrame *always* gets to the previous/next
-   GOP before returning a result.
-   So:
-	 forwards: find the next entry, then go on until an I-frame.
-	 backwards  find the next entry, then go back to second I-frame:
-	 BUT - we always ignore the first frame we reach as:
-	   Going backwards can get stuck if there is a GOP with just an I-frame
-	   Going forwards we can be asked to start on a start code (non I-frame)
-	   which means we keep going back to the same I-frame (with nr_frames==1
-	   we do exit the findNextPicture loop eventually, but try to avoid this).
-	   These cases have only been seen in mpegs (the forward one can
-	   only happen there) but using the same test in h.264 does no harm.
+	GOP before returning a result.
+	So:
+	forwards: find the next entry, then go on until an I-frame.
+	backwards  find the next entry, then go back to second I-frame:
+	BUT - we always ignore the first frame we reach as:
+		Going backwards can get stuck if there is a GOP with just an I-frame
+		Going forwards we can be asked to start on a start code (non I-frame)
+		which means we keep going back to the same I-frame (with nr_frames==1
+		we do exit the findNextPicture loop eventually, but try to avoid this).
+		These cases have only been seen in mpegs (the forward one can
+		only happen there) but using the same test in h.264 does no harm.
 
-   Return the number of video-frames passed over in the process.
+	Return the number of video-frames passed over in the process.
 */
 
 int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int frame_types)
@@ -814,7 +814,6 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 	off_t offset = _offset;
 	int nr_frames = 0;
 	bool is_mpeg2 = false;
-
 	unsigned long long longdata;
 
 // Prime the getStructureEntryXXX cache setting
@@ -834,8 +833,8 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 	} while(offset <= _offset);
 
 	int frame_step, Iframes_to_find;
-		bool frame1_skipped = false;
-		if (direction < 0)      // Going backwards
+	bool frame1_skipped = false;
+	if (direction < 0)      // Going backwards
 	{
 		frame_step = -1;
 		Iframes_to_find = 2;
@@ -860,32 +859,32 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 		if ((data & 0xFF) == 0x09 or (data & 0x7E) == 0x46) /* H.264/H.265 UAD */
 		{
 			nr_frames += frame_step;
-			if ((data & 0xE000) == 0x0000)              /* H.264/5 I-frame */
+			if ((data & 0xE000) == 0x0000)           /* H.264/5 I-frame */
 			{
 				--Iframes_to_find;
 				if ((Iframes_to_find <= 0) and frame1_skipped) break;
-				frame1_skipped = true;              /* Now seen */
+				frame1_skipped = true;               /* Now seen */
 			}
-			else if ((data & 0xE000) == 0x0200          /* H.264/5 P-frame */
-				  or (data & 0xE000) == 0x0400)         /* H.264/5 B-frame */
+			else if ((data & 0xE000) == 0x0200       /* H.264/5 P-frame */
+				 or (data & 0xE000) == 0x0400)       /* H.264/5 B-frame */
 			{
-				frame1_skipped = true;              /* Now seen */
+				frame1_skipped = true;               /* Now seen */
 			}
 		}
-		else if ((data & 0xFF) == 0x00)                     /* MPEG2 start code */
+		else if ((data & 0xFF) == 0x00)              /* MPEG2 start code */
 		{
 			nr_frames += frame_step;
-			if ((data & 0x380000) == 0x080000)          /* MPEG2 I-frame */
+			if ((data & 0x380000) == 0x080000)       /* MPEG2 I-frame */
 			{
 				is_mpeg2 = true;
 				--Iframes_to_find;
 				if ((Iframes_to_find <= 0) and frame1_skipped) break;
-				frame1_skipped = true;              /* Now seen */
+				frame1_skipped = true;               /* Now seen */
 			}
-			else if ((data & 0x380000) == 0x100000      /* MPEG2 P-frame */
-				  or (data & 0x380000) == 0x180000)     /* MPEG2 B-frame */
+			else if ((data & 0x380000) == 0x100000   /* MPEG2 P-frame */
+				 or (data & 0x380000) == 0x180000)   /* MPEG2 B-frame */
 			{
-				frame1_skipped = true;              /* Now seen */
+				frame1_skipped = true;               /* Now seen */
 			}
 		}
 	}
@@ -946,8 +945,8 @@ int eDVBTSTools::findNextPicture(off_t &offset, size_t &len, int &distance, int 
 //	eDebug("[eDVBTSTools] findNextPicture trying to move %d frames at %llu", distance, offset);
 
 /* This code (and findFrame) only looks for an I-Frame
-   TODO: intelligent "allow IP frames when not crossing an I-Frame"
- */
+	TODO: intelligent "allow IP frames when not crossing an I-Frame"
+*/
 	frame_types = frametypeI;
 
 	off_t new_offset = offset;
