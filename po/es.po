@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-04-22 01:25+0100\n"
+"PO-Revision-Date: 2016-05-05 01:25+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -16360,3 +16360,63 @@ msgstr "%02d/%02d"
 
 msgid "%02d.%02d.%d"
 msgstr "%02d/%02d/%d"
+
+msgid "Tuning algorithm"
+msgstr "Algoritmo de ajuste"
+
+msgid "reliable"
+msgstr "seguro"
+
+msgid "traditional (fast)"
+msgstr "Classic (rápido)"
+
+msgid "Volume adjust slow"
+msgstr "Ajustar volumen (lento)"
+
+msgid "Volume adjust fast"
+msgstr "Ajustar volumen (rápido)"
+
+msgid "Step value for single press the volume button. Depending on the setting (if greater) and the current volume (if less) will adjusted the step. (30 to 4, 18 to 3, 9 to 2 and 3 to 1)"
+msgstr "Step value (valor de paso) para presionar el botón del volumen. Dependiendo de la configuración (de mayor) y el volumen actual (si es menor) ajustará el step (paso). (30 to 4, 18 to 3, 9 to 2 and 3 to 1)"
+
+msgid "Step value for fast switching or long press the volume button. Depending on the setting (if greater) and the current volume (if less) will adjusted the step. (30 to 4, 18 to 3, 9 to 2 and 3 to 1)"
+msgstr "Step value (valor de paso) para la conmutación rápida o pulsación larga del botón del volumen. Dependiendo de la configuración (de mayor) y el volumen actual (si es menor) ajustará el step (paso). (30 to 4, 18 to 3, 9 to 2 and 3 to 1)"
+
+msgid "This allows you to show drivers modules in downloads"
+msgstr "Esto le permite mostrar los controladores en descargas"
+
+msgid "This allows you to show extensions modules in downloads"
+msgstr "Esto le permite mostrar las extensiones en descargas"
+
+msgid "This allows you to show systemplugins modules in downloads"
+msgstr "Esto le permite mostrar los plugins del sistema en descargas"
+
+msgid "This allows you to show softcams modules in downloads"
+msgstr "Esto le permite mostrar los softcams en descargas"
+
+msgid "This allows you to show skins modules in downloads"
+msgstr "Esto le permite mostrar los skins (pieles) en descargas"
+
+msgid "This allows you to show lcd skins in downloads"
+msgstr "Esto le permite mostrar los skins (pieles) para el LCD en descargas"
+
+msgid "This allows you to show picons modules in downloads"
+msgstr "Esto le permite mostrar los picons en descargas"
+
+msgid "This allows you to show settings modules in downloads"
+msgstr "Esto le permite mostrar las listas de canales en descargas"
+
+msgid "This allows you to show m2k modules in downloads"
+msgstr "Esto le permite mostrar los módulos m2k en descargas"
+
+msgid "This allows you to show weblinks modules in downloads"
+msgstr "Esto le permite mostrar los weblinks en descargas"
+
+msgid "This allows you to show security modules in downloads"
+msgstr "Esto le permite mostrar los módulos de seguridad en descargas"
+
+msgid "This allows you to show kernel modules in downloads"
+msgstr "Esto le permite mostrar los módulos del kernel en descargas"
+
+msgid "Please enter the your personal feed URL"
+msgstr "Por favor, introduzca la URL de su feed personal"

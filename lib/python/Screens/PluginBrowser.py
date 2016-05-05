@@ -651,6 +651,7 @@ class PluginFilter(ConfigListScreen, Screen):
 		self["HelpWindow"] = Pixmap()
 		self["HelpWindow"].hide()
 		self["status"] = StaticText()
+		self["description"] = Label("")
 		self["labelExitsave"] = Label("[Exit] = " +_("Cancel") +"              [Ok] =" +_("Save"))
 
 		self.onChangedEntry = [ ]
@@ -699,6 +700,7 @@ class PluginFilter(ConfigListScreen, Screen):
 
 	def selectionChanged(self):
 		self["status"].setText(self["config"].getCurrent()[2])
+		self["description"].setText(self["config"].getCurrent()[2])
 
 	def changedEntry(self):
 		for x in self.onChangedEntry:
