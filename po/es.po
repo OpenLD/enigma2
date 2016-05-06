@@ -736,19 +736,15 @@ msgstr "El aspecto AV es %s."
 msgid "SABnzbd Setup"
 msgstr "Configurar SABnzbd"
 
-#
 msgid "Abort"
 msgstr "Abortar"
 
-#
 msgid "About"
 msgstr "Acerca de"
 
-#
 msgid "About..."
 msgstr "Acerca de…"
 
-#
 msgid "Accesspoint:"
 msgstr "Punto de acceso:"
 
@@ -758,18 +754,15 @@ msgstr "Acción"
 msgid "Action on long powerbutton press"
 msgstr "Acción con pulsación larga en la tecla de encendido"
 
-#
 msgid "Action on short powerbutton press"
 msgstr "Acción con pulsación corta en la tecla de encendido"
 
 msgid "Activate"
 msgstr "Activar"
 
-#
 msgid "Activate Picture in Picture"
 msgstr "Activar Picture in Picture"
 
-#
 msgid "Setup Picture in Picture"
 msgstr "Configurar Picture in Picture"
 
@@ -788,7 +781,6 @@ msgstr "Lado a Lado"
 msgid "Big PiP"
 msgstr "Gran PiP"
 
-#
 msgid "Activate network settings"
 msgstr "Activar ajustes de red"
 
@@ -801,23 +793,20 @@ msgstr "Activo"
 msgid "Active clients"
 msgstr "Clientes activos"
 
-#
 msgid "Adapter settings"
 msgstr "Configuración del adaptador"
 
-#
 msgid "Add"
 msgstr "Añadir"
 
 msgid "Add AutoTimer"
-msgstr "Añadir autotemporizador"
+msgstr "Añadir Autotemporizador"
 
-#
 msgid "Add Bookmark"
 msgstr "Añadir marcador"
 
 msgid "Add Timer"
-msgstr "Añadir temporizador"
+msgstr "Añadir Temporizador"
 
 msgid "Add a auto timer for current event"
 msgstr "Añadir autotemporizador para el programa actual"
@@ -831,11 +820,9 @@ msgstr "Añadir un margen antes del inicio de un temporizador programado referid
 msgid "Add WLAN configuration?"
 msgstr "¿Añadir configuración WLAN?"
 
-#
 msgid "Add a mark"
 msgstr "Añadir marca"
 
-#
 msgid "Add a new title"
 msgstr "Añadir un nuevo título"
 
@@ -848,19 +835,18 @@ msgstr "Añadir un temporizador de zapeo para el programa actual"
 msgid "Add network configuration?"
 msgstr "¿Añadir configuración de red?"
 
-#
 msgid "Add timer"
 msgstr "Añadir temporizador"
 
-#
+msgid "Add autoTimer"
+msgstr "Añadir autotemporizador"
+
 msgid "Add title"
 msgstr "Añadir título"
 
-#
 msgid "Add to bouquet"
 msgstr "Añadir a grupo"
 
-#
 msgid "Add to favourites"
 msgstr "Añadir a favoritos"
 
