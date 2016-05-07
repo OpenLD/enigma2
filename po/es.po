@@ -800,7 +800,7 @@ msgid "Add"
 msgstr "Añadir"
 
 msgid "Add AutoTimer"
-msgstr "Añadir Autotemporizador"
+msgstr "Añadir AutoTimer"
 
 msgid "Add Bookmark"
 msgstr "Añadir marcador"
@@ -809,7 +809,7 @@ msgid "Add Timer"
 msgstr "Añadir Temporizador"
 
 msgid "Add a auto timer for current event"
-msgstr "Añadir autotemporizador para el programa actual"
+msgstr "Añadir autotemporizador (AutoTimer) para el programa actual"
 
 msgid "Add a margin after the end time of programmed timers referred to EPG"
 msgstr "Añadir un margen tras la finalización de un temporizador programado referido al EPG"
@@ -839,7 +839,7 @@ msgid "Add timer"
 msgstr "Añadir temporizador"
 
 msgid "Add autoTimer"
-msgstr "Añadir autotemporizador"
+msgstr "Añadir autoTimer"
 
 msgid "Add title"
 msgstr "Añadir título"
