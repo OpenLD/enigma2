@@ -20,6 +20,7 @@
 ##
 ##########################################################################
 from enigma import iServiceInformation, eTimer, eEPGCache, eDVBDB, eDVBCI_UI, eListboxPythonMultiContent, eListboxPythonConfigContent, gFont, loadPNG, eListboxPythonMultiContent, iServiceInformation, eEnv, getDesktop, pNavigation
+
 from Screens.Screen import Screen
 from Screens.Standby import TryQuitMainloop
 from Screens.MessageBox import MessageBox
@@ -31,10 +32,11 @@ from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
 from Components.Label import Label
 from Tools.BoundFunction import boundFunction
+from Components.UsageConfig import InitUsageConfig
 from Components.Pixmap import Pixmap, MultiPixmap
 from Components.ConfigList import ConfigListScreen
 from Components.Harddisk import harddiskmanager
-from Components.config import getConfigListEntry, config, ConfigElement, ConfigYesNo, ConfigText, ConfigSelection, ConfigSubList, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigSubsection, ConfigClock, ConfigDateTime, ConfigInteger, configfile, NoSave, KEY_LEFT, KEY_RIGHT, KEY_OK
+from Components.config import getConfigListEntry, config, ConfigElement, ConfigYesNo, ConfigText, ConfigSelection, ConfigSubList, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigClock, ConfigDateTime, ConfigInteger, configfile, ConfigSelectionNumber, NoSave, KEY_LEFT, KEY_RIGHT, KEY_OK
 from Components.Sources.Progress import Progress
 from Components.About import about
 from Components.Network import iNetwork
@@ -59,6 +61,7 @@ from Tools.Directories import fileExists, pathExists, resolveFilename, SCOPE_CUR
 from os import system, listdir, path, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 import NavigationInstance
+import Components.UsageConfig
 count = 0
 hddchoises = [('/media/hdd/', '/media/hdd/'),
  ('/media/usb/', '/media/usb/'),
@@ -71,6 +74,49 @@ config.plugins.LDteam.auto2 = ConfigSelection(default='no', choices=[('no', _('n
 config.plugins.LDteam.dropmode = ConfigSelection(default='3', choices=[('1', _('free pagecache')), ('2', _('free dentries and inodes')), ('3', _('free pagecache, dentries and inodes'))])
 config.plugins.LDteam.epgtime2 = ConfigClock(default=58500)
 config.plugins.LDteam.epgmhw2wait = ConfigNumber(default=350) # 350 seconds = 5,83 minutes
+
+config.epg = ConfigSubsection()
+config.epg.eit = ConfigYesNo(default = True)
+config.epg.mhw = ConfigYesNo(default = True)
+config.epg.freesat = ConfigYesNo(default = True)
+config.epg.viasat = ConfigYesNo(default = True)
+config.epg.netmed = ConfigYesNo(default = True)
+config.epg.virgin = ConfigYesNo(default = False)
+config.epg.saveepg = ConfigYesNo(default = True)
+
+def EpgSettingsChanged(configElement):
+	from enigma import eEPGCache
+	mask = 0xffffffff
+	if not config.epg.eit.value:
+		mask &= ~(eEPGCache.NOWNEXT | eEPGCache.SCHEDULE | eEPGCache.SCHEDULE_OTHER)
+	if not config.epg.mhw.value:
+		mask &= ~eEPGCache.MHW
+	if not config.epg.freesat.value:
+		mask &= ~(eEPGCache.FREESAT_NOWNEXT | eEPGCache.FREESAT_SCHEDULE | eEPGCache.FREESAT_SCHEDULE_OTHER)
+	if not config.epg.viasat.value:
+		mask &= ~eEPGCache.VIASAT
+	if not config.epg.netmed.value:
+		mask &= ~(eEPGCache.NETMED_SCHEDULE | eEPGCache.NETMED_SCHEDULE_OTHER)
+	if not config.epg.virgin.value:
+		mask &= ~(eEPGCache.VIRGIN_NOWNEXT | eEPGCache.VIRGIN_SCHEDULE)
+	eEPGCache.getInstance().setEpgSources(mask)
+config.epg.eit.addNotifier(EpgSettingsChanged)
+config.epg.mhw.addNotifier(EpgSettingsChanged)
+config.epg.freesat.addNotifier(EpgSettingsChanged)
+config.epg.viasat.addNotifier(EpgSettingsChanged)
+config.epg.netmed.addNotifier(EpgSettingsChanged)
+config.epg.virgin.addNotifier(EpgSettingsChanged)
+
+config.epg.maxdays = ConfigSelectionNumber(min = 1, max = 365, stepwidth = 1, default = 7, wraparound = True)
+def EpgmaxdaysChanged(configElement):
+	from enigma import eEPGCache
+	eEPGCache.getInstance().setEpgmaxdays(config.epg.maxdays.getValue())
+config.epg.maxdays.addNotifier(EpgmaxdaysChanged)
+
+config.epg.histminutes = ConfigSelectionNumber(min = 0, max = 120, stepwidth = 15, default = 0, wraparound = True)
+def EpgHistorySecondsChanged(configElement):
+	eEPGCache.getInstance().setEpgHistorySeconds(config.epg.histminutes.value*60)
+config.epg.histminutes.addNotifier(EpgHistorySecondsChanged)
 
 def mountp():
 	pathmp = []
@@ -498,6 +544,8 @@ class LDepg(Screen, ConfigListScreen):
 		epgcache = new.instancemethod(_enigma.eEPGCache_save, None, eEPGCache)
 		epgcache = eEPGCache.getInstance().save()
 		config.plugins.LDteam.epgmhw2wait.save()
+		config.epg.save()
+		config.epg.maxdays.save()
 		configfile.save()
 		self.mbox = self.session.open(MessageBox, _('configuration is saved'), MessageBox.TYPE_INFO, timeout=4)
 		return
