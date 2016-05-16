@@ -28,7 +28,7 @@ from Screens.SimpleSummary import SimpleSummary
 from sys import stdout, exc_info
 
 profile("Bouquets")
-from Components.config import config, configfile, ConfigText, ConfigYesNo, ConfigInteger, NoSave
+from Components.config import config, configfile, ConfigText, ConfigYesNo, ConfigInteger, NoSave, ConfigSelection
 config.misc.load_unlinked_userbouquets = ConfigYesNo(default=True)
 def setLoadUnlinkedUserbouquets(configElement):
 	enigma.eDVBDB.getInstance().setLoadUnlinkedUserbouquets(configElement.value)
