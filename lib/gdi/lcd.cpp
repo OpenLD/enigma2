@@ -148,7 +148,7 @@ eDBoxLCD::eDBoxLCD()
 	{
 
 #ifndef LCD_IOCTL_ASC_MODE
-#define LCDSET                  0x1000
+#define LCDSET					0x1000
 #define LCD_IOCTL_ASC_MODE		(21|LCDSET)
 #define	LCD_MODE_ASC			0
 #define	LCD_MODE_BIN			1
@@ -204,17 +204,17 @@ void eDBoxLCD::setFlipped(bool onoff)
 }
 
 void eDBoxLCD::setDump(bool onoff)
- {
- 	dump = onoff;
- 	dumpLCD2PNG();
- }
+{
+	dump = onoff;
+	dumpLCD2PNG();
+}
 
 int eDBoxLCD::setLCDContrast(int contrast)
 {
 #ifndef NO_LCD
 
 #ifndef LCD_IOCTL_SRV
-#define LCDSET                  0x1000
+#define LCDSET					0x1000
 #define	LCD_IOCTL_SRV			(10|LCDSET)
 #endif
 
@@ -256,7 +256,7 @@ int eDBoxLCD::setLCDBrightness(int brightness)
 			return(-1);
 		}
 #ifndef FP_IOCTL_LCD_DIMM
-#define FP_IOCTL_LCD_DIMM       3
+#define FP_IOCTL_LCD_DIMM		3
 #endif
 		if(ioctl(fp, FP_IOCTL_LCD_DIMM, &brightness) < 0)
 			eDebug("[LCD] can't set lcd brightness");
