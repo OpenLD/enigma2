@@ -299,59 +299,59 @@ eDBoxLCD::~eDBoxLCD()
 }
 
 void eDBoxLCD::dumpLCD2PNG(void)
- {
- 		if (dump)
- 		{
- 			int bpp =( _stride *8)/res.width();
- 			int lcd_width = res.width();
- 			int lcd_hight = res.height();
- 			ePtr<gPixmap> pixmap32;
- 			pixmap32 = new gPixmap(eSize(lcd_width, lcd_hight), 32, gPixmap::accelAuto);
- 			const uint8_t *srcptr = (uint8_t*)_buffer;
- 			uint8_t *dstptr=(uint8_t*)pixmap32->surface->data;
+{
+		if (dump)
+		{
+			int bpp =( _stride *8)/res.width();
+			int lcd_width = res.width();
+			int lcd_hight = res.height();
+			ePtr<gPixmap> pixmap32;
+			pixmap32 = new gPixmap(eSize(lcd_width, lcd_hight), 32, gPixmap::accelAuto);
+			const uint8_t *srcptr = (uint8_t*)_buffer;
+			uint8_t *dstptr=(uint8_t*)pixmap32->surface->data;
 
- 			switch(bpp)
- 			{
- 				case 8:
- 					eDebug(" 8 bit not supportet yet");
- 					break;
- 				case 16:
- 					{
+			switch(bpp)
+			{
+				case 8:
+					eDebug(" 8 bit not supportet yet");
+					break;
+				case 16:
+					{
 
- 						for (int y = lcd_hight; y != 0; --y)
- 						{
- 							gRGB pixel32;
- 							uint16_t pixel16;
- 							int x = lcd_width;
- 							gRGB *dst = (gRGB *)dstptr;
- 							const uint16_t *src = (const uint16_t *)srcptr;
- 							while (x--)
- 							{
- #if BYTE_ORDER == LITTLE_ENDIAN
- 								pixel16 = bswap_16(*src++);
- #else
- 								pixel16 = *src++;;
- #endif
- 								pixel32.a = 0xFF;
- 								pixel32.r = (pixel16 << 3) & 0xF8;
- 								pixel32.g = (pixel16 >> 3) & 0xFC;
- 								pixel32.b = (pixel16 >> 8) & 0xF8;
- 								*dst++ = pixel32;
- 							}
- 							srcptr += _stride;
- 							dstptr += pixmap32->surface->stride;
- 						}
- 						savePNG("/tmp/lcd.png", pixmap32);
- 					}
- 					break;
- 				case 32:
- 					eDebug(" 32 bit not supportet yet");
- 					break;
- 				default:
- 					eDebug("%d bit not supportet yet",bpp);
- 			}
- 		}
- }
+						for (int y = lcd_hight; y != 0; --y)
+						{
+							gRGB pixel32;
+							uint16_t pixel16;
+							int x = lcd_width;
+							gRGB *dst = (gRGB *)dstptr;
+							const uint16_t *src = (const uint16_t *)srcptr;
+							while (x--)
+							{
+#if BYTE_ORDER == LITTLE_ENDIAN
+								pixel16 = bswap_16(*src++);
+#else
+								pixel16 = *src++;;
+#endif
+								pixel32.a = 0xFF;
+								pixel32.r = (pixel16 << 3) & 0xF8;
+								pixel32.g = (pixel16 >> 3) & 0xFC;
+								pixel32.b = (pixel16 >> 8) & 0xF8;
+								*dst++ = pixel32;
+							}
+							srcptr += _stride;
+							dstptr += pixmap32->surface->stride;
+						}
+						savePNG("/tmp/lcd.png", pixmap32);
+					}
+					break;
+				case 32:
+					eDebug(" 32 bit not supportet yet");
+					break;
+				default:
+					eDebug("%d bit not supportet yet",bpp);
+			}
+		}
+}
 
 void eDBoxLCD::update()
 {
@@ -420,7 +420,7 @@ void eDBoxLCD::update()
 					fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
 					fclose(boxtype_file);
 				}
-				if (((file = fopen("/proc/stb/info/gbmodel", "r")) != NULL ) || (strcmp(boxtype_name, "7100S\n") == 0) || (strcmp(boxtype_name, "7200S\n") == 0))
+				if (((file = fopen("/proc/stb/info/gbmodel", "r")) != NULL ) || (strcmp(boxtype_name, "7100S\n") == 0) || (strcmp(boxtype_name, "7200S\n") == 0) || (strcmp(boxtype_name, "formuler1\n") == 0) || (strcmp(boxtype_name, "formuler3\n") == 0) || (strcmp(boxtype_name, "formuler4\n") == 0) || (strcmp(boxtype_name, "sh1\n") == 0) || (strcmp(boxtype_name, "h3\n") == 0) || (strcmp(boxtype_name, "lc\n") == 0) || (strcmp(boxtype_name, "ew7358\n") == 0) || (strcmp(boxtype_name, "ew7362\n") == 0))
 				{
 					//gggrrrrrbbbbbggg bit order from memory
 					//gggbbbbbrrrrrggg bit order to LCD
