@@ -1,4 +1,4 @@
-installdir = $(pkglibdir)/python/Plugins/Extensions/RemoteChannelStreamConverter
+installdir = $(pkglibdir)/python/Plugins/Extensions/RemoteStreamConverter
 
 SUBDIRS = meta
 

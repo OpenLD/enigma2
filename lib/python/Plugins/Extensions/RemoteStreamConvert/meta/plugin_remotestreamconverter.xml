@@ -4,8 +4,8 @@
 	</prerequisites>
 		<info>
 			<author>OpenLD</author>
-			<name>RemoteChannelStreamConverter</name>
-			<packagename>enigma2-plugin-extensions-remotechannelstreamconverter</packagename>
+			<name>RemoteStreamConverter</name>
+			<packagename>enigma2-plugin-extensions-remotestreamconverter</packagename>
 			<shortdescription>Remote Channel Stream Converter</shortdescription>
 			<description>Convert remote channel list for streaming.</description>
 		</info>
