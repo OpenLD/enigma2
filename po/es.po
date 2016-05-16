@@ -16406,3 +16406,45 @@ msgstr "Esto le permite mostrar los módulos del kernel en descargas"
 
 msgid "Please enter the your personal feed URL"
 msgstr "Por favor, introduzca la URL de su feed personal"
+
+msgid "Remote channel stream converter"
+msgstr "Buscar Canal remoto por stream"
+
+msgid "Select bouquets to convert"
+msgstr "Elegir bouquets a convertir"
+
+msgid "Select a remote server IP first"
+msgstr "Establezca primero la IP del servidor remoto"
+
+msgid "Set server IP"
+msgstr "Establecer IP"
+
+msgid "Make your selection"
+msgstr "Haga su selección"
+
+msgid "Downloading remote services"
+msgstr "Descargando servicios remotos"
+
+msgid "Testing remote connection"
+msgstr "Testeando conexión remota"
+
+msgid "Connection to remote IP ok"
+msgstr "Conexión a IP remota ok"
+
+msgid "Could not connect to remote IP"
+msgstr "Imposible conectar a IP remota"
+
+msgid "FTP reading bouquets %d of %d"
+msgstr "FTP: Leyendo bouquets %d of %d"
+
+msgid "Download from remote failed"
+msgstr "Descarga remota fallida"
+
+msgid "Checking for alternatives"
+msgstr "Comprobación de alternativas"
+
+msgid "No bouquets selected"
+msgstr "No hay bouquets seleccionados"
+
+msgid "FTP reading alternatives %d of %d"
+msgstr "FTP: Leyendo alternativas %d of %d"
