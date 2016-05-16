@@ -4679,7 +4679,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 			pos = 10;
 			while (pos < dataLen)
 			{
-				title.channel_id = data[pos]+1;
+				title.channel_id = data[7]+1;
 				title.mhw2_mjd_hi = data[pos+11];
 				title.mhw2_mjd_lo = data[pos+12];
 				title.mhw2_hours = data[pos+13];
