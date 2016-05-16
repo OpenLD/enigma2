@@ -1407,7 +1407,10 @@ class ChannelSelectionBase(Screen):
 	def getBouquetNumOffset(self, bouquet):
 		if not config.usage.multibouquet.value:
 			return 0
-		str = bouquet.toString()
+		try:
+			str = bouquet.toString()
+		except:
+			pass
 		offset = 0
 		if 'userbouquet.' in bouquet.toCompareString():
 			serviceHandler = eServiceCenter.getInstance()
