@@ -7071,6 +7071,9 @@ msgstr ""
 msgid "Service reference"
 msgstr "Referencia del canal"
 
+msgid "Coding Systems"
+msgstr "Sistemas de codificación"
+
 #
 msgid "Service scan"
 msgstr "Buscar canales"

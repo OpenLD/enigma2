@@ -8,6 +8,8 @@ from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformat
 from Tools.Transponder import ConvertToHumanReadable
 from Components.Converter.ChannelNumbers import channelnumbers
 import skin
+import os
+import subprocess
 
 RT_HALIGN_LEFT = 0
 
@@ -44,14 +46,14 @@ def ServiceInfoListEntry(a, b, valueType=TYPE_TEXT, param=4):
 			#PyObject *type, *px, *py, *pwidth, *pheight, *pfnt, *pstring, *pflags;
 			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 330, 60, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, ""),
 			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 330, 60, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, a),
-			(eListboxPythonMultiContent.TYPE_TEXT, 350, 0, 650, 60, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, b)
+			(eListboxPythonMultiContent.TYPE_TEXT, 360, 0, 680, 60, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, b)
 		]
 	else:
 		return [
 			#PyObject *type, *px, *py, *pwidth, *pheight, *pfnt, *pstring, *pflags;
-			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 320, 30, 0, RT_HALIGN_LEFT, ""),
-			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 320, 25, 0, RT_HALIGN_LEFT, a),
-			(eListboxPythonMultiContent.TYPE_TEXT, 330, 0, 570, 25, 0, RT_HALIGN_LEFT, b)
+			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 320, 24, 0, RT_HALIGN_LEFT, ""),
+			(eListboxPythonMultiContent.TYPE_TEXT, 0, 0, 320, 24, 0, RT_HALIGN_LEFT, a),
+			(eListboxPythonMultiContent.TYPE_TEXT, 330, 0, 570, 24, 0, RT_HALIGN_LEFT, b)
 		]
 
 class ServiceInfoList(HTMLComponent, GUIComponent):
@@ -61,9 +63,9 @@ class ServiceInfoList(HTMLComponent, GUIComponent):
 		self.list = source
 		self.l.setList(self.list)
 		self.fontName = "Regular"
-		self.fontSize = 23
-		self.fontSize1080 = 31
-		self.ItemHeight = 25
+		self.fontSize = 22
+		self.fontSize1080 = 30
+		self.ItemHeight = 24
 
 	def applySkin(self, desktop, screen):
 		if self.skinAttributes is not None:
@@ -173,6 +175,10 @@ class ServiceInfo(Screen):
 				videomode = f.read()[:-1].replace('\n','')
 				f.close()
 
+			codenumbers = subprocess.check_output(['timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F "=" "{print $2}" | awk -F "]" "{print $1}" | wc -l'], shell=True)
+			codesystem = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '=' '{print $2}' | awk -F ']' '{print $1}'"], shell=True)
+			caidssyst = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '(' '{print $2}' | awk -F ')' '{print $1}'"], shell=True)
+
 			Labels = ( (_("Name"), name, TYPE_TEXT),
 					(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
 					(_("Videoformat"), aspect, TYPE_TEXT),
@@ -180,7 +186,18 @@ class ServiceInfo(Screen):
 					(_("Videosize"), resolution, TYPE_TEXT),
 					(_("Videocodec"), videocodec, TYPE_TEXT),
 					(_("Namespace"), self.getServiceInfoValue(iServiceInformation.sNamespace), TYPE_VALUE_HEX, 8),
-					(_("Service reference"), refstr, TYPE_TEXT))
+					(_("Service reference"), refstr, TYPE_TEXT),
+					(_("Coding Systems"), codenumbers, TYPE_TEXT))
+
+			if codenumbers > 0:
+				i = 0
+				caidssyst1 = caidssyst.splitlines()
+				codesystem1 = codesystem.splitlines()
+				while i < int(codenumbers):
+						caidsystem = caidssyst1[i] + " " + codesystem1[i]
+						i += 1
+						newlabel = ( (_("%s " %i), caidsystem, TYPE_TEXT))
+						Labels = Labels + (newlabel,)
 
 			self.fillList(Labels)
 		else:
