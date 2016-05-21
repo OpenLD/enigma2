@@ -9,7 +9,7 @@
 #include <lib/dvb/subtitle.h>
 #include <lib/dvb/teletext.h>
 #include <lib/dvb/radiotext.h>
-#include "filepush.h"
+#include <lib/dvb/filepush.h>
 
 class eStaticServiceDVBInformation;
 class eStaticServiceDVBBouquetInformation;
