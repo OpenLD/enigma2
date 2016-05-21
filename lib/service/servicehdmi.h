@@ -20,6 +20,7 @@ public:
 	RESULT list(const eServiceReference &, ePtr<iListableService> &ptr);
 	RESULT info(const eServiceReference &, ePtr<iStaticServiceInformation> &ptr);
 	RESULT offlineOperations(const eServiceReference &, ePtr<iServiceOfflineOperations> &ptr);
+	RESULT getFilenameExtension(std::string &ext) { ext = ".ts"; return 0; };
 private:
 	ePtr<eStaticServiceHDMIInfo> m_service_info;
 };
