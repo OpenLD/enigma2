@@ -1643,6 +1643,11 @@ void eDVBChannel::pvrEvent(int event)
 		eDebug("[eDVBChannel] End of file!");
 		m_event(this, evtEOF);
 		break;
+	case eFilePushThread::evtFlush:
+		eDebug("eDVBChannel: pvrEvent evtFlush");
+		if (m_decoder_demux)
+			m_decoder_demux->get().flush();
+		break;
 	case eFilePushThread::evtUser: /* start */
 		eDebug("[eDVBChannel] SOF");
 		m_event(this, evtSOF);
