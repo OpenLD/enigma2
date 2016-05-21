@@ -20,7 +20,6 @@ public:
 	RESULT list(const eServiceReference &, ePtr<iListableService> &ptr);
 	RESULT info(const eServiceReference &, ePtr<iStaticServiceInformation> &ptr);
 	RESULT offlineOperations(const eServiceReference &, ePtr<iServiceOfflineOperations> &ptr);
-	RESULT getFilenameExtension(std::string &ext) { ext = ".ts"; return 0; };
 private:
 	ePtr<eStaticServiceHDMIInfo> m_service_info;
 };
@@ -96,6 +95,7 @@ public:
 	RESULT frontendInfo(ePtr<iFrontendInformation> &ptr);
 	RESULT stream(ePtr<iStreamableService> &ptr);
 	RESULT subServices(ePtr<iSubserviceList> &ptr);
+	RESULT getFilenameExtension(std::string &ext) { ext = ".ts"; return 0; };
 
 private:
 	enum { stateIdle, statePrepared, stateRecording };
