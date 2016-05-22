@@ -388,7 +388,8 @@ def InitUsageConfig():
 	config.epg.saveepg = ConfigYesNo(default = True)
 
 	config.misc.showradiopic = ConfigYesNo(default = True)
-	config.misc.bootvideo = ConfigYesNo(default = True)
+	config.misc.bootvideo = ConfigYesNo(default = False)
+
 	def EpgSettingsChanged(configElement):
 		from enigma import eEPGCache
 		mask = 0xffffffff
