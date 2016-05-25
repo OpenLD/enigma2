@@ -7097,8 +7097,8 @@ msgstr "Canales"
 msgid "When enabled, continue to the next bouquet when the last channel of the current bouquet is reached while changing channels."
 msgstr "Cuando está activado, continua hacia el próximo grupo cuando has alcanzado el último canal del grupo actual."
 
-msgid "Services may be grouped in bouquets. When enabled, you can use more then one bouquet."
-msgstr "Los canales pueden juntarse en grupos. Cuando está habilitado, puedes usar más de un grupo."
+msgid "Services may be grouped in bouquets. When enabled, you can use more than one bouquet."
+msgstr "Los canales pueden agruparse en bouquets. Cuando está habilitado, puedes usar más de un grupo."
 
 msgid "Set end time"
 msgstr "Configurar la hora final"
@@ -15060,7 +15060,7 @@ msgstr "Dispositivos de almacenamiento"
 msgid "Channel list cursor behavior"
 msgstr "Comportamiento del cursor en la lista de canales"
 
-msgid "Configure the cursor behaviour in the channel selection list. When opening the channel selection list you can keep on the current service or already select up/down and you are able to revert the B+/B- buttons."
+msgid "Configure the cursor behaviour in the channel selection list. When opening the channel selection list you can remain on the current service or already select up/down and you are able to revert the B+/B- buttons."
 msgstr "Configura el comportamiento del cursor en la lista de canales. Al abrir la lista de canales puedes permanecer en el canal actual o seleccionar arriba/abajo y eres capaz de revertir los botones B+/B-."
 
 msgid "Keep service"
