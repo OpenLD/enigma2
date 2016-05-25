@@ -154,29 +154,54 @@ void eSubtitleWidget::setPage(const ePangoSubtitlePage &p)
 {
 	int elements, element, startY, width, height, size_per_element;
 	int lowerborder;
-	bool rewrap;
+	bool rewrap_enabled;
+	bool colourise_dialogs_enabled;
 
 	m_pango_page = p;
 	m_pango_page_ok = 1;
 	invalidate(m_visible_region); // invalidate old visible regions
 	m_visible_region.rects.clear();
 
-	rewrap = eConfigManager::getConfigBoolValue("config.subtitles.subtitle_rewrap");
+	rewrap_enabled = eConfigManager::getConfigBoolValue("config.subtitles.subtitle_rewrap");
+	colourise_dialogs_enabled = eConfigManager::getConfigBoolValue("config.subtitles.colourise_dialogs");
 	lowerborder = eConfigManager::getConfigIntValue("config.subtitles.subtitle_position", 50);
 
 	elements = m_pango_page.m_elements.size();
 
-	if(rewrap)
+	if(rewrap_enabled | colourise_dialogs_enabled)
 	{
-		std::string::iterator it;
+		size_t ix, colourise_dialogs_current = 0;
+		std::vector<std::string> colourise_dialogs_colours;
+
+		if(colourise_dialogs_enabled)
+		{
+			colourise_dialogs_colours.push_back((std::string)gRGB(0xff, 0xff, 0x00));	// yellow
+			colourise_dialogs_colours.push_back((std::string)gRGB(0x00, 0xff, 0xff));	// cyan
+			colourise_dialogs_colours.push_back((std::string)gRGB(0xff, 0x00, 0xff));	// magenta
+			colourise_dialogs_colours.push_back((std::string)gRGB(0x00, 0xff, 0x00));	// green
+			colourise_dialogs_colours.push_back((std::string)gRGB(0xff, 0xaa, 0xaa));	// light red
+			colourise_dialogs_colours.push_back((std::string)gRGB(0xaa, 0xaa, 0xff));	// light blue
+		}
 
 		for (element = 0; element < elements; element++)
 		{
 			std::string& line = m_pango_page.m_elements[element].m_pango_line;
 
-			for (it = line.begin(); it != line.end(); it++)
-				if((*it) == '\n')
-					*it = ' ';
+			for (ix = 0; ix < line.length(); ix++)
+			{
+				if(rewrap_enabled && !line.compare(ix, 1, "\n"))
+					line.replace(ix, 1, " ");
+
+				if(colourise_dialogs_enabled && !line.compare(ix, 2, "- "))
+				{
+					line.replace(ix, 2, colourise_dialogs_colours.at(colourise_dialogs_current));
+
+					colourise_dialogs_current++;
+
+					if(colourise_dialogs_current >= colourise_dialogs_colours.size())
+						colourise_dialogs_current = 0;
+				}
+			}
 		}
 	}
 
@@ -304,27 +329,35 @@ int eSubtitleWidget::event(int event, void *data, void *data2)
 				text = replace_all(text, "&lt", "<");
 				text = replace_all(text, "&gt", ">");
 
+				if (eConfigManager::getConfigBoolValue("config.subtitles.pango_subtitle_fontswitch"))
+					if (text.find("<i>") != std::string::npos || text.find("</i>") != std::string::npos)
+						if (text.find("<b>") != std::string::npos || text.find("</b>") != std::string::npos)
+							face = Subtitle_MAX;
+						else
+							face = Subtitle_Italic;
+					else if (text.find("<b>") != std::string::npos || text.find("</b>") != std::string::npos)
+						face = Subtitle_Bold;
+
 				if (eConfigManager::getConfigIntValue("config.subtitles.pango_subtitle_colors", 1) == 2)
-				{
 					text = (std::string) gRGB(255, 255, 0) + text;
-					text = replace_all(text, "</u>", (std::string) gRGB(255,255,0));
-				}
 				else
+				{
+					text = replace_all(text, "<u>", (std::string) gRGB(0,255,0));
 					text = replace_all(text, "</u>", (std::string) gRGB(255,255,255));
-
-				if (text.find("<i>") != std::string::npos || text.find("</i>") != std::string::npos)
-					if (text.find("<b>") != std::string::npos || text.find("</b>") != std::string::npos)
-						face = Subtitle_MAX;
-					else
-						face = Subtitle_Italic;
-				else if (text.find("<b>") != std::string::npos || text.find("</b>") != std::string::npos)
-					face = Subtitle_Bold;
-
-				text = replace_all(text, "<u>", (std::string) gRGB(255,255,0));
-				text = replace_all(text, "<i>", "");
-				text = replace_all(text, "<b>", "");
+					if (eConfigManager::getConfigIntValue("config.subtitles.pango_subtitle_colors", 1) == 0)
+					{
+						text = replace_all(text, "<i>", gRGB(255,255,0));
+						text = replace_all(text, "<b>", gRGB(0,255,255));
+						text = replace_all(text, "</i>", (std::string) gRGB(255,255,255));
+						text = replace_all(text, "</b>", (std::string) gRGB(255,255,255));
+					}
+				}
+				text = replace_all(text, "</u>", "");
 				text = replace_all(text, "</i>", "");
 				text = replace_all(text, "</b>", "");
+				text = replace_all(text, "<u>", "");
+				text = replace_all(text, "<i>", "");
+				text = replace_all(text, "<b>", "");
 
 				subtitleStyles[face].font->pointSize=fontsize;
 				painter.setFont(subtitleStyles[face].font);
@@ -415,4 +448,3 @@ void eSubtitleWidget::removeHearingImpaired(std::string& str)
 	while (str[str.length() - 1] == '\n')
 		str.erase(str.length() - 1, 1);
 }
-
