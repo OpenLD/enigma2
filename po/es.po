@@ -4196,6 +4196,18 @@ msgstr "Ipkg"
 msgid "Is this video mode ok?"
 msgstr "¿Es correcto este modo de vídeo?"
 
+msgid ""
+"It seems you did not see all the eight arrow heads. This means your TV is has overscan enabled, and is not configured properly.\n"
+"\n"
+"Please refer to your TVs manual to find how you can disable overscan on your TV. Look for terms like 'Just fit', 'Full width', etc. If you can't find it, ask other users at forum https://www.lonasdigital.com.\n"
+"\n"
+msgstr ""
+"Parece que no has visto las ocho puntas de flecha. Esto significa que su televisor ha permitido OVERSCAN (sobreexploración), y no está configurado correctamente.\n"
+"\n"
+"Por favor consulte el manual de su televisor para encontrar cómo se puede desactivar overscan en el televisor. Busque términos como 'Just fit', 'Full width', etc. Si no lo encuentra, pregunte a otros usuarios en el foro https://www.lonasdigital.com.\n"
+"\n"
+
+
 msgid "Is this setting ok?"
 msgstr "¿Es correcto este ajuste?"
 
