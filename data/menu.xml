@@ -6,7 +6,7 @@
 			<item weight="100" level="0" text="CronTimers" entryID="crontimer_edit"><screen module="CronTimer" screen="CronTimers" /></item>
 			<item weight="100" level="0" text="Timers" entryID="timer_edit"><screen module="TimerEdit" screen="TimerEditList" /></item>
 			<item weight="100" level="0" text="PowerTimers" entryID="powertimer_edit"><screen module="PowerTimerEdit" screen="PowerTimerEditList" /></item>
-			<item level="0" entryID="time_setup"><setup id="time"/></item>			
+			<item level="0" entryID="time_setup"><setup id="time"/></item>
 		</menu>
 		<item level="1" text="VCR scart" entryID="scart_switch" configcondition="config.usage.show_vcr_scart" requires="ScartSwitch"><code>self.session.scart.VCRSbChanged(3)</code></item>
 
@@ -29,7 +29,7 @@
 				<item weight="20" text="Automatic scan" entryID="auto_scan" requires="HasTuners"><screen module="ScanSetup" screen="ScanSimple" /></item>
 				<item weight="30" text="Manual scan" entryID="manual_scan" requires="HasTuners"><screen module="ScanSetup" /></item>
 			</menu>
-				
+
 			<menu weight="5" level="0" text="System" entryID="system_selection">
 				<id val="system" />
 
@@ -62,11 +62,11 @@ self.session.open(HdmiCECSetupScreen)
 			<item weight="10" level="2" entryID="subtitle_setup"><setup id="subtitlesetup" /></item>
 			<item weight="15" level="1" entryID="autolanguage_setup"><setup id="autolanguagesetup" /></item>
 		</menu>
-	</menu>	
+	</menu>
 
 				<item level="0" entryID="usage_setup"><setup id="usage" /></item>
 				<item level="0" entryID="channelselection_setup"><setup id="channelselection" /></item>
-				
+
 				<menu level="0" text="Extended System" entryID="extended_selection">
 					<id val="extended" />
 				<menu level="0" text="Display" entryID="display_selection" requires="Display">
@@ -85,14 +85,14 @@ self.session.open(HdmiCECSetupScreen)
 				<item weight="10" level="0" text="Filesystem Check" entryID="harddisk_check"><screen module="HarddiskSetup" screen="HarddiskFsckSelection"/></item>
 				<item weight="15" level="0" text="Convert ext3 filesystem to ext4" entryID="harddisk_convert" requires="ext4"><screen module="HarddiskSetup" screen="HarddiskConvertExt4Selection"/></item>
 			</menu>
-				
+
 			<!-- Menu / Settings / Recordings -->
 		<menu weight="10" level="1" text="Recordings &amp; Timeshift" entryID="rec_setup">
 			<id val="rec" />
 			<item weight="10" level="0" text="Timeshift settings" entryID="timshift_setup"><screen module="Timershift" screen="TimeshiftSettings" /></item>
 			<item weight="15" level="0" text="Recording settings" entryID="recording_setup"><screen module="Recordings" screen="RecordingSettings" /></item>
-		</menu>	
-				
+		</menu>
+
 				<item level="1" text="Input devices" entryID="input_device_setup"><screen module="InputDeviceSetup" screen="InputDeviceSelection" /></item>
 				<item text="Keyboard" entryID="keyboard"><setup id="keyboard" /></item>
 				<item level="0" entryID="logs_setup"><setup id="logs" /></item>
@@ -135,14 +135,14 @@ self.session.open(RemoteControlCode)
 				<item level="0" text="Skin Setup" entryID="skin_setup"><screen module="SkinSelector" screen="SkinSelector"/></item>
 
 			</menu>
-			
+
 		<!-- Menu / Settings / Common interface -->
 		<menu weight="30" level="1" text="Common interface" entryID="cam_setup" requires="CommonInterface">
 			<id val="cam" />
 			<item weight="0" level="1" text="Common Interface" entryID="ci_setup"><screen module="Ci" screen="CiSelection" /></item>
 			<item weight="5" level="1" text="CIHelper Setup" entryID="ci_setup" requires="CIHelper"><screen module="Ci" screen="CIHelper" /></item>
 		</menu>
-		
+
 			<item weight="15" level="0" text="Parental control" entryID="parental_setup"><screen module="ParentalControlSetup" screen="ParentalControlSetup" /></item>
 			<item weight="25" level="0" text="Factory reset" entryID="factory_reset">
 <code>
@@ -176,7 +176,7 @@ if recordings:
 	self.session.openWithCallback(self.gotoStandby,MessageBox,_("Recording(s) are in progress or coming up in few seconds!\nEntering standby, after recording the box will shutdown."), type = MessageBox.TYPE_INFO, close_on_any_key = True, timeout = 10)
 else:
 	self.session.open(TryQuitMainloop, 1)
-</code>			
+</code>
 			</item>
 		<item weight="5" level="0" text="Shutdown" requires="!DeepstandbySupport" entryID="deep_standby"><screen module="Standby" screen="TryQuitMainloop">1</screen></item>
 		<item weight="10" level="0" text="WOL Standby" requires="GBWOL" entryID="deep_standby">
@@ -188,8 +188,8 @@ if recordings:
 	self.session.openWithCallback(self.gotoStandby,MessageBox,_("Recording(s) are in progress or coming up in few seconds!\nEntering standby, after recording the box will shutdown."), type = MessageBox.TYPE_INFO, close_on_any_key = True, timeout = 10)
 else:
 	self.session.open(TryQuitMainloop, 45)
-</code>			
-			</item>			
+</code>
+			</item>
 		<item weight="15" level="0" text="Standby" entryID="standby"><screen module="Standby" screen="Standby"/></item>
 		<item weight="20" level="0" text="Sleep Timer" requires="DeepstandbySupport" entryID="sleep"><screen module="SleepTimerEdit" screen="SleepTimerEdit" /></item>
 		<item weight="25" level="0" text="Restart" entryID="restart"><screen module="Standby" screen="TryQuitMainloop">2</screen></item>

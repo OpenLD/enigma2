@@ -18,7 +18,7 @@ import commands
 import datetime
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getDriverDate, getImageVersion, getImageBuild, getBrandOEM, getMachineBuild, getImageFolder, getMachineUBINIZE, getMachineMKUBIFS, getMachineMtdKernel, getMachineKernelFile, getMachineRootFile, getImageFileSystem
 
-VERSION = "Version 2.0 OpenLD"
+VERSION = "Version 2.9 OpenLD"
 
 HaveGZkernel = True
 if getBrandOEM() in ("fulan"):
@@ -351,8 +351,8 @@ class ImageBackup(Screen):
 		self.session.open(Console, title = self.TITLE, cmdlist = cmdlist, closeOnSuccess = False)
 
 	def imageInfo(self):
-		AboutText = _("Full Image Backup ")
-		AboutText += _("Desarrollado por Javilonas") + "\n"
+		AboutText = _("Full Image Backup \n")
+		AboutText += _("Developer: Javilonas (Javier Sayago)") + "\n"
 		AboutText += _("Support at") + " www.lonasdigital.com\n\n"
 		AboutText += _("[Image Info]\n")
 		AboutText += _("Model: %s %s\n") % (getMachineBrand(), getMachineName())
