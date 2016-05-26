@@ -14913,6 +14913,12 @@ msgstr "Selecciona lo que hay que hacer cuando el %s %s haya arrancado, visualiz
 msgid "show picons in service list"
 msgstr "Ver picon en la lista de canales"
 
+msgid "Service picons downsize"
+msgstr "Reducir tamaño picons de servicio"
+
+msgid "Reduce the size of the service picons for more line spacing between them."
+msgstr "Reducir el tamaño de los picons de servicios para obtener más espacio entre líneas."
+
 msgid "Configure if service picons will be shown in the servicelist."
 msgstr "Configura si los picon se mostrarán en la lista de canales."
 
