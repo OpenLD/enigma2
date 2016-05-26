@@ -94,6 +94,8 @@ public:
 	void setColumnWidth(int value) { m_column_width = value; }
 	void setProgressbarHeight(int value) {	m_progressbar_height = value; }
 	void setProgressbarBorderWidth(int value) { m_progressbar_border_width = value; }
+	void setNonplayableMargins(int value) { m_nonplayable_margins = value; }
+	void setItemsDistances(int value) { m_items_distances = value; }
 
 	static void setGetPiconNameFunc(SWIG_PYOBJECT(ePyObject) func);
 
@@ -184,6 +186,8 @@ private:
 	int m_column_width;
 	int m_progressbar_height;
 	int m_progressbar_border_width;
+	int m_nonplayable_margins;
+	int m_items_distances;
 };
 
 #endif
