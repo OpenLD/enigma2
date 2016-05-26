@@ -276,7 +276,7 @@ class ServiceList(HTMLComponent, GUIComponent):
 		if self.listHeight:
 			self.instance.resize(eSize(self.listWidth, self.listHeight / itemHeight * itemHeight))
 
-	def setFontsize(self)::
+	def setFontsize(self):
 		self.ServiceNumberFont = gFont(self.ServiceNameFontName, self.ServiceNameFontSize + config.usage.servicenum_fontsize.value)
 		self.ServiceNameFont = gFont(self.ServiceNameFontName, self.ServiceNameFontSize + config.usage.servicename_fontsize.value)
 		self.ServiceInfoFont = gFont(self.ServiceInfoFontName, self.ServiceInfoFontSize + config.usage.serviceinfo_fontsize.value)
