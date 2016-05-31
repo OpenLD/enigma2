@@ -49,18 +49,26 @@ class Ipkuninstall(Screen):
 			self.ipk = self.ipklist[ires]
 			n1 = self.ipk.find("_", 0)
 			self.ipk = self.ipk[:n1]
-			self.session.openWithCallback(self.test, ChoiceBox, title="Select method?", list=[(_("Remove"), "rem"), (_("Force Remove"), "force")])
+			self.session.openWithCallback(self.delete, ChoiceBox, title=_("Select method?"), list=[(_("Remove"), "rem"), (_("Force Depends"), "force-depends"), (_("Force Remove"), "force-remove")])
 		else:
 			return
 
-	def test(self, answer):
+	def cancel(self):
+		self.close()
+
+	def delete(self, answer):
 		cmd = " "
 		title = " "
-		if answer[1] == "rem":
-			cmd = "opkg remove " + self.ipk
-			title = _("Removing ipk %s" %(self.ipk))
-		elif answer[1] == "force":
-			cmd = "opkg remove --force-depends " + self.ipk
-			title = _("Force Removing ipk %s" %(self.ipk))
+		if answer is not None:
+			if answer[1] == "rem":
+				cmd = "opkg remove " + self.ipk
+				title = (_("Removing ipk %s") % (self.ipk))
+			elif answer[1] == "force-depens":
+				cmd = "opkg remove --autoremove --force-depends " + self.ipk
+				title = (_("Removing Depends of ipk %s") % (self.ipk))
+			elif answer[1] == "force-remove":
+				cmd = "opkg remove --force-depends " + self.ipk
+				title = (_("Force Removing ipk %s") % (self.ipk))
+
 		self.session.open(Console,_(title),[cmd])
 		self.close()
