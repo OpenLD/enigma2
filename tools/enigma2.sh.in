@@ -73,8 +73,8 @@ if [ -e @libdir@/libpassthrough.so ]; then
 	LIBS="$LIBS @libdir@/libpassthrough.so"
 fi
 
-# Iniciar Script OpenLD-Init
-sh /etc/init.d/init_openld.sh
+# Script OpenLD-Init
+sh /etc/init.d/init_openld.sh 2>/dev/null
 
 if [ ! -e /etc/enigma2/settings ]; then
 	touch /etc/enigma2/settings
