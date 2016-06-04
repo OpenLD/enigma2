@@ -193,6 +193,7 @@ void TDT::start()
 	if ( chan )
 	{
 		eDVBTableSpec spec;
+		memset(&spec, 0, sizeof(spec));
 		spec.pid = TimeAndDateSection::PID;
 		spec.tid = TimeAndDateSection::TID;
 		spec.tid_mask = 0xFC;
@@ -302,7 +303,7 @@ void eDVBLocalTimeHandler::setUseDVBTime(bool b)
 				eDebug("[eDVBLocalTimeHandler] invalid system time, refuse to disable transponder time sync");
 				return;
 			}
-		}	
+		}
 		if (m_use_dvb_time) {
 			eDebug("[eDVBLocalTimeHandler] disable sync local time with transponder time!");
 			std::map<iDVBChannel*, channel_data>::iterator it =
