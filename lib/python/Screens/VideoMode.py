@@ -595,7 +595,7 @@ class AutoVideoMode(Screen):
 			# workaround for bug, see http://www.lonasdigital.com/reportes-de-fallos-1304/
 			# always use a fixed resolution and frame rate   (e.g. 1080p50 if supported) for TV or .ts files
 			# always use a fixed resolution and correct rate (e.g. 1080p24/p50/p60 for all other videos
-			if config.av.smart1080p.value != 'false':
+			if config.av.smart1080p.value != 'false'and config.av.autores.value != 'disabled':
 				ref = self.session.nav.getCurrentlyPlayingServiceReference()
 				if ref is not None:
 					try:
