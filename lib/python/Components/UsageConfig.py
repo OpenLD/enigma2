@@ -211,7 +211,7 @@ def InitUsageConfig():
 	config.usage.next_movie_msg = ConfigYesNo(default = True)
 	config.usage.last_movie_played = ConfigText()
 	config.usage.leave_movieplayer_onExit = ConfigSelection(default = "no", choices = [
-		("no", _("No")), ("popup", _("With popup")), ("without popup", _("Without popup")), ("movielist", _("Return to movie list")) ])
+		("no", _("No")), ("popup", _("With popup")), ("without popup", _("Without popup")), ("movielist", _("Return to movie list")), ("stop", _("Behave like stop-button")) ])
 
 	config.usage.setup_level = ConfigSelection(default = "expert", choices = [
 		("simple", _("Simple")),
