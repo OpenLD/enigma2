@@ -664,7 +664,7 @@ def InitUsageConfig():
 	config.subtitles.subtitle_fontsize  = ConfigSelection(choices = ["%d" % x for x in range(16,101) if not x % 2], default = "38")
 
 	subtitle_delay_choicelist = []
-	for i in range(-900000, 1845000, 45000):
+	for i in range(-54000000, 54045000, 45000):
 		if i == 0:
 			subtitle_delay_choicelist.append(("0", _("No delay")))
 		else:
