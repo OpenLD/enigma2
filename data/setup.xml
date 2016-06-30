@@ -300,6 +300,7 @@
 		<item level="0" text="Up/Down button mode" description="Select what you want the Up/Down button to activate:">config.usage.updownbutton_mode</item>
 		<item level="0" text="Use image coloured Buttons *" description="Select if you want to use the image coloured Buttons (set to 'no' if you want to use (Multi) Quick Button).">config.plisettings.ColouredButtons</item>
 		<item level="0" text="BlueSwitch: Blue-Short/Blue-Long" description="Switch Blue-Short (QuickMenu) with Blue-Long (Extensions)">config.workaround.blueswitch</item>
+		<item level="0" text="Long press emulation with button" description="Press this button to emulate a long press on a button pressed afterwards (this also overrides any other actions assigned to emulation button).">config.usage.long_press_emulation_key</item>
 		</setup>
 	<setup level="2" key="logs" title="Logs settings">
 		<item level="2" text="Logs location" description="Choose the location for crash and debuglogs.">config.crash.debug_path</item>
