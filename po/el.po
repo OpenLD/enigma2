@@ -3321,11 +3321,14 @@ msgstr "Θέλετε να επαναφέρετε τις ρυθμίσεις σα�
 msgid "Do you want to upgrade the package:\n"
 msgstr "Θέλετε να αναβαθμίσετε το πακέτο:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr "Η ψηφιακή μίξη Dolby Digital είναι τώρα "
+
 msgid "Dolby Digital / DTS downmix"
-msgstr ""
+msgstr "Μίξη Dolby Digital / DTS"
 
 msgid "Don't save"
-msgstr ""
+msgstr "Να μη γίνει αποθήκευση"
 
 #
 #
@@ -13483,4 +13486,3 @@ msgstr "εγγραφή"
 # #
 msgid "zapped"
 msgstr "zapped"
-

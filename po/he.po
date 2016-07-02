@@ -2743,6 +2743,9 @@ msgstr "? האם ברצונך לשחזר את ההגדרות"
 msgid "Do you want to upgrade the package:\n"
 msgstr "?האם ברצונך לשדרג את החבילה\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -10938,4 +10941,3 @@ msgstr "הקלט"
 
 msgid "zapped"
 msgstr "זופזפ"
-

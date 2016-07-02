@@ -2906,6 +2906,9 @@ msgstr "Wolle jo jo ynstellingen wêrom sette ?"
 msgid "Do you want to upgrade the package:\n"
 msgstr ""
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -11677,4 +11680,3 @@ msgstr "opnimme"
 #
 msgid "zapped"
 msgstr "knipt"
-

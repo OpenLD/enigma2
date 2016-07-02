@@ -2726,6 +2726,9 @@ msgstr "Do you want to update your %s %s ?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Do you want to upgrade the package:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr "Dolby Digital / DTS downmix"
 

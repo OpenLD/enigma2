@@ -2772,6 +2772,9 @@ msgstr "هل تريد إستعادة الاعدادات ؟"
 msgid "Do you want to upgrade the package:\n"
 msgstr "هل تريد ترقية الحزمه \n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -10994,4 +10997,3 @@ msgstr "تسجيل"
 
 msgid "zapped"
 msgstr "تم الانتقال"
-

@@ -5305,6 +5305,9 @@ msgstr "Ошибка КроссЕПГ: %s"
 msgid "Crossing Connection time"
 msgstr "Тайм-аут"
 
+msgid "Dolby Digital downmix is now"
+msgstr "Микширование Dolby Digital выполнено"
+
 msgid "Current CEC address"
 msgstr "Текущий СЕС адрес"
 

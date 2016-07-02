@@ -2875,6 +2875,15 @@ msgstr "Chcete aktualizovať Váš box?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Chcete aktualizovať balíček:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
+msgid "Dolby Digital / DTS downmix"
+msgstr ""
+
+msgid "Don't add this recording"
+msgstr ""
+
 msgid "Don't save"
 msgstr "Neukladať"
 

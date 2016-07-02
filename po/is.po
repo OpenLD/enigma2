@@ -2777,6 +2777,9 @@ msgstr "Viltu setja inn stillingarnar þínar aftur?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Viltu uppfæra pakkann:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -11516,4 +11519,3 @@ msgstr "taka upp"
 #
 msgid "zapped"
 msgstr "stokkið"
-

@@ -2612,6 +2612,9 @@ msgstr "ท่านต้องการที่จะนำการตั้
 msgid "Do you want to upgrade the package:\n"
 msgstr "ยืนยันจะปรับปรุงส่วนประกอบนี้:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -10354,4 +10357,3 @@ msgstr "บันทึก"
 
 msgid "zapped"
 msgstr "เปลี่ยนช่องแล้ว"
-

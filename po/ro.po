@@ -3069,6 +3069,9 @@ msgstr "Finalizat"
 msgid "Finished configuring your network"
 msgstr "S-a finalizat configurarea retelei dvs"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Finished restarting your network"
 msgstr "Reteaua dvs a fost repornita"
 
@@ -10292,4 +10295,3 @@ msgstr "inregistrare"
 
 msgid "zapped"
 msgstr "zapped"
-

@@ -2730,6 +2730,9 @@ msgstr "Deseja restaurar as definições?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Deseja atualizar o pacote:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 #, fuzzy
 msgid "Dolby Digital / DTS downmix"
 msgstr "Downmix DTS"
@@ -10740,4 +10743,3 @@ msgstr "desencriptar e gravar ecm"
 
 msgid "zapped"
 msgstr "zapped"
-

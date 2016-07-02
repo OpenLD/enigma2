@@ -2155,6 +2155,15 @@ msgstr "Czy chcesz zaktualizować Twojego %s %s?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Chcesz zaktualizować pakiet:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
+msgid "Dolby Digital / DTS downmix"
+msgstr ""
+
+msgid "Don't add this recording"
+msgstr ""
+
 msgid "Don't save"
 msgstr "Nie zapisuj"
 

@@ -2939,6 +2939,9 @@ msgstr "Vil du genskabe dine indstillinger?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Vil du opgradere pakken:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -11839,4 +11842,3 @@ msgstr "optage"
 #
 msgid "zapped"
 msgstr "skiftet"
-

@@ -2643,6 +2643,9 @@ msgstr "آیا میخواهید تنظیمات شما بازگردانی شود 
 msgid "Do you want to upgrade the package:\n"
 msgstr "آیا میخواهید بسته به روز رسانی شود :\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -10454,4 +10457,3 @@ msgstr "ضبط"
 
 msgid "zapped"
 msgstr "حذف شد"
-

@@ -2733,6 +2733,9 @@ msgstr "Do you want to update your receiver to %s?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Do you want to upgrade the package:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 #, fuzzy
 msgid "Dolby Digital / DTS downmix"
 msgstr "AC3/DTS downmix"
@@ -10694,4 +10697,3 @@ msgstr "Do not record"
 
 msgid "zapped"
 msgstr "zapped"
-

@@ -2943,6 +2943,9 @@ msgstr "Vai vēlaties atjaunot savus iestatījumus?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Vai vēlaties atjaunināt pakotni:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -11744,4 +11747,3 @@ msgstr "ierakstīt"
 #
 msgid "zapped"
 msgstr "pārslēgts"
-

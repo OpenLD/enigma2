@@ -9912,6 +9912,9 @@ msgstr "Toon softwaremanager in pluginbrowser"
 msgid "show softwaremanager on blue button"
 msgstr "Toon softwaremanager onder blauwe knop"
 
+msgid "Dolby Digital downmix is now"
+msgstr "Dolby digitale downmix is nu"
+
 msgid "show transponder info"
 msgstr "Transponder info weergeven"
 
@@ -10717,7 +10720,7 @@ msgstr ""
 msgid "Scan for local extensions and install them"
 msgstr ""
 "Zoek locale plugins en installeer deze. \n"
-"Plugins installeren vanop: HDD, USB, ..."  
+"Plugins installeren vanop: HDD, USB, ..."
 
 # Menue Harddisk
 msgid "Format your Harddisk"
@@ -10814,7 +10817,7 @@ msgstr "Help lang"
 
 msgid "Subtitle"
 msgstr "Ondertitels"
- 
+
 msgid "Previous"
 msgstr "Vorige"
 

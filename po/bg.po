@@ -3053,6 +3053,9 @@ msgstr "Към позиция"
 msgid "Final position at index"
 msgstr ""
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 #, fuzzy
 msgid "Fine movement"
 msgstr "Показвай въртенето на антената"
@@ -10297,4 +10300,3 @@ msgstr "запис"
 
 msgid "zapped"
 msgstr "превключен"
-

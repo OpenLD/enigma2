@@ -4015,6 +4015,13 @@ msgstr ""
 "Видалити не налаштовані супутники\n"
 "%s?"
 
+msgid "Do you want to update your box?"
+msgstr "Бажаєте оновити ваш приймач?"
+
+#
+msgid "Do you want to upgrade the package:\n"
+msgstr "Бажаєте оновити пакет:\n"
+
 #
 msgid "Delete playlist entry"
 msgstr "Видалити запис з плейлиста"
@@ -4509,6 +4516,9 @@ msgstr "Мікшування Dolby Digital виконано"
 
 msgid "Doctor Watson mode:"
 msgstr "Режим Доктор Ватсон"
+
+msgid "Dolby Digital downmix is now"
+msgstr "Мікшування Dolby Digital виконано"
 
 #
 msgid "Dolby Digital / DTS downmix"

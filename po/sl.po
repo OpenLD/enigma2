@@ -2958,6 +2958,9 @@ msgstr "Želite povrniti vaše nastavitve?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Želite nadgraditi paket:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 #
 #, fuzzy
 msgid "Dolby Digital / DTS downmix"
@@ -11949,4 +11952,3 @@ msgstr "posnemi"
 #
 msgid "zapped"
 msgstr "preklopljen"
-

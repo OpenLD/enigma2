@@ -1174,6 +1174,21 @@ msgstr "Arte/Cultura"
 msgid "Ask user"
 msgstr "Chiedere all'utente"
 
+<<<<<<< HEAD
+=======
+msgid "Ask user (with default as 'no')"
+msgstr "Chiedi utente (con default su 'no')"
+
+msgid "Ask user (with default as 'yes')"
+msgstr "Chiedi utente (con default su 'si')"
+
+msgid "Aspect Ratio"
+msgstr "Rapporto TV"
+
+msgid "Aspect list..."
+msgstr "Dolby Digital downmix is now"
+
+>>>>>>> 35db3d5... Update po´s/pot - fix typo
 msgid "Aspect ratio"
 msgstr "(Aspect Radio) Rapporto TV"
 
@@ -3089,8 +3104,8 @@ msgstr "Ripristinare la configurazione?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Aggiornare il pacchetto:\n"
 
-msgid "Dobly Digital downmix is now"
-msgstr ""
+msgid "Dolby Digital downmix is now"
+msgstr "Dolby Digital downmix è adesso"
 
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
@@ -12668,4 +12683,3 @@ msgstr "Settaggi avanzati"
 #, fuzzy
 #~ msgid "Show tag menu"
 #~ msgstr "Mostrare il menu etichette"
-

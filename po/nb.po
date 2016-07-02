@@ -2797,6 +2797,9 @@ msgstr ""
 msgid "Exit mediaplayer"
 msgstr ""
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Exit movie list"
 msgstr ""
 

@@ -2962,6 +2962,9 @@ msgstr "Želite li vratiti vaše postavke iz sigurnosne kopije?"
 msgid "Do you want to upgrade the package:\n"
 msgstr "Da li želite da nadogradite paket:\n"
 
+msgid "Dolby Digital downmix is now"
+msgstr ""
+
 msgid "Dolby Digital / DTS downmix"
 msgstr ""
 
@@ -11847,4 +11850,3 @@ msgstr "Snimi"
 #
 msgid "zapped"
 msgstr "prebačen"
-
