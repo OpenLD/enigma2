@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: tuxbox-enigma 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-03-21 14:27+0100\n"
+"PO-Revision-Date: 2016-06-19 22:33+0100\n"
 "Last-Translator: mike99 <mike99@mail.to>\n"
-"Language-Team: openLD\n"
+"Language-Team: openATV <madie1@gmx.de>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -751,7 +751,7 @@ msgid "Activate Picture in Picture"
 msgstr "Bild-in-Bild aktivieren"
 
 #
-msgid "Setup Picture in Picture"
+msgid "Picture in Picture Setup"
 msgstr "Bild-in-Bild-Einstellungen"
 
 #
@@ -1340,6 +1340,10 @@ msgstr "Startzeit"
 #
 msgid "Behavior of 'pause' when paused"
 msgstr "Verhalten der Pausetaste bei Standbild"
+
+#
+msgid "Single step (GOP)"
+msgstr "Einzelschritte (GOP)"
 
 #
 msgid "Behavior of 0 key in PiP-mode"
@@ -2130,6 +2134,9 @@ msgstr "Endlos (Schleife)"
 msgid "Contrast"
 msgstr "Kontrast"
 
+msgid "Color"
+msgstr "Farben"
+
 msgid "Control of the position how finished timer are shown in the Timer List."
 msgstr "Wie sollen abgeschlossene Timer in der Liste angezeigt werden."
 
@@ -2448,8 +2455,9 @@ msgstr "< Standard >"
 msgid "Defaults"
 msgstr "Standards"
 
-msgid "Default Settings"
-msgstr "Voreinstellungen"
+# SoftwareManager/plugin.py
+msgid "Default settings"
+msgstr "Standard-Einstellungen"
 
 msgid "Default movie location"
 msgstr "Standard-Filmverzeichnis"
@@ -2685,10 +2693,6 @@ msgstr "Einstellung der Helligkeit für das Gerätedisplay im Normalbetrieb."
 
 msgid "Configure the brightness level of the front panel display for standby."
 msgstr "Einstellung der Helligkeit für das Gerätedisplay im Standby."
-
-#
-msgid "Display and Userinterface"
-msgstr "Anzeige und Oberfläche"
 
 msgid "Setup Userinterface"
 msgstr "Einstellungen Benutzeroberfläche"
@@ -5543,7 +5547,7 @@ msgstr "Telefonnummer"
 
 #
 msgid "PiPSetup"
-msgstr "Bild-in-Bild Einstellungen"
+msgstr "Bild-in-Bild-Einstellungen"
 
 msgid "Picture in graphics"
 msgstr "Mini-TV Bild im grafischen EPG anzeigen"
@@ -7423,9 +7427,13 @@ msgstr "Netzwerkfreigaben"
 msgid "Sharpness"
 msgstr "Schärfe"
 
-# RecordingConfig.py:16
+# RecordingConfig.py:17
 msgid "Short filenames"
 msgstr "Kurze Dateinamen"
+
+# RecordingConfig.py:16
+msgid "Short filenames with time"
+msgstr "Kurze Dateinamen mit Uhrzeit"
 
 # RecordingConfig.py:14
 msgid "Very very short filenames - Warning"
@@ -7770,9 +7778,9 @@ msgstr ""
 "Entschuldigung, Ihr Sicherungsverzeichnis ist nicht beschreibbar.\n"
 "Bitte wählen Sie ein anderes Verzeichnis."
 
-#
-msgid "Sorry, no Details available!"
-msgstr "Entschuldigung, keine Details verfügbar"
+#: SoftwareManager/plugin.py:877
+msgid "Sorry, no details available!"
+msgstr "Entschuldigung, keine Details verfügbar!"
 
 #: BackupRestore.py:124 BackupRestore.py:126
 msgid ""
@@ -9489,9 +9497,13 @@ msgstr "Eine Liste der verfügbaren "
 msgid "View list of available CommonInterface extensions"
 msgstr "Verfügbare Common Interface-Erweiterungen anzeigen."
 
-#
-msgid "View list of available Display and Userinterface extensions."
-msgstr "Verfügbare Display- und Userinterface-Erweiterungen anzeigen."
+# SoftwareManager/plugin.py
+msgid "Display and user interface"
+msgstr "Anzeige und Oberfläche"
+
+# SoftwareManager/plugin.py
+msgid "View list of available display and userinterface extensions."
+msgstr "Verfügbare Anzeige/Oberflächen-Erweiterungen anzeigen."
 
 #
 msgid "View list of available EPG extensions."
@@ -9505,7 +9517,7 @@ msgstr "Verfügbare Satellitenausrüstungs-Plugins anzeigen."
 msgid "View list of available communication extensions."
 msgstr "Verfügbare Kommunikations-Erweiterungen anzeigen."
 
-#
+# SoftwareManager/plugin.py
 msgid "View list of available default settings"
 msgstr "Verfügbare Standard-Bouquets anzeigen."
 
@@ -9765,6 +9777,14 @@ msgstr "Wenn der Bildinhalt ein Seitenverhältnis von 4:3 hat, wähle ob das Bil
 msgid "When the content has an aspect ratio of 4:3, choose whether to stretch the picture to fill the screen."
 msgstr "Wenn der Bildinhalt ein Seitenverhältnis von 4:3 hat, wähle ob das Bild gestreckt werden soll um den ganzen Bildschirm zu füllen."
 
+#: VideoMode.py
+msgid "Configure which color format should be used on the SCART output."
+msgstr "Konfigurieren Sie, welches Farbformat am Scart Ausgang benutzt werden soll."
+
+#: VideoMode.py
+msgid "When enabled, content with an aspect ratio of 4:3 will be stretched to fit the screen."
+msgstr "Wenn aktiviert, werden Videoinhalte mit einem Seitenverhältnis von 4:3 gestreckt dargestellt, um den Bildschirm zu füllen."
+
 msgid "When tuned to a service the system will normally scan the transponder for any changes and save them. Only set to 'yes' if you're absolutely sure what you're doing."
 msgstr "Wenn ein Sender eingestellt ist, durchsucht die %s %s den Transponder nach Änderungen und speichert diese. Nur 'Ja' wählen, wenn Sie sich über die Auswirkungen bewusst sind."
 
@@ -9911,6 +9931,14 @@ msgstr "Ja, jetzt herunterfahren."
 #
 msgid "Yes, restore the settings now"
 msgstr "Ja, die Einstellungen jetzt wiederherstellen"
+
+#: SoftwareManager/imagewizard.xml:84
+msgid "Yes, shut down now."
+msgstr "Ja, jetzt herunterfahren."
+
+#: SoftwareManager/imagewizard.xml:94
+msgid "Your %s %s is shutting down. Please wait..."
+msgstr "Ihre %s %s wird jetzt ausgeschaltet. Bitte warten..."
 
 #
 msgid "Yes, returning to movie list"
@@ -10094,7 +10122,7 @@ msgid ""
 "\n"
 "Do you want to install now ?"
 msgstr ""
-"Deine %s %s wird nach installieren des Services neu gestartet\n"
+"Ihre %s %s wird nach installieren des Services neu gestartet\n"
 "\n"
 "Service jetzt installieren?"
 
@@ -10168,7 +10196,7 @@ msgstr ""
 
 #, python-format
 msgid "Your internet connection is working (ip: %s)"
-msgstr "Deine Internetverbindung besteht (IP:%s)"
+msgstr "Ihre Internetverbindung besteht (IP:%s)"
 
 #
 msgid "Your name (optional):"
@@ -10179,10 +10207,10 @@ msgid "Your network configuration has been activated."
 msgstr "Ihre Netzwerk-Konfiguration wurde aktiviert."
 
 msgid "Your %s %s does not have an internet connection"
-msgstr "Deine %s %s hat keine Internetverbindung"
+msgstr "Ihre %s %s hat keine Internetverbindung"
 
 msgid "Your %s %s is not connected to the internet"
-msgstr "Deine %s %s ist nicht mit dem Internet verbunden"
+msgstr "Ihre %s %s ist nicht mit dem Internet verbunden"
 
 msgid ""
 "Your wireless LAN internet connection could not be started!\n"
@@ -10714,6 +10742,10 @@ msgstr "Nicht aufnehmen"
 #
 msgid "done!"
 msgstr "Erledigt!"
+
+#: PowerTimerEdit.py:183
+msgid "running..."
+msgstr "laufend..."
 
 msgid "e-Mail address"
 msgstr "E-Mail-Adresse"
@@ -11930,7 +11962,7 @@ msgstr "Überschreiben der Softcam Dateien beim Update?"
 
 #
 msgid "Overwrite picon files during software upgrade?"
-msgstr "Überschreiben der picon Datein beim Update?"
+msgstr "Überschreiben der Picon-Dateien beim Update?"
 
 #
 msgid "Choose backup files"
@@ -12030,7 +12062,7 @@ msgstr "Starten"
 
 #
 msgid "Select a scirpt to run"
-msgstr "Script zum starten auswählen"
+msgstr "Script zum Starten auswählen"
 
 #
 msgid "Scan All"
@@ -12553,16 +12585,16 @@ msgid "Aborting updateprogress"
 msgstr "Update wurde abgebrochen"
 
 msgid "Caution update not yet tested !!"
-msgstr "Achtung Update nocht nicht Überprüft!!"
+msgstr "Achtung Update noch nicht überprüft!!"
 
 msgid "Update at your own risk"
 msgstr "Update auf eigene Gefahr"
 
-msgid "For more information see http://www.lonasdigital.com"
-msgstr "Für weitere Information gehe auf http://www.lonasdigital.com"
+msgid "For more information see https://www.lonasdigital.com"
+msgstr "Für weitere Information gehe auf https://www.lonasdigital.com"
 
-msgid "The status of the current update could not be checked because http://www.lonasdigital.com could not be reached for some reason"
-msgstr "Der Update Status kann nicht überprüft werden da die Seite http://www.lonasdigital.com nicht erreichbar ist"
+msgid "The status of the current update could not be checked because https://www.lonasdigital.com could not be reached for some reason"
+msgstr "Der Update Status kann nicht überprüft werden da die Seite https://www.lonasdigital.com nicht erreichbar ist"
 
 msgid "Do you want to update your box?"
 msgstr "Update der Box durchführen?"
@@ -13308,7 +13340,7 @@ msgid "Automatic scan for services"
 msgstr "Automatischer Suchlauf"
 
 msgid "Manual scan for services"
-msgstr "Manueller Scan der Dienste"
+msgstr "Manueller Suchlauf"
 
 msgid "Search Sats"
 msgstr "Suche Satelliten und Pegelanzeige"
@@ -13421,8 +13453,8 @@ msgid "Please wait whilst feeds state is checked."
 msgstr "Bitte warten, Feed-Status wird überprüft"
 
 #: Download Netzwerk Dienste
-msgid "Sorry feeds are down for maintenance, please try again later."
-msgstr "Feeds sind nicht verfügbar wegen Wartungsarbeiten, bitte versuchen Sie es später"
+msgid "Sorry feeds are down for maintenance, please try again later. If this issue persists please check www.lonasdigital.com"
+msgstr "Feeds sind wegen Wartungsarbeiten im Moment nicht verfügbar, bitte versuchen Sie es später. Für weitere Fragen besuchen Sie bitte www.lonasdigital.com"
 
 #: Download Netzwerk Dienste
 msgid "Your %s %s is not connected to the internet, please check your network settings and try again."
@@ -13555,7 +13587,7 @@ msgid "'Buffer in hours' or 'number of last events'. For deleting older timeshif
 msgstr "'Puffer in Stunden' oder 'Anzahl der letzten Ereignisse'. Priorität hat die Bedingung zum Löschen älterer Timeshift Dateien, die zuerst aufgetreten ist."
 
 msgid "Timeshift checking for older files [in minutes]"
-msgstr "Timeshift-Überprüfung auf ältere Dateien [in Minuten]"
+msgstr "Timeshift-Überprüfung auf ältere Dateien (in Minuten)"
 
 msgid "In addition to the check at an event start, a repetitive check can be used, so that the conditions 'buffer limit in hours' or 'check free space' are detected earlier."
 msgstr "Zusätzlich zu der Überprüfung bei einem Event-Start kann diese Einstellung genutzt werden. Damit wird die Bedingung 'Puffer Limit in Stunden' oder 'Überprüfung auf freien Speicherplatz' eher erkannt."
@@ -13567,7 +13599,7 @@ msgid "If the free space is less than setting value, then an attempt is made to 
 msgstr "Wenn der freie Speicherplatz kleiner als der eingestellte Wert ist, wird versucht, die alten Timeshift-Dateien zu löschen."
 
 msgid "If set to 'no', timeshift used only one buffer file. It's recommend 'Timeshift checking for older files [in minutes]' and 'Timeshift checking for free space?' to adjust."
-msgstr "Wenn 'Nein' eingestellt ist, wird nur eine Datei als Puffer verwendet. Es wird empfohlen 'Timeshift-Überprüfung auf ältere Dateien [in Minuten]' und 'Timeshift-Überprüfung auf freien Speicherplatz?' anzupassen."
+msgstr "Wenn 'Nein' eingestellt ist, wird nur eine Datei als Puffer verwendet. Es wird empfohlen 'Timeshift-Überprüfung auf ältere Dateien (in Minuten)' und 'Timeshift-Überprüfung auf freien Speicherplatz?' anzupassen."
 
 msgid "Timeshift buffer delete after zap?"
 msgstr "Timeshift-Puffer beim Umschalten löschen?"
@@ -13877,23 +13909,23 @@ msgstr "Sendernamen Breite"
 msgid "Timeline font size"
 msgstr "Schriftgröße für die Zeitskala"
 
-#:EpgList.py
+#: EpgList.py
 msgid "Position of recording icons"
 msgstr "Ausrichtung der Aufnahme-Symbole"
 
-#:EpgList.py
+#: EpgList.py
 msgid "Set the position of the recording icons"
-msgstr "Legen Sie die Positionen der Aufnahme-Symbole fest"
+msgstr "Legen Sie die Positionen der Aufnahme-Symbole fest."
 
-#:EpgList.py
+#: EpgList.py
 msgid "bottom"
 msgstr "Unten"
 
-#:EpgList.py
+#: EpgList.py
 msgid "middle"
 msgstr "Mitte"
 
-#:EpgList.py
+#: EpgList.py
 msgid "hide"
 msgstr "Verstecken"
 
@@ -14251,7 +14283,7 @@ msgid ""
 "Please setup your user interface by adjusting the values till the edges of the red box are touching the edges of your TV.\n"
 "When you are ready press OK to continue."
 msgstr ""
-"Justieren Sie die Position der Benutzeroberfläche. Die  Ränder des roten Bereichs sollten die Ränder des TV-Bildschirms berühren.\n"
+"Justieren Sie die Position der Benutzeroberfläche. Die Ränder des roten Bereichs sollten die Ränder des TV-Bildschirms berühren.\n"
 "\n"
 "Danach OK drücken."
 
@@ -14260,7 +14292,7 @@ msgid ""
 "Please setup your user interface by adjusting the values till the edges of the red box are touching the edges of your TV.\n"
 "When you are ready press green to continue."
 msgstr ""
-"Justieren Sie die Position der Benutzeroberfläche. Die  Ränder des roten Bereichs sollten die Ränder des TV-Bildschirms berühren.\n"
+"Justieren Sie die Position der Benutzeroberfläche. Die Ränder des roten Bereichs sollten die Ränder des TV-Bildschirms berühren.\n"
 "\n"
 "Danach grün drücken."
 
@@ -14896,6 +14928,10 @@ msgstr ""
 "\n"
 "Plugin wird beendet."
 
+# /SoftwareManager/Flash_online.py:624
+msgid "%d of %d kBytes"
+msgstr "%d von %d kBytes"
+
 msgid "Download Failed !!"
 msgstr "Herunterladen gescheitert!!"
 
@@ -15159,7 +15195,7 @@ msgstr "langsam"
 
 # python\Screens\LanguageSelection.py
 msgid "Do you want to delete all other languages?"
-msgstr "Wollen Sie alle anderen Sprachen löschen,"
+msgstr "Wollen Sie alle anderen Sprachen löschen?"
 
 # python\Screens\LanguageSelection.py
 msgid " Except %s"
@@ -17034,7 +17070,7 @@ msgid "Popup"
 msgstr "Aufblenden"
 
 msgid "Slide from left"
-msgstr "Von links Gleiten"
+msgstr "Von links gleiten"
 
 msgid "Slide right to left"
 msgstr "Von rechts nach links"
@@ -17180,7 +17216,7 @@ msgid ""
 msgstr ""
 "Keine Programmliste geladen !!\n"
 "\n"
-"Bitte erst eine Programmliste Installieren"
+"Bitte erst eine Programmliste installieren"
 
 msgid ""
 "Selected settingslist:\n"
@@ -17195,7 +17231,7 @@ msgstr ""
 "Liste: %s\n"
 "Datum: %s\n"
 "\n"
-"Möchtest du die Programmliste Installieren?"
+"Möchten Sie die Programmliste installieren?"
 
 msgid "Server down"
 msgstr "Server ist Offline"
@@ -17212,6 +17248,9 @@ msgstr " von "
 msgid " updated"
 msgstr " installiert"
 
+msgid "Setting Restored "
+msgstr "Wiederhergestellte Programmliste "
+
 msgid ""
 " available !!\n"
 "\n"
@@ -17219,7 +17258,7 @@ msgid ""
 msgstr ""
 " verfügbar !!\n"
 "\n"
-"Möchtest du die Programmliste installieren?"
+"Möchten Sie die Programmliste installieren?"
 
 msgid "Programmlisten-Updater Restore"
 msgstr "Programmlisten-Updater wiederherstellen"
@@ -17231,7 +17270,7 @@ msgid ""
 msgstr ""
 "Ausgewählte Programmliste: %s\n"
 "\n"
-"Möchtest du die Programmliste wiederherstellen?"
+"Möchten Sie die Programmliste wiederherstellen?"
 
 msgid ""
 "Selected settingslist: %s\n"
@@ -17240,14 +17279,13 @@ msgid ""
 msgstr ""
 "Ausgewählte Programmliste: %s\n"
 "\n"
-"Möchtest du die Programmliste löschen?"
-
+"Möchten Sie die Programmliste löschen?"
 
 msgid "Maximum number of days in EPG"
 msgstr "Maximale Anzahl von Tagen vom EPG"
 
 msgid "Use for load only x days in EPG"
-msgstr "Festlegen der Tage zum laden des EPG"
+msgstr "Festlegen der Tage zum Laden des EPG"
 
 msgid "Tuning algorithm"
 msgstr "Tuning-Algorithmus"
@@ -17275,40 +17313,59 @@ msgstr ""
 "(ab 30 auf 4, ab 18 auf 3, ab 9 auf 2, ab 3 auf 1)"
 
 msgid "This allows you to show drivers modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Treibern im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Treibern im Downloadbereich"
 
 msgid "This allows you to show extensions modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Extensions im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Extensions im Downloadbereich"
 
 msgid "This allows you to show systemplugins modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Systemplugins im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Systemplugins im Downloadbereich"
 
 msgid "This allows you to show softcams modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Softcams im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Softcams im Downloadbereich"
 
 msgid "This allows you to show skins modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Skins im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Skins im Downloadbereich"
 
 msgid "This allows you to show lcd skins in downloads"
-msgstr "Dies erlaubt dir die Anzeige von LCD Skins im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von LCD Skins im Downloadbereich"
 
 msgid "This allows you to show picons modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Picons im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Picons im Downloadbereich"
 
 msgid "This allows you to show settings modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Settings im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Settings im Downloadbereich"
 
 msgid "This allows you to show m2k modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von M2K im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von M2K im Downloadbereich"
 
 msgid "This allows you to show weblinks modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Weblinks im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Weblinks im Downloadbereich"
+
+msgid "This allows you to show pli modules in downloads"
+msgstr "Dies erlaubt Ihnen die Anzeige von PLI Erweiterungen im Downloadbereich"
+
+msgid "This allows you to show vix modules in downloads"
+msgstr "Dies erlaubt Ihnen die Anzeige von VIX Erweiterungen im Downloadbereich"
 
 msgid "This allows you to show security modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Security Erweiterungen im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Security Erweiterungen im Downloadbereich"
 
 msgid "This allows you to show kernel modules in downloads"
-msgstr "Dies erlaubt dir die Anzeige von Kernel Erweiterungen im Download"
+msgstr "Dies erlaubt Ihnen die Anzeige von Kernel Erweiterungen im Downloadbereich"
 
 msgid "Please enter the your personal feed URL"
-msgstr "Hier kann man den Persönlichen FEED URL Eintragen"
+msgstr "Hier kann man die persönliche FEED URL eintragen"
+
+#: MultiBootStartup.py:29
+msgid "MultiBoot Selector"
+msgstr "MultiBoot-Auswahl"
+
+#: MultiBootStartup.py:33
+msgid "Select Image: STARTUP_1"
+msgstr "Wähle Image: STARTUP_1"
+
+#: MultiBootStartup.py:55
+#, python-format
+msgid "Select Image: %s"
+msgstr "Wähle Image: %s"
