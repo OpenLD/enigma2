@@ -100,7 +100,7 @@
 		<key id="KEY_F4" mapto="extensions" flags="b" />
 		<key id="KEY_BLUE" mapto="extensions" flags="l" />
 	</map>
-	
+
 	<map context="InfoBarQuickMenu">
 		<key id="KEY_BLUE" mapto="quickmenu" flags="b" />
  	</map>
@@ -224,11 +224,12 @@
 		<key id="KEY_BACK" mapto="historyBack" flags="b" />
 		<key id="KEY_EXIT" mapto="exit_s" flags="b" />
 	</map>
-	
+
 	<map context="InfobarAudioSelectionActions">
-		<key id="KEY_AUDIO" mapto="audio_key" flags="b" />
-		<key id="KEY_YELLOW" mapto="audioSelection" flags="b" />
-		<key id="KEY_YELLOW" mapto="audioSelection" flags="l" />
+		<key id="KEY_YELLOW" mapto="yellow_key" flags="b" />
+		<key id="KEY_YELLOW" mapto="yellow_key" flags="l" />
+		<key id="KEY_AUDIO" mapto="audioSelection" flags="b" />
+		<key id="KEY_AUDIO" mapto="audioSelectionLong" flags="l" />
 	</map>
 
 	<map context="InfobarAspectSelectionActions">
@@ -486,7 +487,7 @@
 	<map context="InfobarTeletextActions">
 		<key id="KEY_TEXT" mapto="startTeletext" flags="m" />
 	</map>
-	
+
 	<map context="TeletextActions">
 		<key id="KEY_RIGHT" mapto="nextSubPage" flags="m" />
 		<key id="KEY_LEFT" mapto="prevSubPage" flags="m" />
@@ -494,7 +495,7 @@
 		<key id="KEY_DOWN" mapto="prevPage" flags="m" />
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_FILE" mapto="transparent" flags="m" />
-		<key id="KEY_VIDEO" mapto="transparent" flags="m" />		
+		<key id="KEY_VIDEO" mapto="transparent" flags="m" />
 		<key id="KEY_MEDIA" mapto="transparent" flags="m" />
 		<key id="KEY_GREEN" mapto="green" flags="m" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
@@ -509,7 +510,7 @@
 		<key id="KEY_EXIT" mapto="exit" flags="m" />
 		<key id="KEY_POWER" mapto="exit" flags="m" />
 	</map>
-	
+
 	<map context="InfobarRdsActions">
 		<key id="KEY_TEXT" mapto="startRassInteractive" flags="m" />
 	</map>

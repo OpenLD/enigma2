@@ -3573,7 +3573,18 @@ class InfoBarAudioSelection:
 		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
 			{
 				"audioSelection": (self.audioSelection, _("Audio options...")),
+				"yellow_key": (self.yellow_key, _("Audio options...")),
+				"audioSelectionLong": (self.audioSelectionLong, _("Toggle Digital downmix...")),
 			})
+
+	def yellow_key(self):
+		if not hasattr(self, "LongButtonPressed"):
+			self.LongButtonPressed = False
+		if not self.LongButtonPressed:
+			try:
+				self.startTimeshift()
+			except:
+				pass
 
 	def audioSelection(self):
 		from Screens.AudioSelection import AudioSelection
