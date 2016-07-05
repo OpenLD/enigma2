@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from boxbranding import getBoxType, getImageVersion
+from boxbranding import getBoxType, getMachineBuild, getImageVersion
 from time import *
 from types import *
 from sys import modules
@@ -54,7 +54,7 @@ def getModelString():
 		return "unknown"
 
 def getChipSetString():
-	if getBoxType() in ('dm7080','dm820'):
+	if getMachineBuild() in ('dm7080','dm820'):
 		return "7435"
 	else:
 		try:
@@ -66,7 +66,7 @@ def getChipSetString():
 			return "unavailable"
 
 def getCPUSpeedString():
-	if getBoxType() in ('vusolo4k'):
+	if getMachineBuild() in ('vusolo4k'):
 		return "1,5 GHz"
 	else:
 		try:
@@ -88,7 +88,7 @@ def getCPUSpeedString():
 			return "unavailable"
 
 def getCPUString():
-	if getBoxType() in ('xc7362', 'vusolo4k'):
+	if getMachineBuild() in ('xc7362', 'vusolo4k'):
 		return "Broadcom"
 	else:
 		try:

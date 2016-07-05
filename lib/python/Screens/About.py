@@ -13,7 +13,7 @@ from Tools.StbHardware import getFPVersion
 
 from ServiceReference import ServiceReference
 from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel
-from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
+from boxbranding import getBoxType, getMachineBuild, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
 
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
@@ -57,7 +57,7 @@ def getAboutText():
 			pass
 
 	cpuMHz = ""
-	if getBoxType() in ('vusolo4k'):
+	if getMachineBuild() in ('vusolo4k'):
 		cpuMHz = "   (1,5 GHz)"
 	else:
 		if path.exists('/proc/cpuinfo'):
