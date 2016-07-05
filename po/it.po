@@ -1174,8 +1174,6 @@ msgstr "Arte/Cultura"
 msgid "Ask user"
 msgstr "Chiedere all'utente"
 
-<<<<<<< HEAD
-=======
 msgid "Ask user (with default as 'no')"
 msgstr "Chiedi utente (con default su 'no')"
 
@@ -1186,9 +1184,8 @@ msgid "Aspect Ratio"
 msgstr "Rapporto TV"
 
 msgid "Aspect list..."
-msgstr "Dolby Digital downmix is now"
+msgstr ""
 
->>>>>>> 35db3d5... Update po´s/pot - fix typo
 msgid "Aspect ratio"
 msgstr "(Aspect Radio) Rapporto TV"
 
