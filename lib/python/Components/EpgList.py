@@ -192,8 +192,8 @@ class EPGList(HTMLComponent, GUIComponent):
 		self.serviceNamePadding = 3
 		self.eventBorderWidth = 1
 		self.eventNamePadding = 3
-		self.eventNameAlign = 'left'
-		self.eventNameWrap = 'yes'
+		#self.eventNameAlign = 'left'
+		#self.eventNameWrap = 'yes'
 		self.NumberOfRows = None
 
 	def applySkin(self, desktop, screen):
@@ -207,11 +207,15 @@ class EPGList(HTMLComponent, GUIComponent):
 				elif attrib == "EntryFontGraphical":
 					font = parseFont(value, ((1,1),(1,1)) )
 					self.eventFontNameGraph = font.family
-					self.eventFontSize = font.pointSize
-				elif attrib == "EntryFontAlignment":
-					self.eventNameAlign = value
-				elif attrib == "EntryFontWrap":
-					self.eventNameWrap = value
+					self.eventFontSizeGraph = font.pointSize
+				elif attrib == "ServiceFontInfobar":
+					font = parseFont(value, ((1,1),(1,1)) )
+					self.serviceFontNameInfobar = font.family
+					self.serviceFontSizeInfobar = font.pointSize
+				elif attrib == "EventFontInfobar":
+					font = parseFont(value, ((1,1),(1,1)) )
+					self.eventFontNameInfobar = font.family
+					self.eventFontSizeInfobar = font.pointSize
 				elif attrib == "EventFontSingle":
 					font = parseFont(value, ((1,1),(1,1)) )
 					self.eventFontNameSingle = font.family
@@ -220,14 +224,10 @@ class EPGList(HTMLComponent, GUIComponent):
 					font = parseFont(value, ((1,1),(1,1)) )
 					self.eventFontNameMulti = font.family
 					self.eventFontSizeMulti = font.pointSize
-				elif attrib == "EventFontInfobar":
-					font = parseFont(value, ((1,1),(1,1)) )
-					self.eventFontNameInfobar = font.family
-					self.eventFontSizeInfobar = font.pointSize
-				elif attrib == "ServiceFontInfobar":
-					font = parseFont(value, ((1,1),(1,1)) )
-					self.serviceFontNameInfobar = font.family
-					self.serviceFontSizeInfobar = font.pointSize
+				#elif attrib == "EntryFontAlignment":
+					#self.eventNameAlign = value
+				#elif attrib == "EntryFontWrap":
+					#self.eventNameWrap = value
 
 				elif attrib == "ServiceForegroundColor":
 					self.foreColorService = parseColor(value).argb()
@@ -293,6 +293,7 @@ class EPGList(HTMLComponent, GUIComponent):
 		self.listHeight = self.instance.size().height()
 		self.listWidth = self.instance.size().width()
 		self.setItemsPerPage()
+		self.setFontsize()
 		return rc
 
 	def getCurrentChangeCount(self):
@@ -516,14 +517,9 @@ class EPGList(HTMLComponent, GUIComponent):
 			self.listWidth = self.instance.size().width()
 			self.itemHeight = itemHeight
 
-	def setServiceFontsize(self):
+	def setFontsize(self):
 		if self.type == EPG_TYPE_GRAPH:
 			self.l.setFont(0, gFont(self.serviceFontNameGraph, self.serviceFontSizeGraph + config.epgselection.graph_servfs.value))
-		elif self.type == EPG_TYPE_INFOBARGRAPH:
-			self.l.setFont(0, gFont(self.serviceFontNameInfobar, self.serviceFontSizeInfobar + config.epgselection.infobar_servfs.value))
-
-	def setEventFontsize(self):
-		if self.type == EPG_TYPE_GRAPH:
 			self.l.setFont(1, gFont(self.eventFontNameGraph, self.eventFontSizeGraph + config.epgselection.graph_eventfs.value))
 		elif self.type == EPG_TYPE_ENHANCED or self.type == EPG_TYPE_SINGLE or self.type == EPG_TYPE_SIMILAR:
 			self.l.setFont(0, gFont(self.eventFontNameSingle, self.eventFontSizeSingle + config.epgselection.enhanced_eventfs.value))
@@ -533,6 +529,7 @@ class EPGList(HTMLComponent, GUIComponent):
 		elif self.type == EPG_TYPE_INFOBAR:
 			self.l.setFont(0, gFont(self.eventFontNameInfobar, self.eventFontSizeInfobar + config.epgselection.infobar_eventfs.value))
 		elif self.type == EPG_TYPE_INFOBARGRAPH:
+			self.l.setFont(0, gFont(self.serviceFontNameInfobar, self.serviceFontSizeInfobar + config.epgselection.infobar_servfs.value))
 			self.l.setFont(1, gFont(self.eventFontNameInfobar, self.eventFontSizeInfobar + config.epgselection.infobar_eventfs.value))
 
 	def postWidgetCreate(self, instance):
@@ -542,13 +539,10 @@ class EPGList(HTMLComponent, GUIComponent):
 			instance.selectionChanged.get().append(self.serviceChanged)
 			instance.setContent(self.l)
 			self.l.setSelectionClip(eRect(0,0,0,0), False)
-			self.setServiceFontsize()
-			self.setEventFontsize()
 		else:
 			instance.setWrapAround(False)
 			instance.selectionChanged.get().append(self.selectionChanged)
 			instance.setContent(self.l)
-			self.setEventFontsize()
 
 	def preWidgetRemove(self, instance):
 		if self.type == EPG_TYPE_GRAPH or self.type == EPG_TYPE_INFOBARGRAPH:
@@ -945,16 +939,6 @@ class EPGList(HTMLComponent, GUIComponent):
 				duration = ev[3]
 				xpos, ewidth = self.calcEntryPosAndWidthHelper(stime, duration, start, end, width)
 				clock_types = self.getPixmapForEntry(service, ev[0], stime, duration)
-				if self.eventNameAlign.lower() == 'left':
-					if self.eventNameWrap.lower() == 'yes':
-						alignnment = RT_HALIGN_LEFT | RT_VALIGN_CENTER | RT_WRAP
-					else:
-						alignnment = RT_HALIGN_LEFT | RT_VALIGN_CENTER
-				else:
-					if self.eventNameWrap.lower() == 'yes':
-						alignnment = RT_HALIGN_CENTER | RT_VALIGN_CENTER | RT_WRAP
-					else:
-						alignnment = RT_HALIGN_CENTER | RT_VALIGN_CENTER
 
 				if stime <= now < (stime + duration):
 					if clock_types is not None and clock_types == 2:
@@ -1050,7 +1034,7 @@ class EPGList(HTMLComponent, GUIComponent):
 				else:
 					res.append(MultiContentEntryText(
 						pos = (evX, evY), size = (evW, evH),
-						font = 1, flags = alignnment,
+						font = 1, flags = int(config.epgselection.graph_event_alignment.value),
 						text = ev[1],
 						color = foreColor, color_sel = foreColorSel,
 						backcolor = backColor, backcolor_sel = backColorSel))

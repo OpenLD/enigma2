@@ -14144,7 +14144,31 @@ msgstr "Tamaño de fuente del canal"
 
 #: gEPG
 msgid "Event font size"
-msgstr "Tamaño de fuente del programa"
+msgstr "Tamaño de fuente del evento"
+
+#: gEPG
+msgid "Alignment of events"
+msgstr "Alineación de eventos"
+
+#: gEPG
+msgid "Configure the alignment of events."
+msgstr "Configurar la alineación de los eventos."
+
+#: gEPG
+msgid "centered"
+msgstr "centrado"
+
+#: gEPG
+msgid "centered, wrapped"
+msgstr "centrado, envuelto"
+
+#: gEPG
+msgid "left, wrapped"
+msgstr "Izquierdo, envuelto"
+
+#: gEPG
+msgid "right, wrapped"
+msgstr "derecha, envuelto"
 
 #
 msgid "When nonzero, a recording will start earlier than the starting time as indicated by the EPG."
