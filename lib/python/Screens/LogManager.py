@@ -192,7 +192,7 @@ class LogManager(Screen):
 				'red': self.changelogtype,
 				'green': self.showLog,
 				'yellow': self.deletelog,
-				#'blue': self.sendlog,
+				'blue': self.sendlog_ld,
 				"left": self.left,
 				"right": self.right,
 				"down": self.down,
@@ -202,7 +202,7 @@ class LogManager(Screen):
 		self["key_red"] = Button(_("Debug Logs"))
 		self["key_green"] = Button(_("View"))
 		self["key_yellow"] = Button(_("Delete"))
-		#self["key_blue"] = Button(_("Send"))
+		self["key_blue"] = Button(_("Send"))
 
 		self.onChangedEntry = [ ]
 		self.sentsingle = ""
@@ -342,6 +342,9 @@ class LogManager(Screen):
 				remove(self.defaultDir + self.sel[0])
 			self["list"].changeDir(self.defaultDir)
 			self["LogsSize"].update(config.crash.debug_path.value)
+
+	def sendlog_ld(self, addtionalinfo = None):
+		self.session.open(MessageBox, _("Sorry, due to spamming reasons the log sending is not available.\nPlease post your log area in lonasdigital.com bug reports."), MessageBox.TYPE_INFO)
 
 	def sendlog(self, addtionalinfo = None):
 		try:
