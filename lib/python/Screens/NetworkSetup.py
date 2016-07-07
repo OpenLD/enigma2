@@ -30,6 +30,22 @@ from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_
 from Tools.LoadPixmap import LoadPixmap
 from Plugins.Plugin import PluginDescriptor
 
+def getSSID(ssid_value):
+	file = '/etc/wifis/'+ssid_value+'.wifi'
+	if fileExists(file):
+		f=open(file,'r')
+		line = f.readlines()
+		f.close()
+		hiddenessid = line[0].replace("\n","")
+		encryption = line[2].replace("\n","")
+		wepkeytype = line[3].replace("\n","")
+		psk = line[4].replace("\n","")
+	else:
+		hiddenessid = encryption = wepkeytype = psk = None
+
+	return hiddenessid,encryption,wepkeytype,psk
+
+
 class NetworkAdapterSelection(Screen,HelpableScreen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -555,6 +571,19 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self.oktext = _("Press OK on your remote control to continue.")
 		self.oldInterfaceState = iNetwork.getAdapterAttribute(self.iface, "up")
 
+		self.newssid = False
+		if iNetwork.isWirelessInterface(self.iface):
+			from Plugins.SystemPlugins.WirelessLan.Wlan import wpaSupplicant
+			self.ws = wpaSupplicant()
+			self.wsconfig = self.ws.loadConfig(self.iface)
+			if essid:
+				if essid != self.wsconfig['ssid']:
+					self.newssid = True
+		self.timer = eTimer()
+		self.timer.timeout.get().append(self.getSSID)
+		self.first = True
+
+
 		self.createConfig()
 
 		self["OkCancelActions"] = HelpableActionMap(self, "OkCancelActions",
@@ -634,6 +663,33 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			self["Gateway"].setText("")
 			self["Gatewaytext"].setText("")
 		self["Adapter"].setText(iNetwork.getFriendlyAdapterName(self.iface))
+
+	def SaveAP(self):
+		if not os.path.exists('/etc/wifis'):
+			os.system('mkdir /etc/wifis')
+		self.updateSSID()
+
+	def updateSSID(self):
+		wifis = '/etc/wifis/' + config.plugins.wlan.essid.value + '.wifi'
+		lista = [config.plugins.wlan.hiddenessid.value, config.plugins.wlan.essid.value, config.plugins.wlan.encryption.value, config.plugins.wlan.wepkeytype.value, config.plugins.wlan.psk.value]
+		info = '\n#Line 1 : Hidden network?\n#Line 2 : Network name\n#Line 3 : Encryption type\n#Line 4 : WEP type\n#Line 5 : Wifi password'
+		g=open(wifis, 'w')
+		for x in lista:
+			g.writelines(str(x)+'\n')
+		g.write(info)
+		g.close()
+
+	def getSSID(self):
+		self.timer.stop()
+		if self.newssid:
+			ssid_value = config.plugins.wlan.essid.value
+			hiddenessid,encryption,wepkeytype,psk = getSSID(ssid_value)
+			if wepkeytype:
+				config.plugins.wlan.encryption.setValue(encryption)
+				config.plugins.wlan.wepkeytype.setValue(wepkeytype)
+				config.plugins.wlan.psk.setValue(psk)
+				if self.activateInterfaceEntry.getValue():
+					self.applyConfig(True)
 
 	def createConfig(self):
 		self.InterfaceEntry = None
@@ -737,6 +793,9 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 							self.list.append(self.encryptionKey)
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
+		if self.first:
+			self.first = False
+			self.timer.start(500, True)
 
 	def KeyBlue(self):
 		self.session.openWithCallback(self.NameserverSetupClosed, NameserverSetup)
@@ -762,7 +821,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 
 	def keySave(self):
 		self.hideInputHelp()
-		if self["config"].isChanged() or (SystemInfo["WakeOnLAN"] and self.wolstartvalue != config.network.wol.value):
+		if self["config"].isChanged() or (SystemInfo["WakeOnLAN"] and self.wolstartvalue != config.network.wol.value) or self.newssid:
 			self.session.openWithCallback(self.keySaveConfirm, MessageBox, (_("Are you sure you want to activate this network configuration?\n\n") + self.oktext ) )
 		else:
 			if self.finished_cb:
@@ -855,7 +914,25 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 	def ConfigfinishedCB(self,data):
 		if data is not None:
 			if data is True:
-				self.close('ok')
+				if iNetwork.isWirelessInterface(self.iface):
+					try:
+						from Plugins.SystemPlugins.WirelessLan.Wlan import iStatus
+					except:
+						self.close('ok')
+					else:
+						iStatus.getDataForInterface(self.iface,self.getInfoCB)
+				else:
+					self.close('ok')
+
+	def getInfoCB(self,data,status):
+		if data is not None:
+			if data is True:
+				if status is not None:
+					if status[self.iface]["essid"] == "off" or status[self.iface]["accesspoint"] == "Not-Associated" or status[self.iface]["accesspoint"] == False:
+						pass
+					else:
+						self.SaveAP()
+		self.close('ok')
 
 	def keyCancelConfirm(self, result):
 		if not result:
