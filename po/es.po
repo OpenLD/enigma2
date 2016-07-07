@@ -14443,10 +14443,10 @@ msgstr ""
 
 #
 msgid ""
-"Please setup your user interface by adjusting the values till the edges of the red box are touching the edges of your TV.\n"
+"Please setup your user interface by adjusting the values till obtain the desired.\n"
 "When you are ready press green to continue."
 msgstr ""
-"Configura tu interfaz de usuario ajustando los valores hasta que los bordes del recuadro rojo toquen los de tu TV.\n"
+"Configura tu interfaz de usuario ajustando los valores hasta obtener el resultado deseado.\n"
 "Cuando estés listo, pulsa Verde para continuar."
 
 msgid "This option lets you adjust the transparency of the user interface"
