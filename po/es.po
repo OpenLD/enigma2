@@ -8046,7 +8046,7 @@ msgstr "Sistema: "
 #
 #. TRANSLATORS: Add here whatever should be shown in the "translator" about screen, up to 6 lines (use \n for newline)
 msgid "TRANSLATOR_INFO"
-msgstr "Traducido por: Joan González, joan@gonzalezcrego.es"
+msgstr "Traducido por: Javier Sayago <admin@lonasdigital.com>"
 
 msgid "Translation Information"
 msgstr "Información de traducción"
