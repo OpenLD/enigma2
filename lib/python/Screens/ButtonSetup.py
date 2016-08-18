@@ -94,6 +94,7 @@ def getButtonSetupKeys():
 		(_("Slow"), "slow", ""),
 		(_("Mark/Portal/Playlist"), "mark", ""),
 		(_("Sleep"), "sleep", ""),
+		(_("Sleep long"), "sleep_long", ""),
 		(_("Power"), "power", ""),
 		(_("Power long"), "power_long", ""),
 		(_("Context"), "contextMenu", "Infobar/showExtensionSelection"),
