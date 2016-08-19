@@ -7,30 +7,23 @@ from Tools.HardwareInfo import HardwareInfo
 
 from boxbranding import getBoxType, getMachineBuild
 
-SystemInfo = { }
+SystemInfo = {}
 
-#FIXMEE...
 def getNumVideoDecoders():
-	idx = 0
-	while fileExists("/dev/dvb/adapter0/video%d"% idx, 'f'):
-		idx += 1
-	return idx
+	number_of_video_decoders = 0
+	while fileExists("/dev/dvb/adapter0/video%d" % (number_of_video_decoders), 'f'):
+		number_of_video_decoders += 1
+	return number_of_video_decoders
+
+def countFrontpanelLEDs():
+	number_of_leds = fileExists("/proc/stb/fp/led_set_pattern") and 1 or 0
+	while fileExists("/proc/stb/fp/led%d_pattern" % number_of_leds):
+		number_of_leds += 1
+	return number_of_leds
 
 SystemInfo["NumVideoDecoders"] = getNumVideoDecoders()
 SystemInfo["PIPAvailable"] = SystemInfo["NumVideoDecoders"] > 1
 SystemInfo["CanMeasureFrontendInputPower"] = eDVBResourceManager.getInstance().canMeasureFrontendInputPower()
-
-
-def countFrontpanelLEDs():
-	leds = 0
-	if fileExists("/proc/stb/fp/led_set_pattern"):
-		leds += 1
-
-	while fileExists("/proc/stb/fp/led%d_pattern" % leds):
-		leds += 1
-
-	return leds
-
 SystemInfo["HasTuners"] = fileCheck("/dev/dvb/adapter0/frontend0") and fileCheck("/proc/bus/nim_sockets")
 SystemInfo["12V_Output"] = Misc_Options.getInstance().detected_12V_output()
 SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
@@ -70,3 +63,8 @@ SystemInfo["grautec"] = fileExists("/tmp/usbtft")
 SystemInfo["3DMode"] = fileCheck("/proc/stb/fb/3dmode") or fileCheck("/proc/stb/fb/primary/3d")
 SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
 SystemInfo["CanUse3DModeChoices"] = fileExists('/proc/stb/fb/3dmode_choices') and True or False
+SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
+SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
+SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
+SystemInfo["HaveColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
+SystemInfo["HaveColorspaceSimple"] = SystemInfo["HaveColorspace"] and HardwareInfo().get_device_model() in "vusolo4k"
