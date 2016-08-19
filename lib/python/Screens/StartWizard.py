@@ -13,7 +13,6 @@ from Components.Pixmap import Pixmap
 from Components.config import config, ConfigBoolean, configfile
 from Components.SystemInfo import SystemInfo
 from LanguageSelection import LanguageWizard
-from enigma import getDesktop
 
 config.misc.firstrun = ConfigBoolean(default = True)
 config.misc.languageselected = ConfigBoolean(default = True)
