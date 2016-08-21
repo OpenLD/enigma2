@@ -389,6 +389,7 @@ public:
 		sLiveStreamDemuxId,
 		sIsDedicated3D,
 		sBuffer,
+		sHideVBI,
 
 		sUser = 0x100
 	};
