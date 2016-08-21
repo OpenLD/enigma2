@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from boxbranding import getMachineBuild, getMachineBrand, getMachineName
 from Screens.EventView import EventViewEPGSelect
-import os, re, unicodedata
+import os, unicodedata
 from Tools.Profile import profile
 
 from Screen import Screen
@@ -47,6 +47,7 @@ from Screens.RdsDisplay import RassInteractive
 from ServiceReference import ServiceReference
 from Tools.BoundFunction import boundFunction
 from Tools import Notifications
+from Tools.Alternatives import CompareWithAlternatives, GetWithAlternative
 from Plugins.Plugin import PluginDescriptor
 from Components.PluginComponent import plugins
 
@@ -177,7 +178,7 @@ class ChannelContextMenu(Screen):
 		self.parentalControlEnabled = config.ParentalControl.configured.value and config.ParentalControl.servicepinactive.value
 
 		menu.append(ChoiceEntryComponent(text = (_("Settings..."), boundFunction(self.openSetup))))
-		if not (current_sel_path or current_sel_flags & (eServiceReference.isDirectory|eServiceReference.isMarker)):
+		if not (current_sel_path or current_sel_flags & (eServiceReference.isDirectory|eServiceReference.isMarker)) or current_sel_flags & eServiceReference.isGroup:
 			append_when_current_valid(current, menu, (_("show transponder info"), self.showServiceInformations), level=2)
 		if csel.bouquet_mark_edit == OFF and not csel.entry_marked:
 			if not inBouquetRootList:
@@ -299,7 +300,8 @@ class ChannelContextMenu(Screen):
 		self["menu"] = ChoiceList(menu)
 
 	def set3DMode(self, value):
-		if config.osd.threeDmode.value == "auto" and self.session.nav.currentlyPlayingServiceReference == self.csel.getCurrentSelection():
+		playingref = self.session.nav.getCurrentlyPlayingServiceReference()
+		if config.osd.threeDmode.value == "auto" and (playingref and playingref == self.csel.getCurrentSelection()):
 			from Screens.VideoMode import applySettings
 			applySettings(value and "sidebyside" or config.osd.threeDmode.value)
 
@@ -410,7 +412,15 @@ class ChannelContextMenu(Screen):
 		self.session.openWithCallback(self.close, MessageBox, _("The servicelist is reloaded."), MessageBox.TYPE_INFO, timeout = 5)
 
 	def showServiceInformations(self):
-		self.session.open( ServiceInfo, self.csel.getCurrentSelection() )
+		current = self.csel.getCurrentSelection()
+		if current.flags & eServiceReference.isGroup:
+			playingref = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+			if playingref and playingref == current:
+				current = self.session.nav.getCurrentlyPlayingServiceReference()
+			else:
+				current = eServiceReference(GetWithAlternative(current.toString()))
+		self.session.open(ServiceInfo, current)
+		self.close()
 
 	def setStartupService(self):
 		self.session.openWithCallback(self.setStartupServiceCallback, MessageBox, _("Set startup service"), list = [(_("Only on startup"), "startup"), (_("Also on standby"), "standby")])
@@ -956,8 +966,11 @@ class ChannelSelectionEdit:
 		return None
 
 	def buildBouquetID(self, name):
-		name = unicodedata.normalize('NFKD', unicode(name, 'utf_8', errors='ignore')).encode('ASCII', 'ignore')
-		return re.sub('[^a-z0-9]', '', name.replace('&', 'and').replace('+', 'plus').replace('*', 'star').lower())
+		name = unicodedata.normalize('NFKD', unicode(name, 'utf_8', errors='ignore')).encode('ASCII', 'ignore').translate(None, '<>:"/\|?*() ')
+		while os.path.isfile((self.mode == MODE_TV and "/etc/enigma2/userbouquet.%s.tv" or "/etc/enigma2/userbouquet.%s.radio") % name):
+			name = name.rsplit("_", 1)
+			name = "_".join((name[0], len(name) == 2 and name[1].isdigit() and str(int(name[1]) + 1) or "1"))
+		return name
 
 	def renameEntry(self):
 		self.editMode = True
@@ -1047,13 +1060,8 @@ class ChannelSelectionEdit:
 		serviceHandler = eServiceCenter.getInstance()
 		mutableBouquetList = serviceHandler.list(self.bouquet_root).startEdit()
 		if mutableBouquetList:
-			if self.mode == MODE_TV:
-				bName += _(" (TV)")
-				str = '1:7:1:0:0:0:0:0:0:0:FROM BOUQUET \"userbouquet.%s.tv\" ORDER BY bouquet'%(self.buildBouquetID(bName))
-			else:
-				bName += _(" (Radio)")
-				str = '1:7:2:0:0:0:0:0:0:0:FROM BOUQUET \"userbouquet.%s.radio\" ORDER BY bouquet'%(self.buildBouquetID(bName))
-			new_bouquet_ref = eServiceReference(str)
+			bName = self.buildBouquetID(bName)
+			new_bouquet_ref = eServiceReference((self.mode == MODE_TV and '1:7:1:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.tv" ORDER BY bouquet' or '1:7:2:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.radio" ORDER BY bouquet') % bName)
 			if not mutableBouquetList.addService(new_bouquet_ref):
 				mutableBouquetList.flushChanges()
 				eDVBDB.getInstance().reloadBouquets()
@@ -2378,10 +2386,20 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.lastservice.save()
 
 	def setCurrentServicePath(self, path, doZap=True):
-		if self.history:
+		hlen = len(self.history)
+		if not hlen:
+			self.history.append(path)
+			self.history_pos = 0
+		if hlen == 1:
 			self.history[self.history_pos] = path
 		else:
-			self.history.append(path)
+			if path in self.history:
+				self.history.remove(path)
+				self.history_pos -= 1
+			tmp = self.history[self.history_pos][:]
+			self.history.append(tmp)
+			self.history_pos += 1
+			self.history[self.history_pos] = path
 		self.setHistoryPath(doZap)
 
 	def getCurrentServicePath(self):
