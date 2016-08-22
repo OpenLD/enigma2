@@ -449,7 +449,7 @@ def tryAudioTrack(tracks, audiolang, caudiolang, trackList, seltrack, useAc3):
 	return False
 
 class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBarMenu, InfoBarEPG, \
-		InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarAudioSelection, HelpableScreen, InfoBarNotifications,
+		InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarAudioSelection, InfoBarResolutionSelection, HelpableScreen, InfoBarNotifications,
 		InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSimpleEventView,
 		InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin, InfoBarAspectSelection,
 		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarResolutionSelection, InfoBarZoom, InfoBarButtonSetup):
@@ -461,8 +461,6 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 
 	def __init__(self, session, service, slist = None, lastservice = None):
 		Screen.__init__(self, session)
-		InfoBarAspectSelection.__init__(self)
-		InfoBarAudioSelection.__init__(self)
 		self.pts_pvrStateDialog = ""
 
 		self["key_yellow"] = Label()
@@ -482,10 +480,10 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 
 		self.allowPiP = True
 
-		for x in HelpableScreen, InfoBarShowHide, InfoBarLongKeyDetection, InfoBarMenu, InfoBarEPG, \
+		for x in InfoBarAspectSelection, HelpableScreen, InfoBarShowHide, InfoBarLongKeyDetection, InfoBarMenu, InfoBarEPG, \
 				InfoBarBase, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, \
 				InfoBarAudioSelection, InfoBarNotifications, InfoBarSimpleEventView, \
-				InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, \
+				InfoBarResolutionSelection, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, \
 				InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, \
 				InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport, InfoBarExtensions, \
 				InfoBarPlugins, InfoBarPiP, InfoBarZoom, InfoBarButtonSetup:
