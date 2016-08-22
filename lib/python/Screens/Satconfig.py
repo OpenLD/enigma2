@@ -17,7 +17,7 @@ from Screens.AutoDiseqc import AutoDiseqc
 from Tools.BoundFunction import boundFunction
 from boxbranding import getBoxType
 
-from time import mktime, localtime
+from time import mktime, localtime, time
 from datetime import datetime
 from os import path
 
@@ -577,6 +577,7 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 			conf.save()
 
 	def keySave(self):
+		self.stopService()
 		if not self.unicableconnection():
 			self.session.open(MessageBox, _("The unicable connection setting is wrong.\n Maybe recursive connection of tuners."),MessageBox.TYPE_ERROR,timeout=10)
 			return
@@ -794,15 +795,20 @@ class NimSelection(Screen):
 			self.session.open(MessageBox, text, MessageBox.TYPE_INFO, simple=True)
 
 	def okbuttonClick(self):
-		nim = self["nimlist"].getCurrent()
-		nim = nim and nim[3]
+		recordings = self.session.nav.getRecordings()
+		next_rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
+		if recordings or (next_rec_time and next_rec_time > 0 and (next_rec_time - time()) < 360):
+			self.session.open(MessageBox, _("Recording(s) are in progress or coming up in few seconds!"), MessageBox.TYPE_INFO, timeout=5, enable_input=False)
+		else:
+			nim = self["nimlist"].getCurrent()
+			nim = nim and nim[3]
 
-		nimConfig = nimmanager.getNimConfig(nim.slot)
-		if isFBCLink(nim) and nimConfig.configMode.value == "loopthrough":
-			return
+			nimConfig = nimmanager.getNimConfig(nim.slot)
+			if nim.isFBCLink() and nimConfig.configMode.value == "nothing" and not getLinkedSlotID(nim.slot) == -1:
+				return
 
-		if nim is not None and not nim.empty and nim.isSupported():
-			self.session.openWithCallback(boundFunction(self.NimSetupCB, self["nimlist"].getIndex()), self.resultclass, nim.slot)
+			if nim is not None and not nim.empty and nim.isSupported():
+				self.session.openWithCallback(boundFunction(self.NimSetupCB, self["nimlist"].getIndex()), self.resultclass, nim.slot)
 
 	def NimSetupCB(self, index=None):
 		self.loadFBCLinks()
