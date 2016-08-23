@@ -7,7 +7,7 @@ from Screens.ChannelSelection import FLAG_IS_DEDICATED_3D
 from Components.About import about
 from Components.SystemInfo import SystemInfo
 from Components.ConfigList import ConfigListScreen
-from Components.config import config, configfile, getConfigListEntry
+from Components.config import config, configfile, getConfigListEntry, ConfigNothing
 from Components.Label import Label
 from Components.Sources.StaticText import StaticText
 from Components.Pixmap import Pixmap
@@ -16,6 +16,7 @@ from Components.ServiceEventTracker import ServiceEventTracker
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.HardwareInfo import HardwareInfo
 from Components.AVSwitch import iAVSwitch
+import os
 
 resolutionlabel = None
 
@@ -124,10 +125,9 @@ class VideoSetup(Screen, ConfigListScreen):
 				if SystemInfo["ScartSwitch"]:
 					self.list.append(getConfigListEntry(_("Auto scart switching"), config.av.vcrswitch, _("When enabled, your receiver will detect activity on the VCR SCART input.")))
 
-		if not isinstance(config.av.scaler_sharpness, ConfigNothing):
-			self.list.append(getConfigListEntry(_("Scaler sharpness"), config.av.scaler_sharpness, _("Configure the sharpness of the video scaling.")))
 		if SystemInfo["havecolorspace"]:
 			self.list.append(getConfigListEntry(_("HDMI Colorspace"), config.av.hdmicolorspace,_("This option allows you can config the Colorspace from Auto to RGB")))
+
 		if SystemInfo["Canedidchecking"]:
 			self.list.append(getConfigListEntry(_("Bypass HDMI EDID Check"), config.av.bypass_edid_checking,_("This option allows you to bypass HDMI EDID check")))
 
@@ -265,11 +265,13 @@ class AudioSetup(Screen, ConfigListScreen):
 
 		if level >= 1:
 			if SystemInfo["CanPcmMultichannel"]:
-				self.list.append(getConfigListEntry(_("PCM Multichannel"), config.av.pcm_multichannel, _("Choose whether multi channel sound tracks should be output as PCM.")))
+				self.list.append(getConfigListEntry(_("PCM Multichannel"), config.av.multichannel_pcm, _("Choose whether multi channel sound tracks should be output as PCM.")))
 			if SystemInfo["CanDownmixAC3"]:
-				self.list.append(getConfigListEntry(_("Dolby Digital / DTS downmix"), config.av.downmix_ac3, _("Choose whether multi channel sound tracks should be downmixed to stereo.")))
+				self.list.append(getConfigListEntry(_("Dolby Digital / AC3 downmix"), config.av.downmix_ac3, _("Choose whether multi channel sound tracks should be downmixed to stereo.")))
+			if SystemInfo["CanDownmixDTS"]:
+				self.list.append(getConfigListEntry(_("Dolby Digital / DTS downmix"), config.av.downmix_dts, _("Choose whether multi channel sound tracks should be downmixed to stereo.")))
 			if SystemInfo["CanDownmixAAC"]:
-				self.list.append(getConfigListEntry(_("AAC downmix"), config.av.downmix_aac, _("Choose whether multi channel sound tracks should be downmixed to stereo.")))
+				self.list.append(getConfigListEntry(_("Dolby Digital / AAC downmix"), config.av.downmix_aac, _("Choose whether multi channel sound tracks should be downmixed to stereo.")))
 			if SystemInfo["Canaudiosource"]:
 				self.list.append(getConfigListEntry(_("Audio Source"), config.av.audio_source, _("Choose whether multi channel sound tracks should be convert to PCM or SPDIF.")))
 			if SystemInfo["CanAACTranscode"]:
@@ -289,9 +291,6 @@ class AudioSetup(Screen, ConfigListScreen):
 
 			if SystemInfo["CanAutoVolume"]:
 				self.list.append(getConfigListEntry(_("Audio Auto Volume Level"), config.av.autovolume,_("This option configures you can set Auto Volume Level.")))
-
-			if SystemInfo["Canedidchecking"]:
-				self.list.append(getConfigListEntry(_("Bypass HDMI EDID Check"), config.av.bypass_edid_checking,_("This option allows you to bypass HDMI EDID check")))
 
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
