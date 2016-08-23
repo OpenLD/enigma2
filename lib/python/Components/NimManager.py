@@ -178,23 +178,6 @@ class SecConfigure:
 				used_nim_slots.append((slot.slot, slot.description, slot.config.configMode.value != "nothing" and True or False, slot.isCompatible("DVB-S2"), slot.frontend_id is None and -1 or slot.frontend_id))
 		eDVBResourceManager.getInstance().setFrontendSlotInformations(used_nim_slots)
 
-		try:
-			for slot in nim_slots:
-				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
-					if "DVB-T2" in types:
-						# DVB-T2 implies DVB-T support
-						types.remove("DVB-T")
-					if "DVB-S2" in types:
-						# DVB-S2 implies DVB-S support
-						types.remove("DVB-S")
-					if len(types) > 1:
-						slot.multi_type = {}
-						for type in types:
-							slot.multi_type[str(types.index(type))] = type
-		except:
-			pass
-
 		for slot in nim_slots:
 			x = slot.slot
 			nim = slot.config
@@ -673,12 +656,13 @@ class SecConfigure:
 class NIM(object):
 	def __init__(self, slot, type, description, has_outputs=True, internally_connectable=None, multi_type=None, frontend_id=None, i2c=None, is_empty=False, input_name = None):
 		if not multi_type: multi_type = {}
-		self.slot = slot
+		nim_types = ["DVB-S", "DVB-S2", "DVB-C", "DVB-T", "DVB-T2", "ATSC"]
 
-		if type not in ("DVB-S", "DVB-C", "DVB-T", "DVB-S2", "DVB-T2", "DVB-C2", "ATSC", None):
+		if type and type not in nim_types:
 			print "warning: unknown NIM type %s, not using." % type
 			type = None
 
+		self.slot = slot
 		self.type = type
 		self.description = description
 		self.has_outputs = has_outputs
@@ -699,6 +683,20 @@ class NIM(object):
 				"DVB-T2": ("DVB-T", "DVB-T2", None),
 				"ATSC": ("ATSC", None),
 			}
+
+		# get multi type using delsys information
+		if self.frontend_id is not None:
+			types = [type for type in nim_types if eDVBResourceManager.getInstance().frontendIsCompatible(self.frontend_id, type)]
+			if "DVB-T2" in types:
+				# DVB-T2 implies DVB-T support
+				types.remove("DVB-T")
+			if "DVB-S2" in types:
+				# DVB-S2 implies DVB-S support
+				types.remove("DVB-S")
+			if len(types) > 1:
+				self.multi_type = {}
+				for type in types:
+					self.multi_type[str(types.index(type))] = type
 
 	def isCompatible(self, what):
 		if not self.isSupported():
