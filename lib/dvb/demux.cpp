@@ -443,8 +443,12 @@ int eDVBRecordFileThread::AsyncIO::wait()
 {
 	if (aio.aio_buf != NULL) // Only if we had a request outstanding
 	{
-		while (aio_error(&aio) == EINPROGRESS)
+		int res;
+		while (1)
 		{
+			res = aio_error(&aio);
+			if (res != EINPROGRESS)
+				break;
 			eDebug("[eDVBRecordFileThread] Waiting for I/O to complete");
 			struct aiocb* paio = &aio;
 			int r = aio_suspend(&paio, 1, NULL);
@@ -454,11 +458,20 @@ int eDVBRecordFileThread::AsyncIO::wait()
 				return -1;
 			}
 		}
-		int r = aio_return(&aio);
-		aio.aio_buf = NULL;
-		if (r < 0)
+		if (res == 0 || res == ECANCELED)
 		{
-			eDebug("[eDVBRecordFileThread] wait: aio_return returned failure: %m");
+			__ssize_t r = aio_return(&aio);
+			aio.aio_buf = NULL;
+			if (r < 0)
+			{
+				eDebug("[eDVBRecordFileThread] wait: aio_return returned failure: %m");
+				return -1;
+			}
+		}
+		else //res > 0
+		{
+			aio.aio_buf = NULL;
+			eDebug("[eDVBRecordFileThread] wait: aio_error returned failure: %m");
 			return -1;
 		}
 	}
@@ -478,17 +491,28 @@ int eDVBRecordFileThread::AsyncIO::poll()
 {
 	if (aio.aio_buf == NULL)
 		return 0;
-	if (aio_error(&aio) == EINPROGRESS)
+	int res = aio_error(&aio);
+	if (res == EINPROGRESS)
 	{
 		return 1;
 	}
-	int r = aio_return(&aio);
-	aio.aio_buf = NULL;
-	if (r < 0)
+	else if (res > 0)
 	{
-		eDebug("[eDVBRecordFileThread] poll: aio_return returned failure: %m");
+		aio.aio_buf = NULL;
+		eDebug("[eDVBRecordFileThread] wait: aio_error returned failure: %m");
 		return -1;
 	}
+	else if (res == 0 || res == ECANCELED)
+	{
+		__ssize_t r = aio_return(&aio);
+		aio.aio_buf = NULL;
+		if (r < 0)
+		{
+			eDebug("[eDVBRecordFileThread] wait: aio_return returned failure: %m");
+			return -1;
+		}
+	}
+	aio.aio_buf = NULL;
 	return 0;
 }
 
