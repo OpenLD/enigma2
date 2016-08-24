@@ -4,7 +4,7 @@ from time import *
 from types import *
 from sys import modules
 import sys, os, time, socket, fcntl, struct, subprocess, threading, traceback, commands, datetime
-from os import system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
+from os import path, system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 
 def getVersionString():
 	return getImageVersion()
@@ -24,7 +24,10 @@ def getImageVersionString():
 
 def getFlashDateString():
 	try:
-		return time.strftime(_("%Y-%m-%d %H:%M"), time.localtime(os.stat("/boot").st_ctime))
+		if path.exists("/boot/STARTUP"):
+			return _("Multiboot active")
+		else:
+			return time.strftime(_("%Y-%m-%d"), time.localtime(os.stat("/boot").st_ctime))
 	except:
 		return _("unknown")
 
