@@ -508,7 +508,7 @@ void *eDVBUsbAdapter::vtunerPump()
 	int pidcount = 0;
 	if (vtunerFd < 0 || demuxFd < 0 || pipeFd[0] < 0) return NULL;
 
-#define MSG_PIDLIST			14
+#define MSG_PIDLIST 14
 	struct vtuner_message
 	{
 		int type;
@@ -516,7 +516,7 @@ void *eDVBUsbAdapter::vtunerPump()
 		unsigned char pad[64]; /* nobody knows the much data the driver will try to copy into our struct, add some padding to be sure */
 	};
 
-#define DEMUX_BUFFER_SIZE (8 * ((188 / 4) * 4096)) /* 1.5MB */
+#define DEMUX_BUFFER_SIZE (16 * ((188 / 4) * 4096)) /* 3 MB */
 	ioctl(demuxFd, DMX_SET_BUFFER_SIZE, DEMUX_BUFFER_SIZE);
 
 	while (running)
