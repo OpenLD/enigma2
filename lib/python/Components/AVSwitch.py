@@ -339,8 +339,7 @@ class AVSwitch:
 						ret = (16,10)
 			elif is_auto:
 				try:
-					aspect_str = open("/proc/stb/vmpeg/0/aspect", "r").read()
-					if aspect_str == "1": # 4:3
+					if "1" in open("/proc/stb/vmpeg/0/aspect", "r").read(): # 4:3
 						ret = (4,3)
 				except IOError:
 					pass
@@ -424,12 +423,12 @@ def InitAVSwitch():
 	"panscan": _("Pan&scan"),
 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if this breaks the aspect)
 	"scale": _("Just scale")}
-	if os.path.exists("/proc/stb/video/policy2_choices"):
-		f = open("/proc/stb/video/policy2_choices")
-		if "auto" in f.readline():
+	try:
+		if "auto" in open("/proc/stb/video/policy2_choices").read():
 			# TRANSLATORS: (aspect ratio policy: always try to display as fullscreen, when there is no content (black bars) on left/right, even if this breaks the aspect.
 			policy2_choices.update({"auto": _("Auto")})
-		f.close()
+	except:
+		pass
 	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "letterbox")
 	policy_choices = {
 	# TRANSLATORS: (aspect ratio policy: black bars on left/right) in doubt, keep english term.
@@ -440,12 +439,12 @@ def InitAVSwitch():
 	# "nonlinear": _("Nonlinear"),
 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if this breaks the aspect)
 	"bestfit": _("Just scale")}
-	if os.path.exists("/proc/stb/video/policy_choices"):
-		f = open("/proc/stb/video/policy_choices")
-		if "auto" in f.readline():
+	try:
+		if "auto" in open("/proc/stb/video/policy_choices").read():
 			# TRANSLATORS: (aspect ratio policy: always try to display as fullscreen, when there is no content (black bars) on left/right, even if this breaks the aspect.
 			policy_choices.update({"auto": _("Auto")})
-		f.close()
+	except:
+		pass
 	config.av.policy_43 = ConfigSelection(choices=policy_choices, default = "panscan")
 	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("multinorm")}, default="pal")
 	config.av.wss = ConfigEnableDisable(default = True)
