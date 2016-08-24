@@ -16,7 +16,7 @@
 #define VIDEO_STREAM_E   0xEF
 
 #define TS_SIZE          188
-#define IN_SIZE		 65424
+#define IN_SIZE          65424
 
 #define PID_MASK_HI      0x1F
 

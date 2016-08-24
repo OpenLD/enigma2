@@ -10,10 +10,9 @@
 #include <lib/dvb/idvb.h>
 #include <lib/dvb/dvb.h>
 #include <lib/dvb/sec.h>
+#include <lib/dvb/fbc.h>
 #include <lib/dvb/specs.h>
 #include "filepush.h"
-
-#include <lib/dvb/fbc.h>
 
 #include <errno.h>
 #include <sys/types.h>
@@ -863,12 +862,11 @@ RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, eP
 	{
 		int c = 0;
 		fbc_fe = NULL;
+
 		if (!check_fbc_linked && i->m_frontend->is_FBCTuner() && fbcmng && fbcmng->canLink(*i))
 		{
 			check_fbc_linked = 1;
 			c = fbcmng->isCompatibleWith(feparm, *i, fbc_fe, simulate);
-
-//			eDebug("[eDVBResourceManager::allocateFrontend] fbcmng->isCompatibleWith slotid : %p (%d), fbc_fe : %p (%d), score : %d", (eDVBRegisteredFrontend *)*i,  i->m_frontend->getSlotID(), fbc_fe, fbc_fe?fbc_fe->m_frontend->getSlotID():-1, c);
 		}
 		else
 		{
@@ -880,18 +878,12 @@ RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, eP
 
 		if (!i->m_inuse)
 		{
-//			eDebug("Slot %d, score %d", i->m_frontend->getSlotID(), c);
 			if (c > bestval)
 			{
 				bestval = c;
-//				best = i;
 				best = *i;
 				best_fbc_fe = fbc_fe;
 			}
-		}
-		else
-		{
-//			eDebug("Slot %d, score %d... but BUSY!!!!!!!!!!!", i->m_frontend->getSlotID(), c);
 		}
 
 		eDVBRegisteredFrontend *tmp = *i;

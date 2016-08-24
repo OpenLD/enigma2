@@ -23,7 +23,7 @@
 static int VPID = 0;
 static int PID_SET = 0;
 static int APID = 0;
-static int H264=0;
+static int H264 = 0;
 
 eServiceFactoryWebTS::eServiceFactoryWebTS()
 {
@@ -59,13 +59,13 @@ RESULT eServiceFactoryWebTS::play(const eServiceReference &ref, ePtr<iPlayableSe
 
 RESULT eServiceFactoryWebTS::record(const eServiceReference &ref, ePtr<iRecordableService> &ptr)
 {
-	ptr=0;
+	ptr = 0;
 	return -1;
 }
 
 RESULT eServiceFactoryWebTS::list(const eServiceReference &, ePtr<iListableService> &ptr)
 {
-	ptr=0;
+	ptr = 0;
 	return -1;
 }
 
