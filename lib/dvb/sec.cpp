@@ -314,13 +314,13 @@ RESULT eDVBSatelliteEquipmentControl::prepareRFmagicCSS(iDVBFrontend &frontend, 
 	int vco = roundMulti(lnb_param.SatCRvco + guard_offset + ifreq, 1000);
 	tunerfreq = heterodyne(frontend, ifreq, vco);
 	unsigned int positions = lnb_param.SatCR_positions ? lnb_param.SatCR_positions : 1;
-	unsigned int posnum = (lnb_param.SatCR_positionnumber > 0)										// position == 0 -> use first position
+	unsigned int posnum = (lnb_param.SatCR_positionnumber > 0)					// position == 0 -> use first position
 				&& (lnb_param.SatCR_positionnumber <= MAX_EN50607_POSITIONS) ?  lnb_param.SatCR_positionnumber - 1 : 0;
 
 	tuningword = (((roundMulti(vco - lnb_param.SatCRvco - 2*guard_offset - 100000, 1000)/1000)&0x07FF)<<8)
-			| (band & 0x3)						//Bit0:HighLow  Bit1:VertHor
-			| ((posnum & 0x3F) << 2)				//position number (0..63)
-			| ((lnb_param.SatCR_idx & 0x1F) << 19);			//addresse of SatCR (0..31)
+			|(band & 0x3)						//Bit0:HighLow  Bit1:VertHor
+			|((posnum & 0x3F) << 2)				//position number (0..63)
+			|((lnb_param.SatCR_idx & 0x1F) << 19);			//addresse of SatCR (0..31)
 
 	eDebugNoSimulate("polarisation: %c band: %c position: %d satcr: %d tunerfreq: %dMHz vco: %dMHz tuningword 0x%06x" \
 		, (band & 2)?'H':'V', (band & 1)?'H':'L', posnum, lnb_param.SatCR_idx, tunerfreq/1000, vco /1000, tuningword);
@@ -1360,7 +1360,10 @@ void eDVBSatelliteEquipmentControl::prepareTurnOffSatCR(iDVBFrontend &frontend)
 
 RESULT eDVBSatelliteEquipmentControl::clear()
 {
+	eFBCTunerManager *fbcmng;
+
 	eSecDebug("eDVBSatelliteEquipmentControl::clear()");
+
 	for (int i=0; i <= m_lnbidx; ++i)
 	{
 		m_lnbs[i].m_satellites.clear();
@@ -1381,12 +1384,8 @@ RESULT eDVBSatelliteEquipmentControl::clear()
 		it->m_frontend->setData(eDVBFrontend::ROTOR_CMD, -1);
 		it->m_frontend->setData(eDVBFrontend::SATCR, -1);
 
-		if (it->m_frontend->is_FBCTuner())
-		{
-			eFBCTunerManager *fbcmng = eFBCTunerManager::getInstance();
-			if (fbcmng)
-				fbcmng->setDefaultFBCID(*it);
-		}
+		if (it->m_frontend->is_FBCTuner() && ((fbcmng = eFBCTunerManager::getInstance())))
+			fbcmng->setDefaultFBCID(*it);
 	}
 
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator it(m_avail_simulate_frontends.begin()); it != m_avail_simulate_frontends.end(); ++it)
@@ -1826,6 +1825,8 @@ struct sat_compare
 
 RESULT eDVBSatelliteEquipmentControl::setTunerLinked(int tu1, int tu2)
 {
+	eFBCTunerManager *fbcmng;
+
 	eSecDebug("eDVBSatelliteEquipmentControl::setTunerLinked(%d, %d)", tu1, tu2);
 	if (tu1 != tu2)
 	{
@@ -1843,11 +1844,8 @@ RESULT eDVBSatelliteEquipmentControl::setTunerLinked(int tu1, int tu2)
 			p1->m_frontend->setData(eDVBFrontend::LINKED_PREV_PTR, (long)p2);
 			p2->m_frontend->setData(eDVBFrontend::LINKED_NEXT_PTR, (long)p1);
 
-			eFBCTunerManager *fbcmng = eFBCTunerManager::getInstance();
-			if (p1->m_frontend->is_FBCTuner() && fbcmng)
-			{
+			if (p1->m_frontend->is_FBCTuner() && ((fbcmng = eFBCTunerManager::getInstance())))
 				fbcmng->updateFBCID(p1, p2);
-			}
 		}
 
 		p1=p2=NULL;
