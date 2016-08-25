@@ -19,7 +19,7 @@
 #include <lib/base/nconfig.h> // access to python config
 #include <lib/base/httpstream.h>
 
-		/* for subtitles */
+/* for subtitles */
 #include <lib/gui/esubtitle.h>
 
 #include <sys/vfs.h>
@@ -187,7 +187,7 @@ RESULT eStaticServiceDVBBouquetInformation::getName(const eServiceReference &ref
 		return err;
 	}
 
-	eBouquet *bouquet=0;
+	eBouquet *bouquet = NULL;
 	if ((err = db->getBouquet(ref, bouquet)) != 0)
 	{
 		eDebug("eStaticServiceDVBBouquetInformation::getName failed.. getBouquet failed!");
@@ -223,7 +223,7 @@ int eStaticServiceDVBBouquetInformation::isPlayable(const eServiceReference &ref
 			return 0;
 		}
 
-		eBouquet *bouquet=0;
+		eBouquet *bouquet = NULL;
 		if (db->getBouquet(ref, bouquet))
 		{
 			eDebug("eStaticServiceDVBBouquetInformation::isPlayable failed.. getBouquet failed!");
