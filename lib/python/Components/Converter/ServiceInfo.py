@@ -308,4 +308,4 @@ class ServiceInfo(Converter, object):
 
 	def changed(self, what):
 		if what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
-			Converter.changed(self, what) 
+			Converter.changed(self, what)

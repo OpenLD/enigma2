@@ -1643,10 +1643,10 @@ void eEPGCache::channel_data::startEPG()
 	mask.pid = 0x12;
 	mask.flags = eDVBSectionFilterMask::rfCRC;
 
+	eDVBChannelID chid = channel->getChannelID();
 #ifdef ENABLE_FREESAT
 	if (eEPGCache::getInstance()->getEpgSources() & eEPGCache::FREESAT_SCHEDULE_OTHER)
 	{
-		eDVBChannelID chid = channel->getChannelID();
 		std::ostringstream epg_id;
 		epg_id << std::hex << std::setfill('0') <<
 			std::setw(0) << ((chid.dvbnamespace.get() & 0xffff0000) >> 16) <<
