@@ -94,9 +94,22 @@ class ConfigElement(object):
 			self.changed()
 
 	def isChanged(self):
+		print '\n Config: isChanged'
 		sv = self.saved_value
+		print 'Config: SV1:',str(sv)
+		print 'Config: SV2:',self.tostring(sv)
+		print 'Config: self.value1:',str(self.value)
+		print 'Config: self.value2:',self.tostring(self.value)
+		print 'Config: self.default1:',str(self.default)
+		print 'Config: self.default2:',self.tostring(self.default)
+
 		if sv is None and str(self.value) == str(self.default):
+			print 'Config A1: FALSE'
 			return False
+		elif sv is None and self.tostring(self.value) != self.tostring(self.default):
+			print 'Config: A2:',self.tostring(self.value) != self.tostring(self.default)
+			return self.tostring(self.value) != self.tostring(self.default)
+		print 'Config: A3:',self.tostring(self.value) != self.tostring(sv)
 		return self.tostring(self.value) != self.tostring(sv)
 
 	def changed(self):
@@ -452,13 +465,13 @@ class ConfigBoolean(ConfigElement):
 		return "text", descr
 
 	def tostring(self, value):
-		if not value or value == 'false':
-			return "false"
+		if not value or str(value).lower() == 'false':
+			return "False"
 		else:
-			return "true"
+			return "True"
 
 	def fromstring(self, val):
-		if val == "true":
+		if str(val).lower() == "true":
 			return True
 		else:
 			return False
@@ -1241,7 +1254,7 @@ class ConfigSelectionNumber(ConfigSelection):
 		strv = str(self.tostring(self.value))
 		if sv is None and strv == str(self.default):
 			return False
-		return strv != str(sv)
+		return strv != self.tostring(sv)
 
 	def handleKey(self, key):
 		if not self.wraparound:
