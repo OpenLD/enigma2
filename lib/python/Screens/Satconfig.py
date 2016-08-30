@@ -811,7 +811,7 @@ class NimSelection(Screen):
 			nim = nim and nim[3]
 
 			nimConfig = nimmanager.getNimConfig(nim.slot)
-			if nim.isFBCLink() and nimConfig.configMode.value == "nothing" and not getLinkedSlotID(nim.slot) == -1:
+			if isFBCLink(nim) and nimConfig.configMode.value == "nothing" and not getLinkedSlotID(nim.slot) == -1:
 				return
 
 			if nim is not None and not nim.empty and nim.isSupported():
