@@ -30,15 +30,15 @@
 				<item weight="30" text="Manual scan" entryID="manual_scan" requires="HasTuners"><screen module="ScanSetup" /></item>
 			</menu>
 
-			<menu weight="5" level="0" text="System" entryID="system_selection">
-				<id val="system" />
+	<menu weight="5" level="0" text="System" entryID="system_selection">
+		<id val="system" />
 
 	<!-- Menu / A/V Settings -->
 	<menu weight="0" level="0" text="A/V settings" entryID="av_setup">
-		<id val="av_setup" />
+		<id val="av_menu" />
 
 		<!-- Menu / Settings / Video Menu -->
-		<menu weight="0" level="0" text="Video Settings" entryID="video_menu">
+		<menu level="0" text="Video Settings" entryID="av_setup">
 			<id val="video_menu" />
 			<item weight="0" level="0" text="Main Video Settings" entryID="video_setup"><screen module="VideoMode" screen="VideoSetup" /></item>
 			<item level="0" text="HDMI CEC" entryID="hdmicec" requires="HDMICEC">
@@ -56,7 +56,7 @@ self.session.open(HdmiCECSetupScreen)
 		</menu>
 
 		<!-- Menu / Settings / Audio Menu -->
-		<menu weight="5" level="1" text="Audio Settings" entryID="audio_menu">
+		<menu weight="5" level="1" text="Audio Settings" entryID="av_setup">
 			<id val="audio_menu" />
 			<item weight="0" level="1" text="Main Audio Settings" entryID="audio_setup"><screen module="VideoMode" screen="AudioSetup" /></item>
 			<item weight="10" level="2" entryID="subtitle_setup"><setup id="subtitlesetup" /></item>
@@ -78,27 +78,26 @@ self.session.open(HdmiCECSetupScreen)
 					<id val="leddisplay"/>
 				</menu>
 				<item level="0" entryID="specialfeatures_menu"><setup id="specialfeatures" /></item>
-				<item level="0" entryID="remote_setup"><setup id="remotesetup"/></item>
-
-			<!-- Menu / Settings / System / Storage devices -->
-			<menu weight="45" level="0" text="Storage devices" entryID="hardisk_selection" requires="Harddisk">
-				<id val="harddisk" />
-				<item weight="0" level="1" entryID="harddisk_setup"><setup id="harddisk"/></item>
-				<item weight="5" level="0" text="Initialization" entryID="harddisk_init"><screen module="HarddiskSetup" screen="HarddiskSelection"/></item>
-				<item weight="10" level="0" text="Filesystem Check" entryID="harddisk_check"><screen module="HarddiskSetup" screen="HarddiskFsckSelection"/></item>
-				<item weight="15" level="0" text="Convert ext3 filesystem to ext4" entryID="harddisk_convert" requires="ext4"><screen module="HarddiskSetup" screen="HarddiskConvertExt4Selection"/></item>
-			</menu>
-
-			<!-- Menu / Settings / Recordings -->
-		<menu weight="10" level="1" text="Recordings &amp; Timeshift" entryID="rec_setup">
-			<id val="rec" />
-			<item weight="10" level="0" text="Recording settings" entryID="recording_setup"><screen module="Recordings" screen="RecordingSettings" /></item>
-			<item weight="15" level="0" text="Timeshift settings" entryID="timshift_setup"><screen module="Timershift" screen="TimeshiftSettings" /></item>
-		</menu>
-
+				<item level="0" entryID="remote_setup"><setup id="remotesetup" /></item>
 				<item level="1" text="Input devices" entryID="input_device_setup"><screen module="InputDeviceSetup" screen="InputDeviceSelection" /></item>
 				<item text="Keyboard" entryID="keyboard"><setup id="keyboard" /></item>
 				<item level="0" entryID="logs_setup"><setup id="logs" /></item>
+
+				<!-- Menu / Settings / System / Storage devices -->
+				<menu weight="45" level="0" text="Storage devices" entryID="hardisk_selection" requires="Harddisk">
+					<id val="harddisk" />
+					<item weight="0" level="1" entryID="harddisk_setup"><setup id="harddisk" /></item>
+					<item weight="5" level="0" text="Initialization" entryID="harddisk_init"><screen module="HarddiskSetup" screen="HarddiskSelection"/></item>
+					<item weight="10" level="0" text="Filesystem Check" entryID="harddisk_check"><screen module="HarddiskSetup" screen="HarddiskFsckSelection"/></item>
+					<item weight="15" level="0" text="Convert ext3 filesystem to ext4" entryID="harddisk_convert" requires="ext4"><screen module="HarddiskSetup" screen="HarddiskConvertExt4Selection"/></item>
+				</menu>
+
+				<!-- Menu / Settings / Recordings -->
+				<menu weight="10" level="1" text="Recordings &amp; Timeshift" entryID="rec_menu">
+					<id val="rec" />
+					<item weight="10" level="0" text="Recording settings" entryID="recording_setup"><screen module="Recordings" screen="RecordingSettings" /></item>
+					<item weight="15" level="0" text="Timeshift settings" entryID="timshift_setup"><screen module="Timershift" screen="TimeshiftSettings" /></item>
+				</menu>
 
 				<menu level="2" text="EPG" entryID="epg_menu">
 					<id val="epg" />
@@ -108,6 +107,46 @@ self.session.open(HdmiCECSetupScreen)
 					<item level="2" entryID="setup_epginfobar"><setup id="epginfobar" /></item>
 					<item level="2" entryID="setup_epginfobargraphical"><setup id="epginfobargraphical" /></item>
 					<item level="2" entryID="setup_epggraphical"><setup id="epggraphical" /></item>
+					<menu level="2" text="Load/Save/Delete" entryID="epgloadsave_menu">
+						<id val="epgloadsave_menu" />
+						<item weight="0" level="0" entryID="loadepgcache" text="Load EPG">
+							<code>
+from Components.EpgLoadSave import EpgLoadMsg
+def msgClosed(ret):
+	if ret:
+		from enigma import eEPGCache
+		epgcache = eEPGCache.getInstance()
+		epgcache.load()
+self.session.openWithCallback(msgClosed, EpgLoadMsg)
+</code>
+						</item>
+						<item weight="50" level="0" entryID="saveepgcache" text="Save EPG">
+							<code>
+from Components.EpgLoadSave import EpgSaveMsg
+def msgClosed(ret):
+	if ret:
+		from enigma import eEPGCache
+		epgcache = eEPGCache.getInstance()
+		epgcache.save()
+self.session.openWithCallback(msgClosed, EpgSaveMsg)
+</code>
+								</item>
+								<item level="0" entryID="deleteepgcache" text="Delete EPG">
+									<code>
+from Components.EpgLoadSave import EpgDeleteMsg
+def msgClosed(ret):
+	if ret:
+		import os
+		from Components.config import config
+		if os.path.exists(config.misc.epgcache_filename.value):
+			os.remove(config.misc.epgcache_filename.value)
+		from enigma import eEPGCache
+		epgcache = eEPGCache.getInstance()
+		epgcache.flushEPG()
+self.session.openWithCallback(msgClosed, EpgDeleteMsg)
+</code>
+						</item>
+					</menu>
 				</menu>
 
 				<item level="1" entryID="rfmod_setup" requires="RfModulator"><setup id="RFmod"/></item>
@@ -137,7 +176,7 @@ self.session.open(RemoteControlCode)
 				</menu>
 				<item level="0" text="Skin Setup" entryID="skin_setup"><screen module="SkinSelector" screen="SkinSelector"/></item>
 
-			</menu>
+	</menu>
 
 		<!-- Menu / Settings / Common interface -->
 		<menu weight="30" level="1" text="Common interface" entryID="cam_setup" requires="CommonInterface">
