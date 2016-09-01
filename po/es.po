@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-05-26 18:00+0100\n"
+"PO-Revision-Date: 2016-09-01 03:02+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gedit 3.10.4\n"
+"X-Generator: Gedit 3.18.3\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "Stop recording now"
@@ -714,6 +714,9 @@ msgstr "AB"
 msgid "Dolby Digital downmix is now"
 msgstr ""
 
+msgid "Dolby Digital / AC3 downmix"
+msgstr "Mezcla Dolby Digital / AC3"
+
 msgid "Dolby Digital / DTS downmix"
 msgstr "Mezcla Dolby Digital / DTS"
 
@@ -1073,6 +1076,9 @@ msgstr "¿Seguro que quieres salir de este asistente?"
 
 msgid "Are you sure you want to reload the EPG data from:\n"
 msgstr "¿Seguro que quieres volver a cargar los datos EPG de…?\n"
+
+msgid "Are you sure you want to delete the EPG data from:\n"
+msgstr "¿Seguro que quieres eliminar los datos EPG de…?\n"
 
 #
 msgid ""
@@ -4537,12 +4543,21 @@ msgstr "Cargar"
 msgid "Load EPG"
 msgstr "Cargar EPG"
 
+msgid "Save EPG"
+msgstr "Guardar EPG"
+
+msgid "Delete EPG"
+msgstr "Eliminar EPG"
+
 #
 msgid "Load Length of Movies in Movielist"
 msgstr "Cargar duración de películas en la lista"
 
 msgid "Load/Save"
 msgstr "Cargar/Guardar"
+
+msgid "Load/Save/Delete"
+msgstr "Cargar/Guardar/Eliminar"
 
 #
 msgid "Local Network"
@@ -6660,9 +6675,6 @@ msgstr "Sábado"
 msgid "Save"
 msgstr "Guardar"
 
-msgid "Save EPG"
-msgstr "Guardar EPG"
-
 #
 msgid "Save Playlist"
 msgstr "Guardar lista de reproducción"
@@ -7032,9 +7044,6 @@ msgstr "Selecciona lo que quieres que activen la teclas de canal +/-:"
 
 msgid "Select what you want the TV button to activate:"
 msgstr "Selecciona lo que quieres que active la tecla TV:"
-
-msgid "Select wireless network"
-msgstr "Selecciona la red inalámbrica."
 
 msgid "Select your provider, and press OK to start the scan"
 msgstr "Selecciona tu proveedor y pulsa OK para iniciar la búsqueda"
@@ -8154,14 +8163,6 @@ msgstr "Tamaño de fuente de texto"
 
 #
 msgid ""
-"Thank you for using the wizard.\n"
-"Please press OK to continue."
-msgstr ""
-"Gracias por usar el asistente.\n"
-"Pulsa OK para continuar."
-
-#
-msgid ""
 "Thank you for using the wizard. Your %s %s is now ready to use.\n"
 "Please press OK to start using your %s %s."
 msgstr ""
@@ -8380,22 +8381,6 @@ msgstr "El estado de la imagen beta actual no pudo comprobarse porque por alguna
 #
 msgid "The timer file (timers.xml) is corrupt and could not be loaded."
 msgstr "El fichero de grabaciones (timers.xml) está dañado y no puede cargarse."
-
-#
-msgid ""
-"The wireless LAN plugin is not installed!\n"
-"Please install it and choose what you want to do next."
-msgstr ""
-"El complemento de LAN inalámbrica no está instalado.\n"
-"Instálalo y elige lo que quieres hacer después."
-
-#
-msgid ""
-"The wireless LAN plugin is not installed!\n"
-"Please install it."
-msgstr ""
-"El complemento de LAN inalámbrica no está instalado.\n"
-"Por favor, instálalo."
 
 #
 msgid "The wizard can backup your current settings. Do you want to do a backup now?"
@@ -9655,20 +9640,6 @@ msgstr ""
 msgid ""
 "Welcome.\n"
 "\n"
-"If you want to connect your %s %s to the Internet, this wizard will guide you through the basic network setup of your %s %s.\n"
-"\n"
-"Press OK to start configuring your network"
-msgstr ""
-"Bienvenido.\n"
-"\n"
-"Si quieres conectar tu %s %s a internet, este asistente te guiará en la configuración básica de red de tu %s %s.\n"
-"\n"
-"Pulsa ‘OK’ para empezar a configurar la red."
-
-#
-msgid ""
-"Welcome.\n"
-"\n"
 "This start wizard will guide you through the basic setup of your %s %s.\n"
 "Press the OK button on your remote control to move to the next step."
 msgstr ""
@@ -9797,11 +9768,70 @@ msgstr "Red LAN"
 msgid "Wireless Network"
 msgstr "Red inalámbrica"
 
+#
+msgid ""
+"Thank you for using the wizard.\n"
+"Please press OK to continue."
+msgstr ""
+"Gracias por usar el asistente.\n"
+"Pulsa OK para continuar."
+
+msgid "Select wireless network"
+msgstr "Selecciona la red inalámbrica."
+
+#
+msgid ""
+"The wireless LAN plugin is not installed!\n"
+"Please install it and choose what you want to do next."
+msgstr ""
+"El complemento de LAN inalámbrica no está instalado.\n"
+"Instálalo y elige lo que quieres hacer después."
+
+#
+msgid ""
+"The wireless LAN plugin is not installed!\n"
+"Please install it."
+msgstr ""
+"El complemento de LAN inalámbrica no está instalado.\n"
+"Por favor, instálalo."
+
+#
+msgid ""
+"Welcome.\n"
+"\n"
+"If you want to connect your %s %s to the Internet, this wizard will guide you through the basic network setup of your %s %s.\n"
+"\n"
+"Press OK to start configuring your network"
+msgstr ""
+"Bienvenido.\n"
+"\n"
+"Si quieres conectar tu %s %s a internet, este asistente te guiará en la configuración básica de red de tu %s %s.\n"
+"\n"
+"Pulsa ‘OK’ para empezar a configurar la red."
+
 msgid "Wireless network connection setup"
 msgstr "Configuración de la conexión de red inalámbrica"
 
 msgid "Wireless network connection setup."
 msgstr "Configuración de la conexión de red inalámbrica."
+
+msgid ""
+"Your internet connection is not working!\n"
+"Please choose what you want to do next."
+msgstr ""
+"Tu conexión a internet no funciona.\n"
+"Elige lo que quieres hacer ahora."
+
+msgid ""
+"Your wireless LAN internet connection could not be started!\n"
+"Have you attached your USB WLAN Stick?\n"
+"\n"
+"Please choose what you want to do next."
+msgstr ""
+"No puede iniciarse la conexión wifi a internet.\n"
+"¿Has conectado un dispositivo WLAN USB?\n"
+"\n"
+"Elige lo que quieres hacer ahora."
 
 msgid "Wireless network state"
 msgstr "Estado de red inalámbrica"
@@ -10184,13 +10214,6 @@ msgstr ""
 "Espera a que se reinicie tu %s %s.\n"
 "Puede tardar varios minutos."
 
-msgid ""
-"Your internet connection is not working!\n"
-"Please choose what you want to do next."
-msgstr ""
-"Tu conexión a internet no funciona.\n"
-"Elige lo que quieres hacer ahora."
-
 #, python-format
 msgid "Your internet connection is working (ip: %s)"
 msgstr "La conexión a internet funciona (ip: %s)"
@@ -10208,17 +10231,6 @@ msgstr "Tu %s %s no tiene conexión a internet"
 
 msgid "Your %s %s is not connected to the internet"
 msgstr "Tu %s %s no está conectado a internet"
-
-msgid ""
-"Your wireless LAN internet connection could not be started!\n"
-"Have you attached your USB WLAN Stick?\n"
-"\n"
-"Please choose what you want to do next."
-msgstr ""
-"No puede iniciarse la conexión wifi a internet.\n"
-"¿Has conectado un dispositivo WLAN USB?\n"
-"\n"
-"Elige lo que quieres hacer ahora."
 
 msgid "Zap"
 msgstr "Zapeo"
@@ -10262,6 +10274,15 @@ msgstr "Otro botón de retardo al zapear"
 
 msgid "Number of digits in channel number"
 msgstr "Dígitos en el número de canal"
+
+msgid "This allows you to set the number of digits to 5, if you have more than 9999 channels."
+msgstr "Aquí se puede establecer el número de puntos en 5 si tiene más de 9999 canales."
+
+msgid "Long press emulation with button"
+msgstr "Emulación de pulsación larga con el botón"
+
+msgid "Press this button to emulate a long press on a button pressed afterwards (this also overrides any other actions assigned to emulation button)."
+msgstr "Pulse este botón para emular una pulsación larga en el botón presionado (esto también anula cualesquiera otras acciones asignadas al botón de emulación)."
 
 msgid "[TimeShift] - Merging records failed!"
 msgstr "[Timeshift] Ha fallado la fusión de grabaciones."
@@ -12832,6 +12853,9 @@ msgstr "Temporizadores Cron"
 msgid "PowerTimers"
 msgstr "Temporizadores de alimentación"
 
+msgid "Power Timers"
+msgstr "Programar alimentación"
+
 msgid "Recording type"
 msgstr "Tipo de grabación"
 
@@ -14050,6 +14074,26 @@ msgstr "Cronología 24 horas"
 msgid "Directory long"
 msgstr "Directorio largo"
 
+#: EpgList.py
+msgid "Position of recording icons"
+msgstr "Posición de los iconos de grabación"
+
+#: EpgList.py
+msgid "Set the position of the recording icons"
+msgstr "Ajuste la posición de los iconos de grabación."
+
+#: EpgList.py
+msgid "bottom"
+msgstr "fondo"
+
+#: EpgList.py
+msgid "middle"
+msgstr "medio"
+
+#: EpgList.py
+msgid "hide"
+msgstr "ocultar"
+
 #
 msgid "Service Title mode"
 msgstr "Modo título de canales"
@@ -14146,6 +14190,10 @@ msgid "Service font size"
 msgstr "Tamaño de fuente del canal"
 
 #: gEPG
+msgid "Alignment of service names"
+msgstr "Alineación de los nombres de servicio"
+
+#: gEPG
 msgid "Event font size"
 msgstr "Tamaño de fuente del evento"
 
@@ -14156,6 +14204,10 @@ msgstr "Alineación de eventos"
 #: gEPG
 msgid "Configure the alignment of events."
 msgstr "Configurar la alineación de los eventos."
+
+#: gEPG
+msgid "Configure the alignment of service names."
+msgstr "Configurar la alineación de los nombres de servicio."
 
 #: gEPG
 msgid "centered"
@@ -14172,6 +14224,22 @@ msgstr "Izquierdo, envuelto"
 #: gEPG
 msgid "right, wrapped"
 msgstr "derecha, envuelto"
+
+#: setup.xml
+msgid "Red button"
+msgstr "Botón rojo"
+
+#: setup.xml
+msgid "Green button"
+msgstr "Botón verde"
+
+#: setup.xml
+msgid "Yellow button"
+msgstr "Botón amarillo"
+
+#: setup.xml
+msgid "Blue button"
+msgstr "Botón azul"
 
 #
 msgid "When nonzero, a recording will start earlier than the starting time as indicated by the EPG."
@@ -14891,20 +14959,38 @@ msgstr "Menú Rápido / Extensiones"
 msgid "Extensions/QuickMenu"
 msgstr "Extensiones / Menú Rápido"
 
+msgid "Wakeup time before a timer begins [mins]"
+msgstr "Despertar antes de que un temporizador se inicie [min]"
+
+msgid "Time window for detection of the wakeup by a timer [mins]"
+msgstr "Ventana de tiempo para la detección del despertar por un temporizador [min]"
+
+msgid "Use workaround for wakeup from deep-standby?"
+msgstr "Usar solución para despertar del modo de espera profundo?"
+
 msgid "Use individual offset from waking up to starting a timer [min]"
 msgstr "Usar variación individual para reactivar por un temporizador [min]"
 
 msgid "Use work-around for recordings from deep-standby"
-msgstr "Usar work-around para grabaciones tras tener el receptor apagado"
+msgstr "Usar solución para grabaciones tras tener el receptor apagado"
 
 msgid "Switch Blue-Short (QuickMenu) with Blue-Long (Extensions)"
 msgstr "Intercambiar azul corto (Menú Rápido) con azul largo (Extensiones)"
+
+msgid "The default settings are 5 minutes earlier to wakeup from deep standby. It possibly may be necessary to change this. (e.g.: the actual wake-up time is inaccurate or to late, waiting to a network-drive, etc.)"
+msgstr "El valor predeterminado es de 5 minutos antes de despertar desde lo más profundo de espera. Puede que sea necesario cambiar esta situación. (Por ejemplo: El tiempo de recuperación real es inexacto, o demasiado tarde, para esperar a una unidad de red, etc.)"
+
+msgid "The default settings are wakeup time - 5 minutes and timer begin time + 5 minutes. This setting changed the time window before the wakeup time. So can be detected a wakeup by a timer even at very early starting receivers."
+msgstr "Los ajustes predeterminados están despertando en - 5 minutos y el temporizador de arranque  en + 5 minutos. Esto establece la ventana de tiempo antes de la hora del despertador. De este modo, se detecta el despertar por un temporizador, incluso en los receptores de partida muy tempranas."
+
+msgid "If enabled, will checks for the time after the start of the receiver is within the time window and optionally switched to standby. If disabled, must additional be available a signal for the successful wakeup detection. (some receiver send a false or none signal)"
+msgstr "Cuando se activa, se comprueba si el tiempo después del inicio del receptor está encendido y, en su caso, en el modo de espera dentro de la ventana de tiempo. Si no se controla, incluso una señal para la detección exitosa también debe estar disponible. (Algunos receptores envían una señal equivocada o no)"
 
 msgid "The standard wakeup time is 5 minutes (or box specific) before a timer starts. Is the real wake up time outside 10 mins (some boxes starts not punctually) to the next timer will not switched to standby. (minus value = wake up to timer is shorter)"
 msgstr "El tiempo de reactivación estándar es 5 minutos (u otro específico) antes que empiece un temporizador. Si el siguiente temporizador empieza en menos de 10 minutos (algunos receptores no encienden puntualmente), el decodificador no irá a modo de espera (menos valor = el tiempo de reactivación antes de temporizador es inferior)"
 
 msgid "Check with an alternative method (some boxes gives no signal when starts from a timer) if there is a timer started in the next 10 mins (at bootup), then will put your box in standby."
-msgstr "Comprueba con un método alternativo (algunos receptores no dan señal cuando inician desde un temporizador) si hayun temporizador en los próximos 10 min (en el arranque) y pone tu receptor en modo de espera."
+msgstr "Comprueba con un método alternativo (algunos receptores no dan señal cuando inician desde un temporizador) si hay un temporizador en los próximos 10 min (en el arranque) y pone tu receptor en modo de espera."
 
 #
 msgid "Reload Services"
@@ -15865,7 +15951,7 @@ msgid "Fallback remote receiver URL"
 msgstr "Receptor remoto reserva URL"
 
 msgid "URL of fallback remote receiver"
-msgstr "URL del receptor remoto de reserva"
+msgstr "URL del receptor remoto de reserva. Añadir solo la IP (http:// y el puerto :8001 se añaden automáticamente)."
 
 msgid "Configure which tuner will be preferred for recordings, when more than one tuner is available. 'Disabled' would select a tuner based on preferred tuner in customise screen. 'Auto' would choose based on E2's default rules, ignoring preferred tuner in customise screen."
 msgstr "Configura qué sintonizador será el preferido para grabaciones cuando más de uno esté disponible. ‘Desactivado’ seleccionará un sintonizador basándose en la configuración personalizada. ‘Auto’ seleccionará basándose en las reglas predeterminadas de E2, ignorando el sintonizador preferido de la configuración personalizada."
@@ -16442,6 +16528,9 @@ msgstr "Grabaciones &amp; Timeshift"
 msgid "Maximum number of days in EPG"
 msgstr "Número Máximo de días en EPG"
 
+msgid "Use for load only x days in EPG"
+msgstr "Ajuste los días que desea obtener para el EPG. (Más de 3 días puede dar problemas en algunos receptores)."
+
 msgid "Update EPG"
 msgstr "Actualizando EPG"
 
@@ -16608,3 +16697,50 @@ msgstr "No hay bouquets seleccionados"
 
 msgid "FTP reading alternatives %d of %d"
 msgstr "FTP: Leyendo alternativas %d of %d"
+
+msgid "Rewrap subtitles"
+msgstr "Rewrap subtítulos"
+
+msgid "When enabled, reformat subtitles to match the width of the screen."
+msgstr "Cuando está activado, cambiar el formato de subtítulos para que coincida con el ancho de la pantalla."
+
+msgid "External subtitle switch fonts"
+msgstr "Cambio de fuente de subtítulos externos"
+
+msgid "Configure if the subtitle should switch between normal, italic, bold and bolditalic"
+msgstr "Configurar si el subtítulo debe conmutar entre normal, cursiva, negrita y negrita cursiva."
+
+msgid "External subtitle dialog colorisation"
+msgstr "Diálogos de colores con subtítulos externos"
+
+msgid "Replace `- ` in dialogs with colored text per speaker (like teletext subtitles for the hearing impaired)"
+msgstr "Reemplazar `- ` en el diálogo con el texto en color por altavoz (como los subtítulos de teletexto para sordos)."
+
+msgid "Hide dashed flickering line (VBI) for this service"
+msgstr "Ocultar línea discontinua parpadeante (VBI) para este servicio"
+
+msgid "Unhide dashed flickering line (VBI) for this service"
+msgstr "Permitir línea discontinua parpadeante (VBI) para este servicio"
+
+#: MultiBootStartup.py:29
+msgid "MultiBoot Selector"
+msgstr "Selector de multiarranque"
+
+#: MultiBootStartup.py:33
+msgid "Select Image: STARTUP_1"
+msgstr "Seleccionar imagen: STARTUP_1"
+
+#: MultiBootStartup.py:55
+#, python-format
+msgid "Select Image: %s"
+msgstr "Seleccionar imagen: %s"
+
+#: TimerEntry.py
+msgid "After Recording"
+msgstr "Después de grabar"
+
+msgid "Your %s %s is shutting down. Please wait..."
+msgstr "Tu %s %s está apagándose. Espera por favor..."
+
+msgid "Yes, shut down now."
+msgstr "Sí, apagar ahora."

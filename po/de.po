@@ -13030,6 +13030,9 @@ msgstr "CronTimer"
 msgid "PowerTimers"
 msgstr "PowerTimer"
 
+msgid "Power Timers"
+msgstr "Strom Timer"
+
 msgid "Recording type"
 msgstr "Aufnahmeart"
 

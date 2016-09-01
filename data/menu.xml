@@ -52,7 +52,7 @@ self.session.open(HdmiCECSetupScreen)
 					<item level="0" entryID="user_interface"><setup id="userinterface" /></item>
 					<item level="2" text="OSD Alpha" entryID="osdsetup" requires="CanChangeOsdAlpha"><screen module="UserInterfacePositioner" screen="UserInterfacePositioner2"/></item>
 					<item level="2" text="OSD 3D Setup" entryID="osd3dsetup" requires="CanChange3DOsd"><screen module="UserInterfacePositioner" screen="OSD3DSetupScreen"/></item>
-				</menu>
+					</menu>
 		</menu>
 
 		<!-- Menu / Settings / Audio Menu -->
@@ -235,7 +235,8 @@ else:
 			</item>
 		<item weight="15" level="0" text="Standby" entryID="standby"><screen module="Standby" screen="Standby"/></item>
 		<item weight="20" level="0" text="Sleep Timer" requires="DeepstandbySupport" entryID="sleep"><screen module="SleepTimerEdit" screen="SleepTimerEdit" /></item>
-		<item weight="25" level="0" text="Restart" entryID="restart"><screen module="Standby" screen="TryQuitMainloop">2</screen></item>
-		<item weight="30" level="0" text="Restart Gui" entryID="restart_enigma"><screen module="Standby" screen="TryQuitMainloop">3</screen></item>
+		<item weight="25" level="0" text="Power Timer" entryID="powertimer_edit"><screen module="PowerTimerEdit" screen="PowerTimerEditList" /></item>
+		<item weight="30" level="0" text="Restart" entryID="restart"><screen module="Standby" screen="TryQuitMainloop">2</screen></item>
+		<item weight="35" level="0" text="Restart Gui" entryID="restart_enigma"><screen module="Standby" screen="TryQuitMainloop">3</screen></item>
 		</menu>
 </menu>
