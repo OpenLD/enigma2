@@ -87,9 +87,11 @@ class LdExtraInfo(Poll, Converter, object):
 				if len(d) > 1:
 					info[d[0].strip()] = d[1].strip()
 
+			data['system'] = info.get('system', '')
 			data['caid'] = info.get('caid', '0')
 			data['pid'] = info.get('pid', '0')
 			data['provider'] = info.get('provider', '')
+			data['provid'] = info.get('provid', '')
 			if data['provider'] == '':
 				data['provider'] = info.get('prov', ' ')
 			data['chid'] = info.get('chid', '0')
@@ -102,13 +104,16 @@ class LdExtraInfo(Poll, Converter, object):
 			data['from'] = info.get('from', 'Unknown')
 			data['protocol'] = info.get('protocol', '')
 			data['hops'] = info.get('hops', '0')
+			data['share'] = info.get('share', '')
 			data['ecm_time'] = info.get('ecm time', '?')
 			data['cw0'] = info.get('cw0', '0')
 			data['cw1'] = info.get('cw1', '0')
 		except:
+			data['system'] = ''
 			data['caid'] = '0x00'
 			data['pid'] = '0x00'
 			data['provider'] = ''
+			data['provid'] = ''
 			data['chid'] = '0x00'
 			data['using'] = ''
 			data['decode'] = ''
@@ -119,6 +124,7 @@ class LdExtraInfo(Poll, Converter, object):
 			data['from'] = ''
 			data['protocol'] = ''
 			data['hops'] = '0'
+			data['share'] = ''
 			data['ecm_time'] = '0'
 			data['cw0'] = '0'
 			data['cw1'] = '0'
@@ -775,7 +781,7 @@ class LdExtraInfo(Poll, Converter, object):
 			if is_crypted != 1:
 				return ''
 			data = self.GetEcmInfo2()
-			if data['using'] == "newcamd":
+			if data['using'] == "newcamd" or data['using'] == "NewCamd":
 				return "Provider: %s" % (data['provider'])
 			elif data['using'] == "CCcam" or data['using'] == "CCcam-s2s":
 				return "Provider: %s" % (data['provider'])
