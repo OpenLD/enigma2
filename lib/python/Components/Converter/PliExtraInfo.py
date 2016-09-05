@@ -1,6 +1,6 @@
 # shamelessly copied from pliExpertInfo (Vali, Mirakels, Littlesat)
 
-from enigma import iServiceInformation, iPlayableService
+from enigma import iServiceInformation, eServiceCenter, iPlayableService, iPlayableServicePtr
 from Components.Converter.Converter import Converter
 from Components.Element import cached
 from Components.config import config
@@ -337,6 +337,9 @@ class PliExtraInfo(Poll, Converter, object):
 
 	def createVideoCodec(self, info):
 		return ("MPEG2", "MPEG4", "MPEG1", "MPEG4-VC", "VC1", "VC1-SM", "HEVC", "")[info.getInfo(iServiceInformation.sVideoType)]
+
+	def createServiceRef(self, info):
+		return info.getInfoString(iServiceInformation.sServiceref)
 
 	def createPIDInfo(self, info):
 		vpid = info.getInfo(iServiceInformation.sVideoPID)
