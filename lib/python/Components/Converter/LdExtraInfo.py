@@ -810,6 +810,12 @@ class LdExtraInfo(Poll, Converter, object):
 					return "Cache"
 				elif data['hops'] == "0" and data['using'] == "sci" or data['hops'] == "0" and data['using'] == "smartreader+":
 					return "Card"
+				elif data['hops'] == "0" and data['protocol'] == "cccam" or data['hops'] == "0" and data['protocol'] == "newcamd":
+					return "Card"
+				elif data['hops'] == "0" and data['using'] == "newcamd" or data['hops'] == "0" and data['using'] == "NewCamd":
+					return "Card"
+				elif data['hops'] == "0" and data['using'] == "CCcam" or data['hops'] == "0" and data['using'] == "CCcam-s2s":
+					return "Card"
 				else:
 					return "Network"
 			elif data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops']:
