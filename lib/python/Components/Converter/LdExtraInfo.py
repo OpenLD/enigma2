@@ -775,7 +775,12 @@ class LdExtraInfo(Poll, Converter, object):
 			if is_crypted != 1:
 				return ''
 			data = self.GetEcmInfo2()
-			return "CAID: %s     Provider: %s" % (data['caid'], data['provider'])
+			if data['using'] == "newcamd":
+				return "Provider: %s" % (data['provider'])
+			elif data['using'] == "CCcam" or data['using'] == "CCcam-s2s":
+				return "Provider: %s" % (data['provider'])
+			else:
+				return "CAID: %s     Provider: %s" % (data['caid'], data['provider'])
 
 		elif self.type == "E-C-N":
 			if is_crypted != 1:
@@ -791,11 +796,11 @@ class LdExtraInfo(Poll, Converter, object):
 
 			data = self.GetEcmInfo2()
 			if data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops']:
-				if data['using'] or data['protocol'] == "fta":
+				if data['using'] == "fta":
 					return "Fta"
 				elif data['using'] == "emu" or data['from'] == "constcw":
 					return "Emulator"
-				elif data['hops'] == "0" and data['protocol'] == "none" or data['using'] or data['from'] == "cache*":
+				elif data['hops'] == "0" and data['protocol'] == "none" or data['from'] == "cache*":
 					return "Cache"
 				elif data['hops'] == "0" and data['using'] == "sci" or data['hops'] == "0" and data['using'] == "smartreader+":
 					return "Card"
