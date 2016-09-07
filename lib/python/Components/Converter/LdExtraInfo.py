@@ -19,7 +19,7 @@
 ## limitations under the License.
 ##
 ##########################################################################
-from enigma import iServiceInformation, eServiceReference, eServiceCenter, iPlayableService, iPlayableServicePtr, eTimer, getBestPlayableServiceReference, eDVBFrontendParametersSatellite
+from enigma import iServiceInformation, eServiceReference, eServiceCenter, iPlayableService, iPlayableServicePtr, eTimer, getBestPlayableServiceReference, eDVBFrontendParametersSatellite, eEPGCache
 from Components.Converter.Converter import Converter
 from Components.Element import cached
 from Components.config import config
@@ -32,6 +32,7 @@ from Poll import Poll
 import NavigationInstance
 import os
 import time
+import re
 
 def addspace(text):
 	if text:
@@ -39,13 +40,15 @@ def addspace(text):
 	return text
 
 class LdExtraInfo(Poll, Converter, object):
+	ecmDict = { }
+
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		Poll.__init__(self)
 		self.type = type
 		self.poll_interval = 1000
 		self.poll_enabled = True
-		self.caid_data = (
+		self.caid_data = {
 			( "0x100",  "0x1ff", "Seca",     "S" ),
 			( "0x500",  "0x5ff", "Via",      "V" ),
 			( "0x600",  "0x6ff", "Irdeto",   "I" ),
@@ -59,10 +62,11 @@ class LdExtraInfo(Poll, Converter, object):
 			("0x2600", "0x2600", "Biss",     "BI" ),
 			("0x4ae0", "0x4ae1", "Dre",      "D" ),
 			("0x4aee", "0x4aee", "BulCrypt", "B1" ),
-			("0x5581", "0x5581", "BulCrypt", "B2" )
-		)
+			("0x5581", "0x5581", "BulCrypt", "B2" ) }
 		self.ecmdata = GetEcmInfo()
 		self.feraw = self.fedata = self.updateFEdata = None
+		self.DynamicTimer = eTimer()
+		self.DynamicTimer.callback.append(self.doSwitch)
 
 	def getCryptoInfo(self, info):
 		if info.getInfo(iServiceInformation.sIsCrypted) == 1:
@@ -80,13 +84,29 @@ class LdExtraInfo(Poll, Converter, object):
 	def GetEcmInfo2(self):
 		data = {}
 		try:
-			ecm = open('/tmp/ecm.info', 'rb').readlines()
+			ecm = open("/tmp/ecm.info", "rb").readlines()
 			info = {}
 			for line in ecm:
-				d = line.split(':', 1)
-				if len(d) > 1:
-					info[d[0].strip()] = d[1].strip()
+				x = line.lower().find("msec")
+				if x != -1:
+					info["ecm time"] = line[0:x+4]
+				elif line.lower().find("response:") != -1:
+					y = line.lower().find("response:")
+					if y != -1:
+						info["ecm time"] = line[y+9:].strip("\n\r")
+				else:
+					item = line.split(":", 1)
+					if len(item) > 1:
+						info[item[0].strip().lower()] = item[1].strip()
+					else:
+						if not info.has_key("caid"):
+							x = line.lower().find("caid")
+							if x != -1:
+								y = line.find(",")
+								if y != -1:
+									info["caid"] = line[x+5:y]
 
+			data['prov']  = info.get('prov', '')
 			data['system'] = info.get('system', '')
 			data['caid'] = info.get('caid', '0')
 			data['pid'] = info.get('pid', '0')
@@ -106,9 +126,11 @@ class LdExtraInfo(Poll, Converter, object):
 			data['hops'] = info.get('hops', '0')
 			data['share'] = info.get('share', '')
 			data['ecm_time'] = info.get('ecm time', '?')
+			data['Time'] = info.get('Time', '?')
 			data['cw0'] = info.get('cw0', '0')
 			data['cw1'] = info.get('cw1', '0')
 		except:
+			data['prov']  = ''
 			data['system'] = ''
 			data['caid'] = '0x00'
 			data['pid'] = '0x00'
@@ -126,6 +148,7 @@ class LdExtraInfo(Poll, Converter, object):
 			data['hops'] = '0'
 			data['share'] = ''
 			data['ecm_time'] = '0'
+			data['Time'] = '0'
 			data['cw0'] = '0'
 			data['cw1'] = '0'
 
@@ -154,6 +177,57 @@ class LdExtraInfo(Poll, Converter, object):
 			ecmtext = '\n\n    ' + _('Ecm info not available.')
 		return str(ecmtext)
 
+	def provfile(self, caid, prov):
+		ecm_info = self.GetEcmInfo2()
+		provider = None
+		pinfo = {}
+		try:
+			provider = open("/tmp/share.info", "rb").readlines()
+		except:
+			pass
+
+		if provider:
+			for line in provider:
+				x = line.lower().find("id:")
+				y = line.lower().find("card ")
+				if x != -1 and y != -1:
+					if caid != "0500":
+						if line[x+3:].strip("\n\r") == prov.strip("\n\r") and line[y+5:y+9] == caid:
+							x = line.lower().find("at ")
+							if x != -1:
+								y = line.lower().find("card ")
+								if y != -1:
+									pinfo["paddress"] = line[x+3:y-1]
+								x = line.lower().find("sl:")
+								if x != -1:
+									y = line.lower().find("lev:")
+									if y != -1:
+										pinfo["slot"] = line[x+3:y-1]
+										x = line.lower().find("dist:")
+										if x != -1:
+											pinfo["level"] = line[y+4:x-1]
+											y = line.lower().find("id:")
+											if y != -1:
+												pinfo["distance"] = line[x+5:y-1]
+					elif line[x+3:].strip("\n\r") == prov.strip("\n\r") and line[y+5:y+8] == caid[:-1]:
+							x = line.lower().find("at ")
+							if x != -1:
+								y = line.lower().find("card ")
+								if y != -1:
+									pinfo["paddress"] = line[x+3:y-1]
+								x = line.lower().find("sl:")
+								if x != -1:
+									y = line.lower().find("lev:")
+									if y != -1:
+										pinfo["slot"] = line[x+3:y-1]
+										x = line.lower().find("dist:")
+										if x != -1:
+											pinfo["level"] = line[y+4:x-1]
+											y = line.lower().find("id:")
+											if y != -1:
+												pinfo["distance"] = line[x+5:y-1]
+		return pinfo
+
 	def createCryptoBar(self, info):
 		res = ""
 		available_caids = info.getInfoObject(iServiceInformation.sCAIDs)
@@ -170,9 +244,8 @@ class LdExtraInfo(Poll, Converter, object):
 				except:
 					pass
 
-			if color != "\c007?7?7?" or caid_entry[4]:
-				if res: res += " "
-				res += color + caid_entry[3]
+			if res: res += " "
+			res += color + caid_entry[3]
 
 		res += "\c00??????"
 		return res
@@ -370,7 +443,10 @@ class LdExtraInfo(Poll, Converter, object):
 		return res
 
 	def createCryptoSpecial(self, info):
-		caid_name = _("Free To Air")
+		is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
+		if is_crypted != 1:
+			return _("Free To Air")
+		caid_name = _("Encrypt")
 		try:
 			for caid_entry in self.caid_data:
 				if int(caid_entry[0], 16) <= int(self.current_caid, 16) <= int(caid_entry[1], 16):
@@ -632,15 +708,64 @@ class LdExtraInfo(Poll, Converter, object):
 		return info.getInfoString(iServiceInformation.sProvider)
 
 	@cached
-	def getText(self):
+	def get_caidlist(self):
+		caidlist = {}
 		service = self.source.service
+		if service:
+			info = service and service.info()
+			if info:
+				available_caids = info.getInfoObject(iServiceInformation.sCAIDs)
+				if available_caids:
+					for cs in self.caid_data:
+						caidlist[cs] = (self.caid_data.get(cs),0)
+
+					for caid in available_caids:
+						c = "%x" % int(caid)
+						if len(c) == 3:
+							c = "0%s" % c
+						c = c[:2].upper()
+						if self.caid_data.has_key(c):
+							caidlist[c] = (self.caid_data.get(c),1)
+
+					ecm_info = self.GetEcmInfo2()
+					if ecm_info:
+						emu_caid = ecm_info.get("caid", "")
+						if emu_caid and emu_caid != "0x000":
+							c = emu_caid.lstrip("0x")
+							if len(c) == 3:
+								c = "0%s" % c
+							c = c[:2].upper()
+							caidlist[c] = (self.caid_data.get(c),2)
+		return caidlist
+
+	getCaidlist = property(get_caidlist)
+
+	@cached
+	def getText(self):
+		self.DynamicTimer.start(200)
+		service = self.source.service
+
 		if service is None:
 			return ""
-		info = service and service.info()
-		is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
+
+		if service:
+			info = service and service.info()
+			is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
 
 		if not info:
 			return ""
+
+		if info:
+			if info.getInfoObject(iServiceInformation.sCAIDs):
+				ecm_info = self.GetEcmInfo2()
+				if ecm_info:
+					# caid
+					caid = ecm_info.get("caid", '')
+					caid = caid.lstrip("0x")
+					caid = caid.upper()
+					caid = caid.zfill(4)
+				else:
+					return ""
 
 		if self.type == "CryptoInfo":
 			self.getCryptoInfo(info)
@@ -734,14 +859,20 @@ class LdExtraInfo(Poll, Converter, object):
 				return ""
 
 		if self.type == "CryptoSpecial":
-			if int(config.usage.show_cryptoinfo.value) > 0:
+			data = self.GetEcmInfo2()
+			if data['decode'] == "Network" or data['decode'] == "Local" or data['protocol'] == "gbox":
+				return "Protocol Gbox"
+			elif int(config.usage.show_cryptoinfo.value) > 0:
 				self.getCryptoInfo(info)
 				return self.createCryptoSpecial(info)
 			else:
 				return ""
 
 		if self.type == "CryptoNameCaid":
-			if int(config.usage.show_cryptoinfo.value) > 0:
+			data = self.GetEcmInfo2()
+			if data['decode'] == "Network" or data['decode'] == "Local" or data['protocol'] == "gbox":
+				return "Protocol Gbox"
+			elif int(config.usage.show_cryptoinfo.value) > 0:
 				self.getCryptoInfo(info)
 				return self.createCryptoNameCaid(info)
 			else:
@@ -762,6 +893,9 @@ class LdExtraInfo(Poll, Converter, object):
 		if self.type == "CamName":
 			return self.get_caName()
 
+		if self.type == "CaidList":
+			return self.get_caidlist()
+
 		elif self.type == "NetInfo":
 			if is_crypted != 1:
 				return ''
@@ -770,6 +904,42 @@ class LdExtraInfo(Poll, Converter, object):
 				return "CAID: %s   -  %s   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['address'], data['hops'], data['ecm_time'])
 			elif data['reader']:
 				return "CAID: %s   -  %s   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['address_from'], data['hops'], data['ecm_time'])
+			elif data['decode']:
+				ecm_info = self.GetEcmInfo2()
+				decode = ecm_info.get("decode", '')
+				prov = ecm_info.get("prov", '')
+				paddress = level = dist = ''
+				if prov:
+					prov = prov[0:4]
+					prov_info = self.provfile(caid, prov)
+					paddress = prov_info.get("paddress", '')
+					if paddress:
+						host = paddress.split(":")[0]
+						if host in self.ecmDict:
+							paddress = self.ecmDict[host]
+					level = prov_info.get("level", None)
+					dist = prov_info.get("distance", None)
+				if decode:
+					if decode == "Internal" or decode == "Local":
+						return "CAID: %s   -  %s   -  ID: %s" % (caid, decode, prov)
+					elif decode == "Network":
+						return "CAID: %s   -  %s   -  ID: %s   %s    Level: %s   Dist: %s" % (caid, decode, prov, paddress, level, dist)
+				return "CAID: %s   -  %s   -  ID: %s" % (data['caid'], data['decode'], data['prov'])
+			elif data['using'] or data['reader']:
+				if data['address'] == "/dev/sci0":
+					return "CAID: %s   -  Card in Slot #1   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['hops'], data['ecm_time'])
+				elif data['address'] == "/dev/sci1":
+					return "CAID: %s   -  Card in Slot #2   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['hops'], data['ecm_time'])
+				else:
+					if data['address_from'] == "/dev/sci0":
+						return "CAID: %s   -  Card in Slot #1   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['hops'], data['ecm_time'])
+					elif data['address_from'] == "/dev/sci1":
+						return "CAID: %s   -  Card in Slot #2   -  HOPS: %s   -  ECM: %ss" % (data['caid'], data['hops'], data['ecm_time'])
+			elif data['source']:
+				if data['source'] == "emu":
+					return "EMU %s" % (data['caid'])
+				else:
+					return "CAID: %s - %s %s" % (data['caid'], data['source'], data['ecm_time'])
 
 		elif self.type == "EcmInfo":
 			if is_crypted != 1:
@@ -785,6 +955,9 @@ class LdExtraInfo(Poll, Converter, object):
 				return "Provider: %s" % (data['provider'])
 			elif data['using'] == "CCcam" or data['using'] == "CCcam-s2s":
 				return "Provider: %s" % (data['provider'])
+			elif data['decode'] == "Network" or data['decode'] == "Local":
+				ecm_info = self.GetEcmInfo2()
+				return "CAID: %s     BoxId: %s" % (caid, data['provider'])
 			else:
 				return "CAID: %s     Provider: %s" % (data['caid'], data['provider'])
 
@@ -799,9 +972,15 @@ class LdExtraInfo(Poll, Converter, object):
 					return self.createCryptoNameCaid(info)
 				else:
 					return ""
+			elif self.type == "CryptoSpecial" or CamName == 'Common Interface':
+				if int(config.usage.show_cryptoinfo.value) > 0:
+					self.getCryptoInfo(info)
+					return self.createCryptoSpecial(info)
+				else:
+					return ""
 
 			data = self.GetEcmInfo2()
-			if data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops']:
+			if data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops'] or data['decode']:
 				if data['using'] == "fta":
 					return "Fta"
 				elif data['using'] == "emu" or data['from'] == "constcw":
@@ -816,6 +995,8 @@ class LdExtraInfo(Poll, Converter, object):
 					return "Card"
 				elif data['hops'] == "0" and data['using'] == "CCcam" or data['hops'] == "0" and data['using'] == "CCcam-s2s":
 					return "Card"
+				elif data['decode'] == "Local":
+					return "Card"
 				else:
 					return "Network"
 			elif data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops']:
@@ -825,28 +1006,6 @@ class LdExtraInfo(Poll, Converter, object):
 				else:
 					return "Card"
 			return ""
-
-		elif self.type == "CryptoBar":
-			data = self.GetEcmInfo2()
-			res = ""
-			available_caids = info.getInfoObject(iServiceInformation.sCAIDs)
-			for caid_entry in self.caid_data:
-				if int(data['caid'], 16) >= int(caid_entry[0], 16) and int(data['caid'], 16) <= int(caid_entry[1], 16):
-					color="\c0000??00"
-				else:
-					color = "\c007?7?7?"
-					try:
-						for caid in available_caids:
-							if caid >= int(caid_entry[0], 16) and caid <= int(caid_entry[1], 16):
-								color="\c00????00"
-					except:
-						pass
-
-				if res: res += " "
-				res += color + caid_entry[3]
-
-			res += "\c00??????"
-			return res
 
 		if self.updateFEdata:
 			feinfo = service.frontendInfo()
@@ -1044,7 +1203,7 @@ class LdExtraInfo(Poll, Converter, object):
 		if data is None:
 			return False
 
-		current_caid	= data['caid'] or data[1]
+		current_caid = data['caid'] or data[1]
 
 		available_caids = info.getInfoObject(iServiceInformation.sCAIDs)
 
@@ -1076,3 +1235,10 @@ class LdExtraInfo(Poll, Converter, object):
 		elif what[0] == self.CHANGED_POLL and self.updateFEdata is not None:
 			self.updateFEdata = False
 			Converter.changed(self, what)
+		else:
+			self.what = what
+			Converter.changed(self, what)
+
+	def doSwitch(self):
+		self.DynamicTimer.stop()
+		Converter.changed(self, self.what)
