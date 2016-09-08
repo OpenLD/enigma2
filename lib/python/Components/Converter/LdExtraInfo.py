@@ -34,10 +34,6 @@ import os
 import time
 import re
 
-def addspace(text):
-	if text:
-		text += "  "
-	return text
 
 class LdExtraInfo(Poll, Converter, object):
 	ecmDict = { }
@@ -82,6 +78,7 @@ class LdExtraInfo(Poll, Converter, object):
 			self.current_ecmpid = "0"
 
 	def GetEcmInfo2(self):
+		ecm = None
 		data = {}
 		try:
 			ecm = open("/tmp/ecm.info", "rb").readlines()
@@ -173,9 +170,39 @@ class LdExtraInfo(Poll, Converter, object):
 				if len(line) > 3:
 					ecmtext = ecmtext + line + '\n'
 			f.close()
+		elif fileExists('/tmp/ecm0.info'):
+			f = open('/tmp/ecm0.info', 'r')
+			for line in f.readlines():
+				line = line.replace('\n', '')
+				line = line.strip()
+				if len(line) > 3:
+					ecmtext = ecmtext + line + '\n'
+			f.close()
+		elif fileExists('/tmp/ecm1.info'):
+			f = open('/tmp/ecm1.info', 'r')
+			for line in f.readlines():
+				line = line.replace('\n', '')
+				line = line.strip()
+				if len(line) > 3:
+					ecmtext = ecmtext + line + '\n'
+			f.close()
 		if len(ecmtext) < 5:
 			ecmtext = '\n\n    ' + _('Ecm info not available.')
 		return str(ecmtext)
+
+	def get_PIDtext(self):
+		pidtext = ''
+		if fileExists('/tmp/pid.info'):
+			f = open('/tmp/pid.info', 'r')
+			for line in f.readlines():
+				line = line.replace('\n', '')
+				line = line.strip()
+				if len(line) > 3:
+					pidtext = pidtext + line + '\n'
+			f.close()
+		if len(pidtext) < 5:
+			pidtext = '\n\n    ' + _('Pid info not available.')
+		return str(pidtext)
 
 	def provfile(self, caid, prov):
 		ecm_info = self.GetEcmInfo2()
@@ -887,6 +914,37 @@ class LdExtraInfo(Poll, Converter, object):
 		if self.type == "Ecmtext":
 			return self.get_Ecmtext()
 
+		if self.type == "PIDtext":
+			data = self.GetEcmInfo2()
+			if data['decode'] == "Network" or data['decode'] == "Local" or data['protocol'] == "gbox":
+				return self.get_PIDtext()
+			else:
+				return ""
+
+		if self.type == "InfoPeer":
+			data = self.GetEcmInfo2()
+			if data['decode'] == "Network" or data['decode'] == "Local" or data['protocol'] == "gbox":
+				ecm_info = self.GetEcmInfo2()
+				decode = ecm_info.get("decode", '')
+				prov = ecm_info.get("prov", '')
+				paddress = level = dist = ''
+				if prov:
+					prov = prov[0:4]
+					prov_info = self.provfile(caid, prov)
+					paddress = prov_info.get("paddress", '')
+					if paddress:
+						host = paddress.split(":")[0]
+						if host in self.ecmDict:
+							paddress = self.ecmDict[host]
+					level = prov_info.get("level", None)
+					dist = prov_info.get("distance", None)
+				if decode:
+					if decode == "Internal" or decode == "Local":
+						return "CAID: %s   -  %s   -  ID: %s" % (caid, decode, prov)
+					elif decode == "Network":
+						return "CAID: %s   -  %s   -  ID: %s   %s    Level: %s   Dist: %s" % (caid, decode, prov, paddress, level, dist)
+				return "CAID: %s   -  %s   -  ID: %s" % (data['caid'], data['decode'], data['prov'])
+
 		if self.type == "ProviderName":
 			return self.createProviderName(info)
 
@@ -955,6 +1013,8 @@ class LdExtraInfo(Poll, Converter, object):
 				return "Provider: %s" % (data['provider'])
 			elif data['using'] == "CCcam" or data['using'] == "CCcam-s2s":
 				return "Provider: %s" % (data['provider'])
+			elif data['using'] == "gbox" or data['address'] == "127.0.0.1:*":
+				return "Provider: %s" % (data['provider'])
 			elif data['decode'] == "Network" or data['decode'] == "Local":
 				ecm_info = self.GetEcmInfo2()
 				return "CAID: %s     BoxId: %s" % (caid, data['provider'])
@@ -980,13 +1040,15 @@ class LdExtraInfo(Poll, Converter, object):
 					return ""
 
 			data = self.GetEcmInfo2()
-			if data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops'] or data['decode']:
+			if data['reader'] or data['using'] or data['protocol'] or data['from'] or data['hops'] or data['decode'] or data['address']:
 				if data['using'] == "fta":
 					return "Fta"
 				elif data['using'] == "emu" or data['from'] == "constcw":
 					return "Emulator"
 				elif data['hops'] == "0" and data['protocol'] == "none" or data['from'] == "cache*":
 					return "Cache"
+				elif data['using'] == "gbox" or data['address'] == "127.0.0.1:*":
+					return "Sharing"
 				elif data['hops'] == "0" and data['using'] == "sci" or data['hops'] == "0" and data['using'] == "smartreader+":
 					return "Card"
 				elif data['hops'] == "0" and data['protocol'] == "cccam" or data['hops'] == "0" and data['protocol'] == "newcamd":

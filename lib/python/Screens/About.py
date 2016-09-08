@@ -333,7 +333,6 @@ class SystemMemoryInfo(Screen):
 		Screen.setTitle(self, _("Memory Information"))
 		self.skinName = ["SystemMemoryInfo", "About"]
 		self["lab1"] = StaticText(_("INFO RAM / FLASH"))
-		#self["lab2"] = StaticText(_("Developer:\t Javilonas (Javier Sayago)"))
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],

@@ -42,9 +42,11 @@ from Components.Sources.StaticText import StaticText
 from Components.PluginList import *
 from Components.VariableText import VariableText
 from Components.Element import cached
+from Components.Converter.Converter import Converter
+from Components.Converter.Poll import Poll
 from Plugins.Plugin import PluginDescriptor
 from Components.PluginComponent import plugins
-from Tools.Directories import fileExists
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 from Tools.StbHardware import getFPVersion
 from Tools.LoadPixmap import LoadPixmap
 from ServiceReference import ServiceReference
@@ -53,10 +55,13 @@ from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVer
 from time import *
 from types import *
 import sys, socket, commands, re, new, os, gettext, _enigma, enigma, subprocess, threading, traceback, time, datetime
-from os import path, popen, system, listdir, remove as os_remove, rename as os_rename, getcwd, chdir
-
+from os import path, popen, system, listdir, remove as os_remove, rename as os_rename, getcwd, chdir, statvfs
 from re import search
 from time import time
+from random import randint
+import os
+import time
+import re
 
 class LdsysInfo(Screen):
 	skin = """
@@ -66,13 +71,12 @@ class LdsysInfo(Screen):
 </widget>
 </screen>"""
 
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self["lab1"] =  Label()
-
+		self.DynamicTimer = eTimer()
+		self.DynamicTimer.callback.append(self.updateInfo)
 		self.onShow.append(self.updateInfo)
-
 		self["myactions"] = ActionMap(["OkCancelActions"],
 		{
 			"ok": self.close,
@@ -80,19 +84,20 @@ class LdsysInfo(Screen):
 		}, -1)
 
 	def updateInfo(self):
+		self.DynamicTimer.start(1000)
 		rc = system("df -h > /tmp/syinfo.tmp")
 		if config.osd.language.value == 'es_ES':
-			text = "RECEPTOR\n"
+			self.text = "RECEPTOR\n"
 		else:
-			text = "BOX\n"
+			self.text = "BOX\n"
 		f = open("/proc/stb/info/model",'r')
 		if config.osd.language.value == 'es_ES':
-			text += "Modelo:\t" + about.getBoxType() + "\n"
+			self.text += "Modelo:\t" + about.getBoxType() + "\n"
 		else:
-			text += "Model:\t" + about.getBoxType() + "\n"
+			self.text += "Model:\t" + about.getBoxType() + "\n"
 		f.close()
 		#f = open("/proc/stb/info/chipset",'r')
-		#text += "Chipset:\t" + about.getChipSetString() + "\n"
+		#self.text += "Chipset:\t" + about.getChipSetString() + "\n"
 		#f.close()
 		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
 		cmd2 = 'cat /proc/cpuinfo | grep "BogoMIPS" -m 1 | awk -F ": " ' + "'{print $2}'"
@@ -109,14 +114,14 @@ class LdsysInfo(Screen):
 		if res2:
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
-		text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
-		text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
-		text += "BogoMIPS \t" + bogoMIPS + "\n"
+		self.text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
+		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
+		self.text += "BogoMIPS \t" + bogoMIPS + "\n"
 		f.close()
 		if config.osd.language.value == 'es_ES':
-			text += "\nMEMORIA\n"
+			self.text += "\nMEMORIA\n"
 		else:
-			text += "\nMEMORY\n"
+			self.text += "\nMEMORY\n"
 		memTotal = memFree = swapTotal = swapFree = 0
 		for line in open("/proc/meminfo",'r'):
 			parts = line.split(':')
@@ -130,61 +135,61 @@ class LdsysInfo(Screen):
 			elif key == "SwapFree":
 				swapFree = parts[1].strip()
 		if config.osd.language.value == 'es_ES':
-			text += "Memoria Total:\t%s\n" % memTotal
+			self.text += "Memoria Total:\t%s\n" % memTotal
 		else:
-			text += "Total memory:\t%s\n" % memTotal
+			self.text += "Total memory:\t%s\n" % memTotal
 		if config.osd.language.value == 'es_ES':
-			text += "Memoria Libre:\t%s \n" % memFree
+			self.text += "Memoria Libre:\t%s \n" % memFree
 		else:
-			text += "Free memory:\t%s \n" % memFree
+			self.text += "Free memory:\t%s \n" % memFree
 		if config.osd.language.value == 'es_ES':
-			text += "Memoria Usada:\t%s" % str(about.getRAMusageString()) + "\n"
+			self.text += "Memoria Usada:\t%s" % str(about.getRAMusageString()) + "\n"
 		else:
-			text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
+			self.text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
 		out_lines = file("/proc/meminfo").readlines()
 		for lidx in range(len(out_lines) - 1):
 			tstLine = out_lines[lidx].split()
 			if "Buffers:" in tstLine:
 				Buffers = out_lines[lidx].split()
-				text += _("Buffers:") + "\t" + Buffers[1] + ' kB'"\n"
+				self.text += _("Buffers:") + "\t" + Buffers[1] + ' kB'"\n"
 			if "Cached:" in tstLine:
 				Cached = out_lines[lidx].split()
-				text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
+				self.text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
 		if config.osd.language.value == 'es_ES':
-			text += "Swap total:\t%s \n" % swapTotal
+			self.text += "Swap total:\t%s \n" % swapTotal
 		else:
-			text += "Swap total:\t%s \n" % swapTotal
+			self.text += "Swap total:\t%s \n" % swapTotal
 		if config.osd.language.value == 'es_ES':
-			text += "Swap libre:\t%s \n" % swapFree
+			self.text += "Swap libre:\t%s \n" % swapFree
 		else:
-			text += "Swap free:\t%s \n" % swapFree
+			self.text += "Swap free:\t%s \n" % swapFree
 		if config.osd.language.value == 'es_ES':
-			text += "\nALMACENAMIENTO\n"
+			self.text += "\nALMACENAMIENTO\n"
 		else:
-			text += "\nSTORAGE\n"
+			self.text += "\nSTORAGE\n"
 		f = open("/tmp/syinfo.tmp",'r')
 		line = f.readline()
 		parts = line.split()
-		text += parts[0] + "\t" + parts[1].strip() + "      " + parts[2].strip() + "    " + parts[3].strip() + "    " + parts[4] + "\n"
+		self.text += parts[0] + "\t" + parts[1].strip() + "      " + parts[2].strip() + "    " + parts[3].strip() + "    " + parts[4] + "\n"
 		line = f.readline()
 		parts = line.split()
-		text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
+		self.text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
 		for line in f.readlines():
 			if line.find('/media/') != -1:
 				line = line.replace('/media/', '   ')
 				parts = line.split()
 				if len(parts) == 6:
-					text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
+					self.text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
 		f.close()
 		os_remove("/tmp/syinfo.tmp")
 
-		text += "\nSOFTWARE\n"
+		self.text += "\nSOFTWARE\n"
 		openLD = "OpenLD "
-		text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + "\n"
-		text += "Kernel: \t " + about.getKernelVersionString() + "\n"
-		text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
-		text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
-		text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-		text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
+		self.text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + "\n"
+		self.text += "Kernel: \t " + about.getKernelVersionString() + "\n"
+		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
+		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
+		self.text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
+		self.text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
 
-		self["lab1"].setText(text)
+		self["lab1"].setText(self.text)

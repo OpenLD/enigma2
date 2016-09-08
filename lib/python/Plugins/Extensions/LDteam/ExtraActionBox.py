@@ -51,7 +51,7 @@ class ExtraActionBox(Screen):
 
 	def __setTitle(self):
 		if self["logo"].instance is not None:
-			self["logo"].instance.setPixmapFromFile(resolveFilename(SCOPE_CURRENT_SKIN, '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/extra/run.png'))
+			self["logo"].instance.setPixmapFromFile(resolveFilename(SCOPE_CURRENT_SKIN, '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/run.png'))
 		self.setTitle(self.ctitle)
 		self.timer = eTimer()
 		self.timer.callback.append(self.__start)

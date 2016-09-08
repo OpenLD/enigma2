@@ -1,4 +1,4 @@
 installdir = $(pkglibdir)/python/Plugins/Extensions/LDteam/images
 
-SUBDIRS = buttons extra icons menu
+SUBDIRS = buttons icons menu
 

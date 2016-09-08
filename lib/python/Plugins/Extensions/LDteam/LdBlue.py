@@ -60,78 +60,85 @@ class LDBluePanel(Screen):
 	skin = """
 <screen name="LDBluePanel" position="center,center" size="1150,650">
 <ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
-<widget source="global.CurrentTime" render="Label" position="35,10" size="500,24" font="Regular; 22" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
+<widget source="global.CurrentTime" render="Label" position="35,10" size="500,24" font="Regular; 21" foregroundColor="#FFFFFF" halign="left" transparent="1" zPosition="5">
 		<convert type="ClockToText">>Format%H:%M:%S</convert>
 </widget>
-<widget source="session.CurrentService" render="Label" position="255,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" halign="left" transparent="1" zPosition="5">
+<widget source="session.CurrentService" render="Label" position="256,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" halign="left" transparent="1" zPosition="5">
 		<convert type="LdExtraInfo">CryptoNameCaid</convert>
 </widget>
-<widget source="session.CurrentService" render="Label" position="345,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" halign="left" transparent="1" zPosition="5">
+<widget source="session.CurrentService" render="Label" position="352,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" halign="left" transparent="1" zPosition="5">
 		<convert type="LdExtraInfo">E-C-N</convert>
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-S" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-S" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">0,0</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-S2" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-S2" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">0,0</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-C" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-C" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">1,1</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-T" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-T" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">2,2</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-T2" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="DVB-T2" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">2,2</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.FrontendInfo" render="FixedLabel" text="ATSC" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.FrontendInfo" render="FixedLabel" text="ATSC" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="FrontendInfo">TYPE</convert>
 <convert type="ValueRange">3,3</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<widget source="session.CurrentService" render="FixedLabel" text="IPTV" position="195,20" size="240,24" font="Regular; 14" backgroundColor="transpBlack" transparent="1" halign="left">
+<widget source="session.CurrentService" render="FixedLabel" text="IPTV" position="195,25" size="240,24" font="Regular; 15" backgroundColor="transpBlack" transparent="1" halign="left">
 <convert type="ServiceInfo">IsStream</convert>
 <convert type="ConditionalShowHide" />
 </widget>
-<ePixmap position="380,10" size="310,155" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/ld.png" alphatest="blend" transparent="1" />
 <ePixmap position="25,55" size="510,255" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/bp_deko.png" zPosition="1" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/red150x30.png" position="30,590" size="150,30" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on" />
-<eLabel text="Daemons" position="30,592" zPosition="1" size="150,25" font="Regular; 20" halign="center" backgroundColor="transpBlack" transparent="1" />
-<eLabel text="Plugins" position="200,592" zPosition="1" size="150,25" font="Regular; 20" halign="center" backgroundColor="transpBlack" transparent="1" />
-<eLabel text="Info" position="370,592" zPosition="1" size="150,25" font="Regular; 20" halign="center" backgroundColor="transpBlack" transparent="1" />
-<eLabel text="Settings" position="543,592" zPosition="1" size="150,25" font="Regular; 20" halign="center" backgroundColor="transpBlack" transparent="1" />
-<widget name="lab1" position="195,43" size="230,25" font="Regular; 20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="lab2" position="195,73" size="190,25" font="Regular; 20" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="key_red" position="30,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="red" transparent="1" />
+<widget name="key_green" position="200,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="green" transparent="1" />
+<widget name="key_yellow" position="370,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="yellow" transparent="1" />
+<widget name="key_blue" position="543,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="blue" transparent="1" />
+<widget name="lab1" position="190,80" size="235,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="list" position="35,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1" />
-<widget name="lab3" position="35,149" size="120,25" font="Regular; 20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab0" position="35,149" size="245,25" font="Regular; 20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="activecam" position="166,149" size="245,25" font="Regular; 20" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab1" position="40,183" size="340,25" font="Regular; 19" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab2" position="40,208" size="340,25" font="Regular; 19" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab3" position="40,233" size="340,25" font="Regular; 19" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget name="Ilab4" position="40,258" size="340,25" font="Regular; 19" zPosition="2" backgroundColor="transpBlack" transparent="1" />
-<widget source="session.CurrentService" render="Label" position="47,293" size="505,380" font="Regular; 18" halign="left" backgroundColor="transpBlack" transparent="1" zPosition="2">
+<widget name="lab2" position="35,149" size="120,25" font="Regular; 19" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab0" position="35,149" size="245,25" font="Regular; 19" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="activecam" position="166,149" size="245,25" font="Regular; 19" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab1" position="40,183" size="340,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab2" position="40,208" size="340,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab3" position="40,233" size="340,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget name="Ilab4" position="40,258" size="340,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
+<widget source="session.CurrentService" render="Label" position="40,293" size="505,380" font="Regular; 16" halign="left" backgroundColor="transpBlack" transparent="1" zPosition="2">
 		<convert type="LdExtraInfo">Ecmtext</convert>
+</widget>
+<widget source="session.CurrentService" render="Label" position="40,415" size="505,380" font="Regular; 14" halign="left" backgroundColor="transpBlack" transparent="1" zPosition="2">
+		<convert type="LdExtraInfo">PIDtext</convert>
+</widget>
+<widget source="session.CurrentService" render="Label" position="40,490" size="505,380" font="Regular; 13" halign="left" backgroundColor="transpBlack" transparent="1" zPosition="2">
+		<convert type="LdExtraInfo">InfoPeer</convert>
 </widget>
 </screen>"""
 	def __init__(self, session):
 		Screen.__init__(self, session)
+		self['key_green'] = Label(_("Plugins"))
+		self['key_red'] = Label(_("Daemons"))
+		self['key_yellow'] = Label(_("Info"))
+		self['key_blue'] = Label(_("Settings"))
 		self['lab1'] = Label()
-		self['lab2'] = Label(_('Set Default CAM'))
-		self['lab3'] = Label()
+		self['lab2'] = Label()
 		if config.osd.language.value == 'es_ES':
 			self['Ilab0'] = Label(_('CAM Activa: '))
 		else:

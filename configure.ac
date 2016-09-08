@@ -679,7 +679,6 @@ lib/python/Plugins/Extensions/LDteam/extras/Makefile
 lib/python/Plugins/Extensions/LDteam/epg/Makefile
 lib/python/Plugins/Extensions/LDteam/images/Makefile
 lib/python/Plugins/Extensions/LDteam/images/buttons/Makefile
-lib/python/Plugins/Extensions/LDteam/images/extra/Makefile
 lib/python/Plugins/Extensions/LDteam/images/icons/Makefile
 lib/python/Plugins/Extensions/LDteam/images/menu/Makefile
 lib/python/Plugins/SystemPlugins/LCNScanner/Makefile

@@ -461,7 +461,8 @@ class LDepg(Screen, ConfigListScreen):
 		self['setupActions'] = ActionMap(['SetupActions',
 		 'WizardActions',
 		 'TimerEditActions',
-		 'ColorActions'], {'blue': self.mhw,
+		 'ColorActions'], {
+		 'blue': self.mhw,
 		 'red': self.cancel,
 		 'cancel': self.cancel,
 		 'yellow': self.downepg,
@@ -588,7 +589,6 @@ class Viewmhw(Screen):
 		 'left': self['text'].pageUp,
 		 'down': self['text'].pageDown,
 		 'right': self['text'].pageDown}, -1)
-
 
 class LDmemoria(ConfigListScreen, Screen):
 	skin = """
