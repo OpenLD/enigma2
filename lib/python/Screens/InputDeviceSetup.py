@@ -258,7 +258,7 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 
 
 class RemoteControlType(Screen, ConfigListScreen):
-
+	
 	rcList = [
 			("0", _("Default")),
 			("3", _("MaraM9")),
@@ -271,7 +271,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 			("11", _("et9200/9500/6500")),
 			("13", _("et4000")),
 			("14", _("XP1000")),
-			("16", _("HD1100/HD1200/HD1265/HD1500/HD500C/et7x00/et8500")),
+			("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/et7x00/et8500/et7000mini")),
 			("17", _("XP3000")),
 			("18", _("F1/F3/F4/TRIPLEX")),
 			("19", _("HD2400")),
@@ -285,6 +285,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 			("et6000", 7),
 			("et6500", 11),
 			("et7x00",16),
+			("et7000mini",16),
 			("et8000", 9),
 			("et8500",16),
 			("et9000", 5),
@@ -292,14 +293,16 @@ class RemoteControlType(Screen, ConfigListScreen):
 			("et9200", 11),
 			("et9500", 11),
 			("et10000", 9),
+			("formuler1",18),
+			("formuler3",18),
+			("formuler4",18),
+			("hd11",16),
+			("hd51",16),
 			("hd1100",16),
 			("hd1200",16),
 			("hd1265",16),
 			("hd500c",16),
 			("hd2400",19),
-			("formuler1",18),
-			("formuler3",18),
-			("formuler4",18),
 			("triplex",18),
 			("xp1000", 14),
 			("xp3000", 17),
