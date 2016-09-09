@@ -569,7 +569,7 @@ std::string convertDVBUTF8(const unsigned char *data, int len, int table, int ts
 				*pconvertedLen += len;
 			break;
 		default:
-			char res[2048];
+			char res[4096];
 			while (i < len && t < sizeof(res))
 			{
 				unsigned long code = 0;
@@ -700,7 +700,7 @@ std::string convertLatin1UTF8(const std::string &string)
 {
 	unsigned int t = 0, i = 0, len = string.size();
 
-	char res[2048];
+	char res[4096];
 
 	while (i < len)
 	{
