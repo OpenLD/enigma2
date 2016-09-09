@@ -332,7 +332,7 @@ static inline unsigned int recode(unsigned char d, int cp)
 	{
 	case 0:		// ISO6937
 		return iso6937[d-0xA0];
-	case 1:		// 8859-1 <-> unicode mapping
+	case 1:		// 8859-1 -> unicode mapping
 		return d;
 	case 2:		// 8859-2 -> unicode mapping
 		return c88592[d-0xA0];
@@ -439,7 +439,7 @@ std::string Big5ToUTF8(const char *szIn, int len, int *pconvertedLen)
 			szOut[t++] = szIn[i];
 	}
 
-        if (i < len && szIn[i] && ((unsigned char)szIn[i] < 0xA0 || (unsigned char)szIn[i] > 0xF9))
+	if (i < len && szIn[i] && ((unsigned char)szIn[i] < 0xA0 || (unsigned char)szIn[i] > 0xF9))
 		szOut[t++] = szIn[i++];
 
 	if (pconvertedLen)
@@ -752,17 +752,17 @@ int isUTF8(const std::string &string)
 
 unsigned int truncateUTF8(std::string &s, unsigned int newsize)
 {
-        unsigned int len = s.size();
+	unsigned int len = s.size();
 
-        // Assume s is a real UTF8 string!!!
-        while (len > newsize) {
-                while (len-- > 0  && (s[len] & 0xC0) == 0x80)
-                        ; // remove UTF data bytes,  e.g. range 0x80 - 0xBF
-                if (len > 0)   // remove the UTF startbyte, or normal ascii character
-                         --len;
-        }
-        s.resize(len);
-        return len;
+	// Assume s is a real UTF8 string!!!
+	while (len > newsize) {
+			while (len-- > 0  && (s[len] & 0xC0) == 0x80)
+					; // remove UTF data bytes,  e.g. range 0x80 - 0xBF
+			if (len > 0)   // remove the UTF startbyte, or normal ascii character
+					 --len;
+	}
+	s.resize(len);
+	return len;
 }
 
 
