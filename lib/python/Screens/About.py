@@ -1,18 +1,19 @@
 from enigma import *
 from Screen import Screen
+from Components.Element import cached
 from Components.config import config
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Sources.StaticText import StaticText
 from Components.Harddisk import Harddisk
 from Components.NimManager import nimmanager
-from Components.About import about, getVersionString
+from Components.About import about, getVersionString, getChipSetString, getKernelVersionString, getCPUString, getCpuCoresString, getPythonVersionString, getGStreamerVersionString, getDriverInstalledDate
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console
-from Tools.StbHardware import getFPVersion
+from Components.Converter.Poll import Poll
 
 from ServiceReference import ServiceReference
-from enigma import iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel
+from enigma import iServiceInformation, eServiceReference, eServiceCenter, iPlayableService, iPlayableServicePtr, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel, getBestPlayableServiceReference, eDVBFrontendParametersSatellite, eEPGCache
 from boxbranding import getBoxType, getMachineBuild, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
 
 from Components.Pixmap import MultiPixmap
@@ -23,6 +24,8 @@ from Components.ProgressBar import ProgressBar
 
 from os import popen
 from Tools.StbHardware import getFPVersion
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
+from Tools.Transponder import ConvertToHumanReadable, getChannelNumber
 
 from os import path
 from re import search
@@ -30,6 +33,9 @@ from re import search
 from Components.HTMLComponent import HTMLComponent
 from Components.GUIComponent import GUIComponent
 import skin
+import os
+import time
+import re
 
 boxtype = getBoxType()
 
@@ -39,7 +45,7 @@ def getAboutText():
 	AboutText += _("Model:\t %s %s\n") % (getMachineBrand(), getMachineName())
 
 	if path.exists('/proc/stb/info/chipset'):
-		AboutText += _("Chipset:\t %s") % str(about.getChipSetString()) + "\n"
+		AboutText += _("Chipset:\t %s") % str(getChipSetString()) + "\n"
 
 	bogoMIPS = ""
 	if path.exists('/proc/cpuinfo'):
@@ -76,17 +82,17 @@ def getAboutText():
 
 	openLD = "OpenLD "
 
-	AboutText += _("CPU:\t %s") % str(about.getCPUString()) + cpuMHz + "\n"
-	AboutText += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
+	AboutText += _("CPU:\t %s") % str(getCPUString()) + cpuMHz + "\n"
+	AboutText += _("Cores:\t %s") % str(getCpuCoresString()) + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
-	AboutText += _("Firmware:\t %s") % openLD + str(about.getImageVersion()) + "\n"
+	AboutText += _("Firmware:\t %s") % openLD + str(getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
-	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
-	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
+	AboutText += _("Kernel:\t %s") % str(getKernelVersionString()) + "\n"
+	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
-	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-	AboutText += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
+	AboutText += _("GStreamer:\t%s") % str(getGStreamerVersionString().replace('GStreamer','')) + "\n"
+	AboutText += _("Python:\t %s") % getPythonVersionString() + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
 	#AboutText += _("Installed:\t ") + about.getFlashDateString() + "\n"

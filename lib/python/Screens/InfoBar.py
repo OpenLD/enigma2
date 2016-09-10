@@ -1,4 +1,6 @@
 from Tools.Profile import profile
+from Tools.BoundFunction import boundFunction
+from enigma import eServiceReference
 
 # workaround for required config entry dependencies.
 import Screens.MovieSelection
@@ -7,7 +9,7 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Components.Label import Label
-from Components.Pixmap import MultiPixmap
+from Components.Pixmap import MovingPixmap, MultiPixmap
 from Tools.Directories import fileExists
 from Screens.ButtonSetup import InfoBarButtonSetup
 

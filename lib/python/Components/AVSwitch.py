@@ -429,7 +429,7 @@ def InitAVSwitch():
 			policy2_choices.update({"auto": _("Auto")})
 	except:
 		pass
-	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "letterbox")
+	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "scale")
 	policy_choices = {
 	# TRANSLATORS: (aspect ratio policy: black bars on left/right) in doubt, keep english term.
 	"panscan": _("Pillarbox"),
@@ -445,7 +445,7 @@ def InitAVSwitch():
 			policy_choices.update({"auto": _("Auto")})
 	except:
 		pass
-	config.av.policy_43 = ConfigSelection(choices=policy_choices, default = "panscan")
+	config.av.policy_43 = ConfigSelection(choices=policy_choices, default = "bestfit")
 	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("multinorm")}, default="pal")
 	config.av.wss = ConfigEnableDisable(default = True)
 	config.av.generalAC3delay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
@@ -466,7 +466,7 @@ def InitAVSwitch():
 		else:
 			if getBoxType() == 'et6x00':
 				map = {"cvbs": 3, "rgb": 3, "svideo": 2, "yuv": 3}
-			elif getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus' or getBoxType().startswith('et'):
+			elif getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus' or getBoxType() == 'formuler1' or getBoxType().startswith('et'):
 				map = {"cvbs": 0, "rgb": 3, "svideo": 2, "yuv": 3}
 			else:
 				map = {"cvbs": 0, "rgb": 1, "svideo": 2, "yuv": 3}
@@ -478,7 +478,7 @@ def InitAVSwitch():
 		iAVSwitch.setAspectRatio(map[configElement.value])
 
 	iAVSwitch.setInput("ENCODER") # init on startup
-	if (getBoxType() in ('gbquad', 'gbquadplus', 'et5x00', 'ixussone', 'ixusszero', 'axodin', 'axodinc', 'starsatlx', 'galaxym6', 'geniuse3hd', 'evoe3hd', 'axase3', 'axase3c', 'omtimussos1', 'omtimussos2', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue' , 'twinboxlcd' )) or about.getModelString() == 'et6000':
+	if (getBoxType() in ('formuler1', 'gbquad', 'gbquadplus', 'et5x00', 'ixussone', 'ixusszero', 'axodin', 'axodinc', 'starsatlx', 'galaxym6', 'geniuse3hd', 'evoe3hd', 'axase3', 'axase3c', 'omtimussos1', 'omtimussos2', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue' , 'twinboxlcd' )) or about.getModelString() == 'et6000':
 		detected = False
 	else:
 		detected = eAVSwitch.getInstance().haveScartSwitch()

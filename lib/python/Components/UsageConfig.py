@@ -196,8 +196,8 @@ def InitUsageConfig():
 	config.usage.allowed_autorecord_paths = ConfigLocations(default = [resolveFilename(SCOPE_AUTORECORD)])
 
 
-	config.usage.movielist_trashcan = ConfigYesNo(default=True)
-	config.usage.movielist_trashcan_network_clean = ConfigYesNo(default=False)
+	config.usage.movielist_trashcan = ConfigYesNo(default = True)
+	config.usage.movielist_trashcan_network_clean = ConfigYesNo(default = False)
 	config.usage.movielist_trashcan_days = ConfigSelectionNumber(min = 1, max = 31, stepwidth = 1, default = 8, wraparound = True)
 	config.usage.movielist_trashcan_reserve = ConfigNumber(default = 40)
 	config.usage.on_movie_start = ConfigSelection(default = "resume", choices = [
@@ -269,8 +269,8 @@ def InitUsageConfig():
 			configElement.value = "%s%s" % (configElement.value, configElement.value.count(":") == 1 and ":8001" or "")
 	config.usage.remote_fallback_enabled = ConfigYesNo(default = False)
 	config.usage.remote_fallback_recording_enabled = ConfigYesNo(default = False)
-	config.usage.remote_fallback = ConfigText(default = "", fixed_size = False)
-	config.usage.remote_fallback.addNotifier(remote_fallback_changed, immediate_feedback=False)
+	config.usage.remote_fallback = ConfigText(default = "http://IP-ADDRESS:8001", fixed_size = False)
+	config.usage.remote_fallback.addNotifier(remote_fallback_changed, immediate_feedback = False)
 
 	nims = [("-1", _("auto"))]
 	rec_nims = [("-2", _("Disabled")), ("-1", _("auto"))]
@@ -386,7 +386,7 @@ def InitUsageConfig():
 
 	def TunerTypePriorityOrderChanged(configElement):
 		setTunerTypePriorityOrder(int(configElement.value))
-	config.usage.alternatives_priority.addNotifier(TunerTypePriorityOrderChanged, immediate_feedback=False)
+	config.usage.alternatives_priority.addNotifier(TunerTypePriorityOrderChanged, immediate_feedback = False)
 
 	def PreferredTunerChanged(configElement):
 		setPreferredTuner(int(configElement.value))
@@ -480,7 +480,7 @@ def InitUsageConfig():
 			if p.mountpoint != '/':
 				hddchoises.append((p.mountpoint, d))
 	config.misc.epgcachepath = ConfigSelection(default = '/etc/enigma2/', choices = hddchoises)
-	config.misc.epgcachefilename = ConfigText(default='epg', fixed_size=False)
+	config.misc.epgcachefilename = ConfigText(default='epg', fixed_size = False)
 	config.misc.epgcache_filename = ConfigText(default = (config.misc.epgcachepath.value + config.misc.epgcachefilename.value.replace('.dat','') + '.dat'))
 	def EpgCacheChanged(configElement):
 		config.misc.epgcache_filename.setValue(os.path.join(config.misc.epgcachepath.value, config.misc.epgcachefilename.value.replace('.dat','') + '.dat'))
@@ -499,12 +499,12 @@ def InitUsageConfig():
 	def setHDDStandby(configElement):
 		for hdd in harddiskmanager.HDDList():
 			hdd[1].setIdleTime(int(configElement.value))
-	config.usage.hdd_standby.addNotifier(setHDDStandby, immediate_feedback=False)
+	config.usage.hdd_standby.addNotifier(setHDDStandby, immediate_feedback = False)
 
 	if SystemInfo["12V_Output"]:
 		def set12VOutput(configElement):
 			Misc_Options.getInstance().set_12V_output(configElement.value == "on" and 1 or 0)
-		config.usage.output_12V.addNotifier(set12VOutput, immediate_feedback=False)
+		config.usage.output_12V.addNotifier(set12VOutput, immediate_feedback = False)
 
 	config.usage.keymap = ConfigText(default = eEnv.resolve("${datadir}/enigma2/keymap.xml"))
 
@@ -614,7 +614,7 @@ def InitUsageConfig():
 					 "Please send the logfile %senigma2_crash_xxxxxx.log to www.lonasdigital.com.\n" \
 					 "Your receiver restarts in 10 seconds!\n" \
 					 "Component: enigma2") % config.crash.debug_path.value
-	config.crash.debug_text = ConfigText(default=crashlogheader, fixed_size=False)
+	config.crash.debug_text = ConfigText(default=crashlogheader, fixed_size = False)
 
 	config.usage.timerlist_finished_timer_position = ConfigSelection(default = "end", choices = [("beginning", _("at beginning")), ("end", _("at end"))])
 
@@ -810,8 +810,8 @@ def InitUsageConfig():
 
 	config.logmanager = ConfigSubsection()
 	config.logmanager.showinextensions = ConfigYesNo(default = False)
-	config.logmanager.user = ConfigText(default='', fixed_size=False)
-	config.logmanager.useremail = ConfigText(default='', fixed_size=False)
+	config.logmanager.user = ConfigText(default='', fixed_size = False)
+	config.logmanager.useremail = ConfigText(default='', fixed_size = False)
 	config.logmanager.usersendcopy = ConfigYesNo(default = True)
 	config.logmanager.path = ConfigText(default = "/")
 	config.logmanager.additionalinfo = NoSave(ConfigText(default = ""))
@@ -928,7 +928,7 @@ def InitUsageConfig():
 	config.epgselection.graph_pig = ConfigYesNo(default = True)
 	config.epgselection.graph_heightswitch = NoSave(ConfigYesNo(default = False))
 	config.epgselection.graph_servicewidth = ConfigSelectionNumber(default = 250, stepwidth = 1, min = 70, max = 500, wraparound = True)
-	config.epgselection.graph_piconwidth = ConfigSelectionNumber(default = 100, stepwidth = 1, min = 70, max = 500, wraparound = True)
+	config.epgselection.graph_piconwidth = ConfigSelectionNumber(default = 100, stepwidth = 1, min = 50, max = 500, wraparound = True)
 	config.epgselection.graph_infowidth = ConfigSelectionNumber(default = 25, stepwidth = 25, min = 0, max = 150, wraparound = True)
 	config.epgselection.graph_rec_icon_height = ConfigSelection(choices = [("bottom",_("bottom")),("top", _("top")), ("middle", _("middle")),  ("hide", _("hide"))], default = "bottom")
 
@@ -948,7 +948,7 @@ def InitUsageConfig():
 	config.epgselection.graph_blue = ConfigSelection(default='autotimer', choices=epg_colorkeys)
 
 	config.oscaminfo = ConfigSubsection()
-	config.oscaminfo.showInExtensions = ConfigYesNo(default=False)
+	config.oscaminfo.showInExtensions = ConfigYesNo(default = False)
 	config.oscaminfo.userdatafromconf = ConfigYesNo(default = False)
 	config.oscaminfo.autoupdate = ConfigYesNo(default = False)
 	config.oscaminfo.username = ConfigText(default = "username", fixed_size = False, visible_width=12)
@@ -959,7 +959,7 @@ def InitUsageConfig():
 	SystemInfo["OScamInstalled"] = False
 
 	config.ncaminfo = ConfigSubsection()
-	config.ncaminfo.showInExtensions = ConfigYesNo(default=False)
+	config.ncaminfo.showInExtensions = ConfigYesNo(default = False)
 	config.ncaminfo.userdatafromconf = ConfigYesNo(default = False)
 	config.ncaminfo.autoupdate = ConfigYesNo(default = False)
 	config.ncaminfo.username = ConfigText(default = "username", fixed_size = False, visible_width=12)
@@ -970,21 +970,21 @@ def InitUsageConfig():
 	SystemInfo["NcamInstalled"] = False
 
 	config.cccaminfo = ConfigSubsection()
-	config.cccaminfo.showInExtensions = ConfigYesNo(default=False)
+	config.cccaminfo.showInExtensions = ConfigYesNo(default = False)
 	config.cccaminfo.serverNameLength = ConfigSelectionNumber(min = 10, max = 100, stepwidth = 1, default = 22, wraparound = True)
-	config.cccaminfo.name = ConfigText(default="Profile", fixed_size=False)
-	config.cccaminfo.ip = ConfigText(default="192.168.1.12", fixed_size=False)
-	config.cccaminfo.username = ConfigText(default="", fixed_size=False)
-	config.cccaminfo.password = ConfigText(default="", fixed_size=False)
+	config.cccaminfo.name = ConfigText(default="Profile", fixed_size = False)
+	config.cccaminfo.ip = ConfigText(default="192.168.1.12", fixed_size = False)
+	config.cccaminfo.username = ConfigText(default="", fixed_size = False)
+	config.cccaminfo.password = ConfigText(default="", fixed_size = False)
 	config.cccaminfo.port = ConfigInteger(default=60001, limits=(1, 65535))
-	config.cccaminfo.profile = ConfigText(default="", fixed_size=False)
-	config.cccaminfo.ecmInfoEnabled = ConfigYesNo(default=True)
+	config.cccaminfo.profile = ConfigText(default="", fixed_size = False)
+	config.cccaminfo.ecmInfoEnabled = ConfigYesNo(default = True)
 	config.cccaminfo.ecmInfoTime = ConfigSelectionNumber(min = 1, max = 10, stepwidth = 1, default = 5, wraparound = True)
-	config.cccaminfo.ecmInfoForceHide = ConfigYesNo(default=True)
+	config.cccaminfo.ecmInfoForceHide = ConfigYesNo(default = True)
 	config.cccaminfo.ecmInfoPositionX = ConfigInteger(default=50)
 	config.cccaminfo.ecmInfoPositionY = ConfigInteger(default=50)
-	config.cccaminfo.blacklist = ConfigText(default="/media/cf/CCcamInfo.blacklisted", fixed_size=False)
-	config.cccaminfo.profiles = ConfigText(default="/media/cf/CCcamInfo.profiles", fixed_size=False)
+	config.cccaminfo.blacklist = ConfigText(default="/media/cf/CCcamInfo.blacklisted", fixed_size = False)
+	config.cccaminfo.profiles = ConfigText(default="/media/cf/CCcamInfo.profiles", fixed_size = False)
 
 	config.streaming = ConfigSubsection()
 	config.streaming.stream_ecm = ConfigYesNo(default = True)
@@ -994,7 +994,7 @@ def InitUsageConfig():
 	config.streaming.authentication = ConfigYesNo(default = False)
 
 	config.mediaplayer = ConfigSubsection()
-	config.mediaplayer.useAlternateUserAgent = ConfigYesNo(default=False)
+	config.mediaplayer.useAlternateUserAgent = ConfigYesNo(default = False)
 	config.mediaplayer.alternateUserAgent = ConfigText(default="")
 
 	config.pluginbrowser = ConfigSubsection()

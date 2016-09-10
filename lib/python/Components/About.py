@@ -54,7 +54,7 @@ def getModelString():
 		file.close()
 		return model
 	except IOError:
-		return "unknown"
+		return _("unknown")
 
 def getChipSetString():
 	if getMachineBuild() in ('dm7080','dm820'):
@@ -66,7 +66,7 @@ def getChipSetString():
 			f.close()
 			return str(chipset.lower().replace('\n','').replace('bcm','').replace('brcm','').replace('sti',''))
 		except IOError:
-			return "unavailable"
+			return _("unavailable")
 
 def getCPUSpeedString():
 	if getMachineBuild() in ('vusolo4k'):
@@ -88,7 +88,7 @@ def getCPUSpeedString():
 			file.close()
 			return mhz
 		except IOError:
-			return "unavailable"
+			return _("unavailable")
 
 def getCPUString():
 	if getMachineBuild() in ('xc7362', 'vusolo4k'):
@@ -109,7 +109,7 @@ def getCPUString():
 			file.close()
 			return system
 		except IOError:
-			return "unavailable"
+			return _("unavailable")
 
 def getCpuCoresString():
 	try:
@@ -127,7 +127,7 @@ def getCpuCoresString():
 		file.close()
 		return cores
 	except IOError:
-		return "unavailable"
+		return _("unavailable")
 
 def _ifinfo(sock, addr, ifname):
 	iface = struct.pack('256s', ifname[:15])
