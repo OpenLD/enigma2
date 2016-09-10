@@ -13119,15 +13119,15 @@ msgstr "Ver el tiempo transcurrido en positivo"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Service number font size"
-msgstr "Tamaño de letra del número de canal"
+msgstr "Tamaño de letra del número del canal"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Service name font size"
-msgstr "Tamaño de letra de la información de canal"
+msgstr "Tamaño de letra del nombre del canal"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Service info font size"
-msgstr "Tamaño de letra de la información de canal"
+msgstr "Tamaño de letra de la inf del canal"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Number of rows"
@@ -16717,10 +16717,10 @@ msgid "Replace `- ` in dialogs with colored text per speaker (like teletext subt
 msgstr "Reemplazar `- ` en el diálogo con el texto en color por altavoz (como los subtítulos de teletexto para sordos)."
 
 msgid "Hide dashed flickering line (VBI) for this service"
-msgstr "Ocultar línea discontinua parpadeante (VBI) para este servicio"
+msgstr "Ocultar VBI para este servicio"
 
 msgid "Unhide dashed flickering line (VBI) for this service"
-msgstr "Permitir línea discontinua parpadeante (VBI) para este servicio"
+msgstr "Permitir VBI para este servicio"
 
 #: MultiBootStartup.py:29
 msgid "MultiBoot Selector"
