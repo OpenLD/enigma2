@@ -13127,7 +13127,7 @@ msgstr "Tamaño de letra del nombre del canal"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Service info font size"
-msgstr "Tamaño de letra de la inf del canal"
+msgstr "Tamaño de letra de la info del canal"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Number of rows"
