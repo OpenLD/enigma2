@@ -6,6 +6,7 @@ from enigma import eAVSwitch, getDesktop
 from boxbranding import getBoxType, getMachineBuild, getBrandOEM
 from SystemInfo import SystemInfo
 import os
+from time import sleep
 
 config.av = ConfigSubsection()
 
@@ -552,6 +553,7 @@ def InitAVSwitch():
 
 	if have_colorimetry:
 		def setHDMIColorimetry(configElement):
+			sleep(0.1)
 			try:
 				f = open("/proc/stb/video/hdmi_colorimetry", "w")
 				f.write(configElement.value)
