@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-09-01 03:02+0100\n"
+"PO-Revision-Date: 2016-09-13 01:44+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.odisealinux.com>\n"
 "Language: es\n"
@@ -6031,6 +6031,24 @@ msgstr "Priorizar los subtítulos guardados por el canal"
 
 msgid "Preferred tuner"
 msgstr "Sintonizador preferido"
+
+msgid "Preferred tuner DVB-C"
+msgstr "Sintonizador DVB-C preferido"
+
+msgid "Preferred tuner DVB-C for recordings"
+msgstr "Sintonizador DVB-C preferido para grabaciones"
+
+msgid "Preferred tuner DVB-S"
+msgstr "Sintonizador DVB-S preferido"
+
+msgid "Preferred tuner DVB-S for recordings"
+msgstr "Sintonizador DVB-S preferido para grabaciones"
+
+msgid "Preferred tuner DVB-T"
+msgstr "Sintonizador DVB-T preferido"
+
+msgid "Preferred tuner DVB-T for recordings"
+msgstr "Sintonizador DVB-T preferido para grabaciones"
 
 msgid "Preferred tuner for recordings"
 msgstr "Sintonizador preferido para grabaciones"
@@ -14194,6 +14212,14 @@ msgid "Alignment of service names"
 msgstr "Alineación de los nombres de servicio"
 
 #: gEPG
+msgid "Alignment of service numbers"
+msgstr "Alineación de los números de servicio"
+
+#: gEPG
+msgid "Alignment of timeline date"
+msgstr "Alineación de la línea de tiempo"
+
+#: gEPG
 msgid "Event font size"
 msgstr "Tamaño de fuente del evento"
 
@@ -14204,6 +14230,18 @@ msgstr "Alineación de eventos"
 #: gEPG
 msgid "Configure the alignment of events."
 msgstr "Configurar la alineación de los eventos."
+
+#: gEPG
+msgid "Configure alignment of service events."
+msgstr "Configurar la alineación de los eventos de servicio."
+
+#: gEPG
+msgid "Configure alignment of the service numbers."
+msgstr "Configurar la alineación de los números de servicio."
+
+#: gEPG
+msgid "Configure alignment of the service names."
+msgstr "Configurar la alineación de los nombres de servicio."
 
 #: gEPG
 msgid "Configure the alignment of service names."
@@ -16744,3 +16782,33 @@ msgstr "Tu %s %s está apagándose. Espera por favor..."
 
 msgid "Yes, shut down now."
 msgstr "Sí, apagar ahora."
+
+msgid "not avaible"
+msgstr "no disponible"
+
+msgid "please wait"
+msgstr "Aguarde por favor..."
+
+msgid "Always include ECM in recordings"
+msgstr "Incluir siempre ECM en las grabaciones"
+
+msgid "Always include ECM messages in recordings. This overrides the individual timer settings globally. It allows recordings to be always decrypted afterwards (sometimes called offline decoding), if supported by your receiver. Default: off."
+msgstr "Incluir siempre mensajes ECM en las grabaciones. Esto anula los ajustes del temporizador individuales a nivel mundial. Permite grabaciones a ser descifrados siempre después (a veces llamada decodificación sin conexión), si es compatible con su receptor. Por defecto: off."
+
+msgid "Never decrypt while recording"
+msgstr "Nunca descifrar durante la grabación"
+
+msgid "Never decrypt the content while recording. This overrides the individual timer settings globally. If enabled, recordings are stored in crypted presentation and must be decrypted afterwards (sometimes called offline decoding). Default: off."
+msgstr "Nunca descifrar el contenido durante la grabación. Esto anula los ajustes del temporizador individuales a nivel mundial. Si está activado, las grabaciones se almacenan en la presentación encriptado y deben ser descifrados después (a veces llamada decodificación sin conexión). Por defecto: off."
+
+msgid "Descramble receiving http streams"
+msgstr "Descodificar streams http entrante"
+
+msgid "When enabled, always descramble receiving http streams. This takes up more resources (descrambling demuxers), only enable if necessary. Individual streams are always descrambled if 0x100 is added to the service type, regardless of this setting. Default off."
+msgstr "Cuando está activado, siempre descodificar al recibir secuencias HTTP. Esto ocupará más recursos (demuxers de descifrado), sólo se permiten si es necesario. Streams individuales son siempre desencriptado si se añade 0x100 al tipo de servicio, independientemente de este ajuste. Por defecto en OFF."
+
+msgid "Descramble sending http streams"
+msgstr "Descodificar streams http saliente"
+
+msgid "When enabled, http streams are descrambled on the server side. The (remote) client receiver does not have to do descrambling. Default on."
+msgstr "Cuando está activado, secuencias http están desencriptadas en el lado del servidor. El receptor cliente (remoto) no tiene que hacer la decodificación de recepción. Por defecto en ON."
