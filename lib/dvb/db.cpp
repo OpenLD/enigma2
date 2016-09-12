@@ -1259,7 +1259,8 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 		}
 	}
 
-	xmlDoc *doc = xmlReadFile(satellitesFilename, NULL, 0);
+	xmlDoc *doc = xmlReadFile(satellitesFilename.c_str(), NULL, 0);
+
 	if (!doc)
 	{
 		eDebug("[eDVBDB] couldn't open satellites.xml - maybe corrupted!!");
