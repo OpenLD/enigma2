@@ -417,7 +417,7 @@ void eDVBDB::parseServiceData(ePtr<eDVBService> s, std::string str)
 		} else if (p == 'C')
 		{
 			int val;
-			sscanf(v.c_str(), "%04x", &val);
+			sscanf(v.c_str(), "%x", &val);
 			s->m_ca.push_back((uint16_t)val);
 		}
 	}
@@ -425,6 +425,7 @@ void eDVBDB::parseServiceData(ePtr<eDVBService> s, std::string str)
 
 static ePtr<eDVBFrontendParameters> parseFrontendData(const char* line, int version)
 {
+	ePtr<eDVBFrontendParameters> feparm = new eDVBFrontendParameters;
 	switch(line[0])
 	{
 		case 's':
@@ -454,10 +455,8 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(const char* line, int vers
 			sat.modulation = modulation;
 			sat.rolloff = rolloff;
 			sat.pilot = pilot;
-			ePtr<eDVBFrontendParameters> feparm = new eDVBFrontendParameters;
 			feparm->setDVBS(sat);
 			feparm->setFlags(flags);
-			return feparm;
 		}
 		case 't':
 		{
@@ -490,10 +489,8 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(const char* line, int vers
 			ter.inversion = inversion;
 			ter.system = system;
 			ter.plp_id = plp_id;
-			ePtr<eDVBFrontendParameters> feparm = new eDVBFrontendParameters;
 			feparm->setDVBT(ter);
 			feparm->setFlags(flags);
-			return feparm;
 		}
 		case 'c':
 		{
@@ -512,14 +509,13 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(const char* line, int vers
 			cab.symbol_rate = symbol_rate;
 			cab.modulation = modulation;
 			cab.system = system;
-			ePtr<eDVBFrontendParameters> feparm = new eDVBFrontendParameters;
 			feparm->setDVBC(cab);
 			feparm->setFlags(flags);
-			return feparm;
 		}
 		default:
 			return NULL;
 	}
+	return feparm;
 }
 
 static eDVBChannelID parseChannelData(const char * line)
@@ -640,7 +636,7 @@ void eDVBDB::saveServicelist(const char *file)
 {
 	eDebug("---- saving lame channel db");
 	std::string filename = file;
-	{
+
 	CFile f((filename + ".writing").c_str(), "w");
 	int channels=0, services=0;
 	if (!f)
@@ -662,27 +658,15 @@ void eDVBDB::saveServicelist(const char *file)
 		ch.m_frontendParameters->getFlags(flags);
 		if (!ch.m_frontendParameters->getDVBS(sat))
 		{
+			fprintf(f, "\ts %d:%d:%d:%d:%d:%d:%d",
+				sat.frequency, sat.symbol_rate, sat.polarisation, sat.fec,
+				sat.orbital_position > 1800 ? sat.orbital_position - 3600 : sat.orbital_position,
+				sat.inversion, flags);
 			if (sat.system == eDVBFrontendParametersSatellite::System_DVB_S2)
 			{
-				fprintf(f, "\ts %d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d\n",
-					sat.frequency, sat.symbol_rate,
-					sat.polarisation, sat.fec,
-					sat.orbital_position > 1800 ? sat.orbital_position - 3600 : sat.orbital_position,
-					sat.inversion,
-					flags,
-					sat.system,
-					sat.modulation,
-					sat.rolloff,
-					sat.pilot);
+				fprintf(f, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
 			}
-			else
-			{
-				fprintf(f, "\ts %d:%d:%d:%d:%d:%d:%d\n",
-					sat.frequency, sat.symbol_rate,
-					sat.polarisation, sat.fec,
-					sat.orbital_position > 1800 ? sat.orbital_position - 3600 : sat.orbital_position,
-					sat.inversion, flags);
-			}
+			fprintf(f, "\n");
 		}
 		else if (!ch.m_frontendParameters->getDVBT(ter))
 		{
@@ -760,9 +744,9 @@ void eDVBDB::saveServicelist(const char *file)
 		services++;
 	}
 	fprintf(f, "end\nHave a lot of bugs!\n");
+
 	eDebug("saved %d channels and %d services!", channels, services);
 	f.sync();
-	}
 	rename((filename + ".writing").c_str(), filename.c_str());
 }
 
