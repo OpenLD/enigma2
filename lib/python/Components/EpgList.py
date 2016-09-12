@@ -194,8 +194,6 @@ class EPGList(HTMLComponent, GUIComponent):
 		self.serviceNumberPadding = 9
 		self.eventBorderWidth = 1
 		self.eventNamePadding = 3
-		#self.eventNameAlign = 'left'
-		#self.eventNameWrap = 'yes'
 		self.NumberOfRows = None
 
 	def applySkin(self, desktop, screen):
@@ -226,10 +224,6 @@ class EPGList(HTMLComponent, GUIComponent):
 					font = parseFont(value, ((1,1),(1,1)) )
 					self.eventFontNameMulti = font.family
 					self.eventFontSizeMulti = font.pointSize
-				#elif attrib == "EntryFontAlignment":
-					#self.eventNameAlign = value
-				#elif attrib == "EntryFontWrap":
-					#self.eventNameWrap = value
 
 				elif attrib == "ServiceForegroundColor":
 					self.foreColorService = parseColor(value).argb()
@@ -850,7 +844,7 @@ class EPGList(HTMLComponent, GUIComponent):
 			elif not self.showServiceTitle:
 				# no picon so show servicename anyway in picon space
 				namefont = 1
-				namefontflag = RT_HALIGN_LEFT | RT_VALIGN_CENTER | RT_WRAP
+				namefontflag = int(config.epgselection.graph_servicename_alignment.value)
 				namewidth = piconWidth + channelWidth
 			else:
 				piconWidth = 0
@@ -864,7 +858,7 @@ class EPGList(HTMLComponent, GUIComponent):
 			
 			if channel:
 				namefont = 0
-				namefontflag = RT_HALIGN_RIGHT | RT_VALIGN_CENTER
+				namefontflag = int(config.epgselection.graph_servicenumber_alignment.value)
 				font = gFont(self.serviceFontNameGraph, self.serviceFontSizeGraph + config.epgselection.graph_servfs.value)
 				channelWidth = getTextBoundarySize(self.instance, font, self.instance.size(), (channel < 10000)  and "0000" or str(channel) ).width()
 				res.append(MultiContentEntryText(
@@ -1446,7 +1440,6 @@ class TimelineText(HTMLComponent, GUIComponent):
 			self.timelineFontSize = 30
 		else:
 			self.timelineFontSize = 20
-		self.timelineAlign = 'left'
 		self.datefmt = ""
 
 	GUI_WIDGET = eListbox
@@ -1469,8 +1462,6 @@ class TimelineText(HTMLComponent, GUIComponent):
 					font = parseFont(value, ((1,1),(1,1)) )
 					self.timelineFontName = font.family
 					self.timelineFontSize = font.pointSize
-				elif attrib == "TimelineAlignment":
-					self.timelineAlign = value
 				elif attrib == "itemHeight":
 					self.itemHeight = int(value)
 				else:
@@ -1500,11 +1491,6 @@ class TimelineText(HTMLComponent, GUIComponent):
 		event_rect = l.getEventRect()
 		time_epoch = l.getTimeEpoch()
 		time_base = l.getTimeBase()
-
-		if self.timelineAlign.lower() == 'right':
-			alignnment = RT_HALIGN_RIGHT | RT_VALIGN_TOP
-		else:
-			alignnment = RT_HALIGN_LEFT | RT_VALIGN_TOP
 
 		if event_rect is None or time_epoch is None or time_base is None:
 			return
@@ -1563,7 +1549,7 @@ class TimelineText(HTMLComponent, GUIComponent):
 			res.append(MultiContentEntryText(
 				pos = (5, 0),
 				size = (service_rect.width()-15, self.listHeight),
-				font = 0, flags = alignnment,
+				font = 0, flags = int(config.epgselection.graph_timelinedate_alignment.value),
 				text = _(datestr),
 				color = foreColor,
 				backcolor = backColor))
@@ -1598,7 +1584,7 @@ class TimelineText(HTMLComponent, GUIComponent):
 				res.append(MultiContentEntryText(
 					pos = (service_rect.width() + xpos, 0),
 					size = (incWidth, self.listHeight),
-					font = 0, flags = RT_HALIGN_LEFT | RT_VALIGN_TOP,
+					font = 0, flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER,
 					text = timetext,
 					color = foreColor,
 					backcolor = backColor))
