@@ -5,9 +5,9 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-09-13 01:44+0100\n"
+"PO-Revision-Date: 2016-09-13 12:11+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
-"Language-Team: Team OpenLD <www.odisealinux.com>\n"
+"Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6053,8 +6053,29 @@ msgstr "Sintonizador DVB-T preferido para grabaciones"
 msgid "Preferred tuner for recordings"
 msgstr "Sintonizador preferido para grabaciones"
 
+msgid "When enabled, this setting has more weight than 'Preferred tuner for recordings'."
+msgstr "Cuando se habilite, esta configuración tiene más peso que 'sintonizador preferido para las grabaciones'."
+
 msgid "Prepare another USB stick for image flashing"
 msgstr "Prepara otra memoria USB para flashear imagen."
+
+msgid "When enabled, a recording is allowed to abort pseudo recordings, when there are no free tuners."
+msgstr "Cuando está activada, se permite en una grabación abortar pseudograbaciones, cuando no hay sintonizadores libres."
+
+msgid "When enabled, a recording is allowed to abort streaming, when there are no free tuners."
+msgstr "Cuando está activada, se permite en una grabación de streaming abortar, cuando no hay sintonizadores libres."
+
+msgid "If enabled, AIT data is included in recordings."
+msgstr "Si está habilitado, los datos AIT serán incluidos en las grabaciones."
+
+msgid "Configure whether the 'recording' symbol (in the display skin and LCD skin) is visible for real recordings only or also for streaming and pseuso recordings (e.g. EPGrefresh)."
+msgstr "Configure si el símbolo 'grabación' (en el skin del display y la pantalla LCD) es visible para las grabaciones reales solamente o también para grabaciones de streaming y seudo EPGrefresh (por ejemplo)."
+
+msgid "Configure for which types of recordings a warning about active recordings is shown when attempting to restart the box or the GUI."
+msgstr "Configurar para que se muestre tipos de grabaciones de una advertencia sobre las grabaciones activas cuando se intenta reiniciar el receptor o la interfaz gráfica de usuario (GUI)."
+
+msgid "Enable remote enigma2 receiver to be tried to tune into services that cannot be tuned into locally for recordings (e.g. tuner is occupied or service type is unavailable on the local tuner. Specify complete URL including http:// and port number (normally ...:8001), e.g. http://second_box:8001."
+msgstr "Activar el receptor enigma2 remoto para ser tratado de sintonizar con los servicios que no pueden sintonizar a nivel local para las grabaciones (por ejemplo, el sintonizador está ocupado o tipo de servicios no estás disponibles en el sintonizador local, especificar la dirección URL completa, incluyendo http:// y número de puerto (normalmente : 8001), por ejemplo, http://ip_segundo_deco:8001."
 
 #
 msgid "Preparing... Please wait"
@@ -16812,3 +16833,78 @@ msgstr "Descodificar streams http saliente"
 
 msgid "When enabled, http streams are descrambled on the server side. The (remote) client receiver does not have to do descrambling. Default on."
 msgstr "Cuando está activado, secuencias http están desencriptadas en el lado del servidor. El receptor cliente (remoto) no tiene que hacer la decodificación de recepción. Por defecto en ON."
+
+msgid "\nManage extensions or plugins for your receiver"
+msgstr "\nAdministrar extensiones o plugins para su receptor"
+
+msgid "\nOnline update of your receiver software."
+msgstr "\nActualizar el Firmware del receptor en línea."
+
+msgid "\nRestore your receiver with a new firmware."
+msgstr "\nRestaurar su receptor con un nuevo firmware."
+
+msgid "\nBackup your running %s image to HDD or USB."
+msgstr "\nCopia de seguridad de la image actual en %s en un HDD o USB."
+
+msgid "\nBackup your receiver settings."
+msgstr "\nCopia de seguridad de la configuración actual de su receptor."
+
+msgid "\nRestore your receiver settings."
+msgstr "\nRestaurar copia de seguridad de la configuración de su receptor."
+
+msgid "Show background behind subtitles"
+msgstr "Mostrar fondo detrás de subtítulos"
+
+msgid "Configure if behind the subtitles a background is shown."
+msgstr "Configurar si detrás de los subtítulos se muestra un fondo."
+
+msgid "Set CI assignment for detection of available services."
+msgstr "Asignación fija de CI para la detección de los servicios disponibles."
+
+msgid "Enable bouquet selection in multi-EPG"
+msgstr "Permitir la selección de grupos de multi-EPG"
+
+msgid "Pressing the panic button will zap you to this channelnumber in your first bouquet."
+msgstr "Al pulsar el botón de pánico le zapeará a este número de canal preconfigurado."
+
+msgid "Setup delay mode to zap to channels."
+msgstr "Configuración del modo de retardo al hacer zapping."
+
+msgid "User defined delay when you press the first button to zap to the channel."
+msgstr "Definido por el usuario,demora cuando se presiona el primer botón de hacer zapping al canal."
+
+msgid "User defined delay when you press another button to zap to the channel."
+msgstr "Definido por el usuario, demora cuando se pulsa otro botón de hacer zapping al canal."
+
+msgid "When enabled, show status or error messages."
+msgstr "Cuando está activado, mostrar mensajes de estado o de error."
+
+msgid "Initial scroll delay"
+msgstr "Retardo del scroll inicial"
+
+msgid "Delay in miliseconds before start of scrolling text on display."
+msgstr "Retraso en milisegundos antes del inicio del desplazamiento de texto en la pantalla."
+
+msgid "Final scroll delay"
+msgstr "Retardo del scroll final"
+
+msgid "Delay in miliseconds after finish scrolling text on display."
+msgstr "Retraso en milisegundos después del acabado del texto de desplazamiento en la pantalla."
+
+msgid "Service Number and Service Name"
+msgstr "Número y Nombre del canal"
+
+msgid "Service Number, Picon and Service Name"
+msgstr "Número, Picón y Nombre del canal"
+
+msgid "Enable or disable Ipv6."
+msgstr "Habilitar o deshabilitar IPv6."
+
+msgid "Enable/Disable IPv6"
+msgstr "Activar/Desactivar IPv6"
+
+msgid "Enable/Disable IPv6 support of your %s %s.\n"
+msgstr "Activar/Desactivar el soporte IPv6 en su %s %s.\n"
+
+msgid "Restore inetd"
+msgstr "Restaurar inetd"
