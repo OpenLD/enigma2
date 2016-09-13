@@ -2,7 +2,7 @@ from Screens.Screen import Screen
 from Screens.HelpMenu import HelpableScreen
 from Components.FileList import FileList
 from Components.Sources.StaticText import StaticText
-from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigYesNo, ConfigDirectory
+from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigYesNo, ConfigDirectory, NoSave
 from Components.ConfigList import ConfigListScreen
 from Components.ActionMap import ActionMap
 from Components.Pixmap import Pixmap
@@ -15,6 +15,9 @@ config.mediaplayer.defaultDir = ConfigDirectory()
 config.mediaplayer.sortPlaylists = ConfigYesNo(default=False)
 config.mediaplayer.alwaysHideInfoBar = ConfigYesNo(default=True)
 config.mediaplayer.onMainMenu = ConfigYesNo(default=False)
+
+config.mediaplayer.useAlternateUserAgent = NoSave(ConfigYesNo(default = False))
+config.mediaplayer.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;openLD;;;)"))
 
 class DirectoryBrowser(Screen, HelpableScreen):
 

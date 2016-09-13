@@ -14,7 +14,7 @@ from Tools.Trashcan import TrashInfo
 from Components.Pixmap import Pixmap, MultiPixmap
 from Components.Label import Label
 from Components.PluginComponent import plugins
-from Components.config import config, ConfigSubsection, ConfigText, ConfigInteger, ConfigLocations, ConfigSet, ConfigYesNo, ConfigSelection, getConfigListEntry, ConfigSelectionNumber
+from Components.config import config, ConfigSubsection, ConfigText, ConfigInteger, ConfigLocations, ConfigSet, ConfigYesNo, ConfigSelection, getConfigListEntry, ConfigSelectionNumber, NoSave
 from Components.ConfigList import ConfigListScreen
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.Sources.ServiceEvent import ServiceEvent
@@ -56,6 +56,9 @@ config.movielist.settings_per_directory = ConfigYesNo(default=True)
 config.movielist.root = ConfigSelection(default="/media", choices=["/", "/media", "/media/hdd", "/media/hdd/movie", "/media/usb", "/media/usb/movie", "/media/uSDextra", "/media/uSDextra/movie"])
 config.movielist.hide_extensions = ConfigYesNo(default=False)
 config.movielist.stop_service = ConfigYesNo(default=True)
+
+config.movielist.useAlternateUserAgent = NoSave(ConfigYesNo(default = False))
+config.movielist.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;openLD;;;)"))
 
 userDefinedButtons = None
 last_selected_dest = []

@@ -532,6 +532,9 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 		if (eConfigManager::getConfigBoolValue("config.mediaplayer.useAlternateUserAgent"))
 			m_useragent = eConfigManager::getConfigValue("config.mediaplayer.alternateUserAgent");
 
+		if (eConfigManager::getConfigBoolValue("config.movielist.useAlternateUserAgent"))
+			m_useragent = eConfigManager::getConfigValue("config.movielist.alternateUserAgent");
+
 		uri = g_strdup_printf ("%s", filename);
 
 		if ( m_ref.getData(7) & BUFFERING_ENABLED )
