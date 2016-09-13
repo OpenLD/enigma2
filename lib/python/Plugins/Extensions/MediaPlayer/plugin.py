@@ -7,7 +7,7 @@ from Screens.HelpMenu import HelpableScreen
 from Screens.MessageBox import MessageBox
 from Screens.InputBox import InputBox
 from Screens.ChoiceBox import ChoiceBox
-from Screens.InfoBar import InfoBar
+from Screens.InfoBar import InfoBar, setAudioTrack
 from Screens.InfoBarGenerics import InfoBarSeek, InfoBarScreenSaver, InfoBarAudioSelection, InfoBarCueSheetSupport, InfoBarNotifications, InfoBarSubtitleSupport, InfoBarResolutionSelection
 from Components.ActionMap import NumberActionMap, HelpableActionMap
 from Components.Label import Label
@@ -113,6 +113,8 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 		self.summary = None
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 		self.session.nav.stopService()
+
+		self.setTitle(_("Media player"))
 
 		self.playlistparsers = {}
 		self.addPlaylistParser(PlaylistIOM3U, "m3u")
@@ -338,6 +340,18 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 	def delMPTimer(self):
 		del self.rightKeyTimer
 		del self.leftKeyTimer
+
+	def switchAudio(self):
+		service = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+		if service:
+			# we go this way for other extensions as own records(they switch over pmt in c)
+			path = service.getPath()
+			ext = os.path.splitext(path)[1].lower()
+			exts = [".mkv", ".avi", ".divx", ".mp4"]      # we need more extensions here ?
+			if ext.lower() in exts:
+				service = self.session.nav.getCurrentService()
+				if service:
+					setAudioTrack(service)
 
 	def readTitleInformation(self):
 		currPlay = self.session.nav.getCurrentService()
@@ -1060,8 +1074,11 @@ def main(session, **kwargs):
 	InfoBar.instance.checkTimeshiftRunning(boundFunction(mainCheckTimeshiftCallback, session))
 
 def menu(menuid, **kwargs):
-	if menuid == "mainmenu" and config.mediaplayer.onMainMenu.getValue():
-		return [(_("Media player"), main, "media_player", 45)]
+	try:
+		if menuid == "mainmenu" and config.mediaplayer.onMainMenu.value:
+			return [(_("Media player"), main, "media_player", 45)]
+	except:
+		pass
 	return []
 
 def filescan_open(list, session, **kwargs):

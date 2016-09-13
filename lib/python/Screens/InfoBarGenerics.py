@@ -250,7 +250,6 @@ class InfoBarScreenSaver:
 
 	def __onExecBegin(self):
 		self.ScreenSaverTimerStart()
-		self.showHideVBI()
 
 	def __onExecEnd(self):
 		if self.screensaver.shown:
@@ -571,10 +570,14 @@ class InfoBarShowHide(InfoBarScreenSaver):
 		self.secondInfoBarScreen = ""
 		if isStandardInfoBar(self):
 			self.SwitchSecondInfoBarScreen()
-		self.onLayoutFinish.append(self.__layoutFinished)
-
 		self.hideVBILineScreen = self.session.instantiateDialog(HideVBILine)
 		self.hideVBILineScreen.show()
+
+		self.onLayoutFinish.append(self.__layoutFinished)
+		self.onExecBegin.append(self.__onExecBegin)
+
+	def __onExecBegin(self):
+		self.showHideVBI()
 
 	def __layoutFinished(self):
 		if self.secondInfoBarScreen:
