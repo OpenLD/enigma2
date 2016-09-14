@@ -489,28 +489,9 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
-			data->m_mhw2_title_pid = 0x28b; // change for fix 7 days epg Movistar+
+			data->m_mhw2_title_pid = 0x284; // change for fix 7 days epg Movistar+
 			data->m_mhw2_summary_pid = 0x282; // change for fix 7 days epg Movistar+
 		}
-/*
-- Javier Sayago <admin@lonasdigital.com>
-Sniffer result from dvbsnoop, trying to identify the new pattern:
---------------------------------------------------
-PID found:  560 (0x0230)  [SECTION: ATSC reserved] // ??
-PID found:  561 (0x0231)  [SECTION: ATSC reserved] // m_mhw2_channel_pid
-PID found:  562 (0x0232)  [SECTION: ATSC reserved] // ??
-PID found:  563 (0x0233)  [SECTION: ATSC reserved] // ??
-PID found:  564 (0x0234)  [SECTION: ATSC reserved] // m_mhw2_title_pid 3 days
-PID found:  565 (0x0235)  [SECTION: ATSC reserved] // ??
-PID found:  566 (0x0236)  [SECTION: User private]  // m_mhw2_summary_pid 3 days
---------------------------------------------------
-PID found:  642 (0x0282)  [SECTION: User private]  // m_mhw2_summary_pid 7 days (OLD?)
-PID found:  644 (0x0284)  [SECTION: ATSC reserved] // m_mhw2_title_pid 7 days
-PID found:  651 (0x028b)  [SECTION: ATSC reserved] // m_mhw2_summary_pid 7 days (NEW?)
---------------------------------------------------
-I need to know the new tables MHW2 for 7 days.
-But .... The information obtained is somewhat confusing.
-*/
 #endif
 		singleLock s(channel_map_lock);
 		m_knownChannels.insert( std::pair<iDVBChannel*, channel_data* >(chan, data) );
@@ -2883,7 +2864,7 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 	uint8_t data[EIT_LENGTH];
 
 	eit_t *packet = (eit_t *) data;
-	packet->table_id = 0x46;
+	packet->table_id = 0x50;
 	packet->section_syntax_indicator = 1;
 
 	packet->version_number = 0; // eEPGCache::sectionRead() will dig this for the moment
@@ -2892,7 +2873,7 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 	packet->last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
 
 	packet->segment_last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
-	packet->segment_last_table_id = 0x46;
+	packet->segment_last_table_id = 0x50;
 
 	eit_event_t *evt_struct = (eit_event_t*) (data + EIT_SIZE);
 
@@ -4091,7 +4072,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 		itTitle->second.mhw2_duration_hi || itTitle->second.mhw2_duration_lo;
 
 	eit_t *packet = (eit_t *) data;
-	packet->table_id = 0x46;
+	packet->table_id = 0x50;
 	packet->section_syntax_indicator = 1;
 
 	packet->service_id_hi = m_channels[ itTitle->second.channel_id - 1 ].channel_id_hi;
@@ -4105,7 +4086,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 	packet->original_network_id_hi = m_channels[ itTitle->second.channel_id - 1 ].network_id_hi;
 	packet->original_network_id_lo = m_channels[ itTitle->second.channel_id - 1 ].network_id_lo;
 	packet->segment_last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
-	packet->segment_last_table_id = 0x46;
+	packet->segment_last_table_id = 0x50;
 
 	uint8_t *title = isMHW2 ? ((uint8_t*)(itTitle->second.title))-4 : (uint8_t*)itTitle->second.title;
 	std::string prog_title = (char *) delimitName( title, name, isMHW2 ? 35 : 23 );
@@ -5607,14 +5588,14 @@ void eEPGCache::crossepgImportEPGv21(std::string dbroot)
 			fread(&title, sizeof(epgdb_title_t), 1, headers);
 
 			eit_t *data_eit = (eit_t*)data;
-			data_eit->table_id = 0x46;
+			data_eit->table_id = 0x50;
 			data_eit->section_syntax_indicator = 1;
 			data_eit->version_number = 0;
 			data_eit->current_next_indicator = 0;
 			data_eit->section_number = 0;
 			data_eit->last_section_number = 0;
 			data_eit->segment_last_section_number = 0;
-			data_eit->segment_last_table_id = 0x46;
+			data_eit->segment_last_table_id = 0x50;
 
 			eit_event_t *data_eit_event = (eit_event_t*)(data+EIT_SIZE);
 			data_eit_event->event_id_hi = title.event_id >> 8;
