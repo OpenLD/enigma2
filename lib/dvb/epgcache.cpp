@@ -2883,7 +2883,7 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 	uint8_t data[EIT_LENGTH];
 
 	eit_t *packet = (eit_t *) data;
-	packet->table_id = 0x50;
+	packet->table_id = 0x46;
 	packet->section_syntax_indicator = 1;
 
 	packet->version_number = 0; // eEPGCache::sectionRead() will dig this for the moment
@@ -2892,7 +2892,7 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 	packet->last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
 
 	packet->segment_last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
-	packet->segment_last_table_id = 0x50;
+	packet->segment_last_table_id = 0x46;
 
 	eit_event_t *evt_struct = (eit_event_t*) (data + EIT_SIZE);
 
@@ -4091,7 +4091,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 		itTitle->second.mhw2_duration_hi || itTitle->second.mhw2_duration_lo;
 
 	eit_t *packet = (eit_t *) data;
-	packet->table_id = 0x50;
+	packet->table_id = 0x46;
 	packet->section_syntax_indicator = 1;
 
 	packet->service_id_hi = m_channels[ itTitle->second.channel_id - 1 ].channel_id_hi;
@@ -4105,7 +4105,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 	packet->original_network_id_hi = m_channels[ itTitle->second.channel_id - 1 ].network_id_hi;
 	packet->original_network_id_lo = m_channels[ itTitle->second.channel_id - 1 ].network_id_lo;
 	packet->segment_last_section_number = 0; // eEPGCache::sectionRead() will dig this for the moment
-	packet->segment_last_table_id = 0x50;
+	packet->segment_last_table_id = 0x46;
 
 	uint8_t *title = isMHW2 ? ((uint8_t*)(itTitle->second.title))-4 : (uint8_t*)itTitle->second.title;
 	std::string prog_title = (char *) delimitName( title, name, isMHW2 ? 35 : 23 );
@@ -4284,10 +4284,42 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 			case 0x40: content_id = 0x30;break; // Entretenimiento
 			case 0x50: content_id = 0x40;break; // Deportes
 			case 0x60: content_id = 0x50;break; // infantiles
-			case 0x70: content_id = 0x60;break; // Musica
+			case 0x61: content_id = 0x70;break;
+			case 0x62: content_id = 0x80;break;
+			case 0x63: content_id = 0x70;break;
+			case 0x64: content_id = 0x80;break;
+			case 0x65: content_id = 0x90;break;
+			case 0x66: content_id = 0x90;break;
+			case 0x67: content_id = 0x70;break;
+			case 0x68: content_id = 0x80;break;
+			case 0x69: content_id = 0x80;break;
+			case 0x70: content_id = 0x70;break;
+			case 0x71: content_id = 0x90;break;
+			case 0x72: content_id = 0x80;break;
+			case 0x73: content_id = 0x90;break;
+			case 0x74: content_id = 0x80;break;
+			case 0x75: content_id = 0x80;break;
+			case 0x76: content_id = 0x90;break;
+			case 0x77: content_id = 0x70;break;
+			case 0x78: content_id = 0x60;break; // Musica
 			case 0x80: content_id = 0x91;break; // Documentales / Educacion
 			case 0x90: content_id = 0x70;break; // Cultura
 			case 0xA0: content_id = 0xA0;break; // Ocio
+			case 0xA1: content_id = 0x90;break;
+			case 0xA2: content_id = 0x70;break;
+			case 0xA3: content_id = 0x70;break;
+			case 0xA4: content_id = 0x90;break;
+			case 0xA5: content_id = 0x90;break;
+			case 0xA6: content_id = 0x70;break;
+			case 0xA7: content_id = 0x70;break;
+			case 0xA8: content_id = 0x70;break;
+			case 0xA9: content_id = 0x70;break;
+			case 0xB0: content_id = 0x90;break;
+			case 0xB1: content_id = 0x70;break;
+			case 0xB2: content_id = 0x90;break;
+			case 0xB3: content_id = 0x70;break;
+			case 0xB4: content_id = 0x90;break;
+			case 0xC: content_id = 0xB0;break; // Otros
 			default: content_id = 0x0F;
 			}
 		}
@@ -5575,14 +5607,14 @@ void eEPGCache::crossepgImportEPGv21(std::string dbroot)
 			fread(&title, sizeof(epgdb_title_t), 1, headers);
 
 			eit_t *data_eit = (eit_t*)data;
-			data_eit->table_id = 0x50;
+			data_eit->table_id = 0x46;
 			data_eit->section_syntax_indicator = 1;
 			data_eit->version_number = 0;
 			data_eit->current_next_indicator = 0;
 			data_eit->section_number = 0;
 			data_eit->last_section_number = 0;
 			data_eit->segment_last_section_number = 0;
-			data_eit->segment_last_table_id = 0x50;
+			data_eit->segment_last_table_id = 0x46;
 
 			eit_event_t *data_eit_event = (eit_event_t*)(data+EIT_SIZE);
 			data_eit_event->event_id_hi = title.event_id >> 8;
