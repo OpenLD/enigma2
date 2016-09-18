@@ -1,23 +1,24 @@
 from Screen import Screen
 from Screens.MessageBox import MessageBox
-from Components.ConfigList import ConfigListScreen
-from Components.ActionMap import ActionMap
-from Components.ActionMap import NumberActionMap
+from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.Console import Console
 from Components.Sources.StaticText import StaticText
 from Components.config import config, ConfigSubsection, ConfigSelection, ConfigSubList, getConfigListEntry, KEY_LEFT, KEY_RIGHT, KEY_0, ConfigNothing, ConfigPIN, ConfigText, ConfigYesNo, NoSave
-from Components.ConfigList import ConfigList
+from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.SystemInfo import SystemInfo
-from Tools.Directories import fileExists
+from Tools.Directories import fileExists, fileCheck
 from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
 from enigma import eTimer, eDVBCI_UI, eDVBCIInterfaces
 from Tools.BoundFunction import boundFunction
 from boxbranding import getBrandOEM, getBoxType
 import time
+import Screens.Standby
 
 MAX_NUM_CI = 4
+
+forceNotShowCiMessages = False
 
 def setCIBitrate(configElement):
 	if configElement.value == "no":
@@ -26,9 +27,7 @@ def setCIBitrate(configElement):
 		eDVBCI_UI.getInstance().setClockRate(configElement.slotid, eDVBCI_UI.rateHigh)
 
 def setdvbCiDelay(configElement):
-	f = open("/proc/stb/tsmux/rmx_delay", "w")
-	f.write(configElement.value)
-	f.close()
+	open(SystemInfo["CommonInterfaceCIDelay"], "w").write("configElement.value")
 
 def InitCiConfig():
 	config.ci = ConfigSubList()
@@ -68,10 +67,11 @@ class MMIDialog(Screen):
 		self["bottom"] = Label("")
 		self["entries"] = ConfigList([ ])
 
-		self["actions"] = NumberActionMap(["SetupActions"],
+		self["actions"] = NumberActionMap(["SetupActions", "MenuActions"],
 			{
 				"ok": self.okbuttonClick,
 				"cancel": self.keyCancel,
+				"menu": self.forceExit,
 				#for PIN
 				"left": self.keyLeft,
 				"right": self.keyRight,
@@ -95,14 +95,14 @@ class MMIDialog(Screen):
 
 		self.is_pin_list = -1
 
-		if action == 2:		#start MMI
+		if action == 2: #start MMI
 			handler.startMMI(self.slotid)
 			self.showWait()
-		elif action == 3:		#mmi already there (called from infobar)
+		elif action == 3: #mmi already there (called from infobar)
 			self.showScreen()
 
 	def addEntry(self, list, entry):
-		if entry[0] == "TEXT":		#handle every item (text / pin only?)
+		if entry[0] == "TEXT": #handle every item (text / pin only?)
 			list.append( (entry[1], ConfigNothing(), entry[2]) )
 		if entry[0] == "PIN":
 			pinlength = entry[1]
@@ -157,6 +157,14 @@ class MMIDialog(Screen):
 	def closeMmi(self):
 		self.timer.stop()
 		self.close(self.slotid)
+
+	def forceExit(self):
+		self.timer.stop()
+		if self.tag == "WAIT":
+			self.handler.stopMMI(self.slotid)
+			global forceNotShowCiMessages
+			forceNotShowCiMessages = True
+			self.close(self.slotid)
 
 	def keyCancel(self):
 		self.timer.stop()
@@ -290,26 +298,13 @@ class MMIDialog(Screen):
 class CiMessageHandler:
 	def __init__(self):
 		self.session = None
+		self.auto_close = False
 		self.ci = { }
 		self.dlgs = { }
-		self.auto_close = False
 		eDVBCI_UI.getInstance().ciStateChanged.get().append(self.ciStateChanged)
-		if getBoxType() in ('vuzero', 'wetekplay'):
-			SystemInfo["CommonInterface"] = False
-		else:
-			SystemInfo["CommonInterface"] = eDVBCIInterfaces.getInstance().getNumOfSlots() > 0
-		try:
-			file = open("/proc/stb/tsmux/ci0_tsclk", "r")
-			file.close()
-			SystemInfo["CommonInterfaceSupportsHighBitrates"] = True
-		except:
-			SystemInfo["CommonInterfaceSupportsHighBitrates"] = False
-		try:
-			file = open("/proc/stb/tsmux/rmx_delay", "r")
-			file.close()
-			SystemInfo["CommonInterfaceCIDelay"] = True
-		except:
-			SystemInfo["CommonInterfaceCIDelay"] = False
+		SystemInfo["CommonInterface"] = eDVBCIInterfaces.getInstance().getNumOfSlots() > 0
+		SystemInfo["CommonInterfaceSupportsHighBitrates"] = fileCheck("/proc/stb/tsmux/ci0_tsclk")
+		SystemInfo["CommonInterfaceCIDelay"] = fileCheck("/proc/stb/tsmux/rmx_delay")
 
 	def setSession(self, session):
 		self.session = session
@@ -345,7 +340,7 @@ class CiMessageHandler:
 							elif ci_tag == 'CLOSE' and self.auto_close:
 								show_ui = False
 								self.auto_close = False
-					if show_ui:
+					if show_ui and not forceNotShowCiMessages and not Screens.Standby.inStandby:
 						self.dlgs[slot] = self.session.openWithCallback(self.dlgClosed, MMIDialog, slot, 3, screen_data = screen_data)
 
 	def dlgClosed(self, slot):
@@ -390,10 +385,16 @@ class CiSelection(Screen):
 		self["entries"] = menuList
 		self["entries"].onSelectionChanged.append(self.selectionChanged)
 		self["text"] = Label(_("Slot %d")%(1))
+		self.onLayoutFinish.append(self.layoutFinished)
+
+	def layoutFinished(self):
+		global forceNotShowCiMessages
+		forceNotShowCiMessages = False
+		self.setTitle(_("Common Interface"))
 
 	def selectionChanged(self):
 		cur_idx = self["entries"].getCurrentIndex()
-		self["text"].setText(_("Slot %d")%((cur_idx / 9)+1))
+		self["text"].setText(_("Slot %d")%((cur_idx / len(self.list))+1))
 
 	def keyConfigEntry(self, key):
 		try:
@@ -413,11 +414,11 @@ class CiSelection(Screen):
 		self.list.append( (_("Reset"), ConfigNothing(), 0, slot) )
 		self.list.append( (_("Init"), ConfigNothing(), 1, slot) )
 
-		if self.state[slot] == 0:			#no module
+		if self.state[slot] == 0: #no module
 			self.list.append( (_("no module found"), ConfigNothing(), 2, slot) )
-		elif self.state[slot] == 1:		#module in init
+		elif self.state[slot] == 1: #module in init
 			self.list.append( (_("init module"), ConfigNothing(), 2, slot) )
-		elif self.state[slot] == 2:		#module ready
+		elif self.state[slot] == 2: #module ready
 			#get appname
 			appname = eDVBCI_UI.getInstance().getAppName(slot)
 			self.list.append( (appname, ConfigNothing(), 2, slot) )
@@ -442,11 +443,11 @@ class CiSelection(Screen):
 		slotidx += 1 # do not change Reset
 		slotidx += 1 # do not change Init
 
-		if state == 0:			#no module
+		if state == 0: #no module
 			self.list[slotidx] = (_("no module found"), ConfigNothing(), 2, slot)
-		elif state == 1:		#module in init
+		elif state == 1: #module in init
 			self.list[slotidx] = (_("init module"), ConfigNothing(), 2, slot)
-		elif state == 2:		#module ready
+		elif state == 2: #module ready
 			#get appname
 			appname = eDVBCI_UI.getInstance().getAppName(slot)
 			self.list[slotidx] = (appname, ConfigNothing(), 2, slot)
@@ -473,9 +474,9 @@ class CiSelection(Screen):
 		if cur and len(cur) > 2:
 			action = cur[2]
 			slot = cur[3]
-			if action == 0:		#reset
+			if action == 0: #reset
 				eDVBCI_UI.getInstance().setReset(slot)
-			elif action == 1:		#init
+			elif action == 1: #init
 				eDVBCI_UI.getInstance().setInit(slot)
 			elif action == 5:
 				self.session.openWithCallback(self.cancelCB, PermanentPinEntry, config.ci[slot].static_pin, _("Smartcard PIN"))
@@ -520,6 +521,7 @@ class PermanentPinEntry(Screen, ConfigListScreen):
 			"red": self.cancel,
 			"save": self.keyOK,
 		}, -1)
+
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("OK"))
 		self.onLayoutFinish.append(self.layoutFinished)
