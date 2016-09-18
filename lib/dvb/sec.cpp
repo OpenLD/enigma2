@@ -7,6 +7,8 @@
 
 #include <lib/base/eerror.h>
 
+#include "absdiff.h"
+
 //#define SEC_DEBUG
 
 #ifdef SEC_DEBUG
@@ -224,7 +226,7 @@ int eDVBSatelliteEquipmentControl::canTune(const eDVBFrontendParametersSatellite
 				{
 					int lof = sat.frequency > lnb_param.m_lof_threshold ?
 						lnb_param.m_lof_hi : lnb_param.m_lof_lo;
-					int tuner_freq = abs(sat.frequency - lof);
+					unsigned int tuner_freq = absdiff(sat.frequency, lof);
 					if (tuner_freq < fe_info.frequency_min || tuner_freq > fe_info.frequency_max)
 						ret = 0;
 				}

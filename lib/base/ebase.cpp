@@ -94,16 +94,16 @@ void eTimer::changeInterval(long msek)
 {
 	if (bActive)  // Timer is running?
 	{
-		context.removeTimer(this);	 // then stop
-		nextActivation -= interval;  // sub old interval
+		context.removeTimer(this); // then stop
+		nextActivation -= interval; // sub old interval
 	}
 	else
 		bActive=true; // then activate Timer
 
-	interval = msek;   			 			// set new Interval
-	nextActivation += interval;		// calc nextActivation
+	interval = msek; // set new Interval
+	nextActivation += interval; // calc nextActivation
 
-	context.addTimer(this);				// add Timer to context TimerList
+	context.addTimer(this); // add Timer to context TimerList
 }
 
 void eTimer::activate()   // Internal Funktion... called from eApplication
@@ -289,7 +289,7 @@ int eMainloop::processOneEvent(unsigned int twisted_timeout, PyObject **res, ePy
 					m_inActivate = 0;
 				}
 				if (pfd[i].revents & (POLLERR|POLLHUP|POLLNVAL))
-					eDebug("poll: unhandled POLLERR/HUP/NVAL for fd %d(%d)", pfd[i].fd, pfd[i].revents);
+					eLog(5, "[eMainloop::processOneEvent] unhandled POLLERR/HUP/NVAL for fd %d(%d)", pfd[i].fd, pfd[i].revents);
 			}
 		}
 		for (; i < fdcount; ++i)
