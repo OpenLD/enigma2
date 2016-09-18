@@ -173,7 +173,7 @@ profile("LoadSkinDefaultDone")
 #
 def parseCoordinate(s, e, size=0, font=None):
 	s = s.strip()
-	if s == "center": # for speed, can be common case
+	if s == "center":		# for speed, can be common case
 		if not size:
 			val = 0
 		else:
@@ -182,7 +182,7 @@ def parseCoordinate(s, e, size=0, font=None):
 		return None
 	else:
 		try:
-			val = int(s) # for speed
+			val = int(s)	# for speed
 		except:
 			if 't' in s:
 				s = s.replace("center", str((e-size)/2.0))
