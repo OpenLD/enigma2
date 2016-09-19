@@ -34,7 +34,7 @@ from Components.Label import Label
 from Tools.BoundFunction import boundFunction
 from Components.UsageConfig import InitUsageConfig
 from Components.Pixmap import Pixmap, MultiPixmap
-from Components.ConfigList import ConfigListScreen
+from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.Harddisk import harddiskmanager
 from Components.config import getConfigListEntry, config, ConfigElement, ConfigYesNo, ConfigText, ConfigSelection, ConfigSubList, ConfigNumber, ConfigSubsection, ConfigPassword, ConfigClock, ConfigDateTime, ConfigInteger, configfile, ConfigSelectionNumber, NoSave, KEY_LEFT, KEY_RIGHT, KEY_OK
 from Components.Sources.Progress import Progress
@@ -62,6 +62,9 @@ from os import system, listdir, path, remove as os_remove, rename as os_rename, 
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 import NavigationInstance
 import Components.UsageConfig
+
+config.plugins.LDteam = ConfigSubsection()
+config.plugins.LDteam.dropmode = ConfigSelection(default='3', choices=[('1', _('free pagecache')), ('2', _('free dentries and inodes')), ('3', _('free pagecache, dentries and inodes'))])
 
 def _(txt):
 	t = gettext.dgettext('messages', txt)
@@ -369,7 +372,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		self['memTotal'] = StaticText()
 		self['bufCache'] = StaticText()
 		self['MemoryLabel'] = StaticText(_('Memory:'))
-		self['setupActions'] = ActionMap(['SetupActions', 'ColorActions', 'EPGSelectActions'], {'red': self.cancel,
+		self['setupActions'] = ActionMap(['SetupActions', 'OkCancelActions', 'ColorActions', 'DirectionActions'], {'red': self.cancel,
 		 'cancel': self.cancel,
 		 'green': self.save_values,
 		 'yellow': self.ClearNow,
