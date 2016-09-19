@@ -7,7 +7,7 @@ from urlparse import urlparse
 
 class HTTPProgressDownloader(client.HTTPDownloader):
 	def __init__(self, url, outfile, headers=None):
-		client.HTTPDownloader.__init__(self, url, outfile, headers=headers, agent="Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;OpenLD;;;)")
+		client.HTTPDownloader.__init__(self, url, outfile, headers=headers, agent="Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;openLD;;;)")
 		self.status = None
 		self.progress_callback = None
 		self.deferred = defer.Deferred()
@@ -40,16 +40,22 @@ class HTTPProgressDownloader(client.HTTPDownloader):
 
 class downloadWithProgress:
 	def __init__(self, url, outputfile, contextFactory=None, *args, **kwargs):
-		parsed = urlparse(url)
-		scheme = parsed.scheme
-		host = parsed.hostname
-		port = parsed.port or (443 if scheme == 'https' else 80)
+		if hasattr(client, '_parse'):
+			scheme, host, port, path = client._parse(url)
+		else:
+			try:
+				from twisted.web.client import _URI as URI
+			except ImportError:
+				from twisted.web.client import URI
+			uri = URI.fromBytes(url)
+			scheme = uri.scheme
+			host = uri.host
+			port = uri.port
+			path = uri.path
+
 		self.factory = HTTPProgressDownloader(url, outputfile, *args, **kwargs)
-		if scheme == 'https':
-			from twisted.internet import ssl
-			if contextFactory is None:
-				contextFactory = ssl.ClientContextFactory()
-			self.connection = reactor.connectSSL(host, port, self.factory, contextFactory)
+		if scheme == "https":
+			self.connection = reactor.connectSSL(host, port, self.factory, ssl.ClientContextFactory())
 		else:
 			self.connection = reactor.connectTCP(host, port, self.factory)
 
