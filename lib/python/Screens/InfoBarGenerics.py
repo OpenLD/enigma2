@@ -3813,14 +3813,40 @@ class InfoBarSubserviceSelection:
 	def openTimerList(self):
 		self.session.open(TimerEditList)
 
+from Components.Sources.HbbtvApplication import HbbtvApplication
+gHbbtvApplication = HbbtvApplication()
 class InfoBarRedButton:
 	def __init__(self):
-		self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
-			{
-				"activateRedButton": (self.activateRedButton, _("Red button...")),
-			})
+		if not (config.misc.rcused.value == 1):
+			self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
+				{
+					"activateRedButton": (self.activateRedButton, _("Red button...")),
+				})
+			self["HbbtvApplication"] = gHbbtvApplication
+		else:
+			self["HbbtvApplication"] = Boolean(fixed=0)
+			self["HbbtvApplication"].name = "" #is this a hack?
+
 		self.onHBBTVActivation = [ ]
 		self.onRedButtonActivation = [ ]
+
+	def updateInfomation(self):
+		try:
+			self["HbbtvApplication"].setApplicationName("")
+		except Exception, ErrMsg:
+			pass
+
+	def detectedHbbtvApplication(self):
+		service = self.session.nav.getCurrentService()
+		info = service and service.info()
+		try:
+			for x in info.getInfoObject(iServiceInformation.sHBBTVUrl):
+				print x
+				if x[0] in (-1, 1):
+					self["HbbtvApplication"].setApplicationName(x[1])
+					break
+		except Exception, ErrMsg:
+			pass
 
 	def activateRedButton(self):
 		service = self.session.nav.getCurrentService()

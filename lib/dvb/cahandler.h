@@ -73,9 +73,9 @@
 												/* CA application should start descrambling the service in this CAPMT object,
 												 * as soon as the list of CAPMT objects is complete
 												 */
-#define CMD_OK_MMI					0x02
-#define CMD_QUERY						0x03
-#define CMD_NOT_SELECTED		0x04
+#define CMD_OK_MMI 0x02
+#define CMD_QUERY 0x03
+#define CMD_NOT_SELECTED 0x04
 												/* CA application should stop descrambling this service
 												 * (used when the last service in a list has left, note
 												 * that there is no CI definition to send an empty list)

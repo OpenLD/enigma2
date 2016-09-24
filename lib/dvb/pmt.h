@@ -41,6 +41,27 @@ class OCSection : public LongCrcSection
 		void *getData() { return data; }
 };
 
+#include <list>
+#include <string>
+class HbbTVApplicationInfo
+{
+public:
+	int m_OrgId;
+	int m_AppId;
+	int m_ControlCode;
+	short m_ProfileCode;
+	std::string m_HbbTVUrl;
+	std::string m_ApplicationName;
+public:
+	HbbTVApplicationInfo(int controlCode, int orgid, int appid, std::string hbbtvUrl, std::string applicationName, int profileCode)
+		: m_ControlCode(controlCode), m_HbbTVUrl(hbbtvUrl), m_ApplicationName(applicationName), m_OrgId(orgid), 
+		  m_AppId(appid), m_ProfileCode(profileCode)
+	{}
+};
+typedef std::list<HbbTVApplicationInfo *> HbbTVApplicationInfoList;
+typedef HbbTVApplicationInfoList::iterator HbbTVApplicationInfoListIterator;
+typedef HbbTVApplicationInfoList::const_iterator HbbTVApplicationInfoListConstIterator;
+
 class eDVBServicePMTHandler: public eDVBPMTParser
 {
 #ifndef SWIG
@@ -77,7 +98,9 @@ class eDVBServicePMTHandler: public eDVBPMTParser
 
 	int m_pmt_pid;
 	int m_dsmcc_pid;
+	HbbTVApplicationInfoList m_HbbTVApplications;
 	std::string m_HBBTVUrl;
+	std::string m_ApplicationName;
 
 	int m_use_decode_demux;
 	uint8_t m_decode_demux_num;
@@ -121,6 +144,7 @@ public:
 	int getDecodeDemux(ePtr<iDVBDemux> &demux);
 	void getAITApplications(std::map<int, std::string> &aitlist);
 	void getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids);
+	PyObject *getHbbTVApplications(void);
 
 	int getPVRChannel(ePtr<iDVBPVRChannel> &pvr_channel);
 	int getServiceReference(eServiceReferenceDVB &service) { service = m_reference; return 0; }
