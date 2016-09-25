@@ -147,6 +147,10 @@ class Standby2(Screen):
 
 	def stopService(self):
 		self.prev_running_service = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+		if config.servicelist.startupservice_onstandby.value:
+			service = self.prev_running_service.toString()
+			if not(service.startswith("1:") and service.rsplit(":", 1)[1].startswith("/")):
+				self.prev_running_service = eServiceReference(config.servicelist.startupservice.value)
 		self.session.nav.stopService()
 
 class Standby(Standby2):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from boxbranding import getMachineBuild, getMachineBrand, getMachineName
 from Screens.EventView import EventViewEPGSelect
-import os, unicodedata
+import os, re, unicodedata
 from Tools.Profile import profile
 
 from Screen import Screen
@@ -192,10 +192,6 @@ class ChannelContextMenu(Screen):
 						append_when_current_valid(current, menu, (_("stop using as startup service"), self.unsetStartupService), level=0)
 					else:
 						append_when_current_valid(current, menu, (_("set as startup service"), self.setStartupService), level=0)
-					if config.servicelist.startupservice_standby.value == self.csel.getCurrentSelection().toString():
-						append_when_current_valid(current, menu, (_("stop using as startup service from standby"), self.unsetStartupServiceStandby), level = 0)
-					else:
-						append_when_current_valid(current, menu, (_("set as startup service from standby"), self.setStartupServiceStandby), level = 0)
 					if self.parentalControlEnabled:
 						if self.parentalControl.getProtectionLevel(csel.getCurrentSelection().toCompareString()) == -1:
 							append_when_current_valid(current, menu, (_("add to parental protection"), boundFunction(self.addParentalProtection, csel.getCurrentSelection())), level=0)
@@ -376,10 +372,10 @@ class ChannelContextMenu(Screen):
 			self.close()
 
 	def removeBouquet(self, answer):
- 		if answer:
- 			self.csel.removeBouquet()
- 			eDVBDB.getInstance().reloadBouquets()
- 			self.close()
+		if answer:
+			self.csel.removeBouquet()
+			eDVBDB.getInstance().reloadBouquets()
+			self.close()
 
 	def purgeDeletedBouquets(self):
 		self.session.openWithCallback(self.purgeDeletedBouquetsCallback, MessageBox, _("Are you sure to purge all deleted userbouquets?"))
@@ -388,6 +384,7 @@ class ChannelContextMenu(Screen):
 		if answer:
 			for file in os.listdir("/etc/enigma2/"):
 				if file.startswith("userbouquet") and file.endswith(".del"):
+					file = "/etc/enigma2/" + file
 					print "permantly remove file ", file
 					os.remove(file)
 			self.close()
@@ -395,6 +392,7 @@ class ChannelContextMenu(Screen):
 	def restoreDeletedBouquets(self):
 		for file in os.listdir("/etc/enigma2/"):
 			if file.startswith("userbouquet") and file.endswith(".del"):
+				file = "/etc/enigma2/" + file
 				print "restore file ", file[:-4]
 				os.rename(file, file[:-4])
 		eDVBDBInstance = eDVBDB.getInstance()
@@ -461,17 +459,6 @@ class ChannelContextMenu(Screen):
 		configfile.save()
 		self.close()
 
-	def setStartupServiceStandby(self):
-		config.servicelist.startupservice_standby.value = self.csel.getCurrentSelection().toString()
-		config.servicelist.save()
-		configfile.save()
-		self.close()
-
-	def unsetStartupServiceStandby(self):
-		config.servicelist.startupservice_standby.value = ''
-		config.servicelist.save()
-		configfile.save()
-		self.close()
 	def showBouquetInputBox(self):
 		self.session.openWithCallback(self.bouquetInputCallback, VirtualKeyBoard, title=_("Please enter a name for the new bouquet"), text="bouquetname", maxSize=False, visible_width=56, type=Input.TEXT)
 
@@ -491,8 +478,10 @@ class ChannelContextMenu(Screen):
 		if result:
 			self.parentalControl.unProtectService(service)
 			self.close()
-		else:
+		elif result is not None:
 			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
+		else:
+			self.close()
 
 	def showServiceInPiP(self):
 		if self.csel.dopipzap or (self.parentalControlEnabled and not self.parentalControl.getProtectionLevel(self.csel.getCurrentSelection().toCompareString()) == -1):
@@ -1983,7 +1972,6 @@ config.radio.lastroot = ConfigText()
 config.servicelist = ConfigSubsection()
 config.servicelist.lastmode = ConfigText(default='tv')
 config.servicelist.startupservice = ConfigText()
-config.servicelist.startupservice_standby = ConfigText()
 config.servicelist.startupservice_onstandby = ConfigYesNo(default = False)
 config.servicelist.startuproot = ConfigText()
 config.servicelist.startupmode = ConfigText(default='tv')
@@ -2018,8 +2006,9 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 				iPlayableService.evEnd: self.__evServiceEnd
 			})
 
-		assert ChannelSelection.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
-		ChannelSelection.instance = self
+		if type(self) is ChannelSelection:
+			assert ChannelSelection.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
+			ChannelSelection.instance = self
 		self.startServiceRef = None
 		self.history_tv = []
 		self.history_radio = []
@@ -2497,7 +2486,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		else:
 			lastservice = eServiceReference(self.lastservice.value)
 			if lastservice.valid() and self.getCurrentSelection() == lastservice:
-				pass	# keep current selection
+				pass # keep current selection
 			else:
 				self.setCurrentSelection(currentPlayedRef)
 
@@ -2893,6 +2882,7 @@ class HistoryZapSelector(Screen):
 
 			info = serviceHandler.info(x[-1])
 			if info:
+				orbpos = self.getOrbitalPos(ServiceReference(x[1]))
 				serviceName = info.getName(x[-1])
 				if serviceName is None:
 					serviceName = ""
@@ -2930,9 +2920,9 @@ class HistoryZapSelector(Screen):
 			if picon != "":
 				png = loadPNG(picon)
 			if self.invertItems:
-				self.list.insert(0, (x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png))
+				self.list.insert(0, (x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png, orbpos))
 			else:
-				self.list.append((x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png))
+				self.list.append((x[1], cnt == mark_item and "»" or "", x[0], eventName, descriptionName, durationTime, png, orbpos))
 			cnt += 1
 		self["menu"] = List(self.list, enableWrapAround=wrap_around)
 		self.onShown.append(self.__onShown)
@@ -2967,3 +2957,24 @@ class HistoryZapSelector(Screen):
 
 	def cancelClick(self):
 		self.close(None)
+
+	def getOrbitalPos(self, ref):
+		refstr = None
+		if hasattr(ref, 'sref'):
+			refstr = str(ref.sref)
+		else:
+			refstr = str(ref)
+		refstr = refstr and GetWithAlternative(refstr)
+		print 'refstr:',refstr
+		if '%3a//' in refstr:
+			return "%s" % _("Stream")
+		op = int(refstr.split(':', 10)[6][:-4] or "0",16)
+		if op == 0xeeee:
+			return "%s" % _("DVB-T")
+		if op == 0xffff:
+			return "%s" % _("DVB-C")
+		direction = 'E'
+		if op > 1800:
+			op = 3600 - op
+			direction = 'W'
+		return ("%d.%d\xc2\xb0%s") % (op // 10, op % 10, direction)
