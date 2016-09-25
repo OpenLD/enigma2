@@ -192,6 +192,10 @@ class ChannelContextMenu(Screen):
 						append_when_current_valid(current, menu, (_("stop using as startup service"), self.unsetStartupService), level=0)
 					else:
 						append_when_current_valid(current, menu, (_("set as startup service"), self.setStartupService), level=0)
+					if config.servicelist.startupservice_standby.value == self.csel.getCurrentSelection().toString():
+						append_when_current_valid(current, menu, (_("stop using as startup service from standby"), self.unsetStartupServiceStandby), level = 0)
+					else:
+						append_when_current_valid(current, menu, (_("set as startup service from standby"), self.setStartupServiceStandby), level = 0)
 					if self.parentalControlEnabled:
 						if self.parentalControl.getProtectionLevel(csel.getCurrentSelection().toCompareString()) == -1:
 							append_when_current_valid(current, menu, (_("add to parental protection"), boundFunction(self.addParentalProtection, csel.getCurrentSelection())), level=0)
@@ -439,22 +443,28 @@ class ChannelContextMenu(Screen):
 		self.close()
 
 	def setStartupService(self):
-		self.session.openWithCallback(self.setStartupServiceCallback, MessageBox, _("Set startup service"), list = [(_("Only on startup"), "startup"), (_("Also on standby"), "standby")])
-
-	def setStartupServiceCallback(self, answer):
-		if answer:
-			config.servicelist.startupservice.value = self.csel.getCurrentSelection().toString()
-			path = ';'.join([i.toString() for i in self.csel.servicePath])
-			config.servicelist.startuproot.value = path
-			config.servicelist.startupmode.value = config.servicelist.lastmode.value
-			config.servicelist.startupservice_onstandby.value = answer == "standby"
-			config.servicelist.save()
-			configfile.save()
+		config.servicelist.startupservice.value = self.csel.getCurrentSelection().toString()
+		path = ';'.join([i.toString() for i in self.csel.servicePath])
+		config.servicelist.startuproot.value = path
+		config.servicelist.startupmode.value = config.servicelist.lastmode.value
+		config.servicelist.save()
+		configfile.save()
 		self.close()
 
 	def unsetStartupService(self):
 		config.servicelist.startupservice.value = ''
-		config.servicelist.startupservice_onstandby.value = False
+		config.servicelist.save()
+		configfile.save()
+		self.close()
+
+	def setStartupServiceStandby(self):
+		config.servicelist.startupservice_standby.value = self.csel.getCurrentSelection().toString()
+		config.servicelist.save()
+		configfile.save()
+		self.close()
+
+	def unsetStartupServiceStandby(self):
+		config.servicelist.startupservice_standby.value = ''
 		config.servicelist.save()
 		configfile.save()
 		self.close()
@@ -1972,7 +1982,7 @@ config.radio.lastroot = ConfigText()
 config.servicelist = ConfigSubsection()
 config.servicelist.lastmode = ConfigText(default='tv')
 config.servicelist.startupservice = ConfigText()
-config.servicelist.startupservice_onstandby = ConfigYesNo(default = False)
+config.servicelist.startupservice_standby = ConfigText()
 config.servicelist.startuproot = ConfigText()
 config.servicelist.startupmode = ConfigText(default='tv')
 
