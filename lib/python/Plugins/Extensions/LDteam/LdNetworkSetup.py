@@ -4246,6 +4246,8 @@ class NetworkXupnpd(Screen):
 			else:
 				commands.append('/bin/su -l -c "/etc/init.d/xupnpd start"')
 			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		else:
+			self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
 
 	def StartStopCallback(self, result = None, retval = None, extra_args = None):
 		time.sleep(3)
@@ -4258,7 +4260,9 @@ class NetworkXupnpd(Screen):
 				commands.append('update-rc.d -f xupnpd remove')
 			else:
 				commands.append('update-rc.d -f xupnpd defaults 20')
-		self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		else:
+			self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
 
 	def updateService(self):
 		import process
