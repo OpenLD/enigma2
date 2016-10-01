@@ -11,6 +11,7 @@ from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixm
 from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
 from Tools.NumericalTextInput import NumericalTextInput
+import skin
 
 class VirtualKeyBoardList(MenuList):
 	def __init__(self, list, enableWrapAround=False):
@@ -259,7 +260,7 @@ class VirtualKeyBoard(Screen):
 				[u"A", u"S", u"D", u"F", u"G", u"H", u"J", u"K", u"L", u"?", u'"', u"|"],
 				[u">", u"Z", u"X", u"C", u"V", u"B", u"N", u"M", u";", u":", u"_", u"CLEAR"],
 				[u"SHIFT", u"SPACE", u"Ą", u"Ć", u"Ę", u"Ł", u"Ń", u"Ó", u"Ś", u"Ź", u"Ż", u"OK"]]
-			self.nextLang = 'en_EN'
+			self.nextLang = 'en_US'
 		else:
 			self.keys_list = [
 				[u"EXIT", u"1", u"2", u"3", u"4", u"5", u"6", u"7", u"8", u"9", u"0", u"BACKSPACE"],
@@ -273,7 +274,7 @@ class VirtualKeyBoard(Screen):
 				[u"A", u"S", u"D", u"F", u"G", u"H", u"J", u"K", u"L", u"?", u'"', u"|"],
 				[u">", u"Z", u"X", u"C", u"V", u"B", u"N", u"M", u";", u":", u"_", u"CLEAR"],
 				[u"SHIFT", u"SPACE", u"OK", u"LEFT", u"RIGHT", u"~"]]
-			self.lang = 'en_EN'
+			self.lang = 'en_US'
 			self.nextLang = 'de_DE'
 		self["country"].setText(self.lang)
 		self.max_key=47+len(self.keys_list[4])

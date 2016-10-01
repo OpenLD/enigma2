@@ -4194,6 +4194,84 @@ class NetworkMiniDLNALog(Screen):
 			remove('/tmp/tmp.log')
 		self['infotext'].setText(strview)
 
+class NetworkUdpxy(Screen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("Udpxy Setup"))
+		self.skinName = "NetworkSamba"
+		self.onChangedEntry = [ ]
+		self['lab1'] = Label(_("Autostart:"))
+		self['labactive'] = Label(_(_("Disabled")))
+		self['lab2'] = Label(_("Current Status:"))
+		self['labstop'] = Label(_("Stopped"))
+		self['labrun'] = Label(_("Running"))
+		self['key_green'] = Label(_("Start"))
+		self['key_red'] = Label()
+		self['key_yellow'] = Label(_("Autostart"))
+		self['key_blue'] = Label()
+		self.Console = Console()
+		self.my_udpxy_active = False
+		self.my_udpxy_run = False
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'green': self.UdpxyStartStop, 'yellow': self.activateUdpxy})
+
+	def createSummary(self):
+		return NetworkServicesSummary
+
+	def UdpxyStartStop(self):
+		commands = []
+		if fileExists('/etc/init.d/udpxy.sh'):
+			if self.my_udpxy_run:
+				commands.append('/etc/init.d/udpxy.sh stop; killall -9 udpxy')
+			else:
+				commands.append('/bin/su -l -c "/etc/init.d/udpxy.sh start"')
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+
+	def StartStopCallback(self, result = None, retval = None, extra_args = None):
+		time.sleep(3)
+		self.updateService()
+
+	def activateUdpxy(self):
+		commands = []
+		if fileExists('/etc/init.d/udpxy.sh'):
+			if fileExists('/etc/rc3.d/S20udpxy.sh'):
+				commands.append('update-rc.d -f udpxy.sh remove')
+			else:
+				commands.append('update-rc.d -f udpxy.sh defaults 20')
+		self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+
+	def updateService(self):
+		import process
+		p = process.ProcessList()
+		udpxy_process = str(p.named('udpxy')).strip('[]')
+		self['labrun'].hide()
+		self['labstop'].hide()
+		self['labactive'].setText(_("Disabled"))
+		self.my_udpxy_active = False
+		self.my_udpxy_run = False
+		if fileExists('/etc/rc3.d/S20udpxy.sh'):
+			self['labactive'].setText(_("Enabled"))
+			self['labactive'].show()
+			self.my_udpxy_active = True
+		if udpxy_process:
+			self.my_udpxy_run = True
+		if self.my_udpxy_run:
+			self['labstop'].hide()
+			self['labactive'].show()
+			self['labrun'].show()
+			self['key_green'].setText(_("Stop"))
+			status_summary = self['lab2'].text + ' ' + self['labrun'].text
+		else:
+			self['labrun'].hide()
+			self['labstop'].show()
+			self['labactive'].show()
+			self['key_green'].setText(_("Start"))
+			status_summary = self['lab2'].text + ' ' + self['labstop'].text
+		title = _("Udpxy Setup")
+		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
+
+		for cb in self.onChangedEntry:
+			cb(title, status_summary, autostartstatus_summary)
+
 class InetdRecovery(Screen, ConfigListScreen):
 	skin = """
 	<screen name="InetdRecovery" position="center,center" size="560,412" title="Inetd recovery">

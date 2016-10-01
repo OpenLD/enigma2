@@ -102,9 +102,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 8:
 			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkTelnet
 			self.session.open(NetworkTelnet)
-		#elif self.sel == 9:
-			#from Plugins.Extensions.LDteam.LdNetworkSetup import RemoteTunerServer
-			#self.session.open(RemoteTunerServer)
+		elif self.sel == 9:
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkUdpxy
+			self.session.open(NetworkUdpxy)
 		else:
 			self.noYet()
 
@@ -180,11 +180,11 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
-		#mypixmap = mypath + "Tuner_Setup.png"
-		#png = LoadPixmap(mypixmap)
-		#name = "RemoteTunerServer"
-		#idx = 9
-		#res = (name, png, idx)
-		#self.list.append(res)
+		mypixmap = mypath + "Dlna.png"
+		png = LoadPixmap(mypixmap)
+		name = "Udpxy"
+		idx = 9
+		res = (name, png, idx)
+		self.list.append(res)
 
 		self["list"].list = self.list
