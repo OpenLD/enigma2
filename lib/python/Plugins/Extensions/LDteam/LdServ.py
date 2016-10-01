@@ -105,6 +105,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 9:
 			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkUdpxy
 			self.session.open(NetworkUdpxy)
+		elif self.sel == 10:
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkXupnpd
+			self.session.open(NetworkXupnpd)
 		else:
 			self.noYet()
 
@@ -184,6 +187,13 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		png = LoadPixmap(mypixmap)
 		name = "Udpxy"
 		idx = 9
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "Dlna.png"
+		png = LoadPixmap(mypixmap)
+		name = "Xupnpd"
+		idx = 10
 		res = (name, png, idx)
 		self.list.append(res)
 

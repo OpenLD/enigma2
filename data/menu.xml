@@ -166,6 +166,7 @@ self.session.open(RemoteControlCode)
 					<item level="2" text="FTP Setup" entryID="netftp_setup"><screen module="NetworkSetup" screen="NetworkFtp"/></item>
 					<item level="2" text="Telnet Setup" entryID="nettelnet_setup"><screen module="NetworkSetup" screen="NetworkTelnet"/></item>
 					<item level="2" text="Udpxy Setup" entryID="netudpxy_setup"><screen module="NetworkSetup" screen="NetworkUdpxy"/></item>
+					<item level="2" text="Xupnpd Setup" entryID="netxupnpd_setup"><screen module="NetworkSetup" screen="NetworkXupnpd"/></item>
 					<item level="2" text="Inadyn Setup" entryID="Inadyn_setup"><screen module="NetworkSetup" screen="NetworkInadyn"/></item>
 					<item level="2" text="MiniDLNA Setup" entryID="minidlna_setup"><screen module="NetworkSetup" screen="NetworkMiniDLNA"/></item>
 					<item level="2" text="NFS Setup" entryID="netnfs_setup"><screen module="NetworkSetup" screen="NetworkNfs"/></item>
@@ -240,3 +241,4 @@ else:
 		<item weight="35" level="0" text="Restart Gui" entryID="restart_enigma"><screen module="Standby" screen="TryQuitMainloop">3</screen></item>
 		</menu>
 </menu>
+
