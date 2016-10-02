@@ -2860,6 +2860,11 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 			/* prefer to use an S tuner, try to keep S2 free for S2 transponders */
 			score--;
 		}
+		if (score > 1 && is_multistream())
+		{
+			/* prefer to use a non multistream tuner, try to keep multistream tuners free for multistream transponders */
+			score--;
+		}
 	}
 	else if (type == eDVBFrontend::feCable)
 	{
