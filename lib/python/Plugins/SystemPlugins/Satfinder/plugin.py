@@ -417,43 +417,42 @@ class Satfinder(ScanSetup, ServiceScan):
 						self.tuner.tuneATSC(transponder)
 					self.transponder = transponder
 
-	def retune(self, configElement): # satellite
-		if not nimmanager.nim_slots[int(self.satfinder_scan_nims.value)].isCompatible("DVB-S"):
-			return self.retuneTerr(configElement)
+	def retuneSat(self):
 		if not self.tuning_sat.value:
 			return
-		satpos = int(self.tuning_sat.value)
-		if self.tuning_type.value == "single_transponder":
-			if self.scan_sat.system.value == eDVBFrontendParametersSatellite.System_DVB_S2:
-				fec = self.scan_sat.fec_s2.value
-			else:
-				fec = self.scan_sat.fec.value
-			transponder = (
-				self.scan_sat.frequency.value,
-				self.scan_sat.symbolrate.value,
-				self.scan_sat.polarization.value,
-				fec,
-				self.scan_sat.inversion.value,
-				satpos,
-				self.scan_sat.system.value,
-				self.scan_sat.modulation.value,
-				self.scan_sat.rolloff.value,
-				self.scan_sat.pilot.value,
-				self.scan_sat.is_id.value,
-				self.scan_sat.pls_mode.value,
-				self.scan_sat.pls_code.value)
-			if self.initcomplete:
-				self.tuner.tune(transponder)
-			self.transponder = transponder
-		elif self.tuning_type.value == "predefined_transponder":
-			tps = nimmanager.getTransponders(satpos)
-			if len(tps) > self.preDefTransponders.index:
-				tp = tps[self.preDefTransponders.index]
-				transponder = (tp[1] / 1000, tp[2] / 1000,
-					tp[3], tp[4], 2, satpos, tp[5], tp[6], tp[8], tp[9], tp[10], tp[11], tp[12])
+		if self.initcomplete:
+			satpos = int(self.tuning_sat.value)
+			if self.tuning_type.value == "single_transponder":
+				if self.scan_sat.system.value == eDVBFrontendParametersSatellite.System_DVB_S2:
+					fec = self.scan_sat.fec_s2.value
+				else:
+					fec = self.scan_sat.fec.value
+				transponder = (
+					self.scan_sat.frequency.value,
+					self.scan_sat.symbolrate.value,
+					self.scan_sat.polarization.value,
+					fec,
+					self.scan_sat.inversion.value,
+					satpos,
+					self.scan_sat.system.value,
+					self.scan_sat.modulation.value,
+					self.scan_sat.rolloff.value,
+					self.scan_sat.pilot.value,
+					self.scan_sat.is_id.value,
+					self.scan_sat.pls_mode.value,
+					self.scan_sat.pls_code.value)
 				if self.initcomplete:
 					self.tuner.tune(transponder)
-				self.transponder = transponder
+					self.transponder = transponder
+			elif self.tuning_type.value == "predefined_transponder":
+				tps = nimmanager.getTransponders(satpos)
+				if len(tps) > self.preDefTransponders.index:
+					tp = tps[self.preDefTransponders.index]
+					transponder = (tp[1] / 1000, tp[2] / 1000,
+						tp[3], tp[4], 2, satpos, tp[5], tp[6], tp[8], tp[9], tp[10], tp[11], tp[12])
+					if self.initcomplete:
+						self.tuner.tune(transponder)
+						self.transponder = transponder
 
 	def keyGoScan(self):
 		if self.transponder is None:
