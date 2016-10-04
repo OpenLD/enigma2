@@ -1,8 +1,8 @@
 #!/bin/sh
 
-prefix=/usr
-exec_prefix=/usr
-datarootdir=${prefix}/share
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
 
 # check for /etc/enigma2 folder
 if [ ! -d /etc/enigma2 ] ; then
@@ -35,23 +35,23 @@ if [ -x /etc/enigma2/startup.sh ]; then
 fi
 
 # remove annoying WebInterface relicts
-if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
-	rm -rf /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/
+if [ -d @libdir@/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
+	rm -rf @libdir@/enigma2/python/Plugins/Extensions/WebInterface/
 fi
 
-if [ -x /usr/bin/showiframe ]; then
-	if [ -f /etc/enigma2/backdrop.mvi ]; then
-		/usr/bin/showiframe /etc/enigma2/backdrop.mvi
-	elif [ -f /etc/enigma2/bootlogo.mvi ]; then
-		/usr/bin/showiframe /etc/enigma2/bootlogo.mvi
-	elif [ -f /usr/share/bootlogo.mvi ]; then
-		/usr/bin/showiframe /usr/share/bootlogo.mvi
+if [ -x @bindir@/showiframe ]; then
+	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
+		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
+	elif [ -f @sysconfdir@/enigma2/bootlogo.mvi ]; then
+		@bindir@/showiframe @sysconfdir@/enigma2/bootlogo.mvi
+	elif [ -f @datadir@/bootlogo.mvi ]; then
+		@bindir@/showiframe @datadir@/bootlogo.mvi
 	fi
 fi
 
 # hook to execute scripts always before enigma2 start
-if [ -x /usr/bin/enigma2_pre_start.sh ]; then
-	/usr/bin/enigma2_pre_start.sh 2>/dev/null
+if [ -x @bindir@/enigma2_pre_start.sh ]; then
+	@bindir@/enigma2_pre_start.sh 2>/dev/null
 fi
 
 if [ -d /home/root ]; then
@@ -61,19 +61,19 @@ fi
 
 # check for sundtek tuner helper lib
 if [ -e /opt/lib/libmediaclient.so ]; then
-	LIBS="/opt/lib/libmediaclient.so /usr/lib/libopen.so.0.0.0"
+	LIBS="/opt/lib/libmediaclient.so @libdir@/libopen.so.0.0.0"
 else
-	LIBS="/usr/lib/libopen.so.0.0.0"
+	LIBS="@libdir@/libopen.so.0.0.0"
 fi
 
 # check for specific pagecache helper lib
-if [ -e /usr/lib/libpagecache.so ]; then
-	LIBS="$LIBS /usr/lib/libpagecache.so"
+if [ -e @libdir@/libpagecache.so ]; then
+	LIBS="$LIBS @libdir@/libpagecache.so"
 fi
 
 # check for receiver specific passthrough helper lib
-if [ -e /usr/lib/libpassthrough.so ]; then
-	LIBS="$LIBS /usr/lib/libpassthrough.so"
+if [ -e @libdir@/libpassthrough.so ]; then
+	LIBS="$LIBS @libdir@/libpassthrough.so"
 fi
 
 # check for settings files
@@ -96,16 +96,16 @@ if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.e
 		RANDOMIZE1970="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 5 | tr -d '\n')"
 	fi
 	if [ "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" != "" -a -d "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" ]; then
-		LD_PRELOAD=$LIBS /usr/bin/enigma2 --debug-no-color &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
+		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
 	else
-		LD_PRELOAD=$LIBS /usr/bin/enigma2 --debug-no-color &> /home/root/logs/Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
+		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> /home/root/logs/Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
 	fi
 else
 	# in case $TERM is "linux" the serial output is activated - discard debug output
 	if [ "$TERM" = linux ]; then
-		LD_PRELOAD=$LIBS /usr/bin/enigma2 2> /dev/null
+		LD_PRELOAD=$LIBS @bindir@/enigma2 2> /dev/null
 	else
-		LD_PRELOAD=$LIBS /usr/bin/enigma2
+		LD_PRELOAD=$LIBS @bindir@/enigma2
 	fi
 fi
 
