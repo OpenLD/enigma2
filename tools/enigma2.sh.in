@@ -35,8 +35,8 @@ if [ -x /etc/enigma2/startup.sh ]; then
 fi
 
 # remove annoying WebInterface relicts
-if [ -d @libdir@/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
-	rm -rf @libdir@/enigma2/python/Plugins/Extensions/WebInterface/
+if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
+	rm -rf /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/
 fi
 
 if [ -x @bindir@/showiframe ]; then
