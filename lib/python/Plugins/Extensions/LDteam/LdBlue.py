@@ -266,7 +266,7 @@ class LDBluePanel(Screen):
 		self.session.openWithCallback(self.keyOk2, startstopCam, self.defCamname, _('Stopping'))
 
 	def keyOk2(self):
-		os.system('/usr/bin/StartLdCam stop')
+		os.system('/usr/bin/StartLdCam stop 2>/dev/null')
 		cmd = 'NEW_CAMD,' + self.newcam
 		self.sendtoLd_sock(cmd)
 		oldcam = self.camnames[self.sel]
@@ -274,7 +274,13 @@ class LDBluePanel(Screen):
 
 	def sendtoLd_sock(self, data):
 		client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		client_socket.connect('/tmp/OpenLD.socket')
+		if fileExists('tmp/OpenLD.socket'):
+			client_socket.connect('/tmp/OpenLD.socket')
+		elif not fileExists('tmp/OpenLD.socket'):
+			os.system('start-stop-daemon -S -b -x /usr/bin/openldsocker 2>/dev/null')
+			os.system('/etc/init.d/openldsocker stop 2>/dev/null')
+			os.system('/etc/init.d/openldsocker start 2>/dev/null')
+			client_socket.connect('/tmp/OpenLD.socket')
 		client_socket.send(data)
 		client_socket.close()
 
@@ -312,7 +318,7 @@ class startstopCam(Screen):
 		self['lab1'] = Label(msg)
 		self.delay = 800
 		if what == _('Starting'):
-			self.delay = 3000
+			self.delay = 5000
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.end)
 		self.onShow.append(self.startShow)
