@@ -119,17 +119,11 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 3:
 			self.openSetup('userinterface')
 		elif self.sel == 4:
-			if os.path.exists("/var/tuxbox/config/ncam.conf"):
-				from Screens.NcamInfo import NcamInfoMenu
-				self.session.open(NcamInfoMenu)
-			else:
-				self.session.open(MessageBox, _("Sorry! /var/tuxbox/config/ncam.conf It was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Screens.NcamInfo import NcamInfoMenu
+			self.session.open(NcamInfoMenu)
 		elif self.sel == 5:
-			if os.path.exists("/var/tuxbox/config/oscam.conf"):
-				from Screens.OScamInfo import OscamInfoMenu
-				self.session.open(OscamInfoMenu)
-			else:
-				self.session.open(MessageBox, _("Sorry! /var/tuxbox/config/oscam.conf It was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Screens.OScamInfo import OscamInfoMenu
+			self.session.open(OscamInfoMenu)
 		elif self.sel == 6:
 			self.session.open(LdEpgPanel)
 		elif self.sel == 7:
@@ -151,11 +145,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			from Plugins.Extensions.LDteam.LdRestartNetwork import RestartNetwork
 			self.session.open(RestartNetwork)
 		elif self.sel == 14:
-			if os.path.exists("/etc/CCcam.cfg"):
-				from Screens.CCcamInfo import CCcamInfoMain
-				self.session.open(CCcamInfoMain)
-			else:
-				self.session.open(MessageBox, _("Sorry! /etc/CCcam.cfg It was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Screens.CCcamInfo import CCcamInfoMain
+			self.session.open(CCcamInfoMain)
 		else:
 			self.noYet()
 
@@ -269,24 +260,27 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		else:
 			name = _('Reset Network')
 		idx = 13
-		res = (name, png, idx)
-		self.list.append(res)
-		mypixmap = mypath + 'Module.png'
-		png = LoadPixmap(mypixmap)
-		name = 'CCcamInfo'
-		idx = 14
-		res = (name, png, idx)
-		self.list.append(res)
-		mypixmap = mypath + 'Module.png'
-		png = LoadPixmap(mypixmap)
-		name = 'NcamInfo'
-		idx = 4
-		res = (name, png, idx)
-		self.list.append(res)
-		mypixmap = mypath + 'Module.png'
-		png = LoadPixmap(mypixmap)
-		name = 'OScamInfo'
-		idx = 5
+		if os.path.exists("/etc/CCcam.cfg"):
+			res = (name, png, idx)
+			self.list.append(res)
+			mypixmap = mypath + 'Module.png'
+			png = LoadPixmap(mypixmap)
+			name = 'CCcamInfo'
+			idx = 14
+		if os.path.exists("/var/tuxbox/config/ncam.conf"):
+			res = (name, png, idx)
+			self.list.append(res)
+			mypixmap = mypath + 'Module.png'
+			png = LoadPixmap(mypixmap)
+			name = 'NcamInfo'
+			idx = 4
+		if os.path.exists("/var/tuxbox/config/oscam.conf"):
+			res = (name, png, idx)
+			self.list.append(res)
+			mypixmap = mypath + 'Module.png'
+			png = LoadPixmap(mypixmap)
+			name = 'OScamInfo'
+			idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
 		self['list'].list = self.list
