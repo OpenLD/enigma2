@@ -19,13 +19,13 @@ fi
 if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.SyncTimeUsing=1" ]; then
 	if [ -x /usr/sbin/ntpdate ]; then
 		/usr/sbin/ntpdate -s -u pool.ntp.org && sleep 2 2>/dev/null
-	elif [ -x usr/sbin/ntpd ]; then
+	elif [ -x /usr/sbin/ntpd ]; then
 		/usr/sbin/ntpd -dnqp pool.ntp.org && sleep 2 2>/dev/null
 	fi
 fi
 
 # check for Script OpenLD-Init
-if [ -x /etc/rc3.d/S14init_openld.sh ]; then
+if [ ! -e /etc/rc3.d/S14init_openld.sh ]; then
 	sh /etc/init.d/init_openld.sh 2>/dev/null
 fi
 
