@@ -474,6 +474,8 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				char * next = strchr(options, ',');
 				if (next)
 					*next++ = '\0';
+				if (strncmp(options, "MIS/PLS:", 8) == 0)
+					sscanf(options+8, "%d:%d:%d", &is_id, &pls_code, &pls_mode);
 				options = next;
 			}
 			feparm->setDVBS(sat);

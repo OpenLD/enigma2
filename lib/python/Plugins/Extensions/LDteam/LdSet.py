@@ -295,8 +295,13 @@ class LdEpgPanel(Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
-		flist = [("EPGSettings"),("EPGSearch"),("Movistar+ (MHW2)"),("CrossEPG"),("EPGImport")]
+
+		flist = [("EPGSettings"),
+		("EPGSearch"),
+		("EPGRefresh"),
+		("Movistar+ (MHW2)"),
+		("CrossEPG"),
+		("EPGImport")]
 		self["list"] = List(flist)
 
 		self['key_red'] = StaticText(_('Close'))
@@ -317,6 +322,12 @@ class LdEpgPanel(Screen):
 			elif sel == "EPGSearch":
 				from Plugins.Extensions.EPGSearch.EPGSearch import EPGSearch as epgsearch
 				self.session.open(epgsearch)
+			elif sel == "EPGRefresh":
+				if os.path.exists("/usr/lib/enigma2/python/Plugins/Extensions/EPGRefresh/plugin.pyo"):
+					from Plugins.Extensions.EPGRefresh.EPGRefreshConfiguration import EPGRefreshConfiguration
+					self.session.open(EPGRefreshConfiguration)
+				else:
+					self.session.open(MessageBox, _("Sorry! EPGRefresh - It not installed"), MessageBox.TYPE_INFO, timeout = 5)
 			elif sel == "Movistar+ (MHW2)":
 				from Plugins.Extensions.LDteam.LdEpg import LDepgScreen
 				self.session.open(LDepgScreen)

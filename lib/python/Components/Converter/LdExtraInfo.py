@@ -1291,7 +1291,7 @@ class LdExtraInfo(Poll, Converter, object):
 			self.updateFEdata = False
 			if what[1] == iPlayableService.evNewProgramInfo:
 				self.updateFEdata = True
-			if what[1] == iPlayableService.evEnd:
+			elif what[1] == iPlayableService.evEnd:
 				self.feraw = self.fedata = None
 			Converter.changed(self, what)
 		elif what[0] == self.CHANGED_POLL and self.updateFEdata is not None:
