@@ -24,8 +24,8 @@ if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.S
 	fi
 fi
 
-# check for Script OpenLD-Init
-if [ ! -e /etc/rc3.d/S14init_openld.sh ]; then
+# check for init_openld.sh to restart enigma2
+if [ -e /etc/init.d/init_openld.sh ]; then
 	sh /etc/init.d/init_openld.sh 2>/dev/null
 fi
 
