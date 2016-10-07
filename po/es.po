@@ -6293,7 +6293,13 @@ msgstr "¿Seguro que quieres reiniciar ahora?"
 msgid "Really shutdown now?"
 msgstr "¿Seguro que quieres apagar ahora?"
 
-#
+msgid "Really upgrade the frontprocessor and reboot now?"
+msgstr "¿Seguro que quieres actualizar el frontprocessor y reiniciar ahora?"
+
+#, python-format
+msgid "Really upgrade your %s %s and reboot now?"
+msgstr "Seguro que quieres actualizar tu %s %s y reiniciar ahora?"
+
 msgid "Reboot"
 msgstr "Reiniciar"
 
@@ -6304,7 +6310,6 @@ msgstr "Grabar"
 msgid "Record started! Stopping timeshift now ..."
 msgstr "Grabación iniciada. Deteniendo Timeshift..."
 
-#
 #, python-format
 msgid "Record time limited due to conflicting timer %s"
 msgstr "Grabación limitada en el tiempo por un conflicto con el temporizador %s"
@@ -9140,35 +9145,46 @@ msgstr "Desconocido"
 msgid "Unmount"
 msgstr "Desmontar"
 
-#
 msgid "Unmount failed"
 msgstr "Desmontaje fallido"
 
-#
 msgid "Unsupported"
 msgstr "No soportado"
 
-#
 msgid "Update"
 msgstr "Actualizar"
+
+msgid "Update channel list only"
+msgstr "Actualizar solamente la lista de canales"
+
+#, python-format
+msgid "Update completed, %d package was installed."
+msgid_plural "Update completed, %d packages were installed."
+msgstr[0] "Actualización completada, %d paquete se instaló."
+msgstr[1] "Actualización completad, %d paquetes se instalaron."
+
+#, python-format
+msgid "Update failed. Your %s %s does not have a working internet connection."
+msgstr "La actualización ha fallado. Su %s %s no tiene conexión a Internet."
 
 msgid "Update interval (in seconds)"
 msgstr "Intervalo de actualización (en segundos)"
 
-#
 msgid "Updatefeed not available."
 msgstr "Fuente de actualizaciones no disponible."
 
 msgid "Updates your receiver's software"
 msgstr "Actualizar el software de tu receptor"
 
+msgid "Updating software catalog"
+msgstr "Actualizando el catálogo de software"
+
+msgid "Upgrade and reboot system"
+msgstr "Actualizar y reiniciar el sistema"
+
 #
 msgid "Updating finished. Here is the result:"
 msgstr "Actualización finalizada. Aquí el resultado:"
-
-#
-msgid "Updating software catalog"
-msgstr "Actualizando el catálogo de software"
 
 #
 msgid "Updating... Please wait... This can take some minutes..."
@@ -9198,11 +9214,19 @@ msgstr "Actualización finalizada. ¿Quieres reiniciar tu %s %s?"
 msgid "Upgrade beendet. Do you want to reboot your receiver?"
 msgstr "Actualización finalizada. ¿Quieres reiniciar tu receptor?"
 
-#
+#, python-format
+msgid ""
+"Upgrade in progress\n"
+"Please wait until your %s %s reboots\n"
+"This may take a few minutes"
+msgstr ""
+"Actualización en progreso\n"
+"Por favor, espere hasta que su %s %s reinicie\n"
+"Esto puede tardar unos pocos minutos"
+
 msgid "Upgrading"
 msgstr "Actualizando"
 
-#
 msgid "Upgrading %s %s... Please wait"
 msgstr "Actualizando %s %s. Espera un momento..."
 
