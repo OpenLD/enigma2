@@ -126,7 +126,6 @@ case $ret in
 		/sbin/reboot
 		;;
 	3)
-		rm -fR /home/root/.gstreamer-0.10
 		rm -f /tmp/.listen.camd.socket.ignore
 		;;
 	4)
@@ -155,4 +154,3 @@ case $ret in
 		rm -f /tmp/.listen.camd.socket.ignore
 		;;
 esac
-
