@@ -274,12 +274,16 @@ class LDBluePanel(Screen):
 
 	def sendtoLd_sock(self, data):
 		client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		if fileExists('tmp/OpenLD.socket'):
-			client_socket.connect('/tmp/OpenLD.socket')
-		elif not fileExists('tmp/OpenLD.socket'):
+		if fileExists('/tmp/OpenLD.socket'):
+			try:
+				client_socket.connect('/tmp/OpenLD.socket')
+			except:
+				pass
+		else:
 			os.system('start-stop-daemon -S -b -x /usr/bin/openldsocker 2>/dev/null')
 			os.system('/etc/init.d/openldsocker stop 2>/dev/null')
 			os.system('/etc/init.d/openldsocker start 2>/dev/null')
+			self.session.open(MessageBox, _("We have not found OpenLD.socket and we have generated the new temporay Socket..."), MessageBox.TYPE_INFO, timeout = 8)
 			client_socket.connect('/tmp/OpenLD.socket')
 		client_socket.send(data)
 		client_socket.close()
@@ -318,7 +322,7 @@ class startstopCam(Screen):
 		self['lab1'] = Label(msg)
 		self.delay = 800
 		if what == _('Starting'):
-			self.delay = 5000
+			self.delay = 3000
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.end)
 		self.onShow.append(self.startShow)
@@ -330,7 +334,6 @@ class startstopCam(Screen):
 		self.activityTimer.stop()
 		del self.activityTimer
 		self.close()
-
 
 class LDBp:
 
