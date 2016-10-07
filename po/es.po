@@ -16910,4 +16910,4 @@ msgid "Restore inetd"
 msgstr "Restaurar inetd"
 
 msgid "We have not found OpenLD.socket and we have generated the new temporay Socket..."
-msgstr "No hemos encontrado OpenLD.socket y hemos generado el nuevo Socket temporal ..."
+msgstr "No hemos encontrado OpenLD.socket y hemos generado el nuevo Socket temporal..."
