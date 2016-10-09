@@ -16,21 +16,21 @@ def setPosition(dst_left, dst_width, dst_top, dst_height):
 		dst_height = 576 - dst_top
 	try:
 		if getBrandOEM() in ('dreambox'):
-			open("/proc/stb/vmpeg/0/dst_left", "w").write('%X' % dst_left)
+			open("/proc/stb/vmpeg/0/dst_left", "w").write('%08x' % dst_left)
 		else:
-			open("/proc/stb/fb/dst_left", "w").write('%X' % dst_left)
+			open("/proc/stb/fb/dst_left", "w").write('%08x' % dst_left)
 		if getBrandOEM() in ('dreambox'):
-			open("/proc/stb/vmpeg/0/dst_width", "w").write('%X' % dst_width)
+			open("/proc/stb/vmpeg/0/dst_width", "w").write('%08x' % dst_width)
 		else:
-			open("/proc/stb/fb/dst_width", "w").write('%X' % dst_width)
+			open("/proc/stb/fb/dst_width", "w").write('%08x' % dst_width)
 		if getBrandOEM() in ('dreambox'):
-			open("/proc/stb/vmpeg/0/dst_top", "w").write('%X' % dst_top)
+			open("/proc/stb/vmpeg/0/dst_top", "w").write('%08x' % dst_top)
 		else:
-			open("/proc/stb/fb/dst_top", "w").write('%X' % dst_top)
+			open("/proc/stb/fb/dst_top", "w").write('%08x' % dst_top)
 		if getBrandOEM() in ('dreambox'):
-			open("/proc/stb/vmpeg/0/dst_height", "w").write('%X' % dst_height)
+			open("/proc/stb/vmpeg/0/dst_height", "w").write('%08x' % dst_height)
 		else:
-			open("/proc/stb/fb/dst_height", "w").write('%X' % dst_height)
+			open("/proc/stb/fb/dst_height", "w").write('%08x' % dst_height)
 	except:
 		return
 
