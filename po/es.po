@@ -16959,3 +16959,9 @@ msgstr "Ver últimos commits"
 
 msgid "Do you want to update your receiver?"
 msgstr "¿Quieres actualizar tu receptor?"
+
+msgid "Choose the CI protocol operation mode for standard ci or ciplus."
+msgstr "Elija el modo de funcionamiento del protocolo CI, ciplus o ci estándar."
+
+msgid "Your Hardware can detect ci mode self or work only in legacy mode."
+msgstr "Hardware detecta el protocolo de la propia CI o sólo funciona en el modo tradicional."
