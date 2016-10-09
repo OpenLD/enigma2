@@ -19,11 +19,6 @@
 ## limitations under the License.
 ##
 ##########################################################################
-from os import system, stat as mystat, path, remove, rename
-from glob import glob
-import stat
-
-from enigma import eTimer
 
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
@@ -36,9 +31,12 @@ from Components.Harddisk import harddiskmanager, getProcMounts
 from Components.Console import Console
 from Components.Sources.StaticText import StaticText
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN
-
 import sys, commands, gettext, subprocess, threading, sys, traceback, time, datetime
+from os import system, stat as mystat, path, remove, rename
+from glob import glob
+import stat
 
+from enigma import eTimer
 
 config.plugins.ldteam = ConfigSubsection()
 config.plugins.ldteam.swapautostart = ConfigYesNo(default=False)
@@ -60,7 +58,7 @@ class StartSwap:
 		self.Console = Console()
 
 	def start(self):
-		self.Console.ePopen("parted -l /dev/sd? 2>/dev/null | grep swap", self.startSwap2)
+		self.Console.ePopen("parted -l /dev/sd? | grep swap", self.startSwap2)
 
 	def startSwap2(self, result=None, retval=None, extra_args=None):
 		swap_place = ""
@@ -98,14 +96,13 @@ class StartSwap:
 			print "[SwapManager] Swapfile is already active on ", swap_place
 		f.close()
 
-
-#######################################################################
 class Swap(Screen):
 	skin = """
-	<screen name="Swap" position="center,center" size="420,250" title="Swap File Manager" flags="wfBorder" >
+	<screen name="Swap" position="center,center" size="560,450" title="Swap File Manager" flags="wfBorder" >
 		<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 		<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 		<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
+		<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
 		<widget name="key_red" position="0,0" zPosition="1" size="140,40" font="Regular;18" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 		<widget name="key_green" position="140,0" zPosition="1" size="140,40" font="Regular;18" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
 		<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;18" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
@@ -114,12 +111,14 @@ class Swap(Screen):
 		<widget name="lab1" position="50,50" size="360,30" font="Regular;18" valign="center" transparent="1"/>
 		<widget name="lab2" position="10,100" size="150,30" font="Regular;18" valign="center" transparent="1"/>
 		<widget name="lab3" position="10,150" size="150,30" font="Regular;18" valign="center" transparent="1"/>
-		<widget name="lab4" position="10,200" size="150,30" font="Regular;18" valign="center" transparent="1" />
+		<widget name="lab4" position="10,200" size="150,30" font="Regular;18" valign="center" transparent="1"/>
+		<widget name="lab5" position="10,290" size="400,150" font="Regular;18" valign="center" transparent="1"/>
 		<widget name="labplace" position="160,100" size="220,30" font="Regular;18" valign="center" backgroundColor="#4D5375"/>
 		<widget name="labsize" position="160,150" size="220,30" font="Regular;18" valign="center" backgroundColor="#4D5375"/>
 		<widget name="inactive" position="160,200" size="100,30" font="Regular;18" valign="center" halign="center" backgroundColor="red"/>
 		<widget name="active" position="160,200" size="100,30" font="Regular;18" valign="center" halign="center" backgroundColor="green"/>
 	</screen>"""
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Swap Manager"))
@@ -132,6 +131,7 @@ class Swap(Screen):
 		self['lab3'] = Label(_("Swap Size:"))
 		self['labsize'] = Label()
 		self['lab4'] = Label(_("Status:"))
+		self['lab5'] = Label(_('Swap status: disabled'))
 		self['inactive'] = Label(_("Inactive"))
 		self['active'] = Label(_("Active"))
 		self['key_red'] = Label(_("Create"))
@@ -148,7 +148,7 @@ class Swap(Screen):
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions', "MenuActions"], {'back': self.close, 'green': self.actDeact, 'yellow': self.autoSsWap, 'red': self.createDel, "menu": self.close})
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.getSwapDevice)
-		self.updateSwap()
+		self.onLayoutFinish.append(self.updateSwap)
 
 	def updateSwap(self, result=None, retval=None, extra_args=None):
 		self["actions"].setEnabled(False)
@@ -163,6 +163,19 @@ class Swap(Screen):
 		self['swapactive_summary'].setText(_("Current Status:"))
 		scanning = _("Wait please while scanning...")
 		self['lab1'].setText(scanning)
+		rc = system('cat /proc/swaps > /tmp/swapdevices.tmp')
+		self.swap_place = ''
+		swapinfo = _('Swap status: disabled')
+		f = open('/proc/swaps', 'r')
+		for line in f.readlines():
+			if line.find('swapfile') != -1:
+				parts = line.split()
+				self.swap_place = parts[0].strip()
+				self.swapsize = int(parts[2].strip())
+				swapinfo = _('Swap status: active\nSwap file: %s \nSwap size: %d Kb \nSwap used: %s Kb') % (self.swap_place, self.swapsize, parts[3].strip())
+
+		f.close()
+		self['lab5'].setText(swapinfo)
 		self.activityTimer.start(10)
 
 	def getSwapDevice(self):
@@ -173,7 +186,7 @@ class Swap(Screen):
 			config.plugins.ldteam.swapautostart.save()
 		if path.exists('/tmp/swapdevices.tmp'):
 			remove('/tmp/swapdevices.tmp')
-		self.Console.ePopen("parted -l /dev/sd? 2>/dev/null | grep swap", self.updateSwap2)
+		self.Console.ePopen("parted -l /dev/sd? | grep swap", self.updateSwap2)
 
 	def updateSwap2(self, result=None, retval=None, extra_args=None):
 		self.swapsize = 0
@@ -186,7 +199,7 @@ class Swap(Screen):
 				if line.find('sd') > 0:
 					parts = line.strip().split()
 					self.swap_place = parts[0]
-					if self.swap_place == 'parted:':
+					if self.swap_place == 'sfdisk:':
 						self.swap_place = ''
 					self.device = True
 				f = open('/proc/swaps', 'r')
@@ -331,6 +344,7 @@ class Swap(Screen):
 			self.commands = []
 			self.commands.append('dd if=/dev/zero of=' + myfile + ' bs=1024 count=' + swapsize + ' 2>/dev/null')
 			self.commands.append('mkswap ' + myfile)
+			self.commands.append('chmod go-rwx ' + myfile)
 			self.Console.eBatch(self.commands, self.updateSwap, debug=True)
 
 	def autoSsWap(self):
