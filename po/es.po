@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-10-07 12:40+0100\n"
+"PO-Revision-Date: 2016-10-09 05:13+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
@@ -16935,3 +16935,15 @@ msgstr "Restaurar inetd"
 
 msgid "We have not found OpenLD.socket and we have generated the new temporay Socket..."
 msgstr "No hemos encontrado OpenLD.socket y hemos generado el nuevo Socket temporal..."
+
+msgid "Status:"
+msgstr "Estado:"
+
+msgid "Inactive"
+msgstr "Inactivo"
+
+msgid "Swap status: disabled"
+msgstr "Estado swap: inactivo"
+
+msgid "Swap status: active\nSwap file: %s \nSwap size: %d Kb \nSwap used: %s Kb"
+msgstr "Estado swap: activo\nArchivo swap: %s \nTamaño swap: %d Kb \nSwap usada: %s Kb"
