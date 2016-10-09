@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-10-09 05:13+0100\n"
+"PO-Revision-Date: 2016-10-09 15:11+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
@@ -16947,3 +16947,15 @@ msgstr "Estado swap: inactivo"
 
 msgid "Swap status: active\nSwap file: %s \nSwap size: %d Kb \nSwap used: %s Kb"
 msgstr "Estado swap: activo\nArchivo swap: %s \nTamaño swap: %d Kb \nSwap usada: %s Kb"
+
+msgid "Update and reboot (recommended)"
+msgstr "Actualizar y reiniciar (recomendado)"
+
+msgid "Update and ask to reboot"
+msgstr "Actualizar y pedir que reinicie"
+
+msgid "Show latest commits"
+msgstr "Ver últimos commits"
+
+msgid "Do you want to update your receiver?"
+msgstr "¿Quieres actualizar tu receptor?"
