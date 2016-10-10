@@ -114,6 +114,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 				self.session.open(NetworkXupnpd)
 			else:
 				self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+		elif self.sel == 11:
+			from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
+			self.session.open(TunerServer)
 		else:
 			self.noYet()
 
@@ -128,78 +131,85 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 
 		mypixmap = mypath + "Mounts.png"
 		png = LoadPixmap(mypixmap)
-		name = "Samba"
+		name = _("Samba")
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "MountManager.png"
 		png = LoadPixmap(mypixmap)
-		name = "NFS"
+		name = _("NFS")
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Vpn.png"
 		png = LoadPixmap(mypixmap)
-		name = "OpenVPN"
+		name = _("OpenVPN")
 		idx = 2
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Inadyn.png"
 		png = LoadPixmap(mypixmap)
-		name = "Inadyn"
+		name = _("Inadyn")
 		idx = 3
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Dlna.png"
 		png = LoadPixmap(mypixmap)
-		name = "MiniDLNA"
+		name = _("MiniDLNA")
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Ftp.png"
 		png = LoadPixmap(mypixmap)
-		name = "FTP"
+		name = _("FTP")
 		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Afp.png"
 		png = LoadPixmap(mypixmap)
-		name = "AFP"
+		name = _("AFP")
 		idx = 6
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Ushare.png"
 		png = LoadPixmap(mypixmap)
-		name = "uShare"
+		name = _("uShare")
 		idx = 7
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Telnet.png"
 		png = LoadPixmap(mypixmap)
-		name = "Telnet"
+		name = _("Telnet")
 		idx = 8
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Dlna.png"
 		png = LoadPixmap(mypixmap)
-		name = "Udpxy"
+		name = _("Udpxy")
 		idx = 9
 		res = (name, png, idx)
 		self.list.append(res)
 
 		mypixmap = mypath + "Dlna.png"
 		png = LoadPixmap(mypixmap)
-		name = "Xupnpd"
+		name = _("Xupnpd")
 		idx = 10
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "Tuner_Setup.png"
+		png = LoadPixmap(mypixmap)
+		name = _("RemoteTunerServer")
+		idx = 11
 		res = (name, png, idx)
 		self.list.append(res)
 
