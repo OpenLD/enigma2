@@ -141,15 +141,13 @@ class About(Screen):
 		self.skinName = "AboutOE"
 		self.populate()
 
-		self["key_green"] = Button(_("Translations"))
-		self["actions"] = ActionMap(["SetupActions", "ColorActions", "TimerEditActions"],
+		self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions", "TimerEditActions"],
 			{
 				"cancel": self.close,
 				"ok": self.close,
-				"log": self.showAboutReleaseNotes,
+				"log": self.showCommits,
 				"up": self["AboutScrollLabel"].pageUp,
-				"down": self["AboutScrollLabel"].pageDown,
-				#"green": self.showTranslationInfo,
+				"down": self["AboutScrollLabel"].pageDown
 			})
 
 	def populate(self):
@@ -161,11 +159,8 @@ class About(Screen):
 
 		self["AboutScrollLabel"] = ScrollLabel(AboutText)
 
-	def showTranslationInfo(self):
-		self.session.open(TranslationInfo)
-
-	def showAboutReleaseNotes(self):
-		self.session.open(ViewGitLog)
+	def showCommits(self):
+		self.session.open(CommitInfo)
 
 	def createSummary(self):
 		return AboutSummary
@@ -188,7 +183,7 @@ class Devices(Screen):
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "TimerEditActions"],
 			{
 				"cancel": self.close,
-				"ok": self.close,
+				"ok": self.close
 			})
 		self.onLayoutFinish.append(self.populate)
 
@@ -634,72 +629,6 @@ class AboutSummary(Screen):
 
 		self["AboutText"] = StaticText(AboutText)
 
-class ViewGitLog(Screen):
-	def __init__(self, session, args=None):
-		Screen.__init__(self, session)
-		self.skinName = "SoftwareUpdateChanges"
-		self.setTitle(_("OE Changes"))
-		self.logtype = 'oe'
-		self["text"] = ScrollLabel()
-		self['title_summary'] = StaticText()
-		self['text_summary'] = StaticText()
-		self["key_red"] = Button(_("Close"))
-		self["key_green"] = Button(_("OK"))
-		self["key_yellow"] = Button(_("Show E2 Log"))
-		self["myactions"] = ActionMap(['ColorActions', 'OkCancelActions', 'DirectionActions'],
-		{
-			'cancel': self.closeRecursive,
-			'green': self.closeRecursive,
-			"red": self.closeRecursive,
-			"yellow": self.changelogtype,
-			"left": self.pageUp,
-			"right": self.pageDown,
-			"down": self.pageDown,
-			"up": self.pageUp
-		},-1)
-		self.onLayoutFinish.append(self.getlog)
-
-	def changelogtype(self):
-		if self.logtype == 'e2':
-			self["key_yellow"].setText(_("Show E2 Log"))
-			self.setTitle(_("OE Changes"))
-			self.logtype = 'oe'
-		else:
-			self["key_yellow"].setText(_("Show OE Log"))
-			self.setTitle(_("Enigma2 Changes"))
-			self.logtype = 'e2'
-		self.getlog()
-
-	def pageUp(self):
-		self["text"].pageUp()
-
-	def pageDown(self):
-		self["text"].pageDown()
-
-	def getlog(self):
-		fd = open('/etc/' + self.logtype + '-git.log', 'r')
-		releasenotes = fd.read()
-		fd.close()
-		releasenotes = releasenotes.replace('\nopenld: build', "\n\nopenld: build")
-		self["text"].setText(releasenotes)
-		summarytext = releasenotes
-		try:
-			if self.logtype == 'e2':
-				self['title_summary'].setText(_("E2 Log"))
-				self['text_summary'].setText(_("Enigma2 Changes"))
-			else:
-				self['title_summary'].setText(_("OE Log"))
-				self['text_summary'].setText(_("OE Changes"))
-		except:
-			self['title_summary'].setText("")
-			self['text_summary'].setText("")
-
-	def unattendedupdate(self):
-		self.close((_("Unattended upgrade without GUI and reboot system"), "cold"))
-
-	def closeRecursive(self):
-		self.close((_("Cancel"), ""))
-
 class TranslationInfo(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -722,6 +651,7 @@ class TranslationInfo(Screen):
 			infomap[type] = value
 		print infomap
 
+		self["key_red"] = Button(_("Cancel"))
 		self["TranslationInfo"] = StaticText(info)
 
 		translator_name = infomap.get("Language-Team", "none")
@@ -733,5 +663,95 @@ class TranslationInfo(Screen):
 		self["actions"] = ActionMap(["SetupActions"],
 			{
 				"cancel": self.close,
-				"ok": self.close,
+				"ok": self.close
 			})
+
+class CommitInfo(Screen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		self.setTitle(_("Latest Commits"))
+		self.skinName = ["CommitInfo", "About"]
+		self["AboutScrollLabel"] = ScrollLabel(_("Please wait"))
+
+		self["key_red"] = Button(_("Cancel"))
+		self["key_green"] = Button(_("Translations"))
+		self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions", "TimerEditActions"],
+			{
+				"cancel": self.close,
+				"ok": self.close,
+				"up": self["AboutScrollLabel"].pageUp,
+				"down": self["AboutScrollLabel"].pageDown,
+				"left": self.left,
+				"right": self.right,
+				"green": self.showTranslationInfo,
+				"red": self.close
+			})
+
+		self.project = 0
+		self.projects = [
+			("enigma2", "Enigma2"),
+			("enigma2-plugins", "Enigma2 Plugins"),
+			("branding-module", "Branding Module"),
+			("3rdparty-plugins", "3rdparty Plugins"),
+			("e2openplugin-OpenWebif", "OpenWebif"),
+			("enigma2-plugin-skins-metrixhd", "Skin MetrixHD OpenLD"),
+			("enigma2-plugin-picons-openld-19edark_on_white", "Picons (TSCNEO) Dark_on_white"),
+			("enigma2-plugin-picons-openld-19elight_on_transparent", "Picons (TSCNEO) Elight_on_transparent"),
+			("enigma2-plugin-settings-defaultsatld", "Channel Settings for default."),
+			("openld-settings", "Settings OpenLD (Collection channel settings)."),
+			("openld-plugins", "OpenLD Plugins"),
+			("openld-skins", "OpenLD Skins"),
+			("openld-tuxbox-common", "Tuxbox Common (list of known transponders)"),
+			("enigma2-skindefault", "Enigma2 Skindefault"),
+			("enigma2-skins", "Enigma2 Skins"),
+			("enigma2-display-skins", "Enigma2 Display Skins")
+		]
+		self.cachedProjects = {}
+		self.Timer = eTimer()
+		self.Timer.callback.append(self.readGithubCommitLogs)
+		self.Timer.start(50, True)
+
+	def showTranslationInfo(self):
+		self.session.open(TranslationInfo)
+
+	def readGithubCommitLogs(self):
+		url = 'https://api.github.com/repos/OpenLD/%s/commits' % self.projects[self.project][0]
+		commitlog = ""
+		from datetime import datetime
+		from json import loads
+		from urllib2 import urlopen
+		try:
+			commitlog += 80 * '-' + '\n'
+			commitlog += url.split('/')[-2] + '\n'
+			commitlog += 80 * '-' + '\n'
+			try:
+				# OpenLD 3.0 uses python 2.7.12 and here we need to bypass the certificate check
+				from ssl import _create_unverified_context
+				log = loads(urlopen(url, timeout=5, context=_create_unverified_context()).read())
+			except:
+				log = loads(urlopen(url, timeout=5).read())
+			for c in log:
+				creator = c['commit']['author']['name']
+				title = c['commit']['message']
+				date = datetime.strptime(c['commit']['committer']['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%x %X')
+				commitlog += date + ' ' + creator + '\n' + title + 2 * '\n'
+			commitlog = commitlog.encode('utf-8')
+			self.cachedProjects[self.projects[self.project][1]] = commitlog
+		except:
+			commitlog += _("Currently the commit log cannot be retrieved - please try later again")
+		self["AboutScrollLabel"].setText(commitlog)
+
+	def updateCommitLogs(self):
+		if self.cachedProjects.has_key(self.projects[self.project][1]):
+			self["AboutScrollLabel"].setText(self.cachedProjects[self.projects[self.project][1]])
+		else:
+			self["AboutScrollLabel"].setText(_("Please wait"))
+			self.Timer.start(50, True)
+
+	def left(self):
+		self.project = self.project == 0 and len(self.projects) - 1 or self.project - 1
+		self.updateCommitLogs()
+
+	def right(self):
+		self.project = self.project != len(self.projects) - 1 and self.project + 1 or 0
+		self.updateCommitLogs()
