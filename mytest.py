@@ -135,6 +135,10 @@ config.misc.NTPserver = ConfigSelection(default = "pool.ntp.org", choices = [
 config.misc.startCounter = ConfigInteger(default=0) # number of e2 starts...
 config.misc.standbyCounter = NoSave(ConfigInteger(default=0)) # number of standby
 config.misc.DeepStandby = NoSave(ConfigYesNo(default=False)) # detect deepstandby
+config.misc.epgcache_filename = ConfigText(default = "/hdd/epg.dat")
+
+def setEPGCachePath(configElement):
+	enigma.eEPGCache.getInstance().setCacheFile(configElement.value)
 
 #demo code for use of standby enter leave callbacks
 #def leaveStandby():
@@ -657,10 +661,13 @@ def runScreenTest():
 
 		screen = screensToRun[0][1]
 		args = screensToRun[0][2:]
+
 		if screensToRun:
 			session.openWithCallback(boundFunction(runNextScreen, session, screensToRun[1:]), screen, *args)
 		else:
 			session.open(screen, *args)
+
+	config.misc.epgcache_filename.addNotifier(setEPGCachePath)
 
 	if not RestoreSettings:
 		runNextScreen(session, screensToRun)

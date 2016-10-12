@@ -50,6 +50,8 @@ def InitParentalControl():
 	config.ParentalControl.config_sections.movie_list = ConfigYesNo(default = False)
 	config.ParentalControl.config_sections.plugin_browser = ConfigYesNo(default = False)
 	config.ParentalControl.config_sections.standby_menu = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.software_update = ConfigYesNo(default = False)
+	config.ParentalControl.config_sections.manufacturer_reset = ConfigYesNo(default = True)
 	config.ParentalControl.config_sections.LDteam = ConfigYesNo(default = False)
 	config.ParentalControl.config_sections.quickmenu = ConfigYesNo(default = False)
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-10-09 15:11+0100\n"
+"PO-Revision-Date: 2016-10-12 02:31+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
@@ -355,7 +355,7 @@ msgstr "(vacío)"
 
 #
 msgid "(show optional DVD audio menu)"
-msgstr "(Ver menú opcional de audio de DVD)"
+msgstr "(Mostrar menú opcional de audio de DVD)"
 
 #
 msgid "* Only available if more than one interface is active."
@@ -1023,7 +1023,7 @@ msgid "Always ask before sending"
 msgstr "Preguntar siempre antes de enviar"
 
 msgid "Always show bouquets"
-msgstr "Visualizar grupos siempre"
+msgstr "Mostrar grupos siempre"
 
 #
 msgid "An empty filename is illegal."
@@ -5621,10 +5621,10 @@ msgid "Fontsize"
 msgstr "Tamaño de letra"
 
 msgid "Show extended description"
-msgstr "Ver descripción extendida"
+msgstr "Mostrar descripción extendida"
 
 msgid "Show or hide the extended description, (skin dependent)."
-msgstr "Ver u ocultar la descripción ampliada (depende del skin)."
+msgstr "Mostrar u ocultar la descripción ampliada (depende del skin)."
 
 msgid "Hide known extensions"
 msgstr "Ocultar extensiones conocidas"
@@ -6191,6 +6191,15 @@ msgstr "Proteger canales"
 #
 msgid "Protect setup"
 msgstr "Proteger configuración"
+
+msgid "Protect software update screen"
+msgstr "Proteger la pantalla de actualización de software"
+
+msgid "Protect manufacturer reset screen"
+msgstr "Proteger la pantalla de reinicio de fábrica"
+
+msgid "Protect LDteam"
+msgstr "Proteger LDteam"
 
 msgid "Protocol"
 msgstr "Protocolo"
@@ -7398,10 +7407,10 @@ msgid "Pluginbrowser Settings"
 msgstr "Ajustes del buscador de complementos"
 
 msgid "Show translation packages"
-msgstr "Ver paquetes de traducción"
+msgstr "Mostrar paquetes de traducción"
 
 msgid "Show source packages"
-msgstr "Ver paquetes de fuente"
+msgstr "Mostrar paquetes de fuente"
 
 #
 msgid "Setup"
@@ -7451,42 +7460,42 @@ msgid "Short filenames"
 msgstr "Nombres de archivos cortos"
 
 msgid "Show /tmp/ecm.info"
-msgstr "Ver /tmp/ecm.info"
+msgstr "Mostrar /tmp/ecm.info"
 
 msgid "Show CCcam in extensions ?"
 msgstr "¿Mostrar CCcam en extensiones?"
 
 msgid "Show Clients"
-msgstr "Ver clientes"
+msgstr "Mostrar clientes"
 
 msgid "Show CoolTVGuide"
 msgstr "Mostrar CoolTVGuide"
 
 msgid "Show Display Icons"
-msgstr "Ver iconos de pantalla"
+msgstr "Mostrar iconos de pantalla"
 
 msgid "Show EIT now/next in infobar"
-msgstr "Ver EIT ahora/siguiente en la barra de información"
+msgstr "Mostrar EIT ahora/siguiente en la barra de información"
 
 msgid "Show Graphical EPG"
 msgstr "Ver gráficos EPG"
 
 #
 msgid "Show Info"
-msgstr "Ver información"
+msgstr "Mostrar información"
 
 msgid "Show info"
-msgstr "Ver información"
+msgstr "Mostrar información"
 
 msgid "Show Log"
-msgstr "Ver historial"
+msgstr "Mostrar historial"
 
 #
 msgid "Show message when recording starts"
-msgstr "Ver mensaje cuando empiece la grabación"
+msgstr "Mostrar mensaje cuando empiece la grabación"
 
 msgid "Show Multi EPG"
-msgstr "Ver MultiEPG"
+msgstr "Mostrar MultiEPG"
 
 msgid "Show OScam in extensions ?"
 msgstr "¿Mostrar OSCam en extensiones?"
@@ -7495,20 +7504,20 @@ msgid "Show PTS Infobar while timeshifting?"
 msgstr "¿Mostrar barra de información PTS durante el uso de timeshift?"
 
 msgid "Show Readers/Proxies"
-msgstr "Ver lectores/proxys"
+msgstr "Mostrar Servidores/Proxys"
 
 msgid "Show Single EPG"
 msgstr "Mostrar EPG único"
 
 #
 msgid "Show WLAN status"
-msgstr "Ver estado de WLAN"
+msgstr "Mostrar estado de WLAN"
 
 msgid "Show animation while busy"
-msgstr "Ver animación cuando esté ocupado."
+msgstr "Mostrar animación cuando esté ocupado."
 
 msgid "Show background in Radio Mode"
-msgstr "Ver fondo en modo radio"
+msgstr "Mostrar fondo en modo radio"
 
 #
 msgid "Show blinking Clock on Display during recording"
@@ -7518,29 +7527,29 @@ msgid "Enable blinking Clock on the LCD Display"
 msgstr "Habilitar reloj parpadeante en LCD"
 
 msgid "Show bouquet on launch"
-msgstr "Ver grupo al inicio"
+msgstr "Mostrar grupo al inicio"
 
 msgid "Show channel numbers in channel selection"
-msgstr "Ver números de canal en la selección de canales"
+msgstr "Mostrar números de canal en la selección de canales"
 
 msgid "Show channel selection on mode change"
-msgstr "Ver la selección de canales en modo de cambio"
+msgstr "Mostrar la selección de canales en modo de cambio"
 
 msgid "Show crypto info in infobar"
-msgstr "Ver información de encriptado en la barra de información"
+msgstr "Mostrar información de encriptado en la barra de información"
 
 msgid "Show crypto icons"
-msgstr "Ver iconos de encriptado"
+msgstr "Mostrar iconos de encriptado"
 
 #
 msgid "Show event-progress in channel selection"
-msgstr "Muestra el progreso del evento en la selección del canal"
+msgstr "Mostrar progreso del evento en la selección del canal"
 
 msgid "Show icon for new/unseen items"
-msgstr "Ver icono de elementos nuevos/no vistos"
+msgstr "Mostrar icono de elementos nuevos/no vistos"
 
 msgid "Show in extensions list ?"
-msgstr "¿Ver en lista de extensiones?"
+msgstr "¿Mostrar en lista de extensiones?"
 
 #
 msgid "Show infobar on channel change"
@@ -7559,21 +7568,21 @@ msgid "Show positioner movement"
 msgstr "Mostrar movimiento del motor"
 
 msgid "Show second infobar"
-msgstr "Ver segunda barra de información"
+msgstr "Mostrar segunda barra de información"
 
 #
 msgid "Show services beginning with"
 msgstr "Mostrar canales que empiecen por"
 
 msgid "Show status icons in movielist"
-msgstr "Ver iconos de estado en la lista de películas"
+msgstr "Mostrar iconos de estado en la lista de películas"
 
 msgid "Show the media player..."
-msgstr "Ver reproductor de medios..."
+msgstr "Mostrar reproductor de medios..."
 
 #
 msgid "Show the radio player..."
-msgstr "Ver el reproductor de radio..."
+msgstr "Mostrar el reproductor de radio..."
 
 #
 msgid "Open service list and select previous channel"
@@ -7581,7 +7590,7 @@ msgstr "Abrir la lista de canales y seleccionar el canal anterior"
 
 #
 msgid "Show the tv player..."
-msgstr "Ver el reproductor de TV."
+msgstr "Mostrar el reproductor de TV."
 
 #
 msgid "Open service list and select next channel"
@@ -8591,7 +8600,7 @@ msgid "This option lets you choose the 3D mode"
 msgstr "Esta opción te permite ajustar el modo 3D"
 
 msgid "This option lets you show the option in the extension screen"
-msgstr "Esta opción te permite visualizar la opción en la pantalla de extensiones"
+msgstr "Esta opción te permite Mostrar la opción en la pantalla de extensiones"
 
 msgid "This option moves the PVR status from the seprate window into the MoviePlayer infobar."
 msgstr "Esta opción traslada el estado PVR de una ventana aparte a la barra de información del reproductor de películas."
@@ -9198,7 +9207,7 @@ msgstr "Actualizar y preguntar para reiniciar"
 
 #
 msgid "Show new Packages"
-msgstr "Ver nuevos paquetes"
+msgstr "Mostrar nuevos paquetes"
 
 #
 msgid "New Packages"
@@ -9737,7 +9746,7 @@ msgid "When enabled, AIT data will be included in http streams. This allows a cl
 msgstr "Cuando está activado, los datos AIT se incluirán en streams http. Permite que un receptor cliente utilice HbbTV."
 
 msgid "When enabled, EIT data will be included in http streams. This allows a client receiver to show EPG."
-msgstr "Cuando está activado, los datos AIT se incluirán en streams http. Permite que un receptor visualice el EPG."
+msgstr "Cuando está activado, los datos AIT se incluirán en streams http. Permite que un receptor cliente mostrar el EPG."
 
 msgid "When enabled, channel numbering will start at '1' for each bouquet."
 msgstr "Cuando está activado, la numeración de canales empezará en ‘1’ en cada grupo."
@@ -9758,7 +9767,7 @@ msgid "When enabled, pressing '0' will zap you to the first channel in your firs
 msgstr "Cuando está activado, pulsar ‘0’ cambia de canal al primero del primer grupo y se borra el historial de zapping."
 
 msgid "When enabled, show channel numbers in the channel selection screen."
-msgstr "Cuando está activado, se visualizan los números de canal en la pantalla de selección."
+msgstr "Cuando está activado, se mostrarán los números de canal en la pantalla de selección."
 
 msgid "When enabled, teletext pages will be cached, allowing faster access."
 msgstr "Cuando está activado, las páginas del teletexto se guardan en caché y se agiliza el acceso."
@@ -9773,7 +9782,7 @@ msgid "Use individual settings for each directory"
 msgstr "Utilizar ajustes individuales para cada directorio."
 
 msgid "Show live tv when movie stopped"
-msgstr "Ver TV en directo cuando se pare la película."
+msgstr "Mostrar TV en directo cuando se pare la película."
 
 msgid "When set each folder will show the previous state used, when off the default values will be shown."
 msgstr "Cuando está activado, cada carpeta muestra el estado previo. Desactivado, se ven los valores por defecto."
@@ -11472,74 +11481,74 @@ msgstr "Compartir:"
 
 #
 msgid "show DVD main menu"
-msgstr "Ver el menú principal de DVD"
+msgstr "Mostrar el menú principal de DVD"
 
 #
 msgid "show Infoline"
-msgstr "Ver línea de información"
+msgstr "Mostrar línea de información"
 
 msgid "show all cards"
-msgstr "Ver todas las tarjetas"
+msgstr "Mostrar todas las tarjetas"
 
 msgid "show all tags"
-msgstr "Ver todas las etiquetas"
+msgstr "Mostrar todas las etiquetas"
 
 #
 msgid "show alternatives"
-msgstr "Ver alternativas"
+msgstr "Mostrar alternativas"
 
 msgid "show cards with uphop 0"
-msgstr "Ver tarjetas con salto superior 0"
+msgstr "Mostrar tarjetas con salto superior 0"
 
 msgid "show cards with uphop 1"
-msgstr "Ver tarjetas con salto superior 1"
+msgstr "Mostrar tarjetas con salto superior 1"
 
 msgid "show cards with uphop 2"
-msgstr "Ver tarjetas con salto superior 2"
+msgstr "Mostrar tarjetas con salto superior 2"
 
 msgid "show cards with uphop 3"
-msgstr "Ver tarjetas con salto superior 3"
+msgstr "Mostrar tarjetas con salto superior 3"
 
 msgid "show cards with uphop 4"
-msgstr "Ver tarjetas con salto superior 4"
+msgstr "Mostrar tarjetas con salto superior 4"
 
 msgid "show cards with uphop 5"
-msgstr "Ver tarjetas con salto superior 5"
+msgstr "Mostrar tarjetas con salto superior 5"
 
 msgid "show cards with uphop 6"
-msgstr "Ver tarjetas con salto superior 6"
+msgstr "Mostrar tarjetas con salto superior 6"
 
 msgid "show cards with uphop 7"
-msgstr "Ver tarjetas con salto superior 7"
+msgstr "Mostrar tarjetas con salto superior 7"
 
 msgid "show cards with uphop 8"
-msgstr "Ver tarjetas con salto superior 8"
+msgstr "Mostrar tarjetas con salto superior 8"
 
 msgid "show cards with uphop 9"
-msgstr "Ver tarjetas con salto superior 9"
+msgstr "Mostrar tarjetas con salto superior 9"
 
 #
 msgid "show event details"
-msgstr "Ver detalles del programa"
+msgstr "Mostrar detalles del programa"
 
 #
 msgid "show extended description"
-msgstr "Ver descripción extendida"
+msgstr "Mostrar descripción extendida"
 
 msgid "show program information..."
-msgstr "Ver información del programa…"
+msgstr "Mostrar información del programa…"
 
 #
 msgid "Show shutdown menu"
-msgstr "Ver menú de apagado"
+msgstr "Mostrar menú de apagado"
 
 #
 msgid "show tag menu"
-msgstr "Ver menú de etiquetas"
+msgstr "Mostrar menú de etiquetas"
 
 #
 msgid "show transponder info"
-msgstr "Ver información del transpondedor"
+msgstr "Mostrar información del transpondedor"
 
 #
 msgid "shuffle playlist"
@@ -12277,10 +12286,10 @@ msgstr "Mostrar CoolSingleGuide"
 
 #
 msgid "Show epg"
-msgstr "Ver EPG"
+msgstr "Mostrar EPG"
 
 msgid "Show EPG"
-msgstr "Ver EPG"
+msgstr "Mostrar EPG"
 
 #
 msgid "Create"
@@ -12433,7 +12442,7 @@ msgstr ""
 
 #
 msgid "Show history"
-msgstr "Ver historial"
+msgstr "Mostrar historial"
 
 #
 msgid "Select a script to run:"
@@ -12448,11 +12457,11 @@ msgstr ""
 
 #
 msgid "Show Merlin EPG Center"
-msgstr "Ver Merlin EPG Center"
+msgstr "Mostrar Merlin EPG Center"
 
 #
 msgid "Show infobar picons"
-msgstr "Ver picon en la barra de información"
+msgstr "Mostrar picon en la barra de información"
 
 #: MountManager.py:475
 msgid "Please wait."
@@ -12589,7 +12598,7 @@ msgid "Jump first press in channel selection"
 msgstr "Ir al principio de la lista de canales"
 
 msgid "Show infobar lite *"
-msgstr "Ver barra de información pequeña *"
+msgstr "Mostrar barra de información pequeña *"
 
 msgid "Elapsed&Remaining"
 msgstr "Transcurrido y restante"
@@ -12649,7 +12658,7 @@ msgid "Predefined"
 msgstr "Predefinido"
 
 msgid "Show job tasks in extensions"
-msgstr "Ver tareas en extensiones"
+msgstr "Mostrar tareas en extensiones"
 
 msgid "Remaining & Elapsed"
 msgstr "Restante y transcurrido"
@@ -12661,10 +12670,10 @@ msgid "Power On Display"
 msgstr "Encender pantalla"
 
 msgid "Show HDMI-Output Res"
-msgstr "Ver resolución de salida HDMI"
+msgstr "Mostrar resolución de salida HDMI"
 
 msgid "Show HDD progress"
-msgstr "Ver progreso de HDD"
+msgstr "Mostrar progreso de HDD"
 
 msgid "Scrolling Speed"
 msgstr "Velocidad de desplazamiento"
@@ -12775,13 +12784,13 @@ msgid "20 seconds"
 msgstr "20 segundos"
 
 msgid "Show Time Remaining/Elapsed"
-msgstr "Ver tiempo restante/transcurrido"
+msgstr "Mostrar tiempo restante/transcurrido"
 
 msgid "Show Transponder Remaining/Elapsed as"
-msgstr "Ver transpondedores restantes/transcurridos como..."
+msgstr "Mostrar transpondedores restantes/transcurridos como..."
 
 msgid "Show Media playback Remaining/Elapsed as"
-msgstr "Ver reproducción de medios restante/transcurrida como…"
+msgstr "Mostrar reproducción de medios restante/transcurrida como…"
 
 msgid "Media playback Remaining/Elapsed as"
 msgstr "Reproducción restante/transcurrida de medios como"
@@ -12848,19 +12857,19 @@ msgid "Configure if and how long the latest service in the PiP will be remembere
 msgstr "Configurar si y en cuánto tiempo el último servicio en PiP será recordado."
 
 msgid "Show VCR scart on main menu"
-msgstr "Ver euroconector VCR en el menú principal"
+msgstr "Mostrar euroconector VCR en el menú principal"
 
 msgid "When enabled, the VCR scart option will be shown on the main menu"
 msgstr "Cuando está activado, se mostrará en el menú la opción del euroconector VCR"
 
 msgid "Show alternative radio mode"
-msgstr "Ver modo alternativo de radio"
+msgstr "Mostrar modo alternativo de radio"
 
 msgid "Show time remaining/elapsed"
-msgstr "Ver el tiempo restante/transcurrido."
+msgstr "Mostrar el tiempo restante/transcurrido."
 
 msgid "Show transponder remaining/elapsed as"
-msgstr "Ver el transpondedor restante/transcurrido como"
+msgstr "Mostrar el transpondedor restante/transcurrido como"
 
 msgid "Sort menu screen's alphabetically"
 msgstr "Ordenar la pantalla de menú alfabéticamente"
@@ -13178,7 +13187,7 @@ msgstr "La búsqueda ciega ha sido cancelada por el usuario."
 
 #: Einstellunen Box Display
 msgid "Show time elapsed as positive"
-msgstr "Ver el tiempo transcurrido en positivo"
+msgstr "Mostrar el tiempo transcurrido en positivo"
 
 #: Einstellunen Kanallisten-Menue
 msgid "Service number font size"
@@ -13218,7 +13227,7 @@ msgid "Blink Record Led"
 msgstr "Parpadear durante grabación"
 
 msgid "Show on VFD"
-msgstr "Ver en LCD"
+msgstr "Mostrar en LCD"
 
 # oe-alliance-plugins/GigaBlueVFDControl/src/plugin.py
 msgid "Channelnumber/Clock in Standby Clock"
@@ -13237,7 +13246,7 @@ msgid "Always off"
 msgstr "Siempre apagado"
 
 msgid "Show clock in Deep Standby"
-msgstr "Ver reloj con el receptor apagado"
+msgstr "Mostrar reloj con el receptor apagado"
 
 msgid "Time mode"
 msgstr "Modo de hora"
@@ -13586,7 +13595,7 @@ msgstr "Puedes activar o desactivar el bootlogo"
 
 #: Einstellunen TV Menue Einstellungen
 msgid "Show picon background colour"
-msgstr "Ver color de fondo de Picon"
+msgstr "Mostrar color de fondo de Picon"
 
 #: Einstellunen TV Menue Einstellungen
 msgid "White"
@@ -13770,7 +13779,7 @@ msgstr "Esta opción te permite apagar el LCD."
 
 # Box Display
 msgid "Show HDMI Output Resulution"
-msgstr "Ver resolución de salida HDMI"
+msgstr "Mostrar resolución de salida HDMI"
 
 # Box Display
 msgid "Disable the HDD Process on VFD"
@@ -13870,11 +13879,11 @@ msgstr "Usar el modo de radio alternativo o convencional."
 
 # Menue Anpassungen OSD
 msgid "Show background when tuned to a radio channel."
-msgstr "Ver fondo cuando se sintonice un canal de radio."
+msgstr "Mostrar fondo cuando se sintonice un canal de radio."
 
 # Menue Anpassungen OSD
 msgid "Show encryption info in the infobar (when supported by the skin)."
-msgstr "Ver información de encriptado en la barra de información (cuando el skin lo permita)."
+msgstr "Mostrar información de encriptado en la barra de información (cuando el skin lo permita)."
 
 # Menue Anpassungen OSD
 msgid "Sort Extensions list alphabetically"
@@ -13974,11 +13983,11 @@ msgstr "Cambios Enigma2"
 
 # InfoScreen
 msgid "Show E2 Log"
-msgstr "Ver historial E2"
+msgstr "Mostrar historial E2"
 
 # InfoScreen
 msgid "Show OE Log"
-msgstr "Ver historial OE"
+msgstr "Mostrar historial OE"
 
 msgid "When enabled, a recording is allowed to interrupt live tv, when there are no free tuners."
 msgstr "Cuando está activado, la grabación puede interrumpir la TV en directo si no hay sintonizadores libres."
@@ -14234,7 +14243,7 @@ msgstr "Actualizar retraso para los programas en lista"
 
 #
 msgid "Show movie lengths in movielist"
-msgstr "Ver la duración de películas en la lista"
+msgstr "Mostrar la duración de películas en la lista"
 
 #
 msgid "Slow motion speeds"
@@ -14438,7 +14447,7 @@ msgid "Infobar EPG"
 msgstr "Barra de información EPG"
 
 msgid "Show EPG for current channel..."
-msgstr "Ver EPG del canal actual…"
+msgstr "Mostrar EPG del canal actual…"
 
 msgid "Select default EPG type..."
 msgstr "Seleccionar el tipo de EPG por defecto..."
@@ -14494,7 +14503,7 @@ msgid "Play previous"
 msgstr "Reproducir anterior"
 
 msgid "Show event details"
-msgstr "Ver detalles del programa"
+msgstr "Mostrar detalles del programa"
 
 msgid "Change sort by..."
 msgstr "Cambie ordenar por…"
@@ -14506,7 +14515,7 @@ msgid "Play next (return to previous service)"
 msgstr "Reproducir siguiente (volver al canal anterior)"
 
 msgid "Show Picons *"
-msgstr "Ver picon *"
+msgstr "Mostrar picon *"
 
 msgid "Shutdown in (mins)"
 msgstr "Apagar en (min)"
@@ -14661,7 +14670,7 @@ msgstr ""
 
 #
 msgid "Show menu"
-msgstr "Ver menú"
+msgstr "Mostrar menú"
 
 #
 msgid "Just zap"
@@ -14934,7 +14943,7 @@ msgid "Configure if and how service type icons will be shown."
 msgstr "Configura si los iconos del tipo de servicio se mostrarán."
 
 msgid "Show screensaver"
-msgstr "Ver salvapantallas"
+msgstr "Mostrar salvapantallas"
 
 msgid "Configure the duration in minutes for the screensaver."
 msgstr "Configura la duración en minutos para el salvapantallas."
@@ -14965,7 +14974,7 @@ msgid "Network Adapter Selection"
 msgstr "Selección de adaptador de red"
 
 msgid "Show channel number in infobar"
-msgstr "Ver números de canal en la barra de información"
+msgstr "Mostrar números de canal en la barra de información"
 
 msgid "If set to 'yes' the channel number will be displayed in the infobar."
 msgstr "Si se ajusta a 'sí', la barra de información mostrará el número del canal."
@@ -15107,7 +15116,7 @@ msgid "Select what should be done when the %s %s was boot-up, normal playing or 
 msgstr "Selecciona lo que hay que hacer cuando el %s %s haya arrancado, visualizar o ir a modo de espera."
 
 msgid "show picons in service list"
-msgstr "Ver picon en la lista de canales"
+msgstr "Mostrar picon en la lista de canales"
 
 msgid "Service picons downsize"
 msgstr "Reducir tamaño picons de servicio"
@@ -15242,7 +15251,7 @@ msgstr "Root y kernel"
 
 #
 msgid "Show MiniTV in the Front Display"
-msgstr "Ver MiniTV en el LCD"
+msgstr "Mostrar MiniTV en el LCD"
 
 msgid "You can Display MiniTV with or without OSD Menu"
 msgstr "Puedes ver la MiniTV con o sin OSD"
@@ -15273,7 +15282,7 @@ msgstr "Enumerar dispositivos de almacenamiento"
 
 # Mediaplayer Setup
 msgid "show mediaplayer on mainmenu"
-msgstr "Ver reproductor de medios en el menú principal"
+msgstr "Mostrar reproductor de medios en el menú principal"
 
 # MediaPlayer/settings.py
 msgid "Always hide infobar"
@@ -15432,7 +15441,7 @@ msgid "If enabled the video will always be de-interlaced."
 msgstr "Si se activa la imagen siempre se desentrelazará."
 
 msgid "Show SD as"
-msgstr "Ver SD como"
+msgstr "Mostrar SD como"
 
 msgid "This option allows you to choose how to display standard defintion video on your TV."
 msgstr "Esta opción te permite elegir cómo visualizar la definición de video estándar en tu TV."
@@ -15450,19 +15459,19 @@ msgid "This option allows you to choose how to display 1080p 30Hz on your TV. (a
 msgstr "Esta opción te permite elegir cómo se mostrará tu TV a una resolución 1080p 30Hz. (no todas las TVs soportan esta resolución)"
 
 msgid "Show 720p 24fps as"
-msgstr "Ver 720p 24fps como"
+msgstr "Mostrar 720p 24fps como"
 
 msgid "Show 1080p 24fps as"
-msgstr "Ver 1080p 24fps como"
+msgstr "Mostrar 1080p 24fps como"
 
 msgid "Show 1080p 25fps as"
-msgstr "Ver 1080p 25fps como"
+msgstr "Mostrar 1080p 25fps como"
 
 msgid "Show 1080p 30fps as"
-msgstr "Ver 1080p 30fps como"
+msgstr "Mostrar 1080p 30fps como"
 
 msgid "Show PIP in the Front Display"
-msgstr "Ver PiP en el LCD"
+msgstr "Mostrar PiP en el LCD"
 
 msgid "You can Display PIP with or without OSD Menu"
 msgstr "Puedes ver PiP con o sin OSD"
@@ -16040,19 +16049,19 @@ msgid "Configure which tuner will be preferred for recordings, when more than on
 msgstr "Configura qué sintonizador será el preferido para grabaciones cuando más de uno esté disponible. ‘Desactivado’ seleccionará un sintonizador basándose en la configuración personalizada. ‘Auto’ seleccionará basándose en las reglas predeterminadas de E2, ignorando el sintonizador preferido de la configuración personalizada."
 
 msgid "Show graphical multi EPG"
-msgstr "Ver MultiEPG gráfico"
+msgstr "Mostrar MultiEPG gráfico"
 
 msgid "Show eventinfo plugins"
 msgstr "Mostrar complementos de información de programa"
 
 msgid "Show single service EPG"
-msgstr "Ver EPG del canal actual"
+msgstr "Mostrar EPG del canal actual"
 
 msgid "Show multi channel EPG"
-msgstr "Ver MultiEPG"
+msgstr "Mostrar MultiEPG"
 
 msgid "Show help"
-msgstr "Ver ayuda"
+msgstr "Mostrar ayuda"
 
 msgid "Zap down"
 msgstr "Cambiar arriba"
@@ -16253,7 +16262,7 @@ msgid "Shows live tv or informations on LCD."
 msgstr "Ver TV en directo o información en LCD."
 
 msgid "Show 480/576p 24fps as"
-msgstr "Ver 480/576p 24fps como"
+msgstr "Mostrar 480/576p 24fps como"
 
 msgid "This option allows you to choose how to display SD progressive 24Hz on your TV. (as not all TV's support these resolutions)"
 msgstr "Esta opción te permite elegir como se mostrará tu TV en SD progresivo 24Hz. (no todas las TVs soportan estas resoluciones)"
@@ -16624,7 +16633,7 @@ msgid "Panic channel"
 msgstr "Canal del pánico"
 
 msgid "Show status messages when switch to live TV"
-msgstr "Ver mensajes de estado cuando cambias a TV en vivo"
+msgstr "Mostrar mensajes de estado cuando cambias a TV en vivo"
 
 msgid "Include AIT in recordings"
 msgstr "Incluir AIT en grabaciones"
@@ -16652,7 +16661,7 @@ msgid "Reset persistent PIN code"
 msgstr "Restablecer PIN"
 
 msgid "Show CI messages"
-msgstr "Ver mensajes CI"
+msgstr "Mostrar mensajes CI"
 
 msgid ""
 "\n"
@@ -16955,7 +16964,7 @@ msgid "Update and ask to reboot"
 msgstr "Actualizar y pedir que reinicie"
 
 msgid "Show latest commits"
-msgstr "Ver últimos commits"
+msgstr "Mostrar últimos commits"
 
 msgid "Do you want to update your receiver?"
 msgstr "¿Quieres actualizar tu receptor?"
@@ -16965,3 +16974,56 @@ msgstr "Elija el modo de funcionamiento del protocolo CI, ciplus o ci estándar.
 
 msgid "Your Hardware can detect ci mode self or work only in legacy mode."
 msgstr "Hardware detecta el protocolo de la propia CI o sólo funciona en el modo tradicional."
+
+msgid ""
+"The OpenLD team would like to point out that upgrading to the latest "
+"nightly build comes not only with the latest features, but also with some "
+"risks. After the update, it is possible that your device no longer works as "
+"expected. We recommend you create backups. "
+"This allows you to quickly and easily restore your device to its previous "
+"state, should you experience any problems. If you encounter a 'bug', please "
+"report the issue on http://www.odisealinux.com..\n"
+"\n"
+"Do you understand this?"
+msgstr ""
+"Aviso de OpenLD: actualizar a la última 'nightly build' puede suponer tener "
+"no sólo las últimas funcionalidades, sino también algunos riesgos. Después "
+"de actualizar, es posible que el receptor no funcione como se esperaba. Es "
+"aconsejable hacer copias de seguridad. "
+"De modo que podrá devolver el receptor al estado anterior en caso de encontrar "
+"problemas. Si detecta algún 'bug', notifíquelo en http://www.odisealinux.com..\n"
+"\n"
+"Seguro que quiere continuar?"
+
+msgid "Reflash recommended!"
+msgstr "Reflashear sería lo ideal!!"
+
+msgid "Show packages to be upgraded"
+msgstr "Mostrar los paquetes que serán actualizados"
+
+msgid "No updates available"
+msgstr "No hay actualizaciones disponibles"
+
+msgid "No updates available."
+msgstr "No hay actualizaciones disponibles."
+
+msgid "No updates available. Please try again later."
+msgstr "No hay actualizaciones. Inténtelo más tarde"
+
+msgid "Show latest upgrade log"
+msgstr "Mostrar el último log de actualización"
+
+msgid "Show disclaimer"
+msgstr "Mostrar renuncia"
+
+msgid "Show search history"
+msgstr "Mostrar historial de búsqueda"
+
+msgid "and never ask this again"
+msgstr "y no volver a preguntarlo"
+
+msgid "and never show this message again"
+msgstr "no volver a mostrar este mensaje"
+
+msgid "and not AutoRestart service"
+msgstr "y no iniciar automáticamente el servicio"

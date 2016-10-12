@@ -1,33 +1,34 @@
 from Screens.ChoiceBox import ChoiceBox
 from Screens.MessageBox import MessageBox
+from Screens.ParentalControlSetup import ProtectedScreen
 from Screens.Screen import Screen
 from Screens.Standby import TryQuitMainloop
-from Screens.About import CommitInfo
 from Screens.TextBox import TextBox
+from Screens.About import CommitInfo
+from Components.config import config
+from Components.About import about
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Ipkg import IpkgComponent
 from Components.Sources.StaticText import StaticText
 from Components.Slider import Slider
 from Tools.BoundFunction import boundFunction
+from Tools.Directories import fileExists
+from Tools.HardwareInfo import HardwareInfo
 from enigma import eTimer, eDVBDB
 from boxbranding import getBoxType
-from urllib import urlopen
-import socket
-import os
-import re
-import time
 
-class UpdatePlugin(Screen):
+class UpdatePlugin(Screen, ProtectedScreen):
 	skin = """
 		<screen name="UpdatePlugin" position="center,center" size="550,300">
-			<widget name="activityslider" position="0,0" size="550,5"  />
-			<widget name="slider" position="0,150" size="550,30"  />
+			<widget name="activityslider" position="0,0" size="550,5" />
+			<widget name="slider" position="0,150" size="550,30" />
 			<widget source="package" render="Label" position="10,30" size="540,20" font="Regular;18" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
 			<widget source="status" render="Label" position="10,180" size="540,100" font="Regular;20" halign="center" valign="center" backgroundColor="#25062748" transparent="1" />
 		</screen>"""
 
 	def __init__(self, session, *args):
 		Screen.__init__(self, session)
+		ProtectedScreen.__init__(self)
 
 		self.sliderPackages = { "dreambox-dvb-modules": 1, "enigma2": 2, "tuxbox-image-info": 3 }
 
@@ -66,47 +67,46 @@ class UpdatePlugin(Screen):
 		self.activityTimer.callback.append(self.doActivityTimer)
 		self.activityTimer.start(100, True)
 
-	def checkTraficLight(self):
+	def isProtected(self):
+		return config.ParentalControl.setuppinactive.value and\
+			(not config.ParentalControl.config_sections.main_menu.value and not config.ParentalControl.config_sections.configuration.value  or hasattr(self.session, 'infobar') and self.session.infobar is None) and\
+			config.ParentalControl.config_sections.software_update.value
 
+	def checkTraficLight(self):
 		self.activityTimer.callback.remove(self.checkTraficLight)
 		self.activityTimer.start(100, False)
 
+		from urllib import urlopen
+		import socket
+		import os
 		currentTimeoutDefault = socket.getdefaulttimeout()
 		socket.setdefaulttimeout(3)
 		message = ""
 		picon = None
 		default = True
-		try:
-			# TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
-			# run in parallel to the package update.
-			if getBoxType() in urlopen("http://openld.es/status").read().split(','):
-				message = _("The current beta image might not be stable.\nFor more information see %s.") % ("www.openld.es")
-				picon = MessageBox.TYPE_ERROR
-				default = False
-		except:
-			message = _("The status of the current beta image could not be checked because %s can not be reached.") % ("www.openld.es")
-			picon = MessageBox.TYPE_ERROR
-			default = False
 		socket.setdefaulttimeout(currentTimeoutDefault)
 		if default:
-			self.startActualUpdate(True)
+			self.showDisclaimer()
 		else:
 			message += "\n" + _("Do you want to update your receiver?")
 			self.session.openWithCallback(self.startActualUpdate, MessageBox, message, default = default, picon = picon)
 
-	def getLatestImageTimestamp(self):
-		currentTimeoutDefault = socket.getdefaulttimeout()
-		socket.setdefaulttimeout(3)
-		latestImageTimestamp = ""
-		try:
-			# TODO: Use Twisted's URL fetcher, urlopen is evil. And it can
-			# run in parallel to the package update.
-			latestImageTimestamp = re.findall('<dd>(.*?)</dd>', urlopen("http://openld.es/download/"+getBoxType()+"/").read())[0][:16]
-			latestImageTimestamp = time.strftime(_("%d-%b-%Y %-H:%M"), time.strptime(latestImageTimestamp, "%Y/%m/%d %H:%M"))
-		except:
-			pass
-		socket.setdefaulttimeout(currentTimeoutDefault)
-		return latestImageTimestamp
+	def showDisclaimer(self, justShow=False):
+		if config.usage.show_update_disclaimer.value or justShow:
+			message = _("The OpenLD team would like to point out that upgrading to the latest nightly build comes not only with the latest features, but also with some risks. After the update, it is possible that your device no longer works as expected. We recommend you create backups. This allows you to quickly and easily restore your device to its previous state, should you experience any problems. If you encounter a 'bug', please report the issue on http://www.odisealinux.com.\n\nDo you understand this?")
+			list = not justShow and [(_("no"), False), (_("yes"), True), (_("yes") + " " + _("and never show this message again"), "never")] or []
+			self.session.openWithCallback(boundFunction(self.disclaimerCallback, justShow), MessageBox, message, list=list)
+		else:
+			self.startActualUpdate(True)
+
+	def disclaimerCallback(self, justShow, answer):
+		if answer == "never":
+			config.usage.show_update_disclaimer.value = False
+			config.usage.show_update_disclaimer.save()
+		if justShow and answer:
+			self.ipkgCallback(IpkgComponent.EVENT_DONE, None)
+		else:
+			self.startActualUpdate(answer)
 
 	def startActualUpdate(self,answer):
 		if answer:
@@ -168,20 +168,23 @@ class UpdatePlugin(Screen):
 			elif self.ipkg.currentCommand == IpkgComponent.CMD_UPGRADE_LIST:
 				self.total_packages = len(self.ipkg.getFetchedList())
 				if self.total_packages:
-					latestImageTimestamp = self.getLatestImageTimestamp()
-					if latestImageTimestamp:
-						message = _("Do you want to update your receiver to %s?") % self.getLatestImageTimestamp() + "\n"
-					else:
-						message = _("Do you want to update your receiver?") + "\n"
-					message = message + "(" + (ngettext("%s updated package available", "%s updated packages available", self.total_packages) % self.total_packages) + ")"
+					message = _("Do you want to update your receiver?") + "\n(" + (ngettext("%s updated package available", "%s updated packages available", self.total_packages) % self.total_packages) + ")"
+					if self.total_packages > 150:
+						message += " " + _("Reflash recommended!")
 					choices = [(_("Update and reboot (recommended)"), "cold"),
 						(_("Update and ask to reboot"), "hot"),
 						(_("Update channel list only"), "channels"),
-						(_("Show latest commits"), "commits"),
-						(_("Cancel"), "")]
-					self.session.openWithCallback(self.startActualUpgrade, ChoiceBox, title=message, list=choices)
+						(_("Show packages to be upgraded"), "showlist")]
 				else:
-					self.session.openWithCallback(self.close, MessageBox, _("No updates available"), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+					message = _("No updates available")
+					choices = []
+				if fileExists("/home/root/ipkgupgrade.log"):
+					choices.append((_("Show latest upgrade log"), "log"))
+				choices.append((_("Show latest commits"), "commits"))
+				if not config.usage.show_update_disclaimer.value:
+					choices.append((_("Show disclaimer"), "disclaimer"))
+				choices.append((_("Cancel"), ""))
+				self.session.openWithCallback(self.startActualUpgrade, ChoiceBox, title=message, list=choices)
 			elif self.channellist_only > 0:
 				if self.channellist_only == 1:
 					self.setEndMessage(_("Could not find installed channel list."))
@@ -235,6 +238,18 @@ class UpdatePlugin(Screen):
 			self.ipkg.startCmd(IpkgComponent.CMD_LIST, args = {'installed_only': True})
 		elif answer[1] == "commits":
 			self.session.openWithCallback(boundFunction(self.ipkgCallback, IpkgComponent.EVENT_DONE, None), CommitInfo)
+		elif answer[1] == "disclaimer":
+			self.showDisclaimer(justShow=True)
+		elif answer[1] == "showlist":
+			text = ""
+			for i in [x[0] for x in sorted(self.ipkg.getFetchedList(), key=lambda d: d[0])]:
+				text = text and text + "\n" + i or i
+			self.session.openWithCallback(boundFunction(self.ipkgCallback, IpkgComponent.EVENT_DONE, None), TextBox, text, _("Packages to update"), True)
+		elif answer[1] == "log":
+			text = ""
+			for i in open("/home/root/ipkgupgrade.log", "r").readlines():
+				text += i
+			self.session.openWithCallback(boundFunction(self.ipkgCallback, IpkgComponent.EVENT_DONE, None), TextBox, text, _("Packages to update"), True)
 		else:
 			self.ipkg.startCmd(IpkgComponent.CMD_UPGRADE, args = {'test_only': False})
 
@@ -244,6 +259,9 @@ class UpdatePlugin(Screen):
 	def exit(self):
 		if not self.ipkg.isRunning():
 			if self.packages != 0 and self.error == 0 and self.channellist_only == 0:
+				if fileExists("/etc/enigma2/.removelang"):
+					from Components.Language import language
+					language.delLanguage()
 				self.session.openWithCallback(self.exitAnswer, MessageBox, _("Update completed. Do you want to reboot your receiver?"))
 			else:
 				self.close()
