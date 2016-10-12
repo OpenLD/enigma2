@@ -2,7 +2,7 @@
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService, iPlayableServicePtr, eServiceCenter
 from Components.Element import cached
-from ServiceReference import resolveAlternate,  ServiceReference
+from ServiceReference import resolveAlternate, ServiceReference
 from Tools.Transponder import ConvertToHumanReadable, getChannelNumber
 from Components.NimManager import nimmanager
 import Screens.InfoBar
@@ -37,12 +37,14 @@ class TransponderInfo(Converter, object):
 			return ""
 		if transponderraw:
 			transponderdata = ConvertToHumanReadable(transponderraw)
-			if not transponderdata:
+			if not transponderdata["system"]:
+				transponderdata["system"] = transponderraw.get("tuner_type", "None")
+			if not transponderdata["system"]:
 				return ""
 			if "DVB-T" in transponderdata["system"]:
-				return "%s %s %d MHz %s" % ("DVB-T", transponderdata["channel"], transponderdata["frequency"]/1000000 + 0.5 , transponderdata["bandwidth"])
+				return "%s %s %d MHz %s" % (transponderdata["system"], transponderdata["channel"], transponderdata["frequency"]/1000000 + 0.5 , transponderdata["bandwidth"])
 			elif "DVB-C" in transponderdata["system"]:
-				return "%s %d MHz %d %s %s" % ("DVB-C", transponderdata["frequency"]/1000 + 0.5, transponderdata["symbol_rate"]/1000 + 0.5, transponderdata["fec_inner"], \
+				return "%s %d MHz %d %s %s" % (transponderdata["system"], transponderdata["frequency"]/1000 + 0.5, transponderdata["symbol_rate"]/1000 + 0.5, transponderdata["fec_inner"], \
 					transponderdata["modulation"])
 			return "%s %d %s %d %s %s %s" % (transponderdata["system"], transponderdata["frequency"]/1000 + 0.5, transponderdata["polarization_abbreviation"], transponderdata["symbol_rate"]/1000 + 0.5, \
 				transponderdata["fec_inner"], transponderdata["modulation"], transponderdata["detailed_satpos" in self.type and "orbital_position" or "orb_pos"])
