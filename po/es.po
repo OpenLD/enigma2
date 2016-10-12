@@ -640,6 +640,9 @@ msgstr ""
 msgid "A recording is currently running. Please stop the recording before trying to configure the positioner."
 msgstr "Hay una grabación en curso. Detén la grabación antes de configurar el motor."
 
+msgid "A recording is currently running on the selected tuner. Please select a different tuner or consider to stop the recording to try again."
+msgstr "Una grabación está trabajando ahora en el sintonizador seleccionado. Utilizar un sintonizador diferente o dejar de escanear la imagen para usted."
+
 msgid "A recording is currently running. Please stop the recording before trying to scan."
 msgstr "Hay una grabación en curso. Detén la grabación antes de iniciar la búsqueda."
 

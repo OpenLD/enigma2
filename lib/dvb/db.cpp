@@ -444,7 +444,7 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown,
 				is_id = NO_STREAM_ID_FILTER,
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root,
-				pls_code = 1;
+				pls_code = 0;
 
 			if (version == 4)
 				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
@@ -792,6 +792,14 @@ void eDVBDB::saveServicelist(const char *file)
 				fprintf(f, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
 				if (g)
 					fprintf(g, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
+
+				if (sat.is_id != NO_STREAM_ID_FILTER ||
+					(sat.pls_code & 0x3FFFF) != eDVBFrontendParametersSatellite::PLS_Root ||
+					(sat.pls_mode & 3) != 0)
+				{
+					fprintf(f, ":%d:%d:%d",
+						sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
+				}
 			}
 			fprintf(f, "\n");
 			if (g)
