@@ -1,6 +1,5 @@
 from boxbranding import getBoxType
 from os import path as os_path
-
 from Components.config import config, ConfigSubsection, ConfigSlider, ConfigSelection, ConfigBoolean, ConfigNothing, NoSave
 
 # The "VideoEnhancement" is the interface to /proc/stb/vmpeg/0.
@@ -18,7 +17,7 @@ class VideoEnhancement:
 
 		if os_path.exists("/proc/stb/vmpeg/0/pep_contrast"):
 			def setContrast(config):
-				myval = int(config.value * 256)
+				myval = int(config.value * 255)
 				try:
 					print "--> setting contrast to: %0.8X" % myval
 					f = open("/proc/stb/vmpeg/0/pep_contrast", "w")
@@ -30,14 +29,14 @@ class VideoEnhancement:
 				if not VideoEnhancement.firstRun:
 					self.setConfiguredValues()
 
-			config.pep.contrast = ConfigSlider(default=128, limits=(0,256))
+			config.pep.contrast = ConfigSlider(default=128, limits=(0,255))
 			config.pep.contrast.addNotifier(setContrast)
 		else:
 			config.pep.contrast = NoSave(ConfigNothing())
 
 		if os_path.exists("/proc/stb/vmpeg/0/pep_saturation"):
 			def setSaturation(config):
-				myval = int(config.value * 256)
+				myval = int(config.value * 255)
 				try:
 					print "--> setting saturation to: %0.8X" % myval
 					f = open("/proc/stb/vmpeg/0/pep_saturation", "w")
@@ -49,14 +48,14 @@ class VideoEnhancement:
 				if not VideoEnhancement.firstRun:
 					self.setConfiguredValues()
 
-			config.pep.saturation = ConfigSlider(default=128, limits=(0,256))
+			config.pep.saturation = ConfigSlider(default=128, limits=(0,255))
 			config.pep.saturation.addNotifier(setSaturation)
 		else:
 			config.pep.saturation = NoSave(ConfigNothing())
 
 		if os_path.exists("/proc/stb/vmpeg/0/pep_hue"):
 			def setHue(config):
-				myval = int(config.value * 256)
+				myval = int(config.value * 255)
 				try:
 					print "--> setting hue to: %0.8X" % myval
 					f = open("/proc/stb/vmpeg/0/pep_hue", "w")
@@ -68,14 +67,14 @@ class VideoEnhancement:
 				if not VideoEnhancement.firstRun:
 					self.setConfiguredValues()
 
-			config.pep.hue = ConfigSlider(default=128, limits=(0,256))
+			config.pep.hue = ConfigSlider(default=128, limits=(0,255))
 			config.pep.hue.addNotifier(setHue)
 		else:
 			config.pep.hue = NoSave(ConfigNothing())
 
 		if os_path.exists("/proc/stb/vmpeg/0/pep_brightness"):
 			def setBrightness(config):
-				myval = int(config.value * 256)
+				myval = int(config.value * 255)
 				try:
 					print "--> setting brightness to: %0.8X" % myval
 					f = open("/proc/stb/vmpeg/0/pep_brightness", "w")
@@ -87,7 +86,7 @@ class VideoEnhancement:
 				if not VideoEnhancement.firstRun:
 					self.setConfiguredValues()
 
-			config.pep.brightness = ConfigSlider(default=128, limits=(0,256))
+			config.pep.brightness = ConfigSlider(default=128, limits=(0,255))
 			config.pep.brightness.addNotifier(setBrightness)
 		else:
 			config.pep.brightness = NoSave(ConfigNothing())
@@ -173,7 +172,7 @@ class VideoEnhancement:
 
 		if os_path.exists("/proc/stb/vmpeg/0/pep_sharpness"):
 			def setSharpness(config):
-				myval = int(config.value * 256)
+				myval = int(config.value * 255)
 				try:
 					print "--> setting sharpness to: %0.8X" % myval
 					f = open("/proc/stb/vmpeg/0/pep_sharpness", "w")
@@ -186,9 +185,9 @@ class VideoEnhancement:
 					self.setConfiguredValues()
 
 			if getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus':
-				config.pep.sharpness = ConfigSlider(default=256, limits=(0,256))
+				config.pep.sharpness = ConfigSlider(default=255, limits=(0,255))
 			else:
-				config.pep.sharpness = ConfigSlider(default=0, limits=(0,256))
+				config.pep.sharpness = ConfigSlider(default=0, limits=(0,255))
 			config.pep.sharpness.addNotifier(setSharpness)
 		else:
 			config.pep.sharpness = NoSave(ConfigNothing())
@@ -265,9 +264,9 @@ class VideoEnhancement:
 					self.setConfiguredValues()
 
 			if getBoxType() == 'gbquad' or getBoxType() == 'gbquadplus':
-				config.pep.dynamic_contrast = ConfigSlider(default=3, limits=(0,256))
+				config.pep.dynamic_contrast = ConfigSlider(default=3, limits=(0,255))
 			else:
-				config.pep.dynamic_contrast = ConfigSlider(default=0, limits=(0,256))
+				config.pep.dynamic_contrast = ConfigSlider(default=0, limits=(0,255))
 			config.pep.dynamic_contrast.addNotifier(setDynamic_contrast)
 		else:
 			config.pep.dynamic_contrast = NoSave(ConfigNothing())
