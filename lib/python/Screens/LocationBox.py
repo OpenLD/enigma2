@@ -11,7 +11,7 @@ from Screens.ChoiceBox import ChoiceBox
 
 # Generic
 from Tools.BoundFunction import boundFunction
-from Tools.Directories import pathExists, createDir, removeDir
+from Tools import Directories
 from Components.config import config
 import os
 
@@ -33,7 +33,24 @@ defaultInhibitDirs = ["/bin", "/boot", "/dev", "/etc", "/lib", "/proc", "/sbin",
 
 class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 	"""Simple Class similar to MessageBox / ChoiceBox but used to choose a folder/pathname combination"""
-	def __init__(self, session, text="", filename="", currDir=None, bookmarks=None, userMode=False, windowTitle=_("Select location"), minFree=None, autoAdd=False, editDir=False, inhibitDirs=None, inhibitMounts=None):
+
+	skin = """<screen name="LocationBox" position="100,75" size="540,460" >
+			<widget name="text" position="0,2" size="540,22" font="Regular;22" />
+			<widget name="target" position="0,23" size="540,22" valign="center" font="Regular;22" />
+			<widget name="filelist" position="0,55" zPosition="1" size="540,210" scrollbarMode="showOnDemand" selectionDisabled="1" />
+			<widget name="textbook" position="0,272" size="540,22" font="Regular;22" />
+			<widget name="booklist" position="5,302" zPosition="2" size="535,100" scrollbarMode="showOnDemand" />
+			<widget name="red" position="0,415" zPosition="1" size="135,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
+			<widget name="key_red" position="0,415" zPosition="2" size="135,40" halign="center" valign="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />   
+			<widget name="green" position="135,415" zPosition="1" size="135,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
+			<widget name="key_green" position="135,415" zPosition="2" size="135,40" halign="center" valign="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />
+			<widget name="yellow" position="270,415" zPosition="1" size="135,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
+			<widget name="key_yellow" position="270,415" zPosition="2" size="135,40" halign="center" valign="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />
+			<widget name="blue" position="405,415" zPosition="1" size="135,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
+			<widget name="key_blue" position="405,415" zPosition="2" size="135,40" halign="center" valign="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />
+		</screen>"""
+
+	def __init__(self, session, text = "", filename = "", currDir = None, bookmarks = None, userMode = False, windowTitle = "Select location", minFree = None, autoAdd = False, editDir = False, inhibitDirs = [], inhibitMounts = []):
 		# Init parents
 		if not inhibitDirs: inhibitDirs = []
 		if not inhibitMounts: inhibitMounts = []
@@ -79,6 +96,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		self["key_yellow"] = Button(_("Rename"))
 		self["key_blue"] = Button(_("Remove bookmark"))
 		self["key_red"] = Button(_("Cancel"))
+		self["key_ch"] = Label(_("Change list"))
 
 		# Background for Buttons
 		self["green"] = Pixmap()
@@ -109,6 +127,10 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		# Actions that will reset quickselect
 		self["WizardActions"] = LocationBoxActionMap(self, "WizardActions",
 			{
+				"left": self.left,
+				"right": self.right,
+				"up": self.up,
+				"down": self.down,
 				"ok": (self.ok, _("select")),
 				"back": (self.cancel, _("Cancel")),
 			}, -2)
@@ -157,7 +179,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 
 		# Run some functions when shown
 		self.onShown.extend((
-			boundFunction(self.setTitle, _("Select Location")),
+			boundFunction(self.setTitle, _(windowTitle)),
 			self.updateTarget,
 			self.showHideRename,
 		))
@@ -168,7 +190,13 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		self.onClose.append(self.disableTimer)
 
 	def switchToFileListOnStart(self):
-		self.switchToFileList()
+		if self.realBookmarks and self.realBookmarks.value:
+			self.currList = "booklist"
+			currDir = self["filelist"].current_directory
+			if currDir in self.bookmarks:
+				self["booklist"].moveToIndex(self.bookmarks.index(currDir))
+		else:
+			self.switchToFileList()
 
 	def disableTimer(self):
 		self.qs_timer.callback.remove(self.timeout)
@@ -177,6 +205,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 		# Don't allow renaming when filename is empty
 		if self.filename == "":
 			self["key_yellow"].hide()
+			self["yellow"].hide()
 
 	def switchToFileList(self):
 		if not self.userMode:
@@ -224,14 +253,14 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 				self.createDirCallback,
 				InputBox,
 				title = _("Please enter name of the new directory"),
-				text = ""
+				text = self.filename
 			)
 
 	def createDirCallback(self, res):
 		if res:
 			path = os.path.join(self["filelist"].current_directory, res)
-			if not pathExists(path):
-				if not createDir(path):
+			if not os.path.exists(path):
+				if not Directories.createDir(path):
 					self.session.open(
 						MessageBox,
 						_("Creating directory %s failed.") % path,
@@ -249,7 +278,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 
 	def removeDir(self):
 		sel = self["filelist"].getSelection()
-		if sel and pathExists(sel[0]):
+		if sel and os.path.exists(sel[0]):
 			self.session.openWithCallback(
 				boundFunction(self.removeDirCallback, sel[0]),
 				MessageBox,
@@ -266,7 +295,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 
 	def removeDirCallback(self, name, res):
 		if res:
-			if not removeDir(name):
+			if not Directories.removeDir(name):
 				self.session.open(
 					MessageBox,
 					_("Removing directory %s failed. (Maybe not empty.)") % name,
@@ -321,12 +350,29 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 			ret = ''.join((self.getPreferredFolder(), self.filename))
 			if self.realBookmarks:
 				if self.autoAdd and not ret in self.bookmarks:
-					self.bookmarks.append(self.getPreferredFolder())
-					self.bookmarks.sort()
+					if self.getPreferredFolder() not in self.bookmarks:
+						self.bookmarks.append(self.getPreferredFolder())
+						self.bookmarks.sort()
 
 				if self.bookmarks != self.realBookmarks.value:
 					self.realBookmarks.value = self.bookmarks
 					self.realBookmarks.save()
+
+				if self.filename and not os.path.exists(ret):
+					menu = [(_("Create new folder and exit"), "folder"), (_("Save and exit"), "exit")]
+					text = _("Select action")
+					def dirAction(choice):
+						if choice:
+							if choice[1] == "folder":
+								if not Directories.createDir(ret):
+									self.session.open(MessageBox, _("Creating directory %s failed.") % (ret), type = MessageBox.TYPE_ERROR)
+									return
+							self.close(ret)
+						else:
+							self.cancel()
+					self.session.openWithCallback(dirAction, ChoiceBox, title=text, list=menu)
+					return
+
 			self.close(ret)
 
 	def select(self):
@@ -348,7 +394,7 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 				self.session.openWithCallback(
 					self.selectConfirmed,
 					MessageBox,
-					_("There might not be enough space on the selected partition..\nDo you really want to continue?"),
+					_("There might not be enough Space on the selected Partition.\nDo you really want to continue?"),
 					type = MessageBox.TYPE_YESNO
 				)
 			# No minimum free Space means we can safely close
@@ -501,8 +547,8 @@ class LocationBox(Screen, NumericalTextInput, HelpableScreen):
 	def __repr__(self):
 		return str(type(self)) + "(" + self.text + ")"
 
-def MovieLocationBox(session, text, dir, minFree = None):
-	return LocationBox(session, text = text, currDir = dir, bookmarks = config.movielist.videodirs, autoAdd = True, editDir = True, inhibitDirs = defaultInhibitDirs, minFree = minFree)
+def MovieLocationBox(session, text, dir, filename = "", minFree = None):
+	return LocationBox(session, text = text, filename = filename, currDir = dir, bookmarks = config.movielist.videodirs, autoAdd = True, editDir = True, inhibitDirs = defaultInhibitDirs, minFree = minFree)
 
 class TimeshiftLocationBox(LocationBox):
 	def __init__(self, session):

@@ -16,7 +16,8 @@ class ServiceName(Converter, object):
 	PROVIDER = 3
 	REFERENCE = 4
 	EDITREFERENCE = 5
-	TRANSPONDER = 6
+	NUMBER = 6
+	TRANSPONDER = 7
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -30,6 +31,8 @@ class ServiceName(Converter, object):
 			self.type = self.REFERENCE
 		elif type == "EditReference":
 			self.type = self.EDITREFERENCE
+		elif type == "Number":
+			self.type = self.NUMBER
 		elif type == "NameOnly":
 			self.type = self.NAME_ONLY
 		elif type == "NameAndEvent":
@@ -91,6 +94,15 @@ class ServiceName(Converter, object):
 				if nref:
 					service = nref
 				return service.toString()
+			elif self.type == self.NUMBER:
+				if not ref:
+					ref = eServiceReference(info.getInfoString(iServiceInformation.sServiceref))
+				num = ref and ref.getChannelNum() or None
+				if num is None:
+					num = '---'
+				else:
+					num = str(num)
+				return num
 			elif self.type == self.TRANSPONDER:
 				if service:
 					nref = resolveAlternate(service)
