@@ -797,8 +797,9 @@ void eDVBDB::saveServicelist(const char *file)
 					(sat.pls_code & 0x3FFFF) != eDVBFrontendParametersSatellite::PLS_Root ||
 					(sat.pls_mode & 3) != 0)
 				{
-					fprintf(f, ":%d:%d:%d",
-						sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
+					fprintf(f, ":%d:%d:%d", sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
+					if (g)
+						fprintf(g, ",MIS/PLS:%d:%d:%d", sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
 				}
 			}
 			fprintf(f, "\n");
