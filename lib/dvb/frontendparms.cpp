@@ -242,7 +242,10 @@ int eDVBSatelliteTransponderData::getInversion() const
 
 int eDVBSatelliteTransponderData::getFrequency() const
 {
-	if (originalValues) return transponderParameters.frequency;
+	if (originalValues)
+	{
+		return transponderParameters.frequency;
+	}
 
 	return roundMulti((spectinvCnt&1) ? frequencyOffset - getProperty(DTV_FREQUENCY) : frequencyOffset + getProperty(DTV_FREQUENCY), 1000);
 }

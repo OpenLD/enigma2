@@ -689,7 +689,15 @@ int eDVBFrontend::openFrontend()
 		fe_info.frequency_max = 2200000;
 	}
 
-	m_multitype = m_delsys[SYS_DVBS] && (m_delsys[SYS_DVBT] || m_delsys[SYS_DVBC_ANNEX_A]);
+	m_multitype = (
+		m_delsys[SYS_DVBS] && m_delsys[SYS_DVBT])
+#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+		|| (m_delsys[SYS_DVBC_ANNEX_A] && m_delsys[SYS_DVBS])
+		|| (m_delsys[SYS_DVBC_ANNEX_A] && m_delsys[SYS_DVBT]);
+#else
+		|| (m_delsys[SYS_DVBC_ANNEX_AC] && m_delsys[SYS_DVBS])
+		|| (m_delsys[SYS_DVBC_ANNEX_AC] && m_delsys[SYS_DVBT]);
+#endif
 
 	if (!m_multitype)
 		m_type = feSatellite;
@@ -2168,7 +2176,12 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			{
 				p[cmdseq.num].cmd = DTV_ROLLOFF, p[cmdseq.num].u.data = rolloff, cmdseq.num++;
 				p[cmdseq.num].cmd = DTV_PILOT, p[cmdseq.num].u.data = pilot, cmdseq.num++;
-				p[cmdseq.num].cmd = DTV_STREAM_ID, p[cmdseq.num].u.data = parm.is_id | (parm.pls_code << 8) | (parm.pls_mode << 26), cmdseq.num++;
+				if (m_dvbversion >= DVB_VERSION(5, 3))
+				{
+#if defined DTV_STREAM_ID
+					p[cmdseq.num].cmd = DTV_STREAM_ID, p[cmdseq.num].u.data = parm.is_id | (parm.pls_code << 8) | (parm.pls_mode << 26), cmdseq.num++;
+#endif
+				}
 			}
 		}
 		else if (type == iDVBFrontend::feCable)
@@ -3394,7 +3407,7 @@ std::string eDVBFrontend::getCapabilities()
 
 	ss << "Capabilities:";
 	if (fe_info.caps == FE_IS_STUPID)			ss << " stupid FE";
-	if (fe_info.caps &  FE_CAN_INVERSION_AUTO)		ss << " auto inversion";
+	if (fe_info.caps &  FE_CAN_INVERSION_AUTO)	ss << " auto inversion";
 	if (fe_info.caps &  FE_CAN_FEC_1_2)			ss << " FEC 1/2";
 	if (fe_info.caps &  FE_CAN_FEC_2_3)			ss << " FEC 2/3";
 	if (fe_info.caps &  FE_CAN_FEC_3_4)			ss << " FEC 3/4";
@@ -3403,27 +3416,27 @@ std::string eDVBFrontend::getCapabilities()
 	if (fe_info.caps &  FE_CAN_FEC_6_7)			ss << " FEC 6/7";
 	if (fe_info.caps &  FE_CAN_FEC_7_8)			ss << " FEC 7/8";
 	if (fe_info.caps &  FE_CAN_FEC_8_9)			ss << " FEC 8/9";
-	if (fe_info.caps &  FE_CAN_FEC_AUTO)			ss << " FEC AUTO";
+	if (fe_info.caps &  FE_CAN_FEC_AUTO)		ss << " FEC AUTO";
 	if (fe_info.caps &  FE_CAN_QPSK)			ss << " QPSK";
 	if (fe_info.caps &  FE_CAN_QAM_16)			ss << " QAM 16";
 	if (fe_info.caps &  FE_CAN_QAM_32)			ss << " QAM 32";
 	if (fe_info.caps &  FE_CAN_QAM_64)			ss << " QAM 64";
 	if (fe_info.caps &  FE_CAN_QAM_128)			ss << " QAM 128";
 	if (fe_info.caps &  FE_CAN_QAM_256)			ss << " QAM 256";
-	if (fe_info.caps &  FE_CAN_QAM_AUTO)			ss << " QAM AUTO";
+	if (fe_info.caps &  FE_CAN_QAM_AUTO)		ss << " QAM AUTO";
 	if (fe_info.caps &  FE_CAN_TRANSMISSION_MODE_AUTO)	ss << " auto transmission mode";
-	if (fe_info.caps &  FE_CAN_BANDWIDTH_AUTO)             	ss << " auto bandwidth";
-	if (fe_info.caps &  FE_CAN_GUARD_INTERVAL_AUTO)		ss << " auto guard interval";
+	if (fe_info.caps &  FE_CAN_BANDWIDTH_AUTO)		ss << " auto bandwidth";
+	if (fe_info.caps &  FE_CAN_GUARD_INTERVAL_AUTO)	ss << " auto guard interval";
 	if (fe_info.caps &  FE_CAN_HIERARCHY_AUTO)		ss << " auto hierarchy";
 	if (fe_info.caps &  FE_CAN_8VSB)			ss << " FE_CAN_8VSB";
 	if (fe_info.caps &  FE_CAN_16VSB)			ss << " FE_CAN_16VSB";
-	if (fe_info.caps &  FE_HAS_EXTENDED_CAPS)		ss << " FE_HAS_EXTENDED_CAPS";
+	if (fe_info.caps &  FE_HAS_EXTENDED_CAPS)	ss << " FE_HAS_EXTENDED_CAPS";
 #if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
-	if (fe_info.caps &  FE_CAN_MULTISTREAM)			ss << " FE_CAN_MULTISTREAM";
+	if (fe_info.caps &  FE_CAN_MULTISTREAM)		ss << " FE_CAN_MULTISTREAM";
 #endif
-	if (fe_info.caps &  FE_CAN_TURBO_FEC)			ss << " FE_CAN_TURBO_FEC";
-	if (fe_info.caps &  FE_CAN_2G_MODULATION)		ss << " FE_CAN_2G_MODULATION";
-	if (fe_info.caps &  FE_NEEDS_BENDING)			ss << " FE_NEEDS_BENDING";
+	if (fe_info.caps &  FE_CAN_TURBO_FEC)		ss << " FE_CAN_TURBO_FEC";
+	if (fe_info.caps &  FE_CAN_2G_MODULATION)	ss << " FE_CAN_2G_MODULATION";
+	if (fe_info.caps &  FE_NEEDS_BENDING)		ss << " FE_NEEDS_BENDING";
 	if (fe_info.caps &  FE_CAN_RECOVER)			ss << " FE_CAN_RECOVER";
 	if (fe_info.caps &  FE_CAN_MUTE_TS)			ss << " FE_CAN_MUTE_TS";
 	ss << std::endl;
