@@ -166,10 +166,10 @@ class Satfinder(ScanSetup, ServiceScan):
 						self.list.append(self.rolloffEntry)
 						self.pilotEntry = getConfigListEntry(_('Pilot'), self.scan_sat.pilot)
 						self.list.append(self.pilotEntry)
-					if nim.isMultistream():
-						self.list.append(getConfigListEntry(_('Input Stream ID'), self.scan_sat.is_id))
-						self.list.append(getConfigListEntry(_('PLS Mode'), self.scan_sat.pls_mode))
-						self.list.append(getConfigListEntry(_('PLS Code'), self.scan_sat.pls_code))
+						if nim.isMultistream():
+							self.list.append(getConfigListEntry(_('Input Stream ID'), self.scan_sat.is_id))
+							self.list.append(getConfigListEntry(_('PLS Mode'), self.scan_sat.pls_mode))
+							self.list.append(getConfigListEntry(_('PLS Code'), self.scan_sat.pls_code))
 				elif self.tuning_type.value == "predefined_transponder":
 					if self.preDefTransponders is None:
 						self.updatePreDefTransponders()
