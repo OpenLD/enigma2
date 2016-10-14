@@ -376,7 +376,7 @@ class HddMount(Screen):
 		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
 		rename('/etc/fstab.tmp','/etc/fstab')
 		out = open('/etc/fstab', 'a')
-		line = self.device_uuid + '\t/media/hdd\tauto\tdefaults\t0 0\n'
+		line = self.device_uuid + '    /media/hdd    auto    rw,relatime,barrier=1,data=ordered    0  0\n'
 		out.write(line)
 		out.close()
 		self.Console.ePopen('mount /media/hdd', self.updateList)
@@ -590,6 +590,9 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/media/mmc', '/media/mmc'),
 		('/media/mmc2', '/media/mmc2'),
 		('/media/mmc3', '/media/mmc3'),
+		('/media/cf', '/media/cf'),
+		('/media/cf2', '/media/cf2'),
+		('/media/cf3', '/media/cf3'),
 		('/media/uSDextra', '/media/uSDextra'),
 		('/media/net', '/media/net'),
 		('/media/downloads', '/media/downloads'),
@@ -599,7 +602,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/media/video', '/media/video'),
 		('/usr', '/usr')]))
 		if dtype == 'Linux':
-			dtype = 'ext2' or 'ext3'
+			dtype = 'ext2' or 'ext3' or 'ext4'
 		else:
 			dtype = 'auto'
 		item.value = d1.strip()
@@ -677,7 +680,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
 		rename('/etc/fstab.tmp','/etc/fstab')
 		out = open('/etc/fstab', 'a')
-		line = self.device_uuid + '\t' + self.mountp + '\t' + self.device_type + '\tdefaults\t0 0\n'
+		line = self.device_uuid + '    ' + self.mountp + '    ' + self.device_type + '    rw,relatime,barrier=1,data=ordered    0  0\n'
 		out.write(line)
 		out.close()
 

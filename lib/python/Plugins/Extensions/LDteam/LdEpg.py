@@ -66,6 +66,7 @@ import Components.UsageConfig
 count = 0
 hddchoises = [('/media/hdd/', '/media/hdd/'),
  ('/media/usb/', '/media/usb/'),
+ ('/media/mmc', '/media/mmc'),
  ('/media/uSDextra/', '/media/uSDextra/'),
  ('/usr/share/enigma2/', '/usr/share/enigma2/'),
  ('/etc/enigma2/', '/etc/enigma2/')]

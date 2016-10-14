@@ -58,13 +58,13 @@ class StartSwap:
 		self.Console = Console()
 
 	def start(self):
-		self.Console.ePopen("parted -l /dev/sd? | grep swap", self.startSwap2)
+		self.Console.ePopen("sfdisk -l /dev/mmc?,/dev/sd? | grep swap", self.startSwap2)
 
 	def startSwap2(self, result=None, retval=None, extra_args=None):
 		swap_place = ""
-		if result and result.find('sd') != -1:
+		if result and result.find('mmc,sd') != -1:
 			for line in result.split('\n'):
-				if line.find('sd') != -1:
+				if line.find('mmc,sd') != -1:
 					parts = line.strip().split()
 					swap_place = parts[0]
 					tmpfile = file('/etc/fstab.tmp', 'w')
@@ -186,17 +186,17 @@ class Swap(Screen):
 			config.plugins.ldteam.swapautostart.save()
 		if path.exists('/tmp/swapdevices.tmp'):
 			remove('/tmp/swapdevices.tmp')
-		self.Console.ePopen("parted -l /dev/sd? | grep swap", self.updateSwap2)
+		self.Console.ePopen("sfdisk -l /dev/mmc?,/dev/sd? | grep swap", self.updateSwap2)
 
 	def updateSwap2(self, result=None, retval=None, extra_args=None):
 		self.swapsize = 0
 		self.swap_place = ''
 		self.swap_active = False
 		self.device = False
-		if result.find('sd') > 0:
+		if result.find('mmc,sd') > 0:
 			self['key_red'].setText("")
 			for line in result.split('\n'):
-				if line.find('sd') > 0:
+				if line.find('mmc,sd') > 0:
 					parts = line.strip().split()
 					self.swap_place = parts[0]
 					if self.swap_place == 'sfdisk:':
@@ -343,8 +343,10 @@ class Swap(Screen):
 			myfile = self.new_place + 'swapfile'
 			self.commands = []
 			self.commands.append('dd if=/dev/zero of=' + myfile + ' bs=1024 count=' + swapsize + ' 2>/dev/null')
-			self.commands.append('mkswap ' + myfile)
-			self.commands.append('chmod go-rwx ' + myfile)
+			self.commands.append('chown root:root ' + myfile + ' 2>/dev/null')
+			self.commands.append('chmod 0600 ' + myfile + ' 2>/dev/null')
+			self.commands.append('mkswap ' + myfile + ' 2>/dev/null')
+			self.commands.append('swapon ' + myfile + ' 2>/dev/null')
 			self.Console.eBatch(self.commands, self.updateSwap, debug=True)
 
 	def autoSsWap(self):

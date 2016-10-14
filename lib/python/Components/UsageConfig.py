@@ -506,7 +506,7 @@ def InitUsageConfig():
 	choiceoptions = [("mode1", _("Mode 1")), ("mode2", _("Mode 2"))]
 	config.osd.threeDsetmode = ConfigSelection(default = 'mode1' , choices = choiceoptions )
 
-	hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/media/uSDextra/', '/media/uSDextra/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
+	hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/media/mmc', '/media/mmc'), ('/media/uSDextra/', '/media/uSDextra/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
 	for p in harddiskmanager.getMountedPartitions():
 		if os.path.exists(p.mountpoint):
 			d = os.path.normpath(p.mountpoint)
