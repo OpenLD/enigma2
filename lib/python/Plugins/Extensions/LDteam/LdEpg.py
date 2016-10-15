@@ -68,6 +68,8 @@ hddchoises = [('/media/hdd/', '/media/hdd/'),
  ('/media/usb/', '/media/usb/'),
  ('/media/mmc', '/media/mmc'),
  ('/media/uSDextra/', '/media/uSDextra/'),
+ ('/media/upnp/', '/media/upnp/'),
+ ('/media/net/', '/media/net/'),
  ('/usr/share/enigma2/', '/usr/share/enigma2/'),
  ('/etc/enigma2/', '/etc/enigma2/')]
 config.misc.epgcachepath = ConfigSelection(default='/etc/enigma2/', choices=hddchoises)

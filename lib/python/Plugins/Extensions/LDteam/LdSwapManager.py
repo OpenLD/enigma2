@@ -58,13 +58,13 @@ class StartSwap:
 		self.Console = Console()
 
 	def start(self):
-		self.Console.ePopen("sfdisk -l /dev/mmc?,/dev/sd? | grep swap", self.startSwap2)
+		self.Console.ePopen("sfdisk -l | grep swap", self.startSwap2)
 
 	def startSwap2(self, result=None, retval=None, extra_args=None):
 		swap_place = ""
-		if result and result.find('mmc,sd') != -1:
+		if result and result.find('sd') != -1 or result.find('mmcblk') != -1:
 			for line in result.split('\n'):
-				if line.find('mmc,sd') != -1:
+				if line.find('sd') != -1 or line.find('mmcblk') != -1:
 					parts = line.strip().split()
 					swap_place = parts[0]
 					tmpfile = file('/etc/fstab.tmp', 'w')
@@ -186,17 +186,18 @@ class Swap(Screen):
 			config.plugins.ldteam.swapautostart.save()
 		if path.exists('/tmp/swapdevices.tmp'):
 			remove('/tmp/swapdevices.tmp')
-		self.Console.ePopen("sfdisk -l /dev/mmc?,/dev/sd? | grep swap", self.updateSwap2)
+		self.Console.ePopen("sfdisk -l | grep swap", self.updateSwap2)
 
 	def updateSwap2(self, result=None, retval=None, extra_args=None):
 		self.swapsize = 0
 		self.swap_place = ''
 		self.swap_active = False
 		self.device = False
-		if result.find('mmc,sd') > 0:
+
+		if result.find('sd') > 0 or result.find('mmcblk') > 0:
 			self['key_red'].setText("")
 			for line in result.split('\n'):
-				if line.find('mmc,sd') > 0:
+				if line.find('sd') > 0 or line.find('mmcblk') > 0:
 					parts = line.strip().split()
 					self.swap_place = parts[0]
 					if self.swap_place == 'sfdisk:':
