@@ -115,6 +115,12 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			else:
 				self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
 		elif self.sel == 11:
+			if os.path.exists("/etc/init.d/djmount") and os.path.exists("/usr/bin/djmount"):
+				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkDjmount
+				self.session.open(NetworkDjmount)
+			else:
+				self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+		elif self.sel == 12:
 			from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
 			self.session.open(TunerServer)
 		else:
@@ -206,10 +212,17 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
+		mypixmap = mypath + "Ushare.png"
+		png = LoadPixmap(mypixmap)
+		name = _("Djmount")
+		idx = 11
+		res = (name, png, idx)
+		self.list.append(res)
+
 		mypixmap = mypath + "Tuner_Setup.png"
 		png = LoadPixmap(mypixmap)
 		name = _("RemoteTunerServer")
-		idx = 11
+		idx = 12
 		res = (name, png, idx)
 		self.list.append(res)
 

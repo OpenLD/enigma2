@@ -4317,10 +4317,10 @@ class NetworkXupnpd(Screen):
 	def activateXupnpd(self):
 		commands = []
 		if fileExists('/etc/init.d/xupnpd'):
-			if fileExists('/etc/rc3.d/S20xupnpd'):
+			if fileExists('/etc/rc3.d/S30xupnpd'):
 				commands.append('update-rc.d -f xupnpd remove')
 			else:
-				commands.append('update-rc.d -f xupnpd defaults 20')
+				commands.append('update-rc.d -f xupnpd defaults 30')
 			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
 		else:
 			self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
@@ -4334,7 +4334,7 @@ class NetworkXupnpd(Screen):
 		self['labactive'].setText(_("Disabled"))
 		self.my_xupnpd_active = False
 		self.my_xupnpd_run = False
-		if fileExists('/etc/rc3.d/S20xupnpd'):
+		if fileExists('/etc/rc3.d/S30xupnpd'):
 			self['labactive'].setText(_("Enabled"))
 			self['labactive'].show()
 			self.my_xupnpd_active = True
@@ -4353,6 +4353,88 @@ class NetworkXupnpd(Screen):
 			self['key_green'].setText(_("Start"))
 			status_summary = self['lab2'].text + ' ' + self['labstop'].text
 		title = _("Xupnpd Setup")
+		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
+
+		for cb in self.onChangedEntry:
+			cb(title, status_summary, autostartstatus_summary)
+
+class NetworkDjmount(Screen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("Djmount Setup"))
+		self.skinName = "NetworkSamba"
+		self.onChangedEntry = [ ]
+		self['lab1'] = Label(_("Autostart:"))
+		self['labactive'] = Label(_(_("Disabled")))
+		self['lab2'] = Label(_("Current Status:"))
+		self['labstop'] = Label(_("Stopped"))
+		self['labrun'] = Label(_("Running"))
+		self['key_green'] = Label(_("Start"))
+		self['key_red'] = Label()
+		self['key_yellow'] = Label(_("Autostart"))
+		self['key_blue'] = Label()
+		self.Console = Console()
+		self.my_djmount_active = False
+		self.my_djmount_run = False
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'green': self.DjmountStartStop, 'yellow': self.activateDjmount})
+
+	def createSummary(self):
+		return NetworkServicesSummary
+
+	def DjmountStartStop(self):
+		commands = []
+		if fileExists('/etc/init.d/djmount'):
+			if self.my_djmount_run:
+				commands.append('/etc/init.d/djmount stop; killall -9 djmount')
+			else:
+				commands.append('/bin/su -l -c "/etc/init.d/djmount start"')
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		else:
+			self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+
+	def StartStopCallback(self, result = None, retval = None, extra_args = None):
+		time.sleep(3)
+		self.updateService()
+
+	def activateDjmount(self):
+		commands = []
+		if fileExists('/etc/init.d/djmount'):
+			if fileExists('/etc/rc3.d/S20djmount'):
+				commands.append('update-rc.d -f djmount remove')
+			else:
+				commands.append('update-rc.d -f djmount defaults 20')
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		else:
+			self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+
+	def updateService(self):
+		import process
+		p = process.ProcessList()
+		djmount_process = str(p.named('djmount')).strip('[]')
+		self['labrun'].hide()
+		self['labstop'].hide()
+		self['labactive'].setText(_("Disabled"))
+		self.my_djmount_active = False
+		self.my_djmount_run = False
+		if fileExists('/etc/rc3.d/S20djmount'):
+			self['labactive'].setText(_("Enabled"))
+			self['labactive'].show()
+			self.my_djmount_active = True
+		if djmount_process:
+			self.my_djmount_run = True
+		if self.my_djmount_run:
+			self['labstop'].hide()
+			self['labactive'].show()
+			self['labrun'].show()
+			self['key_green'].setText(_("Stop"))
+			status_summary = self['lab2'].text + ' ' + self['labrun'].text
+		else:
+			self['labrun'].hide()
+			self['labstop'].show()
+			self['labactive'].show()
+			self['key_green'].setText(_("Start"))
+			status_summary = self['lab2'].text + ' ' + self['labstop'].text
+		title = _("Djmount Setup")
 		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
 
 		for cb in self.onChangedEntry:
