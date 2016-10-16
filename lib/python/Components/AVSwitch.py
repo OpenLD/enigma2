@@ -748,6 +748,28 @@ def InitAVSwitch():
 	else:
 		config.av.transcodeaac = ConfigNothing()
 
+	if os.path.exists("/proc/stb/vmpeg/0/pep_scaler_sharpness"):
+		def setScaler_sharpness(config):
+			myval = int(config.value)
+			try:
+				print "[VideoMode] setting scaler_sharpness to: %0.8X" % myval
+				f = open("/proc/stb/vmpeg/0/pep_scaler_sharpness", "w")
+				f.write("%0.8X\n" % myval)
+				f.close()
+				f = open("/proc/stb/vmpeg/0/pep_apply", "w")
+				f.write("1")
+				f.close()
+			except IOError:
+				print "couldn't write pep_scaler_sharpness"
+
+		if getBoxType() in ('gbquad', 'gbquadplus'):
+			config.av.scaler_sharpness = ConfigSlider(default=5, limits=(0,26))
+		else:
+			config.av.scaler_sharpness = ConfigSlider(default=13, limits=(0,26))
+		config.av.scaler_sharpness.addNotifier(setScaler_sharpness)
+	else:
+		config.av.scaler_sharpness = NoSave(ConfigNothing())
+
 	config.av.edid_override = ConfigYesNo(default = False)
 
 	iAVSwitch.setConfiguredMode()
