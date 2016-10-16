@@ -2464,7 +2464,7 @@ audiotype_t eServiceMP3::gstCheckAudioPad(GstStructure* structure)
 			case 2:
 				return atAAC;
 			case 4:
-				return atAAC;
+				return atAACHE;
 			default:
 				return atUnknown;
 		}
