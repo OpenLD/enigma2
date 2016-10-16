@@ -672,8 +672,6 @@ class DevicePanelConf(Screen, ConfigListScreen):
 			self.device_type = 'auto'
 
 		if self.device_type.startswith('ext'):
-			self.device_type = 'ext2' or 'ext3' or 'ext4'
-		else:
 			self.device_type = 'auto'
 
 		if not path.exists(self.mountp):
