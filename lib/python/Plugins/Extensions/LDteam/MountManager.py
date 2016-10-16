@@ -117,7 +117,18 @@ class HddMount(Screen):
 		self.list = []
 		list2 = []
 		f = open('/proc/partitions', 'r')
+		try:
+			f = open('/proc/partitions', 'r')
+			fd = open('/proc/mounts', 'r')
+			mnt = fd.readlines()
+			fd.close()
+		except:
+			self['list'].list = self.list
+			self['lab1'].hide()
+			self.selectionChanged()
+			return
 		for line in f.readlines():
+			mount_list =[]
 			parts = line.strip().split()
 			if not parts:
 				continue
@@ -363,23 +374,24 @@ class HddMount(Screen):
 		self.device = extra_args[0]
 		self.mountp = extra_args[1]
 		self.device_uuid_tmp = result.split('UUID=')
-		self.device_uuid_tmp = self.device_uuid_tmp[1].replace('"',"")
-		self.device_uuid_tmp = self.device_uuid_tmp.replace('\n',"")
-		self.device_uuid_tmp = self.device_uuid_tmp.split()[0]
-		self.device_uuid = 'UUID=' + self.device_uuid_tmp
-		if not path.exists(self.mountp):
-			mkdir(self.mountp, 0755)
-		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if '/media/hdd' not in l])
-		rename('/etc/fstab.tmp','/etc/fstab')
-		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device not in l])
-		rename('/etc/fstab.tmp','/etc/fstab')
-		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
-		rename('/etc/fstab.tmp','/etc/fstab')
-		out = open('/etc/fstab', 'a')
-		line = self.device_uuid + '    /media/hdd    auto    rw,relatime,barrier=1,data=ordered    0  0\n'
-		out.write(line)
-		out.close()
-		self.Console.ePopen('mount /media/hdd', self.updateList)
+		if str(self.device_uuid_tmp) != "['']":
+			self.device_uuid_tmp = self.device_uuid_tmp[1].replace('TYPE="ext2"','').replace('TYPE="ext3"','').replace('TYPE="ext4"','').replace('TYPE="ntfs"','').replace('TYPE="exfat"','').replace('TYPE="vfat"','').replace('TYPE="xfs"','').replace('"','')
+			self.device_uuid_tmp = self.device_uuid_tmp.replace('\n',"")
+			self.device_uuid_tmp = self.device_uuid_tmp.split()[0]
+			self.device_uuid = 'UUID=' + self.device_uuid_tmp
+			if not path.exists(self.mountp):
+				mkdir(self.mountp, 0755)
+			file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if '/media/hdd' not in l])
+			rename('/etc/fstab.tmp','/etc/fstab')
+			file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device not in l])
+			rename('/etc/fstab.tmp','/etc/fstab')
+			file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
+			rename('/etc/fstab.tmp','/etc/fstab')
+			out = open('/etc/fstab', 'a')
+			line = self.device_uuid + '    /media/hdd    auto    rw,relatime,barrier=1,data=ordered    0  0\n'
+			out.write(line)
+			out.close()
+			self.Console.ePopen('mount /media/hdd', self.updateList)
 
 	def restBo(self, answer):
 		if answer is True:
@@ -417,9 +429,12 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		self.Console = Console()
 		self.Console.ePopen("sfdisk -l | grep swap | awk '{print $(NF-9)}' >/tmp/devices.tmp")
 		sleep(0.5)
-		f = open('/tmp/devices.tmp', 'r')
-		swapdevices = f.read()
-		f.close()
+		try:
+			f = open('/tmp/devices.tmp', 'r')
+			swapdevices = f.read()
+			f.close()
+		except:
+			swapdevices = ''
 		if path.exists('/tmp/devices.tmp'):
 			remove('/tmp/devices.tmp')
 		swapdevices = swapdevices.replace('\n','')
@@ -526,20 +541,31 @@ class DevicePanelConf(Screen, ConfigListScreen):
 				device2 = device.replace('p8', '')
 		except:
 			device2 = ''
-		devicetype = path.realpath('/sys/block/' + device2 + '/device')
+		try:
+			devicetype = path.realpath('/sys/block/' + device2 + '/device')
+		except:
+			devicetype = ''
 		d2 = device
+		model = '-?-'
 		name = 'USB: '
 		mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_usbstick.png'
-		if device2.startswith('mmcblk'):
-			model = file('/sys/block/' + device2 + '/device/name').read()
-			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_mmc.png'
+		if 'sdhci' in devicetype or device2.startswith('mmcblk'):
 			name = 'MMC: '
+			try:
+				model = file('/sys/block/' + device2 + '/device/name').read()
+				model = str(model).replace('\n', '')
+				mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_mmc.png'
+			except:
+				pass
 		else:
-			model = file('/sys/block/' + device2 + '/device/model').read()
-		model = str(model).replace('\n', '')
+			try:
+				model = file('/sys/block/' + device2 + '/device/model').read()
+				model = str(model).replace('\n', '')
+			except:
+				pass
 		des = ''
 		print "test:"
-		if devicetype.find('/devices/pci') != -1 or devicetype.find('ahci') != -1:
+		if devicetype.find('/devices/pci') != -1 or devicetype.find('ahci') != -1 or devicetype.find('/devices/platform/strict-ahci') != -1:
 			name = _("HARD DISK: ")
 			mypixmap = '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/dev_hdd.png'
 		name = name + model
@@ -609,7 +635,6 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		item.value = d1.strip()
 		text = name + ' ' + des + ' /dev/' + device
 		res = getConfigListEntry(text, item, device, dtype)
-
 		if des != '' and self.list.append(res):
 			pass
 
