@@ -27,7 +27,8 @@ from Screens.InfoBarGenerics import InfoBarShowHide, \
 	InfoBarSubserviceSelection, InfoBarShowMovies, \
 	InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSimpleEventView, InfoBarBuffer, \
 	InfoBarSummarySupport, InfoBarMoviePlayerSummarySupport, InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions, \
-	InfoBarSubtitleSupport, InfoBarPiP, InfoBarPlugins, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer, InfoBarOpenOnTopHelper, \
+	InfoBarSubtitleSupport, InfoBarPiP, InfoBarPlugins, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, \
+	InfoBarSleepTimer, InfoBarOpenOnTopHelper, \
 	InfoBarHdmi, setResumePoint, delResumePoint
 
 profile("LOAD:InitBar_Components")
@@ -41,12 +42,13 @@ from Screens.HelpMenu import HelpableScreen
 
 class InfoBar(InfoBarBase, InfoBarShowHide,
 	InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder,
-	InfoBarInstantRecord, InfoBarAudioSelection, InfoBarRedButton, InfoBarTimerButton, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarVmodeButton,
+	InfoBarInstantRecord, InfoBarAudioSelection, InfoBarRedButton, InfoBarTimerButton, LDBluePanel,
+	InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarVmodeButton,
 	HelpableScreen, InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection,
 	InfoBarSubserviceSelection, InfoBarTimeshift, InfoBarSeek, InfoBarCueSheetSupport, InfoBarBuffer,
 	InfoBarSummarySupport, InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions,
-	InfoBarPiP, InfoBarPlugins, InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer, InfoBarOpenOnTopHelper,
-	InfoBarHdmi, InfoBarButtonSetup, Screen):
+	InfoBarPiP, InfoBarPlugins, InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom,
+	InfoBarSleepTimer, InfoBarOpenOnTopHelper, InfoBarHdmi, InfoBarButtonSetup, Screen):
 
 	ALLOW_SUSPEND = True
 	instance = None
@@ -179,6 +181,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 		elif config.usage.tvradiobutton_mode.value == "BouquetList":
 			self.showTvChannelList(True)
 			self.servicelist.showFavourites()
+
 	def showTvButton(self):
 		if boxtype.startswith('gb') or boxtype in ('classm', 'genius', 'evo', 'galaxym6'):
 			self.toogleTvRadio()
@@ -231,10 +234,6 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 		self.doShow()
 
 	def showMovies(self, defaultRef=None):
-		if getMachineBrand() == 'GI' or boxtype.startswith('azbox') or boxtype.startswith('ini') or boxtype.startswith('venton'):
-			from Screens.BoxPortal import BoxPortal
-			self.session.open(BoxPortal)
-		else:
 			self.lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 			if self.lastservice and ':0:/' in self.lastservice.toString():
 				self.lastservice = enigma.eServiceReference(config.movielist.curentlyplayingservice.value)
@@ -440,7 +439,7 @@ def tryAudioTrack(tracks, audiolang, caudiolang, trackList, seltrack, useAc3):
 					return True
 			elif entry == x[1] and seltrack != x[0]:
 				if useAc3:
-				        if x[2].startswith('AC'):
+					if x[2].startswith('AC'):
 						print("[MoviePlayer] audio track match: " + str(x))
 						tracks.selectTrack(x[0])
 						return True
@@ -450,11 +449,12 @@ def tryAudioTrack(tracks, audiolang, caudiolang, trackList, seltrack, useAc3):
 					return True
 	return False
 
-class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBarMenu, InfoBarEPG, \
-		InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarAudioSelection, InfoBarResolutionSelection, HelpableScreen, InfoBarNotifications,
-		InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSimpleEventView,
-		InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin, InfoBarAspectSelection,
-		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarZoom, InfoBarButtonSetup):
+class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBarMenu, InfoBarEPG,
+				  InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarAudioSelection, HelpableScreen, InfoBarNotifications,
+				  InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport,
+				  InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin,
+				  InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarZoom, InfoBarHdmi,
+				  InfoBarButtonSetup, InfoBarResolutionSelection, InfoBarSimpleEventView, InfoBarAspectSelection ):
 
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
@@ -476,8 +476,8 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 
 		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
 			{
-				"leavePlayer": (self.leavePlayer, _("leave movie player...")),
-				"leavePlayerOnExit": (self.leavePlayerOnExit, _("leave movie player..."))
+				"leavePlayer": (self.leavePlayer, _("Exit movie player...")),
+				"leavePlayerOnExit": (self.leavePlayerOnExit, _("Exit movie player..."))
 			})
 
 		self.allowPiP = True
@@ -499,6 +499,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 		self.returning = False
 		self.onClose.append(self.__onClose)
 		self.onShow.append(self.doButtonsCheck)
+		config.misc.standbyCounter.addNotifier(self.standbyCountChanged, initial_call=False)
 
 		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
 			{
@@ -536,13 +537,21 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 		self["key_blue"].setText(_("Extensions"))
 
 	def __onClose(self):
+		config.misc.standbyCounter.removeNotifier(self.standbyCountChanged)
 		MoviePlayer.instance = None
 		from Screens.MovieSelection import playlist
 		del playlist[:]
-		Screens.InfoBar.InfoBar.instance.callServiceStarted()
+		if not config.movielist.stop_service.value:
+			Screens.InfoBar.InfoBar.instance.callServiceStarted()
 		self.session.nav.playService(self.lastservice)
 		config.usage.last_movie_played.value = self.cur_service and self.cur_service.toString() or ""
 		config.usage.last_movie_played.save()
+
+	def standbyCountChanged(self, value):
+		if config.ParentalControl.servicepinactive.value:
+			from Components.ParentalControl import parentalControl
+			if parentalControl.isProtected(self.cur_service):
+				self.close()
 
 	def handleLeave(self, how):
 		self.is_closing = True
@@ -769,21 +778,15 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarLongKeyDetection, InfoBar
 				del self.session.pip
 				self.session.pipshown = False
 		else:
-			service = self.session.nav.getCurrentService()
-			info = service and service.info()
-			xres = str(info.getInfo(enigma.iServiceInformation.sVideoWidth))
-			if int(xres) <= 720 or not getMachineBuild() == 'blackbox7405':
-				from Screens.PictureInPicture import PictureInPicture
-				self.session.pip = self.session.instantiateDialog(PictureInPicture)
-				self.session.pip.show()
-				if self.session.pip.playService(slist.getCurrentSelection()):
-					self.session.pipshown = True
-					self.session.pip.servicePath = slist.getCurrentServicePath()
-				else:
-					self.session.pipshown = False
-					del self.session.pip
+			from Screens.PictureInPicture import PictureInPicture
+			self.session.pip = self.session.instantiateDialog(PictureInPicture)
+			self.session.pip.show()
+			if self.session.pip.playService(slist.getCurrentSelection()):
+				self.session.pipshown = True
+				self.session.pip.servicePath = slist.getCurrentServicePath()
 			else:
-				self.session.open(MessageBox, _("Your %s %s does not support PiP HD") % (getMachineBrand(), getMachineName()), type = MessageBox.TYPE_INFO,timeout = 5 )
+				self.session.pipshown = False
+				del self.session.pip
 
 	def movePiP(self):
 		if self.session.pipshown:

@@ -1301,7 +1301,7 @@ msgid "Background delete option"
 msgstr "Opción para borrar en segundo plano"
 
 msgid "Background delete speed"
-msgstr "Velocidad al borraren segundo plano"
+msgstr "Velocidad al borrar en segundo plano"
 
 msgid "Backup completed."
 msgstr "Copia de seguridad terminada."
@@ -3115,18 +3115,18 @@ msgstr "Habilitar o deshabilitar Thimeshift permanente. Cuando está habilitado,
 msgid "Enable panic button"
 msgstr "Habilitar botón del pánico"
 
-#
 msgid "Enable parental control"
 msgstr "Activar el control paterno"
 
 msgid "Enable teletext caching"
 msgstr "Habilitar caché de teletexto"
 
-#
 msgid "Enable timer"
 msgstr "Activar temporizador"
 
-#
+msgid "Enable timer conflict detection"
+msgstr "Habilitar detección de conflictos"
+
 msgid "Enabled"
 msgstr "Habilitado"
 
@@ -6496,6 +6496,9 @@ msgstr "Renombras historiales de fallos"
 msgid "Rename failed!"
 msgstr "¡Error al renombrar!"
 
+msgid "Rename name and description for new events"
+msgstr "Cambiar el nombre y la descripción en nuevos eventos"
+
 msgid "Rename to:"
 msgstr "Renombrar a:"
 
@@ -9723,6 +9726,41 @@ msgstr ""
 "El asistente de inicio te guiará por la configuración básica de tu %s %s.\n"
 "Pulsa la tecla ‘OK’ del mando para ir al siguiente paso."
 
+msgid ""
+"Welcome.\n"
+"\n"
+"This start wizard will guide you through the basic setup of your receiver.\n"
+"Press the OK button on your remote control to move to the next step."
+msgstr ""
+"Bienvenido.\n"
+"\n"
+"Este asistente de inicio le guiará en la configuración básica del receptor.\n"
+"Pulse el botón OK del mando a distancia para ir al siguiente paso."
+
+msgid ""
+"Welcome.\n"
+"\n"
+"This Wizard will help you to create a new AutoTimer by providing descriptions for common settings.\n"
+msgstr ""
+"Bienvenido.\n"
+"\n"
+"Este asistente le ayudará a crear un nuevo AutoTimer proporcionando descripciones de los ajustes comunes.\n"
+
+msgid ""
+"You can set the basic properties of an AutoTimer here.\n"
+"While 'Name' is just a human-readable name displayed in the Overview, 'Match "
+"in title' is what is looked for in the EPG."
+msgstr ""
+"Puede configurar las propiedades básicas de un AutoTimers aquí.\n"
+"Mientras \"Nombre\" es sólo un nombre legible por humanos que se muestra en la vista general, "
+"\"Encuentra en el título\" lo que se busca en la EPG."
+
+msgid "Create a new AutoTimer"
+msgstr "Crear un nuevo AutoTimer"
+
+msgid "Abort this Wizard"
+msgstr "Abortar este asistente"
+
 #
 msgid "Welcome..."
 msgstr "Bienvenido..."
@@ -9883,6 +9921,21 @@ msgstr ""
 "Si quieres conectar tu %s %s a internet, este asistente te guiará en la configuración básica de red de tu %s %s.\n"
 "\n"
 "Pulsa ‘OK’ para empezar a configurar la red."
+
+msgid ""
+"Welcome.\n"
+"\n"
+"If you want to connect your receiver to the Internet, this wizard will guide "
+"you through the basic network setup of your receiver.\n"
+"\n"
+"Press OK to start configuring your network"
+msgstr ""
+"Bienvenido.\n"
+"\n"
+"Si quiere conectar el receptor a internet, este asistente le guiará en la "
+"configuración básica de la red.\n"
+"\n"
+"Pulse OK para empezar a configurarla"
 
 msgid "Wireless network connection setup"
 msgstr "Configuración de la conexión de red inalámbrica"
@@ -14191,6 +14244,9 @@ msgstr "Eliminar elementos de la papelera después de (días)"
 
 #
 msgid "Clean network trash can's"
+msgstr "Vaciar las papeleras en red"
+
+msgid "Clean network trash cans"
 msgstr "Vaciar las papeleras en red"
 
 msgid "When enabled, network trash can's are probed for cleaning."

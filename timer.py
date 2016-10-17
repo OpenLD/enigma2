@@ -241,10 +241,12 @@ class Timer:
 
 		min = int(now) + self.MaxWaitTime
 
+		self.timer_list and self.timer_list.sort() #  resort/refresh list, try to fix hanging timers
+
 		# calculate next activation point
-		if self.timer_list:
-			self.timer_list.sort() #  resort/refresh list, try to fix hanging timers
-			w = self.timer_list[0].getNextActivation()
+		timer_list = [ t for t in self.timer_list if not t.disabled ]
+		if timer_list:
+			w = timer_list[0].getNextActivation()
 			if w < min:
 				min = w
 
@@ -306,5 +308,9 @@ class Timer:
 	def processActivation(self):
 		t = int(time()) + 1
 		# we keep on processing the first entry until it goes into the future.
-		while self.timer_list and self.timer_list[0].getNextActivation() < t:
-			self.doActivate(self.timer_list[0])
+		while True:
+			timer_list = [ tmr for tmr in self.timer_list if not tmr.disabled ]
+			if timer_list and timer_list[0].getNextActivation() < t:
+				self.doActivate(timer_list[0])
+			else:
+				break

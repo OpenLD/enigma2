@@ -496,7 +496,7 @@ class AutoVideoMode(Screen):
 			f.close()
 
 		if not video_height or not video_width or not video_pol or not video_rate:
-			service = self.session.nav.getCurrentService()
+			service = self.session and self.session.nav.getCurrentService()
 			if service is not None:
 				info = service.info()
 			else:
@@ -600,7 +600,7 @@ class AutoVideoMode(Screen):
 			# always use a fixed resolution and frame rate   (e.g. 1080p50 if supported) for TV or .ts files
 			# always use a fixed resolution and correct rate (e.g. 1080p24/p50/p60 for all other videos
 			if config.av.smart1080p.value != 'false'and config.av.autores.value != 'disabled':
-				ref = self.session.nav.getCurrentlyPlayingServiceReference()
+				ref = self.session and self.session.nav.getCurrentlyPlayingServiceReference()
 				if ref is not None:
 					try:
 						mypath = ref.getPath()

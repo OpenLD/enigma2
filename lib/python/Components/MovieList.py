@@ -2,11 +2,10 @@ import os
 import struct
 import random
 
-from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformation, eSize, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER, eServiceReference, eServiceCenter, eTimer, getDesktop, loadPNG, BT_SCALE, BT_KEEP_ASPECT_RATIO
-
 from GUIComponent import GUIComponent
 from Tools.FuzzyDate import FuzzyTime
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, MultiContentEntryPixmapAlphaBlend, MultiContentEntryProgress
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, \
+	MultiContentEntryPixmapAlphaBlend, MultiContentEntryProgress
 from Components.config import config
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import SCOPE_ACTIVE_SKIN, resolveFilename
@@ -16,6 +15,10 @@ from ServiceReference import ServiceReference
 from Components.Renderer.Picon import getPiconName
 import NavigationInstance
 import skin
+
+from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformation, eSize, \
+	RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER, eServiceReference, eServiceCenter, eTimer, \
+	getDesktop, loadPNG, BT_SCALE, BT_KEEP_ASPECT_RATIO
 
 AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".3gp", ".3g2", ".wma"))
 DVD_EXTENSIONS = ('.iso', '.img')
@@ -166,6 +169,19 @@ class MovieList(GUIComponent):
 			self.fontSize = 20
 		self.listHeight = None
 		self.listWidth = None
+		self.pbarShift = 5
+		self.pbarHeight = 16
+		self.pbarLargeWidth = 48
+		self.pbarColour = 0x206333
+		self.pbarColourSeen = 0xffc71d
+		self.pbarColourRec = 0xff001d
+		self.partIconeShift = 5
+		self.spaceRight = 2
+		self.spaceIconeText = 2
+		self.iconsWidth = 22
+		self.trashShift = 1
+		self.dirShift = 1
+		self.columns = (180,200)
 		self.reloadDelayTimer = None
 		self.l = eListboxPythonMultiContent()
 		self.tags = set()
@@ -192,24 +208,6 @@ class MovieList(GUIComponent):
 		self.runningTimers = {}
 		self.updateRecordings()
 		self.updatePlayPosCache()
-
-	def applySkin(self, desktop, parent):
-		if self.skinAttributes is not None:
-			attribs = [ ]
-			for (attrib, value) in self.skinAttributes:
-				if attrib == "font":
-					font = skin.parseFont(value, ((1,1),(1,1)))
-					self.fontName = font.family
-					self.fontSize = font.pointSize
-				else:
-					attribs.append((attrib,value))
-			self.skinAttributes = attribs
-			self.setFontsize()
-		rc = GUIComponent.applySkin(self, desktop, parent)
-		self.listHeight = self.instance.size().height()
-		self.listWidth = self.instance.size().width()
-		self.setItemsPerPage()
-		return rc
 
 	def get_playInBackground(self):
 		return self._playInBackground
@@ -275,6 +273,54 @@ class MovieList(GUIComponent):
 
 	def setSortType(self, type):
 		self.sort_type = type
+
+	def applySkin(self, desktop, parent):
+		def warningWrongSkinParameter(string):
+			print "[MovieList] wrong '%s' skin parameters" % string
+		def font(value):
+			font = skin.parseFont(value, ((1,1),(1,1)))
+			self.fontName = font.family
+			self.fontSize = font.pointSize
+		def pbarShift(value):
+			self.pbarShift = int(value)
+		def pbarHeight(value):
+			self.pbarHeight = int(value)
+		def pbarLargeWidth(value):
+			self.pbarLargeWidth = int(value)
+		def pbarColour(value):
+			self.pbarColour = skin.parseColor(value).argb()
+		def pbarColourSeen(value):
+			self.pbarColourSeen = skin.parseColor(value).argb()
+		def pbarColourRec(value):
+			self.pbarColourRec = skin.parseColor(value).argb()
+		def partIconeShift(value):
+			self.partIconeShift = int(value)
+		def spaceIconeText(value):
+			self.spaceIconeText = int(value)
+		def iconsWidth(value):
+			self.iconsWidth = int(value)
+		def trashShift(value):
+			self.trashShift = int(value)
+		def dirShift(value):
+			self.dirShift = int(value)
+		def spaceRight(value):
+			self.spaceRight = int(value)
+		def columns(value):
+			self.columns = map(int, value.split(","))
+			if len(self.columns) != 2:
+				warningWrongSkinParameter(attrib)
+		for (attrib, value) in self.skinAttributes[:]:
+			try:
+				locals().get(attrib)(value)
+				self.skinAttributes.remove((attrib, value))
+			except:
+				pass
+		rc = GUIComponent.applySkin(self, desktop, parent)
+		self.listHeight = self.instance.size().height()
+		self.listWidth = self.instance.size().width()
+		self.setFontsize()
+		self.setItemsPerPage()
+		return rc
 
 	def setItemsPerPage(self):
 		if self.listHeight > 0:
@@ -384,9 +430,9 @@ class MovieList(GUIComponent):
 				elif switch == 'p' or switch == 's':
 					data.part = 100
 					if (self.playInBackground or self.playInForeground) and serviceref == (self.playInBackground or self.playInForeground):
-						data.partcol = 0xffc71d
+						data.partcol = self.pbarColourSeen
 					else:
-						data.partcol = 0xff001d
+						data.partcol = self.pbarColourRec
 			elif (self.playInBackground or self.playInForeground) and serviceref == (self.playInBackground or self.playInForeground):
 				data.icon = self.iconMoviePlay
 			else:
@@ -399,11 +445,11 @@ class MovieList(GUIComponent):
 							data.icon = self.iconUnwatched
 				elif switch == 'p' or switch == 's':
 					if data.part is not None and data.part > 0:
-						data.partcol = 0xffc71d
+						data.partcol = self.pbarColourSeen
 					else:
 						if config.usage.movielist_unseen.value:
 							data.part = 100
-							data.partcol = 0x206333
+							data.partcol = self.pbarColour
 		len = data.len
 		if len > 0:
 			len = "%d:%02d" % (len / 60, len % 60)
