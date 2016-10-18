@@ -4442,8 +4442,8 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 			mhw_channel_name_t *channel = (mhw_channel_name_t*) &data[4 + i*record_size];
 			m_channels[i]=*channel;
 
-			if (f) fprintf(f,"(%s) %x:%x:%x\n",m_channels[i].name,m_channels[i].getChannelID(),
-			m_channels[i].getTransportStreamId(),m_channels[i].getNetworkID());
+			if (f) fprintf(f,"(%s) %x:%x:%x\n",m_channels[i].name,m_channels[i].channel_id,
+			m_channels[i].getTransportStreamId(),m_channels[i].network_id);
 		}
 		haveData |= MHW;
 
@@ -4683,7 +4683,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 //			eDebug("%d(%02x) %s", i, i, channel.name);
 
 			if (f) fprintf(f,"(%s) %x:%x:%x\n",channel.name,
-			channel.getChannelID(),channel.setTransportStreamId(),channel.getNetworkID());
+			channel.channel_id,channel.setTransportStreamId(),channel.network_id);
 		}
 
 		fclose(f);
@@ -5109,7 +5109,7 @@ void eEPGCache::channel_data::readMHWData2_old(const uint8_t *data)
 			channel.name[channel_name_len]=0;
 //			eDebug("%d(%02x) %s", i, i, channel.name);
 
-			if (f) fprintf(f,"(%s) %x:%x:%x\n",channel.name,channel.getChannelID(),channel.setTransportStreamId(),channel.getNetworkID());
+			if (f) fprintf(f,"(%s) %x:%x:%x\n",channel.name,channel.channel_id,channel.setTransportStreamId(),channel.network_id);
 		}
 
 		fclose(f);
