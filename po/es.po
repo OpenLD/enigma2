@@ -17086,3 +17086,12 @@ msgstr "no volver a mostrar este mensaje"
 
 msgid "and not AutoRestart service"
 msgstr "y no iniciar automáticamente el servicio"
+
+msgid "Streaming clients info"
+msgstr "Info clientes streaming "
+
+msgid "Total Clients streaming: "
+msgstr "Total Clientes streaming: "
+
+msgid "No stream clients"
+msgstr "Ningún cliente streaming"
