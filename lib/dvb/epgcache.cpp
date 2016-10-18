@@ -2999,6 +2999,8 @@ void eEPGCache::submitEventData(const std::vector<eServiceReferenceDVB>& service
 	{
 		eDVBChannelID chid;
 		serviceRef->getChannelID(chid);
+		packet->setChannelID(serviceRef->getChannelID().get());
+		packet->setNetworkID(serviceRef->getNetworkID().get());
 		packet->setServiceId(serviceRef->getServiceID().get());
 		packet->setTransportStreamId(chid.transport_stream_id.get());
 		packet->setOriginalNetworkId(chid.original_network_id.get());
