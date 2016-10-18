@@ -29,6 +29,7 @@ from Screens.ChoiceBox import ChoiceBox
 from Screens.LocationBox import MovieLocationBox
 from Screens.HelpMenu import HelpableScreen
 import Screens.InfoBar
+from Tools.LoadPixmap import LoadPixmap
 from Tools import NumericalTextInput
 from Tools.Directories import resolveFilename, SCOPE_HDD
 from Tools.BoundFunction import boundFunction
@@ -168,6 +169,7 @@ def moveServiceFiles(serviceref, dest, name=None, allowCopy=True):
 		if name is None:
 			name = os.path.split(moveList[-1][0])[1]
 		Tools.CopyFiles.moveFiles(moveList, name)
+		#print ("Moving file... (Init)")
 	except Exception, e:
 		print "[MovieSelection] Failed move:", e
 		# rethrow exception
@@ -309,7 +311,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
-		return SetupSummary
+		return SetupSummary and BarritadeMarras
 
 	def save(self):
 		self.saveAll()
@@ -979,7 +981,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		try:
 			NavigationInstance.instance.RecordTimer.on_state_change.remove(self.list.updateRecordings)
 		except Exception, e:
-			print "[ML] failed to unsubscribe:", e
+			print "[MovieSelection] failed to unsubscribe:", e
 			pass
 
 	def createSummary(self):
@@ -1005,9 +1007,13 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		self.reloadList()
 
 	def can_move(self, item):
-		if not item:
+		try:
+			if not item:
+				return False
+			return canMove(item)
+		except:
+
 			return False
-		return canMove(item)
 
 	def can_delete(self, item):
 		try:
@@ -1113,7 +1119,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			self.session.open(DVD.DVDPlayer, dvd_filelist=[path])
 			return True
 		except Exception, e:
-			print "[ML] DVD Player not installed:", e
+			print "[MovieSelection] DVD Player not installed:", e
 
 	def __serviceStarted(self):
 		if not self.list.playInBackground or not self.list.playInForeground:
@@ -1731,7 +1737,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			else:
 				msg = _("Error") + '\n' + str(e)
 		except Exception, e:
-			print "[ML] Unexpected error:", e
+			print "[MovieSelection] Unexpected error:", e
 			msg = _("Error") + '\n' + str(e)
 		if msg:
 			mbox=self.session.open(MessageBox, msg, type = MessageBox.TYPE_ERROR, timeout = 5)
@@ -1868,6 +1874,8 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 					inlist.append(d)
 			self.onMovieSelected = self.gotMoveMovieDest
 			self.movieSelectTitle = title
+			print ("Select file...")
+			self.showActionFeedback(_("Select file...") + " " + name)
 			self.session.openWithCallback(self.gotMovieLocation, ChoiceBox, title=title, list=bookmarks)
 
 	def gotMoveMovieDest(self, choice):
@@ -1883,6 +1891,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 				name = item[1].getName(current)
 			moveServiceFiles(current, dest, name)
 			self["list"].removeService(current)
+			#print ("Moving file... (End)")
 		except Exception, e:
 			mbox=self.session.open(MessageBox, str(e), MessageBox.TYPE_ERROR)
 			mbox.setTitle(self.getTitle())

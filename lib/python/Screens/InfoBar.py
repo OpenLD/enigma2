@@ -20,15 +20,14 @@ from boxbranding import getBoxType, getMachineBrand, getBrandOEM, getMachineBuil
 boxtype = getBoxType()
 
 profile("LOAD:InfoBarGenerics")
-from Screens.InfoBarGenerics import InfoBarShowHide, \
-	InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, InfoBarRdsDecoder, InfoBarRedButton, InfoBarTimerButton, InfoBarVmodeButton, \
-	InfoBarEPG, InfoBarSeek, InfoBarInstantRecord, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, \
-	InfoBarAudioSelection, InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection, \
-	InfoBarSubserviceSelection, InfoBarShowMovies, \
-	InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSimpleEventView, InfoBarBuffer, \
-	InfoBarSummarySupport, InfoBarMoviePlayerSummarySupport, InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions, \
-	InfoBarSubtitleSupport, InfoBarPiP, InfoBarPlugins, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, \
-	InfoBarSleepTimer, InfoBarOpenOnTopHelper, \
+from Screens.InfoBarGenerics import InfoBarShowHide, InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, \
+	InfoBarEPG, InfoBarRdsDecoder, InfoBarRedButton, InfoBarTimerButton, InfoBarVmodeButton, InfoBarSeek, \
+	InfoBarInstantRecord, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarAudioSelection, \
+	InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection, \
+	InfoBarSubserviceSelection, InfoBarShowMovies, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, \
+	InfoBarSimpleEventView, InfoBarBuffer, InfoBarSummarySupport, InfoBarMoviePlayerSummarySupport, InfoBarTimeshiftState, \
+	InfoBarTeletextPlugin, InfoBarExtensions, InfoBarSubtitleSupport, InfoBarPiP, InfoBarPlugins, \
+	InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer, InfoBarOpenOnTopHelper, \
 	InfoBarHdmi, setResumePoint, delResumePoint
 
 profile("LOAD:InitBar_Components")
@@ -40,15 +39,14 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 profile("LOAD:HelpableScreen")
 from Screens.HelpMenu import HelpableScreen
 
-class InfoBar(InfoBarBase, InfoBarShowHide,
-	InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder,
-	InfoBarInstantRecord, InfoBarAudioSelection, InfoBarRedButton, InfoBarTimerButton, LDBluePanel,
-	InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarVmodeButton,
-	HelpableScreen, InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection,
-	InfoBarSubserviceSelection, InfoBarTimeshift, InfoBarSeek, InfoBarCueSheetSupport, InfoBarBuffer,
-	InfoBarSummarySupport, InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions,
-	InfoBarPiP, InfoBarPlugins, InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom,
-	InfoBarSleepTimer, InfoBarOpenOnTopHelper, InfoBarHdmi, InfoBarButtonSetup, Screen):
+class InfoBar(InfoBarBase, InfoBarShowHide, InfoBarNumberZap, InfoBarChannelSelection, 
+	InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder, InfoBarRedButton, InfoBarTimerButton, InfoBarVmodeButton, 
+	InfoBarSeek, InfoBarInstantRecord, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarAudioSelection, 
+	InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection, 
+	InfoBarSubserviceSelection, InfoBarTimeshift, InfoBarCueSheetSupport, InfoBarBuffer, InfoBarSummarySupport, 
+	InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions, HelpableScreen, InfoBarPiP, InfoBarPlugins, 
+	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer, 
+	InfoBarOpenOnTopHelper, InfoBarHdmi, InfoBarButtonSetup, Screen):
 
 	ALLOW_SUSPEND = True
 	instance = None
@@ -234,6 +232,10 @@ class InfoBar(InfoBarBase, InfoBarShowHide,
 		self.doShow()
 
 	def showMovies(self, defaultRef=None):
+		if getMachineBrand() == 'GI' or boxtype.startswith('azbox') or boxtype.startswith('ini') or boxtype.startswith('venton'):
+			from Screens.BoxPortal import BoxPortal
+			self.session.open(BoxPortal)
+		else:
 			self.lastservice = self.session.nav.getCurrentlyPlayingServiceOrGroup()
 			if self.lastservice and ':0:/' in self.lastservice.toString():
 				self.lastservice = enigma.eServiceReference(config.movielist.curentlyplayingservice.value)
