@@ -169,7 +169,6 @@ def moveServiceFiles(serviceref, dest, name=None, allowCopy=True):
 		if name is None:
 			name = os.path.split(moveList[-1][0])[1]
 		Tools.CopyFiles.moveFiles(moveList, name)
-		#print ("Moving file... (Init)")
 	except Exception, e:
 		print "[MovieSelection] Failed move:", e
 		# rethrow exception
@@ -311,7 +310,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
-		return SetupSummary and BarritadeMarras
+		return SetupSummary
 
 	def save(self):
 		self.saveAll()
@@ -1874,8 +1873,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 					inlist.append(d)
 			self.onMovieSelected = self.gotMoveMovieDest
 			self.movieSelectTitle = title
-			print ("Select file...")
-			self.showActionFeedback(_("Select file...") + " " + name)
 			self.session.openWithCallback(self.gotMovieLocation, ChoiceBox, title=title, list=bookmarks)
 
 	def gotMoveMovieDest(self, choice):
@@ -1891,7 +1888,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 				name = item[1].getName(current)
 			moveServiceFiles(current, dest, name)
 			self["list"].removeService(current)
-			#print ("Moving file... (End)")
 		except Exception, e:
 			mbox=self.session.open(MessageBox, str(e), MessageBox.TYPE_ERROR)
 			mbox.setTitle(self.getTitle())
