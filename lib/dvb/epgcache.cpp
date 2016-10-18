@@ -4444,9 +4444,6 @@ void eEPGCache::channel_data::readMHWData(const uint8_t *data)
 			mhw_channel_name_t *channel = (mhw_channel_name_t*) &data[4 + i*record_size];
 			m_channels[i]=*channel;
 
-			int network_id  = mhw->getNetworkID(;
-			int channel_id  = mhw->getChannelID(;
-
 			if (f) fprintf(f,"(%s) %x:%x:%x\n",m_channels[i].name,m_channels[i].getChannelID(),
 			m_channels[i].getTransportStreamId(),m_channels[i].getNetworkID());
 		}
