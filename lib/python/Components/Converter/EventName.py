@@ -26,7 +26,8 @@ class EventName(Converter, object):
 
 	NEXT_DESCRIPTION = 21
 	THIRD_NAME = 22
-	THIRD_DESCRIPTION = 23
+	THIRD_NAME2 = 23
+	THIRD_DESCRIPTION = 24
 
 	AUSSHORT = 0
 	AUSLONG = 1
@@ -110,11 +111,12 @@ class EventName(Converter, object):
 			self.type = self.RAWRATING
 		elif type == "RatingCountry":
 			self.type = self.RATINGCOUNTRY
-
 		elif type == "NextDescription":
 			self.type = self.NEXT_DESCRIPTION
 		elif type == "ThirdName":
 			self.type = self.THIRD_NAME
+		elif type == "ThirdNameOnly":
+			self.type = self.THIRD_NAME2
 		elif type == "ThirdDescription":
 			self.type = self.THIRD_DESCRIPTION
 		else:
@@ -263,8 +265,10 @@ class EventName(Converter, object):
 						if (description and extended) and (description[0:20] != extended[0:20]):
 							description += self.SEPARATOR
 						return description + extended
-					elif self.type == self.THIRD_NAME and self.list[2][1]:
+					if self.type == self.THIRD_NAME and self.list[2][1]:
 						return pgettext("third event: 'third' event label", "Later") + ": " + self.trimText(self.list[2][1])
+					elif self.type == self.THIRD_NAME2 and self.list[2][1]:
+						return self.list[2][1]
 					elif self.type == self.THIRD_DESCRIPTION and (self.list[2][2] or self.list[2][3]):
 						description = self.trimText(self.list[2][2])
 						extended = self.trimText(self.list[2][3])

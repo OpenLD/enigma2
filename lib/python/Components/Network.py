@@ -172,7 +172,7 @@ class Network:
 				fp.write("nameserver %d.%d.%d.%d\n" % tuple(nameserver))
 			fp.close()
 		except:
-			print "[Network.py] interfaces - resolv.conf write failed"
+			print "[Network] interfaces - resolv.conf write failed"
 
 	def loadNetworkConfig(self,iface,callback = None):
 		interfaces = []
@@ -182,7 +182,7 @@ class Network:
 			interfaces = fp.readlines()
 			fp.close()
 		except:
-			print "[Network.py] interfaces - opening failed"
+			print "[Network] interfaces - opening failed"
 
 		ifaces = {}
 		currif = ""
@@ -640,6 +640,8 @@ class Network:
 
 	def getWlanModuleDir(self, iface = None):
 		devicedir = self.sysfsPath(iface) + '/device'
+		if not os.path.isdir(devicedir):
+			return None
 		moduledir = devicedir + '/driver/module'
 		if os.path.isdir(moduledir):
 			return moduledir

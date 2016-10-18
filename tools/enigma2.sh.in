@@ -42,16 +42,25 @@ fi
 if [ -x @bindir@/showiframe ]; then
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
-	elif [ -f @sysconfdir@/enigma2/bootlogo.mvi ]; then
-		@bindir@/showiframe @sysconfdir@/enigma2/bootlogo.mvi
-	elif [ -f @datadir@/bootlogo.mvi ]; then
-		@bindir@/showiframe @datadir@/bootlogo.mvi
+	elif [ -f @datadir@/backdrop.mvi ]; then
+		@bindir@/showiframe @datadir@/backdrop.mvi
 	fi
 fi
 
 # hook to execute scripts always before enigma2 start
 if [ -x @bindir@/enigma2_pre_start.sh ]; then
 	@bindir@/enigma2_pre_start.sh 2>/dev/null
+fi
+
+if [ -e /proc/stb/info/hwmodel ]; then
+	stbcheck=`cat /proc/stb/info/hwmodel | cut -c1-8`
+	if [ $stbcheck == "optimuss" ]; then
+		string=`mount | grep 'sda1' | cut -d " " -f3`
+		if [ -e $string/sat-soft/settings.sh ]; then
+			chmod 755 $string/sat-soft/settings.sh
+			$string/sat-soft/settings.sh
+		fi
+	fi
 fi
 
 if [ -d /home/root ]; then
@@ -79,6 +88,15 @@ fi
 # check for settings files
 if [ ! -e /etc/enigma2/settings ]; then
 	touch /etc/enigma2/settings
+fi
+
+# check for default sat settings
+stbcheck=00
+if [ -e /proc/stb/info/subtype ]; then
+	stbcheck=`cat /proc/stb/info/subtype`
+fi
+if [ -e /etc/defaultsat.tar.gz ] && [ ! -e /etc/enigma2/lamedb ] && [ ! $stbcheck == "01" ] && [ ! $stbcheck == "1" ]; then
+	tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2
 fi
 
 sync
@@ -143,6 +161,11 @@ case $ret in
 		init 1
 		;;
 	44)
+		# little hack but it will be fixed soon in drivers
+		/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear
+		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi
+		echo fpupload >/proc/vfd && sleep 3 && dd bs=256k if=/tmp/micom.bin of=/dev/mcu
+		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi
 		# Wait forever for the user to power off
 		while(true) ; do sleep 60 ; done
 		;;

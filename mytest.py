@@ -8,8 +8,12 @@ from Tools.Profile import profile, profile_final
 profile("PYTHON_START")
 
 import Tools.RedirectOutput
+from boxbranding import getBoxType, getBrandOEM, getImageVersion, getMachineBuild
+print "[Image Type] %s" % getImageType()
+print "[Image Version] %s" % getImageVersion()
+print "[Image Build] %s" % getImageBuild()
+
 import enigma
-from boxbranding import getBoxType, getBrandOEM, getMachineBuild
 import eConsoleImpl
 import eBaseImpl
 enigma.eTimer = eBaseImpl.eTimer
@@ -377,12 +381,13 @@ class Session:
 			callback(*retval)
 
 	def instantiateSummaryDialog(self, screen, **kwargs):
-		self.pushSummary()
-		summary = screen.createSummary() or SimpleSummary
-		arguments = (screen,)
-		self.summary = self.doInstantiateDialog(summary, arguments, kwargs, self.summary_desktop)
-		self.summary.show()
-		screen.addSummary(self.summary)
+		if self.summary_desktop is not None:
+			self.pushSummary()
+			summary = screen.createSummary() or SimpleSummary
+			arguments = (screen,)
+			self.summary = self.doInstantiateDialog(summary, arguments, kwargs, self.summary_desktop)
+			self.summary.show()
+			screen.addSummary(self.summary)
 
 	def doInstantiateDialog(self, screen, arguments, kwargs, desktop):
 		# create dialog
@@ -451,16 +456,19 @@ class Session:
 		self.execEnd()
 
 	def pushSummary(self):
-		if self.summary:
+		if self.summary is not None:
 			self.summary.hide()
 			self.summary_stack.append(self.summary)
 			self.summary = None
 
 	def popSummary(self):
-		if self.summary:
+		if self.summary is not None:
 			self.summary.doClose()
-		self.summary = self.summary_stack and self.summary_stack.pop()
-		if self.summary:
+		if not self.summary_stack:
+			self.summary = None
+		else:
+			self.summary = self.summary_stack.pop()
+		if self.summary is not None:
 			self.summary.show()
 
 profile("Standby,PowerKey")

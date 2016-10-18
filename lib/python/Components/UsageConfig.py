@@ -313,7 +313,7 @@ def InitUsageConfig():
 
 	config.misc.disable_background_scan = ConfigYesNo(default = False)
 
-	config.usage.jobtaksextensions = ConfigYesNo(default = True)
+	config.usage.jobtaskextensions = ConfigYesNo(default = True)
 
 	config.usage.servicenum_fontsize = ConfigSelectionNumber(default = -3, stepwidth = 1, min = -8, max = 10, wraparound = True)
 	config.usage.servicename_fontsize = ConfigSelectionNumber(default = -5, stepwidth = 1, min = -8, max = 10, wraparound = True)

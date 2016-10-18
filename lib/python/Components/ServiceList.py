@@ -66,6 +66,7 @@ class ServiceList(HTMLComponent, GUIComponent):
 		self.ServiceInfoFontName = "Regular"
 		self.ServiceInfoFontSize = 18
 		self.progressBarWidth = 52
+		self.progressPercentWidth = 0
 		self.fieldMargins = 10
 		self.itemsppage = 1
 		self.onSelectionChanged = [ ]
@@ -81,6 +82,8 @@ class ServiceList(HTMLComponent, GUIComponent):
 			self.l.setColor(eListboxServiceContent.markedBackgroundSelected, parseColor(value))
 		def foregroundColorServiceNotAvail(value):
 			self.l.setColor(eListboxServiceContent.serviceNotAvail, parseColor(value))
+		def foregroundColorServiceSelected(value):
+			self.l.setColor(eListboxServiceContent.serviceSelected, parseColor(value))
 		def foregroundColorEvent(value):
 			self.l.setColor(eListboxServiceContent.eventForeground, parseColor(value))
 		def colorServiceDescription(value):
@@ -138,6 +141,8 @@ class ServiceList(HTMLComponent, GUIComponent):
 			self.l.setProgressbarBorderWidth(int(value))
 		def progressBarWidth(value):
 			self.progressBarWidth = int(value)
+		def progressPercentWidth(value):
+			self.progressPercentWidth = int(value)
 		def fieldMargins(value):
 			self.fieldMargins = int(value)
 		def nonplayableMargins(value):
@@ -394,12 +399,16 @@ class ServiceList(HTMLComponent, GUIComponent):
 
 		self.l.setElementPosition(self.l.celServiceNumber, eRect(0, 0, channelNumberWidth, self.ItemHeight))
 
+		progressWidth = self.progressBarWidth
+		if "perc" in config.usage.show_event_progress_in_servicelist.value:
+			progressWidth = self.progressPercentWidth or self.progressBarWidth
+
 		if "left" in config.usage.show_event_progress_in_servicelist.value:
-			self.l.setElementPosition(self.l.celServiceEventProgressbar, eRect(channelNumberWidth+channelNumberSpace, 0, self.progressBarWidth , self.ItemHeight))
-			self.l.setElementPosition(self.l.celServiceName, eRect(channelNumberWidth+channelNumberSpace + self.progressBarWidth + self.fieldMargins, 0, rowWidth - (channelNumberWidth+channelNumberSpace + self.progressBarWidth + self.fieldMargins), self.ItemHeight))
+			self.l.setElementPosition(self.l.celServiceEventProgressbar, eRect(channelNumberWidth+channelNumberSpace, 0, progressWidth , self.ItemHeight))
+			self.l.setElementPosition(self.l.celServiceName, eRect(channelNumberWidth+channelNumberSpace + progressWidth + self.fieldMargins, 0, rowWidth - (channelNumberWidth+channelNumberSpace + progressWidth + self.fieldMargins), self.ItemHeight))
 		elif "right" in config.usage.show_event_progress_in_servicelist.value:
-			self.l.setElementPosition(self.l.celServiceEventProgressbar, eRect(rowWidth - self.progressBarWidth, 0, self.progressBarWidth, self.ItemHeight))
-			self.l.setElementPosition(self.l.celServiceName, eRect(channelNumberWidth+channelNumberSpace, 0, rowWidth - (channelNumberWidth+channelNumberSpace + self.progressBarWidth + self.fieldMargins), self.ItemHeight))
+			self.l.setElementPosition(self.l.celServiceEventProgressbar, eRect(rowWidth - progressWidth, 0, progressWidth, self.ItemHeight))
+			self.l.setElementPosition(self.l.celServiceName, eRect(channelNumberWidth+channelNumberSpace, 0, rowWidth - (channelNumberWidth+channelNumberSpace + progressWidth + self.fieldMargins), self.ItemHeight))
 		else:
 			self.l.setElementPosition(self.l.celServiceEventProgressbar, eRect(0, 0, 0, 0))
 			self.l.setElementPosition(self.l.celServiceName, eRect(channelNumberWidth+channelNumberSpace, 0, rowWidth - (channelNumberWidth+channelNumberSpace), self.ItemHeight))
