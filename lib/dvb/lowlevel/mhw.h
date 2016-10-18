@@ -13,10 +13,6 @@ typedef struct {
 	u_char channel_id_hi;
 	u_char channel_id_lo;
 	u_char name[16];
-
-	int getChannelID() const    { return channel_id_hi << 8 | channel_id_lo; };
-	int getNetworkID() const    { return network_id << 8 | network_id_lo; };
-	int getTransportStreamId() const { return transport_stream_id_hi << 8 | transport_stream_id_lo; };
 } mhw_channel_name_t;
 
 typedef struct {
@@ -95,6 +91,15 @@ typedef struct {
 
 	int getDuration() const     { return duration_hi << 8 | duration_lo; };
 	int getMhw2Duration() const { return mhw2_duration_hi << 8 | mhw2_duration_lo; };
+	int getChannelID() const    { return channel_id_hi << 8 | channel_id_lo; };
+	int getNetworkID() const    { return network_id << 8 | network_id_lo; };
+	int getTransportStreamId() const { return transport_stream_id_hi << 8 | transport_stream_id_lo; };
+	int getSectionLength() const     { return section_length_hi << 8 | section_length_lo; };
+
+	void setChannelID(int channelId)   { channel_id_hi = channelId >> 8; channel_id_lo = channelId & 0xFF; };
+	void setNetworkID(int networkId)   { network_id_hi = networkId >> 8; network_id_lo = networkId & 0xFF; };
+	void setTransportStreamId(int tsi) { transport_stream_id_hi = tsi >> 8; transport_stream_id_lo = tsi & 0xFF; };
+	void setSectionLength(int length)  { section_length_hi = length >> 8; section_length_lo = length & 0xFF; };
 } mhw_title_t;
 
 typedef struct mhw_summary {
@@ -119,8 +124,6 @@ typedef struct mhw_summary {
 	u_char :8;
 	u_char :8;
 	u_char nb_replays :8;
-
-	int getSectionLength() const     { return section_length_hi << 8 | section_length_lo; };
 } mhw_summary_t;
 
 #endif
