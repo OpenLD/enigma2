@@ -760,7 +760,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 				if self.hasGatewayConfigEntry.value:
 					self.list.append(getConfigListEntry(_('Gateway'), self.gatewayConfigEntry))
 			havewol = False
-			if SystemInfo["WakeOnLAN"] and not getBoxType() in ('et10000', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue', 'gbipbox', 'gbquad', 'gbx1', 'gbx3'):
+			if SystemInfo["WakeOnLAN"] and not getBoxType() in ('et10000', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue', 'gbipbox', 'gbquad', 'gbquadplus', 'gbx1', 'gbx3'):
 				havewol = True
 			if getBoxType() == 'et10000' and self.iface == 'eth0':
 				havewol = False
@@ -4399,10 +4399,10 @@ class NetworkDjmount(Screen):
 	def activateDjmount(self):
 		commands = []
 		if fileExists('/etc/init.d/djmount'):
-			if fileExists('/etc/rc3.d/S20djmount'):
+			if fileExists('/etc/rc3.d/S60djmount'):
 				commands.append('update-rc.d -f djmount remove')
 			else:
-				commands.append('update-rc.d -f djmount defaults 20')
+				commands.append('update-rc.d -f djmount defaults 60')
 			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
 		else:
 			self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
@@ -4416,7 +4416,7 @@ class NetworkDjmount(Screen):
 		self['labactive'].setText(_("Disabled"))
 		self.my_djmount_active = False
 		self.my_djmount_run = False
-		if fileExists('/etc/rc3.d/S20djmount'):
+		if fileExists('/etc/rc3.d/S60djmount'):
 			self['labactive'].setText(_("Enabled"))
 			self['labactive'].show()
 			self.my_djmount_active = True
