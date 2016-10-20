@@ -121,6 +121,12 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			else:
 				self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
 		elif self.sel == 12:
+			if os.path.exists("/etc/init.d/mediatomb") and os.path.exists("/usr/bin/mediatomb"):
+				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkMediatomb
+				self.session.open(NetworkMediatomb)
+			else:
+				self.session.open(MessageBox, _("Sorry! mediatomb it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+		elif self.sel == 13:
 			from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
 			self.session.open(TunerServer)
 		else:
@@ -219,10 +225,17 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
+		mypixmap = mypath + "Ushare.png"
+		png = LoadPixmap(mypixmap)
+		name = _("Mediatomb")
+		idx = 12
+		res = (name, png, idx)
+		self.list.append(res)
+
 		mypixmap = mypath + "Tuner_Setup.png"
 		png = LoadPixmap(mypixmap)
 		name = _("RemoteTunerServer")
-		idx = 12
+		idx = 13
 		res = (name, png, idx)
 		self.list.append(res)
 

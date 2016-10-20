@@ -173,6 +173,7 @@ self.session.open(RemoteControlCode)
 					<item level="2" text="OpenVPN Setup" entryID="netvpn_setup"><screen module="NetworkSetup" screen="NetworkOpenvpn"/></item>
 					<item level="2" text="uShare Setup" entryID="netushare_setup"><screen module="NetworkSetup" screen="NetworkuShare"/></item>
 					<item level="2" text="Djmount Setup" entryID="netsmba_setup"><screen module="NetworkSetup" screen="NetworkDjmount"/></item>
+					<item level="2" text="Mediatomb Setup" entryID="netsmba_setup"><screen module="NetworkSetup" screen="NetworkMediatomb"/></item>
 					<item level="2" text="Remote Tuner Server" entryID="netrts_setup">
 <code>
 from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
