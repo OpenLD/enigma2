@@ -14,15 +14,15 @@ eErrorOutput::eErrorOutput():
 {
 	printout_timer = eTimer::create(this);
 //	fprintf(stderr, "[eErrorOutput] Constructor\n");
-//	fprintf(stderr, "[eErrorOutput] PIPE_BUF: %d\n", PIPE_BUF);
+	fprintf(stderr, "PIPE_BUF: %d\n", PIPE_BUF);
 	if(!pipe2(pipe_fd, O_NONBLOCK))
 	{
 		int max_pipe_size;
 		CFile f("/proc/sys/fs/pipe-max-size", "r");
 		if (f)
 			if (fscanf(f, "%d", &max_pipe_size) == 1)
-				fprintf(stderr, "[eErrorOutput] F_SETPIPE_SZ: %d\n", fcntl(pipe_fd[0], F_SETPIPE_SZ, max_pipe_size));
-		fprintf(stderr, "[eErrorOutput] F_GETPIPE_SZ 0: %d\n", fcntl(pipe_fd[0], F_GETPIPE_SZ, 0));
+				fprintf(stderr, "F_SETPIPE_SZ: %d\n", fcntl(pipe_fd[0], F_SETPIPE_SZ, max_pipe_size));
+		fprintf(stderr, "F_GETPIPE_SZ 0: %d\n", fcntl(pipe_fd[0], F_GETPIPE_SZ, 0));
 	}
 	else
 	{
