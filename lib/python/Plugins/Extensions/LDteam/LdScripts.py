@@ -94,5 +94,5 @@ class LDScripts(Screen):
 		if mysel:
 			mysel = mysel[0]
 			mysel2 = "/usr/lib/enigma2/python/Plugins/Extensions/LDteam/scripts/" + mysel + ".sh"
-			mytitle = "LD Team E2 Scripts: " + mysel
+			mytitle = "Scripts: " + mysel
 			self.session.open(Console, title=mytitle, cmdlist=[mysel2])

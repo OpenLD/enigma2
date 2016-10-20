@@ -17095,3 +17095,12 @@ msgstr "Total Clientes streaming: "
 
 msgid "No stream clients"
 msgstr "Ningún cliente streaming"
+
+msgid "Your IP public is:\n %s"
+msgstr "Su IP pública es:\n %s"
+
+msgid "Your IP local is:\n %s"
+msgstr "Su IP local es:\n %s"
+
+msgid "Mac Adress:\n %s"
+msgstr "Dirección Mac:\n %s"

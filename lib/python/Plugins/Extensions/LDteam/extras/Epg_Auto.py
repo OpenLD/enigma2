@@ -25,7 +25,7 @@ from types import *
 from time import sleep
 from threading import Thread
 from random import random
-import os, sys, commands, gettext, subprocess, threading, sys, traceback, time, datetime
+import os, sys, commands, gettext, subprocess, threading, traceback, time, datetime
 from os import system, remove as os_remove, rename as os_rename, popen, getcwd, chdir
 ##########################################################################
 class ProgressBar(threading.Thread):

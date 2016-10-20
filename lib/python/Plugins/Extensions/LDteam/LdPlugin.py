@@ -77,7 +77,7 @@ class LDPluginPanel(Screen):
 		self["key_green"] = Label(_("Addons"))
 		self["key_red"] = Label(_("Update"))
 		self["key_yellow"] = Label(_("Scripts"))
-		self["key_blue"] = Label(_("vTuner"))
+		self["key_blue"] = Label(_("Tools"))
 
 		self.list = []
 		self["list"] = List(self.list)
@@ -125,8 +125,8 @@ class LDPluginPanel(Screen):
 		self.session.open(PluginDownloadBrowser)
 
 	def keyBlue(self):
-		from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
-		self.session.open(TunerServer)
+		from Plugins.Extensions.LDteam.LdUtil import LDUtiles
+		self.session.open(LDUtiles)
 
 class LDPl:
 	def __init__(self):

@@ -14,7 +14,7 @@ eErrorOutput::eErrorOutput():
 {
 	printout_timer = eTimer::create(this);
 //	fprintf(stderr, "[eErrorOutput] Constructor\n");
-	fprintf(stderr, "[eErrorOutput] PIPE_BUF: %d\n", PIPE_BUF);
+//	fprintf(stderr, "[eErrorOutput] PIPE_BUF: %d\n", PIPE_BUF);
 	if(!pipe2(pipe_fd, O_NONBLOCK))
 	{
 		int max_pipe_size;
