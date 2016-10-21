@@ -248,7 +248,9 @@ class InfoBarTimeshift:
 			else:
 				self.SaveTimeshift("pts_livebuffer_%s" % self.pts_eventcount)
 		self.service_changed = 0
-		if not config.timeshift.isRecording.value:
+		#if not config.timeshift.isRecording.value:
+		#	self.__seekableStatusChanged()
+		self.__seekableStatusChanged() # fix: enable ready to start for standard timeshift after saving the event
 			self.__seekableStatusChanged()
 		self["TimeshiftActions"].setEnabled(False)
 
@@ -723,14 +725,17 @@ class InfoBarTimeshift:
 	def saveTimeshiftActions(self, action=None, returnFunction=None):
 		# print 'saveTimeshiftActions'
 		# print 'action',action
+		timeshiftfile = None
+		if self.pts_currplaying != self.pts_eventcount:
+			timeshiftfile = "pts_livebuffer_%s" % self.pts_currplaying
 		if action == "savetimeshift":
-			self.SaveTimeshift()
+			self.SaveTimeshift(timeshiftfile)
 		elif action == "savetimeshiftandrecord":
-			if self.pts_curevent_end > time():
+			if self.pts_curevent_end > time() and timeshiftfile is None:
 				self.SaveTimeshift(mergelater=True)
 				self.ptsRecordCurrentEvent()
 			else:
-				self.SaveTimeshift()
+				self.SaveTimeshift(timeshiftfile)
 		elif action == "noSave":
 			config.timeshift.isRecording.value = False
 			self.save_current_timeshift = False
