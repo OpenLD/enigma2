@@ -251,7 +251,6 @@ class InfoBarTimeshift:
 		#if not config.timeshift.isRecording.value:
 		#	self.__seekableStatusChanged()
 		self.__seekableStatusChanged() # fix: enable ready to start for standard timeshift after saving the event
-			self.__seekableStatusChanged()
 		self["TimeshiftActions"].setEnabled(False)
 
 	def __evSOFjump(self):
