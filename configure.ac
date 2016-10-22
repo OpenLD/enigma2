@@ -1,4 +1,4 @@
-AC_INIT([enigma2],[3.0.0],[enigma2-devel@lists.elitedvb.net])
+AC_INIT([enigma2],[3.0],[http://www.odisealinux.com])
 AM_INIT_AUTOMAKE([dist-bzip2 no-define tar-pax -Wno-portability])
 AC_CONFIG_HEADERS([enigma2_config.h])
 
@@ -207,11 +207,29 @@ if test x"$withosdanimation" != xno ; then
 fi
 AM_CONDITIONAL(HAVE_OSDANIMATION, test x"$withosdanimation" != xno)
 
-
+AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
 if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
 	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
 	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
 fi
+
+AC_ARG_ENABLE([sh],
+	[AS_HELP_STRING(--enable-sh,    enable sh patches)],
+	[case "${enableval}" in
+		yes) enable_sh=true ;;
+		no) enable_sh=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-sh]) ;;
+	esac])
+AM_CONDITIONAL([ENABLE_SH], [test x$enable_sh = xtrue])
+
+AC_ARG_ENABLE([libeplayer3],
+	[AS_HELP_STRING(--enable-libeplayer3,    enable libeplayer3)],
+	[case "${enableval}" in
+		yes) enable_libeplayer3=true ;;
+		no) enable_libeplayer3=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-libeplayer3]) ;;
+	esac])
+AM_CONDITIONAL([ENABLE_LIBEPLAYER3], [test x$enable_libeplayer3 = xtrue])
 
 AC_ARG_WITH(nolcd,
 	AC_HELP_STRING([--with-nolcd], [disable ascii based lcd, yes or no]),
@@ -492,6 +510,10 @@ if test "$BOXTYPE" == "vuduo" -o "$BOXTYPE" == "vusolo" -o "$BOXTYPE" == "vuduo2
 	AC_DEFINE(KEY_INFO_TO_KEY_EPG, 1,[define when rc sends a KEY_INFO event for its KEY_EPG key])
 fi
 
+if test "$BOXTYPE" == "vusolo2" -o "$BOXTYPE" == "vuduo2" -o "$BOXTYPE" == "vusolose" -o "$BOXTYPE" == "vusolo4k" -o "$BOXTYPE" == "vuzero"; then
+	AC_DEFINE(VUPLUS_RC_WORKAROUND, 1, [workaround for problem with vuplus event/rc driver])
+fi
+
 if test "$BOXTYPE" == "vp7358ci" ; then
 	AC_DEFINE(FORCE_ADVANCED_REMOTE, 1,[define to fixup the input device identification when the remote control is actually an 'advanced' remote (with play/forward/rewind keys)])
 	AC_DEFINE(KEY_HELP_TO_KEY_INFO, 1,[define when rc sends a KEY_HELP event we need KEY_INFO])
@@ -587,12 +609,72 @@ if test "$with_memcheck" = "yes"; then
 	AC_DEFINE([MEMLEAK_CHECK],[1],[Define to 1 to enable memory leak checks])
 fi
 
+AC_ARG_WITH(po,
+	AS_HELP_STRING([--with-po],[enable updating of po files]),
+	[with_po="$withval"],[with_po="no"])
+if test "$with_po" = "yes"; then
+	AC_PATH_PROG(MSGINIT, msginit)
+	AC_PATH_PROG(MSGMERGE, msgmerge)
+	AC_PATH_PROG(MSGUNIQ, msguniq)
+	AC_PATH_PROG(XGETTEXT, xgettext)
+	if test -z "$MSGINIT" -o -z "$MSGMERGE" -o -z "$MSGUNIQ" -o -z "$XGETTEXT"; then
+		AC_MSG_ERROR([Could not find required gettext tools])
+	fi
+fi
+AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
+
+AC_ARG_WITH(alsa,
+	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
+	[[with_alse=$withval]],
+	[[with_alse=no]]
+)
+if test x"$with_alsa" == xyes ; then
+	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
+	PKG_CHECK_MODULES(ALSA, alsa)
+fi
+
+AC_ARG_WITH(alsacard,
+	AC_HELP_STRING([--with-alsacard=card], [use 'card' for alsa card device, e.g. hw:0]),
+	[[with_alsacard=$withval]],
+	[[with_alsacard=no]]
+)
+if test x"$with_alsacard" != xno ; then
+	AC_DEFINE_UNQUOTED(ALSA_CARD, "$withval",[Defines which alsa card to use])
+fi
+
+AC_ARG_WITH(alsamixer,
+	AC_HELP_STRING([--with-alsamixer=mixername], [use alsa 'mixername' for volume control, e.g. Master]),
+	[[with_alsamixer=$withval]],
+	[[with_alsamixer=no]]
+)
+if test x"$with_alsamixer" != xno ; then
+	AC_DEFINE_UNQUOTED(ALSA_VOLUME_MIXER, "$withval",[Defines which alsa mixer to use for volume control])
+fi
+
+AC_ARG_WITH(fbdev,
+	AC_HELP_STRING([--with-fbdev=devicename], [use devicename for framebuffer device, e.g. /dev/fb0 ]),
+	[[with_fbdev=$withval]],
+	[[with_fbdev=no]]
+)
+if test x"$with_fbdev" != xno ; then
+	AC_DEFINE_UNQUOTED(FB_DEV, "$withval", [Defines which device to use for main framebuffer (e.g. /dev/fb0)])
+fi
+
+AC_ARG_WITH(lcddev,
+	AC_HELP_STRING([--with-lcddev=devicename], [use devicename for lcd framebuffer device, e.g. /dev/fb1 ]),
+	[[with_lcddev=$withval]],
+	[[with_lcddev=no]]
+)
+if test x"$with_lcddev" != xno ; then
+	AC_DEFINE_UNQUOTED(LCD_DEV, "$withval", [Defines which device to use for lcd (e.g. /dev/fb1)])
+fi
+
 ENIGMA2_CFLAGS="-fno-rtti -fno-exceptions -rdynamic -funwind-tables"
 AC_SUBST(ENIGMA2_CFLAGS)
 
 CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
 CFLAGS="$CFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall $BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $GLES_CFLAGS"
+CXXFLAGS="$CXXFLAGS -Wall $BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $GLES_CFLAGS $ALSA_CFLAGS"
 AX_SWIG_PYTHON_OPT="$AX_SWIG_PYTHON_OPT -DSWIG_PYTHON_LEGACY_BOOL"
 
 AC_CONFIG_FILES([

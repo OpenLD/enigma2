@@ -336,10 +336,12 @@ class SystemMemoryInfo(Screen):
 		self["lab1"] = StaticText(_("INFO RAM / FLASH"))
 		self["AboutScrollLabel"] = ScrollLabel()
 
-		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
+		self["actions"] = ActionMap(["SetupActions", "ColorActions", "DirectionActions"],
 			{
 				"cancel": self.close,
 				"ok": self.close,
+				"up": self["AboutScrollLabel"].pageUp,
+				"down": self["AboutScrollLabel"].pageDown,
 			})
 
 		out_lines = file("/proc/meminfo").readlines()
