@@ -103,29 +103,17 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkTelnet
 			self.session.open(NetworkTelnet)
 		elif self.sel == 9:
-			if os.path.exists("/etc/init.d/udpxy.sh") and os.path.exists("/usr/bin/udpxy"):
-				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkUdpxy
-				self.session.open(NetworkUdpxy)
-			else:
-				self.session.open(MessageBox, _("Sorry! udpxy it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkUdpxy
+			self.session.open(NetworkUdpxy)
 		elif self.sel == 10:
-			if os.path.exists("/etc/init.d/xupnpd") and os.path.exists("/usr/bin/xupnpd"):
-				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkXupnpd
-				self.session.open(NetworkXupnpd)
-			else:
-				self.session.open(MessageBox, _("Sorry! xupnpd it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkXupnpd
+			self.session.open(NetworkXupnpd)
 		elif self.sel == 11:
-			if os.path.exists("/etc/init.d/djmount") and os.path.exists("/usr/bin/djmount"):
-				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkDjmount
-				self.session.open(NetworkDjmount)
-			else:
-				self.session.open(MessageBox, _("Sorry! djmount it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkDjmount
+			self.session.open(NetworkDjmount)
 		elif self.sel == 12:
-			if os.path.exists("/etc/init.d/mediatomb") and os.path.exists("/usr/bin/mediatomb"):
-				from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkMediatomb
-				self.session.open(NetworkMediatomb)
-			else:
-				self.session.open(MessageBox, _("Sorry! mediatomb it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkMediatomb
+			self.session.open(NetworkMediatomb)
 		elif self.sel == 13:
 			from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
 			self.session.open(TunerServer)
