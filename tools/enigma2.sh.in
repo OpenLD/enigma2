@@ -24,11 +24,6 @@ if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.S
 	fi
 fi
 
-# check for init_openld.sh to restart enigma2
-if [ -e /etc/init.d/init_openld.sh ]; then
-	sh /etc/init.d/init_openld.sh 2>/dev/null
-fi
-
 # hook to execute user startup script before enigma2 start
 if [ -x /etc/enigma2/startup.sh ]; then
 	sh /etc/enigma2/startup.sh 2>/dev/null
@@ -83,6 +78,12 @@ fi
 # check for receiver specific passthrough helper lib
 if [ -e @libdir@/libpassthrough.so ]; then
 	LIBS="$LIBS @libdir@/libpassthrough.so"
+fi
+
+# check for init_openld.sh to restart enigma2
+if [ -e /etc/init.d/init_openld.sh ]; then
+	chmod 755 /etc/init.d/init_openld.sh 2>/dev/null
+	nohup sh /etc/init.d/init_openld.sh > /dev/null 2>&1 &
 fi
 
 # check for settings files

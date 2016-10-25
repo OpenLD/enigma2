@@ -2801,7 +2801,7 @@ class NetworkSambaLog(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Samba Log"))
-		self.skinName = "NetworkInadynLog"
+		self.skinName = "NetworkSambaLog"
 		self['infotext'] = ScrollLabel('')
 		self.Console = Console()
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'up': self['infotext'].pageUp, 'down': self['infotext'].pageDown})
@@ -4781,6 +4781,185 @@ class NetworkMediatomb(Screen):
 			self['key_green'].setText(_("Start"))
 			status_summary = self['lab2'].text + ' ' + self['labstop'].text
 		title = _("Mediatomb Setup")
+		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
+
+		for cb in self.onChangedEntry:
+			cb(title, status_summary, autostartstatus_summary)
+
+class NetworkTransmissionAbout(Screen):
+	def __init__(self, session, args = 0):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("Transmission About"))
+		self.skinName = "NetworkSambaLog"
+		abouttxt = 'Name: Transmission\nBuild version: v.2.92 (14714)\nBuild by: Javier Sayago (Javilonas)\n\nA fast and easy BitTorrent client\nCopyright (c) The Transmission Project\n\n'
+		self['infotext'] = Label(abouttxt)
+		self['key_green'] = Label()
+		self['key_red'] = Label()
+		self['key_blue'] = Label(_("Exit"))
+		self['key_yellow'] = Label()
+		self['actions'] = ActionMap(['OkCancelActions', 'ColorActions'], {
+		 'blue': self.quit,
+		 'cancel': self.quit
+		 }, -2)
+
+	def quit(self):
+		self.close()
+
+class NetworkTransmission(Screen):
+	def __init__(self, session):
+		Screen.__init__(self, session)
+		Screen.setTitle(self, _("Transmission Setup"))
+		self.skinName = "NetworkSamba"
+		self.onChangedEntry = [ ]
+		self['lab1'] = Label(_("Autostart:"))
+		self['labactive'] = Label(_(_("Disabled")))
+		self['lab2'] = Label(_("Current Status:"))
+		self['labstop'] = Label(_("Stopped"))
+		self['labrun'] = Label(_("Running"))
+		self['key_green'] = Label(_("Start"))
+		self['key_red'] = Label(_("Remove Service"))
+		self['key_yellow'] = Label(_("Autostart"))
+		self['key_blue'] = Label(_("About"))
+		self.Console = Console()
+		self.my_transmission_active = False
+		self.my_transmission_run = False
+		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {
+		 'ok': self.close,
+		 'back': self.close,
+		 'red': self.UninstallCheck,
+		 'green': self.TransmissionStartStop,
+		 'yellow': self.activateTransmission,
+		 'blue': self.TransmissionshowAbout})
+		self.service_name = 'transmission'
+		self.onLayoutFinish.append(self.InstallCheck)
+
+	def InstallCheck(self):
+		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.checkNetworkState)
+
+	def checkNetworkState(self, str, retval, extra_args):
+		if 'Collected errors' in str:
+			self.session.openWithCallback(self.close, MessageBox, _("A background update check is in progress, please wait a few minutes and try again."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		elif not str:
+			self.feedscheck = self.session.open(MessageBox,_('Please wait whilst feeds state is checked.'), MessageBox.TYPE_INFO, enable_input = False)
+			self.feedscheck.setTitle(_('Checking Feeds'))
+			cmd1 = "opkg update"
+			self.CheckConsole = Console()
+			self.CheckConsole.ePopen(cmd1, self.checkNetworkStateFinished)
+		else:
+			self.updateService()
+
+	def checkNetworkStateFinished(self, result, retval,extra_args=None):
+		if 'bad address' in result:
+			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Your %s %s is not connected to the internet, please check your network settings and try again.") % (getMachineBrand(), getMachineName()), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
+			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
+		else:
+			self.session.openWithCallback(self.QuestionCallback, MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+
+	def QuestionCallback(self, val):
+		if val:
+			self.session.openWithCallback(self.InstallPackage, MessageBox, _('Do you want to also install transmission client ?.'), MessageBox.TYPE_YESNO)
+		else:
+			self.feedscheck.close()
+			self.close()
+
+	def InstallPackage(self, val):
+		if val:
+			self.service_name += ' transmission-client'
+		self.doInstall(self.installComplete, self.service_name)
+
+	def InstallPackageFailed(self, val):
+		self.feedscheck.close()
+		self.close()
+
+	def doInstall(self, callback, pkgname):
+		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message.setTitle(_('Installing Service'))
+		self.Console.ePopen('/usr/bin/opkg install ' + pkgname, callback)
+
+	def installComplete(self,result = None, retval = None, extra_args = None):
+		self.session.open(TryQuitMainloop, 2)
+
+	def UninstallCheck(self):
+		self.service_name += ' transmission-client'
+		self.Console.ePopen('/usr/bin/opkg list_installed ' + self.service_name, self.RemovedataAvail)
+
+	def RemovedataAvail(self, str, retval, extra_args):
+		if str:
+			restartbox = self.session.openWithCallback(self.RemovePackage,MessageBox,_('Your %s %s will be restarted after the removal of service\nDo you want to remove now ?') % (getMachineBrand(), getMachineName()), MessageBox.TYPE_YESNO)
+			restartbox.setTitle(_('Ready to remove "%s" ?') % self.service_name)
+		else:
+			self.updateService()
+
+	def RemovePackage(self, val):
+		if val:
+			self.doRemove(self.removeComplete, self.service_name)
+
+	def doRemove(self, callback, pkgname):
+		self.message = self.session.open(MessageBox,_("please wait..."), MessageBox.TYPE_INFO, enable_input = False)
+		self.message.setTitle(_('Removing Service'))
+		self.Console.ePopen('/usr/bin/opkg remove ' + pkgname + ' --force-remove --autoremove', callback)
+
+	def removeComplete(self,result = None, retval = None, extra_args = None):
+		self.session.open(TryQuitMainloop, 2)
+
+	def createSummary(self):
+		return NetworkServicesSummary
+
+	def TransmissionshowAbout(self):
+		self.session.open(NetworkTransmissionAbout)
+
+	def TransmissionStartStop(self):
+		commands = []
+		if fileExists('/etc/init.d/transmission'):
+			if not self.my_transmission_run:
+				self.Console.ePopen('/etc/init.d/transmission start', self.StartStopCallback)
+			elif self.my_transmission_run:
+				self.Console.ePopen('/etc/init.d/transmission stop', self.StartStopCallback)
+		else:
+			self.session.open(MessageBox, _("Sorry! transmission it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+
+	def StartStopCallback(self, result = None, retval = None, extra_args = None):
+		time.sleep(3)
+		self.updateService()
+
+	def activateTransmission(self):
+		commands = []
+		if fileExists('/etc/init.d/transmission'):
+			if fileExists('/etc/rc3.d/S99transmission'):
+				commands.append('update-rc.d -f transmission remove')
+			else:
+				commands.append('update-rc.d -f transmission defaults 99')
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		else:
+			self.session.open(MessageBox, _("Sorry! transmission it was not found"), MessageBox.TYPE_INFO, timeout = 5)
+
+	def updateService(self):
+		import process
+		p = process.ProcessList()
+		transmission_process = str(p.named('transmission-da')).strip('[]')
+		self['labrun'].hide()
+		self['labstop'].hide()
+		self['labactive'].setText(_("Disabled"))
+		self.my_transmission_active = False
+		self.my_transmission_run = False
+		if fileExists('/etc/rc3.d/S99transmission'):
+			self['labactive'].setText(_("Enabled"))
+			self['labactive'].show()
+			self.my_transmission_active = True
+		if transmission_process:
+			self.my_transmission_run = True
+		if self.my_transmission_run:
+			self['labstop'].hide()
+			self['labrun'].show()
+			self['key_green'].setText(_("Stop"))
+			status_summary = self['lab2'].text + ' ' + self['labrun'].text
+		else:
+			self['labrun'].hide()
+			self['labstop'].show()
+			self['key_green'].setText(_("Start"))
+			status_summary = self['lab2'].text + ' ' + self['labstop'].text
+		title = _("Transmission Setup")
 		autostartstatus_summary = self['lab1'].text + ' ' + self['labactive'].text
 
 		for cb in self.onChangedEntry:

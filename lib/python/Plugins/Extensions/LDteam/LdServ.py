@@ -117,6 +117,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 13:
 			from Plugins.Extensions.LDteam.LdTunerServer import TunerServer
 			self.session.open(TunerServer)
+		elif self.sel == 14:
+			from Plugins.Extensions.LDteam.LdNetworkSetup import NetworkTransmission
+			self.session.open(NetworkTransmission)
 		else:
 			self.noYet()
 
@@ -224,6 +227,13 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		png = LoadPixmap(mypixmap)
 		name = _("RemoteTunerServer")
 		idx = 13
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "Afp.png"
+		png = LoadPixmap(mypixmap)
+		name = _("Transmission")
+		idx = 14
 		res = (name, png, idx)
 		self.list.append(res)
 
