@@ -2715,7 +2715,7 @@ msgid ""
 "Do you really want to initialize the device?\n"
 "All data on the disk will be lost!"
 msgstr ""
-"¿Seguro que quieres inicializar el dispositivo?\n"
+"¿Seguro que quieres formatear el dispositivo?\n"
 "Se perderán todos los datos."
 
 #
@@ -4085,7 +4085,7 @@ msgstr "Inicialización"
 
 #
 msgid "Initialize"
-msgstr "Inicializar"
+msgstr "Formatear"
 
 msgid "Initializing storage device..."
 msgstr "Inicializando el dispositivo de almacenamiento…"
@@ -5032,7 +5032,7 @@ msgstr "Sin conexión"
 
 #
 msgid "No HDD found or HDD not initialized!"
-msgstr "HDD no encontrado o no inicializado."
+msgstr "HDD no encontrado o sin formato."
 
 msgid "No Timeshift found to save as recording!"
 msgstr "No se ha encontrado ningún Timeshift guardado como grabación."
@@ -12428,7 +12428,7 @@ msgstr "Formateando partición %d"
 
 #
 msgid "Initialize disk"
-msgstr "Inicializar disco"
+msgstr "Formatear disco"
 
 #
 msgid "Cannot format partition %d"
