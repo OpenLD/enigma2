@@ -375,7 +375,7 @@ class HddMount(Screen):
 		self.mountp = extra_args[1]
 		self.device_uuid_tmp = result.split('UUID=')
 		if str(self.device_uuid_tmp) != "['']":
-			self.device_uuid_tmp = self.device_uuid_tmp[1].replace('TYPE="ext2"','').replace('TYPE="ext3"','').replace('TYPE="ext4"','').replace('TYPE="ntfs"','').replace('TYPE="exfat"','').replace('TYPE="vfat"','').replace('TYPE="xfs"','').replace('"','')
+			self.device_uuid_tmp = self.device_uuid_tmp[1].replace('TYPE="ext2"','').replace('TYPE="ext3"','').replace('TYPE="ext4"','').replace('TYPE="ntfs"','').replace('TYPE="exfat"','').replace('TYPE="vfat"','').replace('TYPE="fat"','').replace('TYPE="fat16"','').replace('TYPE="fat32"','').replace('TYPE="xfs"','').replace('"','')
 			self.device_uuid_tmp = self.device_uuid_tmp.replace('\n',"")
 			self.device_uuid_tmp = self.device_uuid_tmp.split()[0]
 			self.device_uuid = 'UUID=' + self.device_uuid_tmp
@@ -630,6 +630,8 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/usr', '/usr')]))
 		if dtype == 'Linux':
 			dtype = 'ext2' or 'ext3' or 'ext4'
+		elif dtype == 'vfat':
+			dtype = 'vfat' or 'fat' or 'fat16' or 'fat32'
 		else:
 			dtype = 'auto'
 		item.value = d1.strip()

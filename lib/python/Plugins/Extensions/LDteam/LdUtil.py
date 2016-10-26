@@ -149,14 +149,12 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		res = (name, png, idx)
 		self.list.append(res)
 
-
 		mypixmap = mypath + "Network.png"
 		png = LoadPixmap(mypixmap)
 		name = _("Trace")
 		idx = 4
 		res = (name, png, idx)
 		self.list.append(res)
-
 
 		mypixmap = mypath + "Network.png"
 		png = LoadPixmap(mypixmap)

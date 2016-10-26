@@ -111,8 +111,8 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			from Plugins.Extensions.LDteam.MountManager import HddMount
 			self.session.open(HddMount)
 		elif self.sel == 1:
-			from Plugins.Extensions.LDteam.LdFormat import LD_UsbFormat
-			self.session.open(LD_UsbFormat)
+			from Plugins.Extensions.LDteam.LdEparted import Ceparted
+			self.session.open(Ceparted)
 		elif self.sel == 2:
 			from Plugins.Extensions.LDteam.LdSwapManager import Swap
 			self.session.open(Swap)
@@ -175,12 +175,10 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 0
 		res = (name, png, idx)
 		self.list.append(res)
-		mypixmap = mypath + 'Usb.png'
+		mypixmap = mypath + 'Harddisk.png'
 		png = LoadPixmap(mypixmap)
-		if config.osd.language.value == 'es_ES':
-			name = _('Formatear USB')
-		else:
-			name = _('Usb Format Wizard')
+		name = _('eParted')
+
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
