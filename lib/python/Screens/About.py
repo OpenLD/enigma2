@@ -92,18 +92,12 @@ def getAboutText():
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("GStreamer:\t%s") % str(getGStreamerVersionString().replace('GStreamer','')) + "\n"
+	AboutText += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
 	AboutText += _("Python:\t %s") % getPythonVersionString() + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
 	#AboutText += _("Installed:\t ") + about.getFlashDateString() + "\n"
 	#AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n\n"
-
-	fp_version = getFPVersion()
-	if fp_version is None:
-		fp_version = ""
-	elif fp_version != 0:
-		fp_version = _("Frontprocessor version: %s") % fp_version
-		AboutText += fp_version + "\n"
 
 	tempinfo = ""
 	if path.exists('/proc/stb/sensors/temp0/value'):
@@ -131,6 +125,20 @@ def getAboutText():
 		mark = str('\xc2\xb0')
 		AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
 	AboutLcdText = AboutText.replace('\t', ' ')
+
+	fp_version = getFPVersion()
+	if fp_version is None:
+		fp_version = ""
+	elif fp_version != 0:
+		fp_version = _("Frontprocessor version: %s") % fp_version
+		AboutText += fp_version + "\n"
+
+	bootloader = ""
+	if path.exists('/sys/firmware/devicetree/base/bolt/tag'):
+		f = open('/sys/firmware/devicetree/base/bolt/tag', 'r')
+		bootloader = f.readline().replace('\x00', '').replace('\n', '')
+		f.close()
+		AboutText += _("Bootloader:\t\t%s\n") % (bootloader)
 
 	return AboutText, AboutLcdText
 
