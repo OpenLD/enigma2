@@ -437,8 +437,8 @@ class Cpart(Screen):
 		if val[PA_FS]=="linux-swap":
 			mkfs = "/sbin/mkswap"
 		elif val[PA_FS]=="fat":
-			mkfs = "/sbin/mkfs.fat"
 			self.mbox = self.session.open(MessageBox,_("Verify a partition smaller than 4G has been created on the USB device. If it is higher, it appears as FAT32."), MessageBox.TYPE_INFO)
+			mkfs = "/sbin/mkfs.fat"
 		elif val[PA_FS]=="fat16":
 			self.mbox = self.session.open(MessageBox,_("Verify a partition smaller than 4G has been created on the USB device. If it is higher, it will fail."), MessageBox.TYPE_INFO)
 			mkfs = "/sbin/mkfs.msdos -F 16"
