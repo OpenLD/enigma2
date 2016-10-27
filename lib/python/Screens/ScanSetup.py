@@ -805,7 +805,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 						self.scan_ter.system.value = eDVBFrontendParametersTerrestrial.System_DVB_T
 					self.TerrestrialRegionEntry = getConfigListEntry(_('Region'), self.TerrestrialRegion)
 					self.list.append(self.TerrestrialRegionEntry)
-		elif  self.DVB_type.value == "ATSC":
+		elif self.DVB_type.value == "ATSC":
 			if self.scan_type_atsc.value == "single_transponder":
 				self.systemEntry = getConfigListEntry(_("System"), self.scan_ats.system)
 				self.list.append(self.systemEntry)
