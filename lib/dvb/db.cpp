@@ -447,18 +447,20 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				is_id = NO_STREAM_ID_FILTER,
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root,
 				pls_code = 0;
-#endif
 
 			if (version == 4)
 				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
 					&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
 					&inversion, &flags, &system, &modulation, &rolloff, &pilot);
-#if defined NO_STREAM_ID_FILTER
 			else
 				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
 					&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
 					&inversion, &flags, &system, &modulation, &rolloff, &pilot,
 					&is_id, &pls_code, &pls_mode);
+#else
+			sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
+				&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
+				&inversion, &flags, &system, &modulation, &rolloff, &pilot);
 #endif
 
 			sat.frequency = frequency;
