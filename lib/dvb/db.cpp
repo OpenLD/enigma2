@@ -462,6 +462,7 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 			sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
 				&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
 				&inversion, &flags, &system, &modulation, &rolloff, &pilot);
+#endif
 
 			sat.frequency = frequency;
 			sat.symbol_rate = symbol_rate;
@@ -1303,6 +1304,7 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 		modulation, system, freq, sr, pol, fec, inv, pilot, rolloff, is_id, pls_code, pls_mode, tsid, onid;
 #else
 		modulation, system, freq, sr, pol, fec, inv, pilot, rolloff, tsid, onid;
+#endif
 	char *end_ptr;
 
 	xmlNode *root_element = xmlDocGetRootElement(doc);
@@ -1386,9 +1388,11 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 					else if (name == "inversion") dest = &inv;
 					else if (name == "rolloff") dest = &rolloff;
 					else if (name == "pilot") dest = &pilot;
+#if defined NO_STREAM_ID_FILTER
 					else if (name == "is_id") dest = &is_id;
 					else if (name == "pls_code") dest = &pls_code;
 					else if (name == "pls_mode") dest = &pls_mode;
+#endif
 					else if (name == "tsid") dest = &tsid;
 					else if (name == "onid") dest = &onid;
 					else continue;
@@ -1405,6 +1409,7 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 
 				if (freq && sr && pol != -1)
 				{
+#if defined NO_STREAM_ID_FILTER
 					tuple = PyTuple_New(15);
 					PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(0));
 					PyTuple_SET_ITEM(tuple, 1, PyInt_FromLong(freq));
@@ -1423,6 +1428,23 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 					PyTuple_SET_ITEM(tuple, 14, PyInt_FromLong(onid));
 					PyList_Append(tplist, tuple);
 					Py_DECREF(tuple);
+#else
+					tuple = PyTuple_New(12);
+					PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(0));
+					PyTuple_SET_ITEM(tuple, 1, PyInt_FromLong(freq));
+					PyTuple_SET_ITEM(tuple, 2, PyInt_FromLong(sr));
+					PyTuple_SET_ITEM(tuple, 3, PyInt_FromLong(pol));
+					PyTuple_SET_ITEM(tuple, 4, PyInt_FromLong(fec));
+					PyTuple_SET_ITEM(tuple, 5, PyInt_FromLong(system));
+					PyTuple_SET_ITEM(tuple, 6, PyInt_FromLong(modulation));
+					PyTuple_SET_ITEM(tuple, 7, PyInt_FromLong(inv));
+					PyTuple_SET_ITEM(tuple, 8, PyInt_FromLong(rolloff));
+					PyTuple_SET_ITEM(tuple, 9, PyInt_FromLong(pilot));
+					PyTuple_SET_ITEM(tuple, 10, PyInt_FromLong(tsid));
+					PyTuple_SET_ITEM(tuple, 11, PyInt_FromLong(onid));
+					PyList_Append(tplist, tuple);
+					Py_DECREF(tuple);
+#endif
 				}
 
 				// next transponder
