@@ -129,7 +129,6 @@ void eDVBFrontendParametersSatellite::set(const SatelliteDeliverySystemDescripto
 	is_id = NO_STREAM_ID_FILTER;
 	pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 	pls_code = 0;
-#endif
 	if (system == System_DVB_S2)
 	{
 		eDebug("[eDVBFrontendParametersSatellite] SAT DVB-S2 freq %d, %s, pos %d, sr %d, fec %d, modulation %d, rolloff %d, is_id %d, pls_mode %d, pls_code %d",
@@ -151,6 +150,26 @@ void eDVBFrontendParametersSatellite::set(const SatelliteDeliverySystemDescripto
 			orbital_position,
 			symbol_rate, fec);
 	}
+#else
+	if (system == System_DVB_S2)
+	{
+		eDebug("[eDVBFrontendParametersSatellite] SAT DVB-S2 freq %d, %s, pos %d, sr %d, fec %d, modulation %d, rolloff %d",
+			frequency,
+			polarisation ? "hor" : "vert",
+			orbital_position,
+			symbol_rate, fec,
+			modulation,
+			rolloff);
+	}
+	else
+	{
+		eDebug("SAT DVB-S freq %d, %s, pos %d, sr %d, fec %d",
+			frequency,
+			polarisation ? "hor" : "vert",
+			orbital_position,
+			symbol_rate, fec);
+	}
+#endif
 }
 
 void eDVBFrontendParametersCable::set(const CableDeliverySystemDescriptor &descriptor)
@@ -363,12 +382,14 @@ RESULT eDVBFrontendParameters::calculateDifference(const iDVBFrontendParameters 
 				diff = 1<<29;
 			else if (sat.polarisation != osat.polarisation)
 				diff = 1<<28;
+#if defined NO_STREAM_ID_FILTER
 			else if (sat.is_id != osat.is_id)
 				diff = 1<<27;
 			else if (sat.pls_mode != osat.pls_mode)
 				diff = 1<<27;
 			else if (sat.pls_code != osat.pls_code)
 				diff = 1<<27;
+#endif
 			else if (exact && sat.fec != osat.fec && sat.fec != eDVBFrontendParametersSatellite::FEC_Auto && osat.fec != eDVBFrontendParametersSatellite::FEC_Auto)
 				diff = 1<<27;
 			else if (exact && sat.modulation != osat.modulation && sat.modulation != eDVBFrontendParametersSatellite::Modulation_Auto && osat.modulation != eDVBFrontendParametersSatellite::Modulation_Auto)
@@ -1435,7 +1456,9 @@ void eDVBFrontend::getTransponderData(ePtr<iDVBTransponderData> &dest, bool orig
 			p[cmdseq.num++].cmd = DTV_INNER_FEC;
 			p[cmdseq.num++].cmd = DTV_ROLLOFF;
 			p[cmdseq.num++].cmd = DTV_PILOT;
+#if defined DTV_STREAM_ID
 			p[cmdseq.num++].cmd = DTV_STREAM_ID;
+#endif
 		}
 		else if (type == feCable)
 		{
@@ -1450,7 +1473,9 @@ void eDVBFrontend::getTransponderData(ePtr<iDVBTransponderData> &dest, bool orig
 			p[cmdseq.num++].cmd = DTV_TRANSMISSION_MODE;
 			p[cmdseq.num++].cmd = DTV_GUARD_INTERVAL;
 			p[cmdseq.num++].cmd = DTV_HIERARCHY;
+#if defined DTV_STREAM_ID
 			p[cmdseq.num++].cmd = DTV_STREAM_ID;
+#endif
 		}
 		else if (type == feATSC)
 		{
@@ -2537,6 +2562,7 @@ RESULT eDVBFrontend::prepare_sat(const eDVBFrontendParametersSatellite &feparm, 
 	res = m_sec->prepare(*this, feparm, satfrequency, 1 << m_slotid, tunetimeout);
 	if (!res)
 	{
+#if defined NO_STREAM_ID_FILTER
 		eDebugNoSimulate("[eDVBFrontend] prepare_sat System %d Freq %d Pol %d SR %d INV %d FEC %d orbpos %d system %d modulation %d pilot %d, rolloff %d, is_id %d, pls_mode %d, pls_code %d",
 			m_dvbid,
 			feparm.system,
@@ -2559,6 +2585,27 @@ RESULT eDVBFrontend::prepare_sat(const eDVBFrontendParametersSatellite &feparm, 
 			return -EINVAL;
 		}
 		eDebugNoSimulate("tuning to %d mhz", satfrequency / 1000);
+#else
+		eDebugNoSimulate("[eDVBFrontend] prepare_sat System %d Freq %d Pol %d SR %d INV %d FEC %d orbpos %d system %d modulation %d pilot %d, rolloff %d",
+			m_dvbid,
+			feparm.system,
+			feparm.frequency,
+			feparm.polarisation,
+			feparm.symbol_rate,
+			feparm.inversion,
+			feparm.fec,
+			feparm.orbital_position,
+			feparm.system,
+			feparm.modulation,
+			feparm.pilot,
+			feparm.rolloff);
+		if ((unsigned int)satfrequency < fe_info.frequency_min || (unsigned int)satfrequency > fe_info.frequency_max)
+		{
+			eDebugNoSimulate("%d mhz out of tuner range.. dont tune", satfrequency / 1000);
+			return -EINVAL;
+		}
+		eDebugNoSimulate("tuning to %d mhz", satfrequency / 1000);
+#endif
 	}
 	oparm.setDVBS(feparm, feparm.no_rotor_command_on_tune);
 	return res;
