@@ -442,16 +442,23 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				system=eDVBFrontendParametersSatellite::System_DVB_S,
 				modulation=eDVBFrontendParametersSatellite::Modulation_QPSK,
 				rolloff=eDVBFrontendParametersSatellite::RollOff_alpha_0_35,
-				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown,
 #if defined NO_STREAM_ID_FILTER
+				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown,
 				is_id = NO_STREAM_ID_FILTER,
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root,
 				pls_code = 0;
-			sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
-				&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
-				&inversion, &flags, &system, &modulation, &rolloff, &pilot,
-				&is_id, &pls_code, &pls_mode);
+
+			if (version == 4)
+				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
+					&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
+					&inversion, &flags, &system, &modulation, &rolloff, &pilot);
+			else
+				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
+					&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
+					&inversion, &flags, &system, &modulation, &rolloff, &pilot,
+					&is_id, &pls_code, &pls_mode);
 #else
+				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown;
 			sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
 				&frequency, &symbol_rate, &polarisation, &fec, &orbital_position,
 				&inversion, &flags, &system, &modulation, &rolloff, &pilot);
@@ -1292,7 +1299,10 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 	}
 
 	int tmp, *dest = NULL,
+#if defined NO_STREAM_ID_FILTER
 		modulation, system, freq, sr, pol, fec, inv, pilot, rolloff, is_id, pls_code, pls_mode, tsid, onid;
+#else
+		modulation, system, freq, sr, pol, fec, inv, pilot, rolloff, tsid, onid;
 	char *end_ptr;
 
 	xmlNode *root_element = xmlDocGetRootElement(doc);
