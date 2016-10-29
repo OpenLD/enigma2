@@ -471,16 +471,20 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 			sat.modulation = modulation;
 			sat.rolloff = rolloff;
 			sat.pilot = pilot;
+#if defined NO_STREAM_ID_FILTER
 			sat.is_id = is_id;
 			sat.pls_mode = pls_mode & 3;
 			sat.pls_code = pls_code & 0x3FFFF;
+#endif
 			// Process optional features
 			while (options) {
 				char * next = strchr(options, ',');
 				if (next)
 					*next++ = '\0';
+#if defined NO_STREAM_ID_FILTER
 				if (strncmp(options, "MIS/PLS:", 8) == 0)
 					sscanf(options+8, "%d:%d:%d", &is_id, &pls_code, &pls_mode);
+#endif
 				options = next;
 			}
 			feparm->setDVBS(sat);
