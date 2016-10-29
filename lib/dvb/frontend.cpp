@@ -2485,6 +2485,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 					oparm.getDVBS(parm);
 					uint32_t value = parm.pls_code | (parm.pls_mode & 0x3 << 18);
 					uint8_t seq[6];
+#if defined NO_STREAM_ID_FILTER
 					if ((parm.is_id != NO_STREAM_ID_FILTER) && (parm.system == eDVBFrontendParametersSatellite::System_DVB_S2))
 					{
 						seq[0] = (value >> 16) & 0xFF;
@@ -2503,6 +2504,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 						seq[4] = 0xff;
 						seq[5] = 0x00;
 					}
+#endif
 					int pnp_offset = 0;
 					int fd = open("/proc/stb/info/model", O_RDONLY);
 					char tmp[16];
@@ -3509,7 +3511,7 @@ std::string eDVBFrontend::getCapabilities()
 	if (fe_info.caps &  FE_CAN_16VSB)			ss << " FE_CAN_16VSB";
 	if (fe_info.caps &  FE_HAS_EXTENDED_CAPS)	ss << " FE_HAS_EXTENDED_CAPS";
 //#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
-#if DVB_API_VERSION >= 5
+#if DVB_API_VERSION >= 5  || FE_CAN_MULTISTREAM
 	if (fe_info.caps &  FE_CAN_MULTISTREAM)		ss << " FE_CAN_MULTISTREAM";
 #endif
 	if (fe_info.caps &  FE_CAN_TURBO_FEC)		ss << " FE_CAN_TURBO_FEC";
