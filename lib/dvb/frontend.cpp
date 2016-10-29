@@ -2466,6 +2466,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			}
 			cmdseq.num++;
 		}
+#if defined NO_STREAM_ID_FILTER
 		if(!strcmp(m_description, "GIGA DVB-S2 NIM (SP2246T)"))
 		{
 			if (type == iDVBFrontend::feSatellite)
@@ -2485,7 +2486,6 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 					oparm.getDVBS(parm);
 					uint32_t value = parm.pls_code | (parm.pls_mode & 0x3 << 18);
 					uint8_t seq[6];
-#if defined NO_STREAM_ID_FILTER
 					if ((parm.is_id != NO_STREAM_ID_FILTER) && (parm.system == eDVBFrontendParametersSatellite::System_DVB_S2))
 					{
 						seq[0] = (value >> 16) & 0xFF;
@@ -2504,7 +2504,6 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 						seq[4] = 0xff;
 						seq[5] = 0x00;
 					}
-#endif
 					int pnp_offset = 0;
 					int fd = open("/proc/stb/info/model", O_RDONLY);
 					char tmp[16];
@@ -2543,6 +2542,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 					::close(plasmid);
 			}
 		}
+#endif
 		p[cmdseq.num].cmd = DTV_TUNE, cmdseq.num++;
 		if (ioctl(m_fd, FE_SET_PROPERTY, &cmdseq) == -1)
 		{
@@ -3458,6 +3458,7 @@ eDVBRegisteredFrontend *eDVBFrontend::getLast(eDVBRegisteredFrontend *fe)
 
 bool eDVBFrontend::is_multistream()
 {
+#if define FE_CAN_MULTISTREAM
 //#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
 #if DVB_API_VERSION >= 5
 	if(!strcmp(m_description, "TBS-5925"))
@@ -3467,6 +3468,7 @@ bool eDVBFrontend::is_multistream()
 	return fe_info.caps & FE_CAN_MULTISTREAM;
 #else //if DVB_API_VERSION < 5
 	return 0;
+#endif
 #endif
 }
 
