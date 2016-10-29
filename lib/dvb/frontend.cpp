@@ -3460,8 +3460,9 @@ eDVBRegisteredFrontend *eDVBFrontend::getLast(eDVBRegisteredFrontend *fe)
 
 bool eDVBFrontend::is_multistream()
 {
+#if defined FE_CAN_MULTISTREAM
 //#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
-#if define FE_CAN_MULTISTREAM || DVB_API_VERSION >= 5
+#if DVB_API_VERSION >= 5
 	if(!strcmp(m_description, "TBS-5925"))
 		return true;
 	if(!strcmp(m_description, "GIGA DVB-S2 NIM (SP2246T)"))
@@ -3469,6 +3470,7 @@ bool eDVBFrontend::is_multistream()
 	return fe_info.caps & FE_CAN_MULTISTREAM;
 #else //if DVB_API_VERSION < 5
 	return 0;
+#endif
 #endif
 }
 
