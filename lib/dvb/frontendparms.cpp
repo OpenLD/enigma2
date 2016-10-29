@@ -159,6 +159,7 @@ int eDVBTransponderData::getSystem() const
 	return -1;
 }
 
+#if defined DTV_STREAM_ID
 int eDVBTransponderData::getIsId() const
 {
 	return -1;
@@ -173,6 +174,7 @@ int eDVBTransponderData::getPLSCode() const
 {
 	return -1;
 }
+#endif
 
 int eDVBTransponderData::getBandwidth() const
 {
