@@ -342,6 +342,7 @@ int eDVBSatelliteTransponderData::getSystem() const
 	}
 }
 
+#if defined DTV_STREAM_ID
 int eDVBSatelliteTransponderData::getIsId() const
 {
 	if (originalValues) return transponderParameters.is_id;
@@ -362,6 +363,7 @@ int eDVBSatelliteTransponderData::getPLSCode() const
 
 	return (getProperty(DTV_STREAM_ID) >> 8) & 0x3FFFF;
 }
+#endif
 
 DEFINE_REF(eDVBCableTransponderData);
 

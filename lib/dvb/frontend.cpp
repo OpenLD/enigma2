@@ -3261,13 +3261,17 @@ std::string eDVBFrontend::getDeliverySystem()
 	switch (delsys)
 	{
 		case SYS_ATSC:          ds = "ATSC"; break;
+#if defined SYS_DVBC_ANNEX_B
 		case SYS_DVBC_ANNEX_B:  ds = "ATSC"; break;
+#endif
 		case SYS_DVBS:          ds = "DVB-S"; break;
 		case SYS_DVBS2:         ds = "DVB-S2"; break;
 		case SYS_DVBT:          ds = "DVB-T"; break;
 		case SYS_DVBT2:         ds = "DVB-T2"; break;
+#if defined SYS_DVBC_ANNEX_A && SYS_DVBC_ANNEX_C
 		case SYS_DVBC_ANNEX_A:  ds = "DVB-C"; break;
 		case SYS_DVBC_ANNEX_C:  ds = "DVB-C"; break;
+#endif
 		default:                ds = ""; break;
 	}
 	return ds;
@@ -3511,8 +3515,10 @@ std::string eDVBFrontend::getCapabilities()
 	if (fe_info.caps &  FE_CAN_16VSB)			ss << " FE_CAN_16VSB";
 	if (fe_info.caps &  FE_HAS_EXTENDED_CAPS)	ss << " FE_HAS_EXTENDED_CAPS";
 //#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
-#if DVB_API_VERSION >= 5  || FE_CAN_MULTISTREAM
+#if DVB_API_VERSION >= 5
+#if defined FE_CAN_MULTISTREAM
 	if (fe_info.caps &  FE_CAN_MULTISTREAM)		ss << " FE_CAN_MULTISTREAM";
+#endif
 #endif
 	if (fe_info.caps &  FE_CAN_TURBO_FEC)		ss << " FE_CAN_TURBO_FEC";
 	if (fe_info.caps &  FE_CAN_2G_MODULATION)	ss << " FE_CAN_2G_MODULATION";
@@ -3534,7 +3540,9 @@ std::string eDVBFrontend::getCapabilities()
 		case SYS_CMMB:		ss << " CMBB"; break;
 		case SYS_DAB:		ss << " DAB"; break;
 		case SYS_DSS:		ss << " DSS"; break;
+#if defined SYS_DVBC_ANNEX_B
 		case SYS_DVBC_ANNEX_B:	ss << " DVBC_ANNEX_B"; break;
+#endif
 		case SYS_DVBH:		ss << " DVBH"; break;
 		case SYS_DVBS:		ss << " DVBS"; break;
 		case SYS_DVBS2:		ss << " DVBS2"; break;
@@ -3543,11 +3551,15 @@ std::string eDVBFrontend::getCapabilities()
 		case SYS_ISDBS:		ss << " ISDBS"; break;
 		case SYS_ISDBT:		ss << " ISDBT"; break;
 		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
+#if defined SYS_DVBC_ANNEX_A && SYS_DVBC_ANNEX_C
 		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
 		case SYS_DVBC_ANNEX_C:	ss << " DVBC_ANNEX_C"; break;
+#endif
 		case SYS_DVBT2:		ss << " DVBT2"; break;
 		case SYS_TURBO:		ss << " TURBO"; break;
+#if defined DTMB
 		case SYS_DTMB:		ss << " DTMB"; break;
+#endif
 		}
 	}
 
