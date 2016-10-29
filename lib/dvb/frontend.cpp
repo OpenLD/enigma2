@@ -2702,8 +2702,10 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where)
 
 	if (m_type == feSatellite && type != feSatellite)
 		setTone(iDVBFrontend::toneOff);
+#if defined setDeliverySystem
 	else if (type == feSatellite && m_type != feSatellite)
 		setDeliverySystem("DVB-S");
+#endif
 
 	if (!m_simulate)
 		m_sn->stop();
@@ -3458,17 +3460,17 @@ eDVBRegisteredFrontend *eDVBFrontend::getLast(eDVBRegisteredFrontend *fe)
 
 bool eDVBFrontend::is_multistream()
 {
-#if define FE_CAN_MULTISTREAM
 //#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 8
 #if DVB_API_VERSION >= 5
 	if(!strcmp(m_description, "TBS-5925"))
 		return true;
 	if(!strcmp(m_description, "GIGA DVB-S2 NIM (SP2246T)"))
 		return true;
+#if define FE_CAN_MULTISTREAM
 	return fe_info.caps & FE_CAN_MULTISTREAM;
+#endif
 #else //if DVB_API_VERSION < 5
 	return 0;
-#endif
 #endif
 }
 
