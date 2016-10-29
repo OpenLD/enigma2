@@ -91,12 +91,14 @@ void eDVBFrontendParametersSatellite::set(const S2SatelliteDeliverySystemDescrip
 		pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 		pls_code = descriptor.getScramblingSequenceIndex();
 	}
+#if defined NO_STREAM_ID_FILTER
 	else
 	{
 		is_id = NO_STREAM_ID_FILTER;
 		pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 		pls_code = 0;
 	}
+#endif
 }
 
 void eDVBFrontendParametersSatellite::set(const SatelliteDeliverySystemDescriptor &descriptor)
@@ -123,9 +125,11 @@ void eDVBFrontendParametersSatellite::set(const SatelliteDeliverySystemDescripto
 		modulation = Modulation_QPSK;
 	}
 	rolloff = descriptor.getRollOff();
+#if defined NO_STREAM_ID_FILTER
 	is_id = NO_STREAM_ID_FILTER;
 	pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 	pls_code = 0;
+#endif
 	if (system == System_DVB_S2)
 	{
 		eDebug("[eDVBFrontendParametersSatellite] SAT DVB-S2 freq %d, %s, pos %d, sr %d, fec %d, modulation %d, rolloff %d, is_id %d, pls_mode %d, pls_code %d",

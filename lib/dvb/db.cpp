@@ -443,9 +443,11 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				modulation=eDVBFrontendParametersSatellite::Modulation_QPSK,
 				rolloff=eDVBFrontendParametersSatellite::RollOff_alpha_0_35,
 				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown,
+#if defined NO_STREAM_ID_FILTER
 				is_id = NO_STREAM_ID_FILTER,
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root,
 				pls_code = 0;
+#endif
 
 			if (version == 4)
 				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
@@ -793,7 +795,7 @@ void eDVBDB::saveServicelist(const char *file)
 				fprintf(f, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
 				if (g)
 					fprintf(g, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
-
+#if defined NO_STREAM_ID_FILTER
 				if (sat.is_id != NO_STREAM_ID_FILTER ||
 					(sat.pls_code & 0x3FFFF) != 0 ||
 					(sat.pls_mode & 3) != eDVBFrontendParametersSatellite::PLS_Root)
@@ -802,6 +804,7 @@ void eDVBDB::saveServicelist(const char *file)
 					if (g)
 						fprintf(g, ",MIS/PLS:%d:%d:%d", sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
 				}
+#endif
 			}
 			fprintf(f, "\n");
 			if (g)
@@ -1352,9 +1355,11 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 				inv = eDVBFrontendParametersSatellite::Inversion_Unknown;
 				pilot = eDVBFrontendParametersSatellite::Pilot_Unknown;
 				rolloff = eDVBFrontendParametersSatellite::RollOff_alpha_0_35;
+#if defined NO_STREAM_ID_FILTER
 				is_id = NO_STREAM_ID_FILTER;
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 				pls_code = 0;
+#endif
 				tsid = -1;
 				onid = -1;
 
