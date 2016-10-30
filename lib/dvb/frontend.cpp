@@ -3213,14 +3213,15 @@ std::string eDVBFrontend::getDeliverySystem()
 		case SYS_DVBS2:         ds = "DVB-S2"; break;
 		case SYS_DVBT:          ds = "DVB-T"; break;
 		case SYS_DVBT2:         ds = "DVB-T2"; break;
+#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
 		case SYS_DVBC_ANNEX_A:  ds = "DVB-C"; break;
 		case SYS_DVBC_ANNEX_C:  ds = "DVB-C"; break;
+#endif
 		default:                ds = ""; break;
 	}
 	return ds;
 }
 
-#if defined DTV_ENUM_DELSYS
 bool eDVBFrontend::setDeliverySystem(const char *type)
 {
 	struct dtv_property p[1];
@@ -3290,7 +3291,6 @@ bool eDVBFrontend::setDeliverySystem(const char *type)
 	eDebug("[eDVBFrontend] setDeliverySystem succefully changed delivery system to %s", type);
 	return true;
 }
-#endif
 
 bool eDVBFrontend::setSlotInfo(int id, const char *descr, bool enabled, bool isDVBS2, int frontendid)
 {
@@ -3490,11 +3490,15 @@ std::string eDVBFrontend::getCapabilities()
 		case SYS_ISDBS:		ss << " ISDBS"; break;
 		case SYS_ISDBT:		ss << " ISDBT"; break;
 		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
+#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
 		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
 		case SYS_DVBC_ANNEX_C:	ss << " DVBC_ANNEX_C"; break;
+#endif
 		case SYS_DVBT2:		ss << " DVBT2"; break;
 		case SYS_TURBO:		ss << " TURBO"; break;
+#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
 		case SYS_DTMB:		ss << " DTMB"; break;
+#endif
 		}
 	}
 
