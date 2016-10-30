@@ -2647,10 +2647,12 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where)
 		goto tune_error;
 	}
 
+#if defined DTV_ENUM_DELSYS
 	if (m_type == feSatellite && type != feSatellite)
 		setTone(iDVBFrontend::toneOff);
 	else if (type == feSatellite && m_type != feSatellite)
 		setDeliverySystem("DVB-S");
+#endif
 
 	if (!m_simulate)
 		m_sn->stop();
@@ -3222,6 +3224,7 @@ std::string eDVBFrontend::getDeliverySystem()
 	return ds;
 }
 
+#if defined DTV_ENUM_DELSYS
 bool eDVBFrontend::setDeliverySystem(const char *type)
 {
 	struct dtv_property p[1];
@@ -3291,6 +3294,7 @@ bool eDVBFrontend::setDeliverySystem(const char *type)
 	eDebug("[eDVBFrontend] setDeliverySystem succefully changed delivery system to %s", type);
 	return true;
 }
+#endif
 
 bool eDVBFrontend::setSlotInfo(int id, const char *descr, bool enabled, bool isDVBS2, int frontendid)
 {
