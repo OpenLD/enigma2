@@ -107,6 +107,7 @@ eServiceFactoryMP3::eServiceFactoryMP3()
 		extensions.push_back("asf");
 		extensions.push_back("wmv");
 		extensions.push_back("wma");
+		extensions.push_back("ape");
 		extensions.push_back("stream");
 		extensions.push_back("webm");
 		sc->addServiceFactory(eServiceFactoryMP3::id, this, extensions);

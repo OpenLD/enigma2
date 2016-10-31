@@ -2485,6 +2485,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.setStartRoot(self.startRoot)
 			self.new_service_played = True
 			self.session.nav.playService(self.startServiceRef)
+			self.setCurrentSelection(self.startServiceRef)
 			self.saveChannel(self.startServiceRef)
 		else:
 			self.restoreMode()
@@ -2497,8 +2498,6 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			lastservice = eServiceReference(self.lastservice.value)
 			if lastservice.valid() and self.getCurrentSelection() == lastservice:
 				pass # keep current selection
-			else:
-				self.setCurrentSelection(currentPlayedRef)
 
 	def setStartRoot(self, root):
 		if root:
