@@ -86,10 +86,10 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			f.close()
 			self.mbox = self.session.open(MessageBox,_("Your IP public is:\n %s") % (ip), MessageBox.TYPE_INFO)
 		elif self.sel == 1:
-			localip = os.popen("ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{ print $1}'").read()
+			localip = os.popen("ifconfig | egrep 'inet addr' | grep Bcast | awk '{ print $2 }' | awk -F ':' '{ print $2 }'").read()
 			self.mbox = self.session.open(MessageBox,_("Your IP local is:\n %s") % (localip), MessageBox.TYPE_INFO)
 		elif self.sel == 2:
-			macaddress = os.popen("cat /sys/class/net/eth?/address").read()
+			macaddress = os.popen("ifconfig | grep HWaddr | awk '{print $1,$5}'").read()
 			self.mbox = self.session.open(MessageBox,_("Mac Adress:\n %s") % (macaddress), MessageBox.TYPE_INFO)
 		elif self.sel == 3:
 			os.popen("wget -qO /tmp/.ptr http://icanhazptr.com/")
