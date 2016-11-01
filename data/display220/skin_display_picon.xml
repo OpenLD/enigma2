@@ -79,7 +79,7 @@
 		<widget source="parent.Service" render="Label" position="110,126" size="105,50" font="FdLcD;24" halign="right" transparent="1" foregroundColor="#02c6ff" >
 			<convert type="MovieInfo">FileSize</convert>
 		</widget>
-    </screen>
+	</screen>
 
 <!-- channelselection-->
 	<screen name="ChannelSelection_summary" position="fill">
@@ -173,7 +173,7 @@
 		<widget source="parent.Title" render="Label" position="0,0" size="160,22" font="FdLcD;20" halign="left" noWrap="1" />
 		<widget source="parent.summary_description" render="Label" position="0,22" size="220,140" font="FdLcD;17" />
 	</screen>
-	
+
 <!-- Servicescan -->
 	<screen name="ServiceScanSummary" position="0,0" size="220,176">
 		<widget source="parent.Title" render="Label" position="0,0" size="220,55" font="FdLcD;26" halign="center" valign="center" foregroundColor="#FFFF00" />
@@ -277,7 +277,7 @@
 			<widget name="Chapter" position="fill" font="FdLcD;12" halign="left" />
 		</panel>
 	</screen>
-	
+
 <!-- EMC-->
 	<screen name="EMCSelection_summary" position="0,0" size="220,176"> 
 		<widget source="parent.Service" render="Label" position="0,0" size="220,120" foregroundColor="#FFFF00" font="FdLcD;24" halign="center" valign="center" >
@@ -303,7 +303,7 @@
 		</widget>
 		<panel name="SummaryClockPanel" />
 	</screen>
-	
+
 <!-- Mediaplayer -->
 	<screen name="MediaPlayerLCDScreen" position="0,0" size="220,176">
 		<widget source="session.CurrentService" render="Label" position="0,0" size="220,90" foregroundColor="#FFFF00" font="FdLcD;26" halign="center" valign="top" >
@@ -324,13 +324,18 @@
 		<widget source="parent.number_summary" render="Label" position="0,75" size="220,45" font="FdLcD;40" halign="center" valign="center" />
 		<panel name="SummaryClockPanel" />
 	</screen>
-	
+
+<!-- RDS info -->
+	<screen name="RdsInfoDisplaySummary" position="fill">
+		<widget source="message" render="Label" position="0,0" size="220,176" font="FdLcD;30" halign="center" valign="center" />
+	</screen>
+
 <!-- Quickmenü -->
 	<screen name="QuickMenu_summary" position="0,0" size="220,176">
 		<widget source="parent.Title" render="Label" position="0,0" foregroundColor="#FFFF00" size="220,80" font="FdLcD;35" halign="center" valign="top" />
 		<widget source="parent.summary_description" render="Label" position="0,82" size="220,80" font="FdLcD;30" halign="center" valign="center"  />
 	</screen>
-	
+
 <!-- softwaremanagment -->
 	<screen name="BackupSelection_summary" position="0,0" size="220,176">
 		<widget source="parent.Title" render="Label" position="0,0" size="220,55" font="FdLcD;26" halign="center" valign="center" foregroundColor="#FFFF00" />
@@ -362,5 +367,5 @@
 		<widget source="parent.summary_description" render="Label" position="0,60" size="220,50" font="FdLcD;24" halign="center" valign="center" />
 		<panel name="SummaryClockPanel" />
 	</screen>
-	
+
 </skin>
