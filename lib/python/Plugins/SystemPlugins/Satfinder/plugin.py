@@ -26,6 +26,7 @@ class Satfinder(ScanSetup, ServiceScan):
 		self.preDefTransponders = None
 		self.TerrestrialTransponders = None
 		self.CableTransponders = None
+		self.ATSCTransponders = None
 		self.typeOfTuningEntry = None
 		self.systemEntry = None
 		self.systemEntryATSC = None
