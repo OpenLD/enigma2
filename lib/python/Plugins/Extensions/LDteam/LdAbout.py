@@ -190,7 +190,7 @@ class LdsysInfo(Screen):
 		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 		self.text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-		self.text += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
+		#self.text += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
 		self.text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
 
 		self["lab1"].setText(self.text)
