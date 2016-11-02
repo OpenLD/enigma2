@@ -885,11 +885,11 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &background, cons
 		return;
 
 	if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
- 				    current_font->scaler.face_id,
- 				    &current_face) < 0) ||
+					current_font->scaler.face_id,
+					&current_face) < 0) ||
 	    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
-				    &current_font->scaler,
-				    &current_font->size) < 0))
+					&current_font->scaler,
+					&current_font->size) < 0))
 	{
 		eDebug("FTC_Manager_Lookup_Size failed!");
 		return;
