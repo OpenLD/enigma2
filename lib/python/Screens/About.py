@@ -92,7 +92,7 @@ def getAboutText():
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("GStreamer:\t%s") % str(getGStreamerVersionString().replace('GStreamer','')) + "\n"
-	AboutText += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
+	#AboutText += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
 	AboutText += _("Python:\t %s") % getPythonVersionString() + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
