@@ -4,6 +4,7 @@
 #include <lib/base/encoding.h>
 #include <lib/base/eerror.h>
 #include <lib/base/eenv.h>
+#include <uchardet/uchardet.h>
 
 eDVBTextEncodingHandler encodingHandler;  // the one and only instance
 int defaultEncodingTable = 1;   // the one and only instance
@@ -11,6 +12,19 @@ int defaultEncodingTable = 1;   // the one and only instance
 inline char tolower(char c)
 {
 	return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
+}
+
+int detectEncoding(const std::string &content, std::string &encoding)
+{
+	uchardet_t handle = uchardet_new();
+	int retval = uchardet_handle_data(handle, content.c_str(), content.length());
+	if (retval == 0)
+	{
+		uchardet_data_end(handle);
+		encoding = uchardet_get_charset(handle);
+		uchardet_delete(handle);
+	}
+	return retval;
 }
 
 int mapEncoding(char *s_table)

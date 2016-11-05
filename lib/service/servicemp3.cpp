@@ -1,5 +1,6 @@
 	/* note: this requires gstreamer 0.10.x and a big list of plugins. */
 	/* it's currently hardcoded to use a big-endian alsasink as sink. */
+#include <lib/base/encoding.h>
 #include <lib/base/ebase.h>
 #include <lib/base/eerror.h>
 #include <lib/base/init_num.h>
@@ -15,6 +16,9 @@
 #include <lib/service/service.h>
 #include <lib/gdi/gpixmap.h>
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 
 #include <gst/gst.h>
@@ -645,6 +649,26 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 		{
 			eDebug("[eServiceMP3] subtitle uri: %s", g_filename_to_uri(srt_filename, NULL, NULL));
 			g_object_set (G_OBJECT (m_gst_playbin), "suburi", g_filename_to_uri(srt_filename, NULL, NULL), NULL);
+			std::ifstream ifs(srt_filename);
+			if (ifs.is_open())
+			{
+				std::stringstream ss;
+				ss << ifs.rdbuf();
+				std::string encoding;
+				if (detectEncoding(ss.str(), encoding) == 0)
+				{
+					eDebug("[eServiceMP3] detected subtitles encoding: %s", encoding.c_str());
+					g_object_set (G_OBJECT (m_gst_playbin), "subtitle-encoding", encoding.c_str(), NULL);
+				}
+				else
+				{
+					eDebug("[eServiceMP3] cannot detect subtitles encoding");
+				}
+			}
+			else
+			{
+				eDebug("[eServiceMP3] cannot open subtitles file: %m");
+			}
 		}
 	} else
 	{
@@ -2779,6 +2803,11 @@ RESULT eServiceMP3::enableSubtitles(iSubtitleUser *user, struct SubtitleTrack &t
 		m_currentSubtitleStream = track.pid;
 		m_cachedSubtitleStream = m_currentSubtitleStream;
 		g_object_set (G_OBJECT (m_gst_playbin), "current-text", m_currentSubtitleStream, NULL);
+		// encoding has to be reset on playbin after changing stream otherwise it's not applied
+		gchar *encoding = NULL;
+		g_object_get (G_OBJECT (m_gst_playbin), "subtitle-encoding", &encoding, NULL);
+		g_object_set (G_OBJECT (m_gst_playbin), "subtitle-encoding", encoding, NULL);
+		g_free(encoding);
 
 		m_subtitle_widget = user;
 
