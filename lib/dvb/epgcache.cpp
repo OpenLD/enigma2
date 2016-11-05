@@ -4923,8 +4923,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 			channel.name[channel_name_len]=0;
 //			eDebug("%d(%02x) %s", i, i, channel.name);
 
-			if (f) fprintf(f,"(%s) %x:%x:%x\n",channel.name,
-			channel.getChannelId(), channel.getTransportStreamId(), channel.getNetworkId());
+			if (f) fprintf(f,"(%s) %x:%x:%x\n", channel.name, channel.getChannelId(), channel.getTransportStreamId(), channel.getNetworkId());
 		}
 
 		fclose(f);
