@@ -6,7 +6,6 @@ from Components.Label import Label
 from Components.MovieList import AUDIO_EXTENSIONS, MOVIE_EXTENSIONS, DVD_EXTENSIONS
 from Components.PluginComponent import plugins
 from Components.ServiceEventTracker import ServiceEventTracker
-from Components.Sources.ServiceEvent import ServiceEvent
 from Components.Sources.Boolean import Boolean
 from Components.Sources.List import List
 from Components.config import config, configfile, ConfigBoolean, ConfigClock
@@ -1047,7 +1046,6 @@ class NumberZap(Screen):
 				self.Timer.start(config.usage.numzaptimeout2.value, True)
 		self.numberString += str(number)
 		self["number"].setText(self.numberString)
-		self["servicenumber"].setText(self.numberString)
 		self["number_summary"].setText(self.numberString)
 		self.field = self.numberString
 
@@ -1057,16 +1055,8 @@ class NumberZap(Screen):
 		if len(self.numberString) >= int(config.usage.maxchannelnumlen.value):
 			self.keyOK()
 
-	def showPicon(self):
-		self["Service"].newService(self.service)
-
 	def __init__(self, session, number, searchNumberFunction = None):
 		Screen.__init__(self, session)
-
-		if config.usage.numzappicon.value:
-			self.onLayoutFinish.append(self.showPicon)
-			self.skinName = ["NumberZapPicon", "NumberZapWithName"]
-
 		self.onChangedEntry = [ ]
 		self.numberString = str(number)
 		self.field = str(number)
@@ -1077,11 +1067,10 @@ class NumberZap(Screen):
 		self["channel_summary"] = StaticText(_("Channel:"))
 
 		self["number"] = Label(self.numberString)
-		self["servicenumber"] = Label(self.numberString)
 		self["number_summary"] = StaticText(self.numberString)
 		self["servicename"] = Label()
 		self["service_summary"] = StaticText("")
-		self["Service"] = ServiceEvent()
+
 		self.handleServiceName()
 		self["service_summary"].setText(self["servicename"].getText())
 
