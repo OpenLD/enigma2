@@ -824,14 +824,6 @@ RESULT eServiceMP3::stop()
 	m_state = stStopped;
 
 	GstStateChangeReturn ret;
-	GstState state, pending;
-	/* make sure that last state change was successfull */
-	ret = gst_element_get_state(m_gst_playbin, &state, &pending, 5 * GST_SECOND);
-	eDebug("[eServiceMP3] stop state:%s pending:%s ret:%s",
-		gst_element_state_get_name(state),
-		gst_element_state_get_name(pending),
-		gst_element_state_change_return_get_name(ret));
-
 	ret = gst_element_set_state(m_gst_playbin, GST_STATE_NULL);
 	if (ret != GST_STATE_CHANGE_SUCCESS)
 		eDebug("[eServiceMP3] stop GST_STATE_NULL failure");
@@ -2367,6 +2359,11 @@ void eServiceMP3::playbinNotifySource(GObject *object, GParamSpec *unused, gpoin
 					g_object_set(G_OBJECT(source), "timeout", HTTP_TIMEOUT, NULL);
 				}
 			}
+		}
+		if (g_object_class_find_property(G_OBJECT_GET_CLASS(source), "blocksize") != 0)
+		{
+			/* default blocksize is only 4096 we need to feed hardware decoder with more data */
+			g_object_set(G_OBJECT(source), "blocksize", 16*1024, NULL);
 		}
 		if (g_object_class_find_property(G_OBJECT_GET_CLASS(source), "ssl-strict") != 0)
 		{
