@@ -192,7 +192,7 @@ RESULT eDVBService::getEvent(const eServiceReference &ref, ePtr<eServiceEvent> &
 	return eEPGCache::getInstance()->lookupEventTime(ref, start_time, ptr);
 }
 
-bool eDVBService::isCrypted(const eServiceReference &ref)
+bool eDVBService::isCrypted()
 {
 	return m_ca.size() > 0;
 }
