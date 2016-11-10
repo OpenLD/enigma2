@@ -1302,7 +1302,7 @@ int eDVBFrontend::readFrontendData(int type)
 					{
 						for(unsigned int i=0; i<prop[0].u.st.len; i++)
 						{
-+							if (prop[0].u.st.stat[i].scale == FE_SCALE_DECIBEL &&
+							if (prop[0].u.st.stat[i].scale == FE_SCALE_DECIBEL &&
 								type == iFrontendInformation_ENUMS::signalQualitydB)
 							{
 								signalqualitydb = prop[0].u.st.stat[i].svalue / 10;
