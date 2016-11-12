@@ -138,10 +138,16 @@ RESULT eServiceHDMI::stop()
 	return 0;
 }
 
-RESULT eServiceHDMI::setTarget(int target, bool noaudio = false)
+RESULT eServiceHDMI::setTarget(int target)
 {
+	/* target -1 used for pip, change decoder index to 1 */
+	if (target == -1)
+	{
+		target = 1;
+		m_noaudio = true;
+	}
+
 	m_decoder_index = target;
-	m_noaudio = noaudio;
 	return 0;
 }
 
