@@ -5,7 +5,6 @@ dist_install_DATA = \
 	movie.png \
 	music.png \
 	picture.png \
-	cover_no.png \
-	cover_yes.png \
-	no_cover.png \
-	no_coverbg.png
+	false.png \
+	true.png \
+	no_cover.png
