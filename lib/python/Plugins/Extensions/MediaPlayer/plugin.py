@@ -1167,7 +1167,7 @@ def audiocdscan(menuid, **kwargs):
 def filescan(**kwargs):
 	from Components.Scanner import Scanner, ScanPath
 	return [
-		Scanner(mimetypes = ["video/mpeg", "video/MP2T", "video/x-msvideo", "video/mkv"],
+		Scanner(mimetypes = ["video/mpeg", "video/MP2T", "video/x-msvideo", "video/mkv", "video/webm", "video/ogg", "video/avi"],
 			paths_to_scan =
 				[
 					ScanPath(path = "", with_subdirs = False),
