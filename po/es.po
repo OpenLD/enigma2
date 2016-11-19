@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2016-10-12 02:31+0100\n"
+"PO-Revision-Date: 2016-11-19 19:04+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
@@ -17104,3 +17104,99 @@ msgstr "Su IP local es:\n %s"
 
 msgid "Mac Adress:\n %s"
 msgstr "Dirección Mac:\n %s"
+
+msgid "Search for Covers"
+msgstr "Buscar Carátulas"
+
+msgid "Set Scan Path"
+msgstr "Ruta a Escanear"
+
+msgid "Search Cover(s)"
+msgstr "Buscar Carátula(s)"
+
+msgid "Scan Path:"
+msgstr "Escanear Ruta:"
+
+msgid "Press 'Green' for scanning your MovieList and search Cover(s)."
+msgstr "Pulse 'Verde' para escanear su MovieList y buscar Cuarátula(s)."
+
+msgid "Covers"
+msgstr "Carátulas"
+
+msgid "Covers:"
+msgstr "Carátulas:"
+
+msgid "Cover(s):"
+msgstr "Carátula(s):"
+
+msgid "Scanning: '%s'"
+msgstr "Escaneado: '%s'"
+
+msgid "Found %s File(s)."
+msgstr "Encontrado %s Archivo(s)."
+
+msgid "No Movie(s) found!"
+msgstr "No se encontró ninguna película!"
+
+msgid "Cover(s): %s / %s - Scan: %s"
+msgstr "Carátula(s): %s / %s - Escanear: %s"
+
+msgid "Downloaded %s Cover(s) in %.1f sec."
+msgstr "Descargada %s Carátula(s) en %.1f segundos."
+
+msgid "Cover resolution TMDB:"
+msgstr "Resolución Carátulas TMDB:"
+
+msgid "Scan in:"
+msgstr "Escanear en:"
+
+msgid "Save Cover(s) for (MovieList):"
+msgstr "Guardar Carátula(s) de (MovieList):"
+
+msgid "Save Cover(s) to Path"
+msgstr "Guardar Carátula(s) en la ruta"
+
+msgid "Search in symlinks:"
+msgstr "Buscar en enlaces simbólicos:"
+
+msgid "Scan for Cover(s) in Background:"
+msgstr "Escaneo de Carátula(s) en Background:"
+
+msgid "Background Scan for new Cover(s) every (stunden):"
+msgstr "Análisis de fondo para nuevas Carátula(s) cada (horas):"
+
+msgid "Scan Path: %s"
+msgstr "Ruta de escaneo: %s"
+
+msgid "Download:"
+msgstr "Descargar:"
+
+msgid "Not Found:"
+msgstr "No encontrado"
+
+msgid "Download Error:"
+msgstr "Error descarga:"
+
+msgid "Download: %s"
+msgstr "Descargar: %s"
+
+msgid "Not Found: %s"
+msgstr "No encontrado: %s"
+
+msgid "Download Error: %s"
+msgstr "Error descarga: %s"
+
+msgid "Choose Download folder"
+msgstr "Seleccione directorio para Descargas"
+
+msgid "Selection: %s"
+msgstr "Selección: %s"
+
+msgid "Find MovieList Covers"
+msgstr "Busca Carátulas MovieList"
+
+msgid "This allows you to show locale modules in downloads"
+msgstr "Esto le permite ver los módulos de configuración regional en las descargas"
+
+msgid "Show Covers in Movielist"
+msgstr "Mostrar Carátulas en Movielist"

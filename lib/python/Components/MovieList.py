@@ -22,8 +22,8 @@ from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformat
 
 AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".3gp", ".3g2", ".wma"))
 DVD_EXTENSIONS = ('.iso', '.img')
-IMAGE_EXTENSIONS = frozenset((".jpg", ".png", ".gif", ".bmp"))
-MOVIE_EXTENSIONS = frozenset((".mpg", ".mpeg", ".vob", ".wav", ".m4v", ".mkv", ".avi", ".divx", ".dat", ".ts", ".flv", ".mp4", ".mov", ".wmv", ".m2ts", ".asf", ".webm"))
+IMAGE_EXTENSIONS = frozenset((".jpg", ".jpeg", ".png", ".gif", ".gifv", ".bmp"))
+MOVIE_EXTENSIONS = frozenset((".264", ".265", ".amv", ".bik", ".camrec", ".mfv", ".mpg", ".mpg4", ".mpeg", ".vob", ".wav", ".ogv", ".m4s", ".m4u", ".m4v", ".mv4", ".mks", ".mkv", ".mk3d", ".avi", ".dash", ".dav", ".divx", ".dat", ".drc", ".dvr", ".dv4", ".dvx", ".tts", ".ts", ".ts4", ".flv", ".qt", ".nsv", ".n3r", ".mp4", ".mov", ".wmv", ".mod", ".mpv", ".m2v", ".m2t", ".m2ts", ".m2p", ".mts", ".dxa", ".mxf", ".svi", ".swf", ".trec", ".avchd", ".avc", ".h264", ".h265", ".mmv", ".asf", ".arf", ".webm", ".yuv" ".vvf", ".vid", ".vp8", ".vcd", ".wmv", ".xwmv"))
 KNOWN_EXTENSIONS = MOVIE_EXTENSIONS.union(IMAGE_EXTENSIONS, DVD_EXTENSIONS, AUDIO_EXTENSIONS)
 RECORD_EXTENSIONS = (".ts")
 

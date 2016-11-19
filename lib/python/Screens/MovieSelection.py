@@ -2,7 +2,7 @@ import os
 import time
 import cPickle as pickle
 
-from enigma import eServiceReference, eServiceCenter, eTimer, eSize, iPlayableService, iServiceInformation, getPrevAsciiCode, eRCInput, pNavigation
+from enigma import eServiceReference, eServiceCenter, eTimer, eSize, iPlayableService, iServiceInformation, getPrevAsciiCode, eRCInput, pNavigation, gPixmapPtr, eDVBVolumecontrol, ePicLoad, getDesktop
 
 from Screen import Screen
 from Components.Button import Button
@@ -13,6 +13,7 @@ from Components.MenuList import MenuList
 from Components.MovieList import MovieList, resetMoviePlayState, AUDIO_EXTENSIONS, DVD_EXTENSIONS, IMAGE_EXTENSIONS, moviePlayState
 from Components.DiskInfo import DiskInfo
 from Tools.Trashcan import TrashInfo
+from Components.AVSwitch import AVSwitch
 from Components.Pixmap import Pixmap, MultiPixmap
 from Components.Label import Label
 from Components.PluginComponent import plugins
@@ -24,6 +25,8 @@ from Components.Sources.StaticText import StaticText
 import Components.Harddisk
 from Components.UsageConfig import preferredTimerPath
 from Components.Sources.Boolean import Boolean
+from Components.Renderer import Renderer
+from Components.Renderer.Cover import *
 from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
@@ -70,7 +73,7 @@ preferredTagEditor = None
 # this kludge is needed because ConfigSelection only takes numbers
 # and someone appears to be fascinated by 'enums'.
 l_moviesort = [
-	(str(MovieList.SORT_GROUPWISE), _("default") , '02/01 & A-Z'),
+	(str(MovieList.SORT_GROUPWISE), _("default"), '02/01 & A-Z'),
 	(str(MovieList.SORT_RECORDED), _("by date"), '03/02/01'),
 	(str(MovieList.SORT_ALPHANUMERIC), _("alphabetic"), 'A-Z'),
 	(str(MovieList.SORT_ALPHANUMERIC_FLAT_REVERSE), _("flat alphabetic reverse"), 'Z-A Flat'),
@@ -79,7 +82,7 @@ l_moviesort = [
 	(str(MovieList.SORT_ALPHANUMERIC_FLAT), _("flat alphabetic"), 'A-Z Flat'),
 	(str(MovieList.SORT_RECORDED_REVERSE), _("reverse by date"), '01/02/03'),
 	(str(MovieList.SORT_ALPHANUMERIC_REVERSE), _("alphabetic reverse"), 'Z-A'),
-	(str(MovieList.SORT_ALPHAREV_DATE_NEWEST_FIRST), _("alpharev then newest"),  'Z1 A2 A1')]
+	(str(MovieList.SORT_ALPHAREV_DATE_NEWEST_FIRST), _("alpharev then newest"), 'Z1 A2 A1')]
 
 def defaultMoviePath():
 	result = config.usage.default_path.value
@@ -266,6 +269,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 		configList.append(getConfigListEntry(_("Root directory"), config.movielist.root, _("Sets the root folder of movie list, to remove the '..' from benign shown in that folder.")))
 		configList.append(getConfigListEntry(_("Hide known extensions"), config.movielist.hide_extensions, _("Allows you to hide the extensions of known file types.")))
 		configList.append(getConfigListEntry(_("Show live tv when movie stopped"), config.movielist.show_live_tv_in_movielist, _("When set the PIG will return to live after a movie has stopped playing.")))
+		configList.append(getConfigListEntry(_("Show Covers in Movielist"), config.usage.movielist_show_cover, _("Shows the Covers in Movielist and Moviebar")))
 		for btn in (('red', _('Red')), ('green', _('Green')), ('yellow', _('Yellow')), ('blue', _('Blue')),('redlong', _('Red long')), ('greenlong', _('Green long')), ('yellowlong', _('Yellow long')), ('bluelong', _('Blue long')), ('TV', _('TV')), ('Radio', _('Radio')), ('Text', _('Text')), ('F1', _('F1')), ('F2', _('F2')), ('F3', _('F3'))):
 			configList.append(getConfigListEntry(_("Button") + " " + _(btn[1]), userDefinedButtons[btn[0]], _("Allows you to setup the button to do what you choose.")))
 		ConfigListScreen.__init__(self, configList, session = self.session, on_change = self.changedEntry)
@@ -425,6 +429,7 @@ class MovieContextMenu(Screen):
 						append_to_menu(menu, (_("Reset playback position"), csel.do_reset))
 					if service.getPath().endswith('.ts'):
 						append_to_menu(menu, (_("Start offline decode"), csel.do_decode))
+					append_to_menu(menu, (_("Search for Covers"), csel.do_covers))
 				elif csel.isBlurayFolderAndFile(service):
 					append_to_menu(menu, (_("Auto play blu-ray file"), csel.playBlurayFile))
 				# Plugins expect a valid selection, so only include them if we selected a non-dir
@@ -477,6 +482,8 @@ class SelectionEventInfo:
 		self.list.connectSelChanged(self.__selectionChanged)
 		self.timer = eTimer()
 		self.timer.callback.append(self.updateEventInfo)
+		self["Cover"] = Pixmap()
+		self["Cover"].hide()
 		self.onShown.append(self.__selectionChanged)
 
 	def __selectionChanged(self):
@@ -1116,7 +1123,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		remount = extra_args[1]
 		if remount != 0:
 			del self.remountTimer
-		if os.path.isdir(os.path.join(extra_args[0], 'BDMV/STREAM/')):
+		if os.path.isdir(os.path.join(extra_args[0], 'PRIVATE/AVCHD/BDMV/STREAM/')):
 			self.itemSelectedCheckTimeshiftCallback('bluray', extra_args[0], True)
 		elif remount < 5:
 			remount += 1
@@ -1139,7 +1146,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			self.session.open(BlurayUi.BlurayMain, path)
 			return True
 		except Exception as e:
-			print "[ML] Cannot open BlurayPlayer:", e
+			print "[MovieSelection] Cannot open BlurayPlayer:", e
 
 	def playAsDVD(self, path):
 		try:
@@ -1313,7 +1320,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		if current is not None:
 			path = current.getPath()
 			if current.flags & eServiceReference.mustDescent:
-				if os.path.isdir(os.path.join(path, 'BDMV/STREAM/')):
+				if os.path.isdir(os.path.join(path, 'PRIVATE/AVCHD/BDMV/STREAM/')):
 					#force a BLU-RAY extention
 					Screens.InfoBar.InfoBar.instance.checkTimeshiftRunning(boundFunction(self.itemSelectedCheckTimeshiftCallback, 'bluray', path))
 					return
@@ -1358,7 +1365,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 				try:
 					from Plugins.Extensions.BlurayPlayer import BlurayUi
 				except Exception as e:
-					print "[ML] BlurayPlayer not installed:", e
+					print "[MovieSelection] BlurayPlayer not installed:", e
 				else:
 					iso_path = path.replace(' ', '\ ')
 					mount_path = '/media/Bluray_%s' % os.path.splitext(iso_path)[0].rsplit('/', 1)[1]
@@ -1748,8 +1755,8 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 	def isBlurayFolderAndFile(self, service):
 		self.playfile = ""
 		folder = os.path.join(service.getPath(), "STREAM/")
-		if "BDMV/STREAM/" not in folder:
-			folder = folder[:-7] + "BDMV/STREAM/"
+		if "PRIVATE/AVCHD/BDMV/STREAM/" not in folder:
+			folder = folder[:-7] + "PRIVATE/AVCHD/BDMV/STREAM/"
 		if os.path.isdir(folder):
 			fileSize = 0
 			for name in os.listdir(folder):
@@ -1760,23 +1767,26 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 							fileSize = size
 							self.playfile = folder + name
 				except:
-					print "[ML] Error calculate size for %s" % (folder + name)
+					print "[MovieSelection] Error calculate size for %s" % (folder + name)
 			if self.playfile:
 				return True
 		return False
 
 	def can_bookmarks(self, item):
 		return True
+
 	def do_bookmarks(self):
 		self.selectMovieLocation(title=_("Please select the movie path..."), callback=self.gotFilename)
 
 	def can_addbookmark(self, item):
 		return True
+
 	def exist_bookmark(self):
 		path = config.movielist.last_videodir.value
 		if path in config.movielist.videodirs.value:
 			return True
 		return False
+
 	def do_addbookmark(self):
 		path = config.movielist.last_videodir.value
 		if path in config.movielist.videodirs.value:
@@ -1787,6 +1797,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		else:
 			config.movielist.videodirs.value += [path]
 			config.movielist.videodirs.save()
+
 	def removeBookmark(self, yes):
 		if not yes:
 			return
@@ -1798,11 +1809,25 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 
 	def can_createdir(self, item):
 		return True
+
 	def do_createdir(self):
 		from Screens.VirtualKeyBoard import VirtualKeyBoard
 		self.session.openWithCallback(self.createDirCallback, VirtualKeyBoard,
 			title = _("Please enter name of the new directory"),
 			text = "")
+
+	def do_covers(self):
+		item = self.getCurrentSelection()
+		current = item[0]
+		info = item[1]
+		if info is None:
+			return
+		else:
+			service = info and info.getName(current)
+			print "service:", service
+			from Components.SearchCovers import *
+			self.session.openWithCallback(self.reloadList, FindMovieList, service)
+
 	def createDirCallback(self, name):
 		if not name:
 			return
