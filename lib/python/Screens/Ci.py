@@ -29,6 +29,7 @@ def setCIBitrate(configElement):
 
 def setdvbCiDelay(configElement):
 	open(SystemInfo["CommonInterfaceCIDelay"], "w").write(configElement.value)
+	configElement.save()
 
 def InitCiConfig():
 	config.ci = ConfigSubList()
