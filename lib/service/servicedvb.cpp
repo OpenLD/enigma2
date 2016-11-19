@@ -1439,16 +1439,10 @@ RESULT eDVBServicePlay::stop()
 	return 0;
 }
 
-RESULT eDVBServicePlay::setTarget(int target)
+RESULT eDVBServicePlay::setTarget(int target, bool noaudio = false)
 {
-	/* target -1 used for pip, change decoder index to 1 */
-	if (target == -1)
-	{
-		target = 1;
-		m_noaudio = true;
-	}
-
 	m_decoder_index = target;
+	m_noaudio = noaudio;
 	return 0;
 }
 
@@ -2876,7 +2870,6 @@ void eDVBServicePlay::updateDecoder(bool sendSeekableStateChanged)
 	if (m_decoder)
 	{
 		bool wasSeekable = m_decoder->getVideoProgressive() != -1;
-		/* use audio only if not pip */
 		if (!m_noaudio)
 		{
 			if (m_dvb_service)
@@ -2902,6 +2895,7 @@ void eDVBServicePlay::updateDecoder(bool sendSeekableStateChanged)
 					}
 				}
 			}
+
 			setAC3Delay(ac3_delay == -1 ? 0 : ac3_delay);
 			setPCMDelay(pcm_delay == -1 ? 0 : pcm_delay);
 		}
