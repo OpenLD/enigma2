@@ -25,7 +25,7 @@
 #include <dvbsi++/application_name_descriptor.h>
 
 eDVBServicePMTHandler::eDVBServicePMTHandler()
-	:m_last_channel_state(-1), m_ca_servicePtr(0), doDescramble(false), m_dvb_scan(0), m_decode_demux_num(0xFF),
+	:m_last_channel_state(-1), m_ca_servicePtr(0), m_dvb_scan(0), m_decode_demux_num(0xFF),
 	m_no_pat_entry_delay(eTimer::create()), m_have_cached_program(false)
 {
 	m_use_decode_demux = 0;
