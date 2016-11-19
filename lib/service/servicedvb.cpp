@@ -2869,6 +2869,7 @@ void eDVBServicePlay::updateDecoder(bool sendSeekableStateChanged)
 
 	if (m_decoder)
 	{
+		bool wasSeekable = m_decoder->getVideoProgressive() != -1;
 		if (!m_noaudio)
 		{
 			if (m_dvb_service)
@@ -2885,6 +2886,7 @@ void eDVBServicePlay::updateDecoder(bool sendSeekableStateChanged)
 				if (!parent)
 					parent = ref;
 				if (parent)
+				{
 					ePtr<eDVBService> origService;
 					if (!eDVBDB::getInstance()->getService(parent, origService))
 					{
