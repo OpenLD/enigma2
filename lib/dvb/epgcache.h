@@ -255,7 +255,7 @@ class eEPGCache: public eMainloop, private eThread, public Object
 		int nb_equiv;
 		bool log_open ();
 		void log_close();
-		void log_add (char *message, ...);
+		void log_add (const char *message, ...);
 #endif
 #ifdef ENABLE_ATSC
 		int m_atsc_eit_index;

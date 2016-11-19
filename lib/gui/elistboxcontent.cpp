@@ -19,8 +19,8 @@ using namespace std;
     offset. Different interfaces can be used to adapt different lists,
     pre-filter lists on the fly etc.
 
-		cursorSave/Restore is used to avoid re-iterating the list on redraw.
-		The current selection is always selected as cursor position, the
+    cursorSave/Restore is used to avoid re-iterating the list on redraw.
+    The current selection is always selected as cursor position, the
     cursor is then positioned to the start, and then iterated. This gives
     at most 2x m_items_per_page cursor movements per redraw, indepenent
     of the size of the list.
