@@ -17197,3 +17197,6 @@ msgstr "Busca Carátulas MovieList"
 
 msgid "This allows you to show locale modules in downloads"
 msgstr "Esto le permite ver los módulos de configuración regional en las descargas"
+
+msgid "Show Covers in Movielist"
+msgstr "Mostrar Carátulas en Movielist"
