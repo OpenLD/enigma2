@@ -19,14 +19,14 @@ int fileExist(const char* filename){
 	struct stat buffer;
 	int exist = stat(filename,&buffer);
 	if(exist == 0)
-	    return 1;
+		return 1;
 	else // -1
-	    return 0;
+		return 0;
 }
 
 void noRTC()
 {
-	mybox[0] = NULL;
+	mybox[0] = 0;
 	if(fileExist("/proc/stb/info/gbmodel"))
 	{
 		FILE *fb = fopen("/proc/stb/info/gbmodel","r");
