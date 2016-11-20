@@ -68,7 +68,6 @@ public:
 	void addAudio(int pid, std::string lang, std::string desc, int type);
 };
 
-
 class eStreamThreadWeb;
 class eServiceWebTS: public iPlayableService, public iPauseableService,
 	public iServiceInformation, public iSeekableService,
@@ -87,7 +86,7 @@ public:
 	RESULT info(ePtr<iServiceInformation>&);
 
 	// not implemented
-	RESULT setTarget(int target, bool noaudio = false) { return -1; };
+	RESULT setTarget(int target) { return -1; };
 	RESULT setSlowMotion(int ratio) { return -1; };
 	RESULT setFastForward(int ratio) { return -1; };
 	RESULT audioChannel(ePtr<iAudioChannelSelection> &ptr) { ptr = this; return 0; };
@@ -106,7 +105,6 @@ public:
 	// iPausableService
 	RESULT pause();
 	RESULT unpause();
-
 
 	// iSeekableService
 	RESULT getLength(pts_t &SWIG_OUTPUT);
