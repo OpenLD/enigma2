@@ -443,11 +443,9 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 				modulation=eDVBFrontendParametersSatellite::Modulation_QPSK,
 				rolloff=eDVBFrontendParametersSatellite::RollOff_alpha_0_35,
 				pilot=eDVBFrontendParametersSatellite::Pilot_Unknown,
-#if defined NO_STREAM_ID_FILTER
 				is_id = NO_STREAM_ID_FILTER,
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root,
 				pls_code = 0;
-#endif
 
 			if (version == 4)
 				sscanf(line+2, "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
@@ -469,20 +467,16 @@ static ePtr<eDVBFrontendParameters> parseFrontendData(char* line, int version)
 			sat.modulation = modulation;
 			sat.rolloff = rolloff;
 			sat.pilot = pilot;
-#if defined NO_STREAM_ID_FILTER
 			sat.is_id = is_id;
 			sat.pls_mode = pls_mode & 3;
 			sat.pls_code = pls_code & 0x3FFFF;
-#endif
 			// Process optional features
 			while (options) {
 				char * next = strchr(options, ',');
 				if (next)
 					*next++ = '\0';
-#if defined NO_STREAM_ID_FILTER
 				if (strncmp(options, "MIS/PLS:", 8) == 0)
 					sscanf(options+8, "%d:%d:%d", &is_id, &pls_code, &pls_mode);
-#endif
 				options = next;
 			}
 			feparm->setDVBS(sat);
@@ -803,7 +797,6 @@ void eDVBDB::saveServicelist(const char *file)
 				if (g)
 					fprintf(g, ":%d:%d:%d:%d", sat.system, sat.modulation, sat.rolloff, sat.pilot);
 
-#if defined NO_STREAM_ID_FILTER
 				if (sat.is_id != NO_STREAM_ID_FILTER ||
 					(sat.pls_code & 0x3FFFF) != 0 ||
 					(sat.pls_mode & 3) != eDVBFrontendParametersSatellite::PLS_Root)
@@ -812,7 +805,6 @@ void eDVBDB::saveServicelist(const char *file)
 					if (g)
 						fprintf(g, ",MIS/PLS:%d:%d:%d", sat.is_id, sat.pls_code & 0x3FFFF, sat.pls_mode & 3);
 				}
-#endif
 			}
 			fprintf(f, "\n");
 			if (g)
@@ -1365,11 +1357,9 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 				inv = eDVBFrontendParametersSatellite::Inversion_Unknown;
 				pilot = eDVBFrontendParametersSatellite::Pilot_Unknown;
 				rolloff = eDVBFrontendParametersSatellite::RollOff_alpha_0_35;
-#if defined NO_STREAM_ID_FILTER
 				is_id = NO_STREAM_ID_FILTER;
 				pls_mode = eDVBFrontendParametersSatellite::PLS_Root;
 				pls_code = 0;
-#endif
 				tsid = -1;
 				onid = -1;
 
@@ -1385,11 +1375,9 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 					else if (name == "inversion") dest = &inv;
 					else if (name == "rolloff") dest = &rolloff;
 					else if (name == "pilot") dest = &pilot;
-#if defined NO_STREAM_ID_FILTER
 					else if (name == "is_id") dest = &is_id;
 					else if (name == "pls_code") dest = &pls_code;
 					else if (name == "pls_mode") dest = &pls_mode;
-#endif
 					else if (name == "tsid") dest = &tsid;
 					else if (name == "onid") dest = &onid;
 					else continue;
@@ -1417,11 +1405,9 @@ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObje
 					PyTuple_SET_ITEM(tuple, 7, PyInt_FromLong(inv));
 					PyTuple_SET_ITEM(tuple, 8, PyInt_FromLong(rolloff));
 					PyTuple_SET_ITEM(tuple, 9, PyInt_FromLong(pilot));
-#if defined NO_STREAM_ID_FILTER
 					PyTuple_SET_ITEM(tuple, 10, PyInt_FromLong(is_id));
 					PyTuple_SET_ITEM(tuple, 11, PyInt_FromLong(pls_mode & 3));
 					PyTuple_SET_ITEM(tuple, 12, PyInt_FromLong(pls_code & 0x3FFFF));
-#endif
 					PyTuple_SET_ITEM(tuple, 13, PyInt_FromLong(tsid));
 					PyTuple_SET_ITEM(tuple, 14, PyInt_FromLong(onid));
 					PyList_Append(tplist, tuple);
