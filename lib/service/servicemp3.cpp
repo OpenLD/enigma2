@@ -972,7 +972,7 @@ RESULT eServiceMP3::trickSeek(gdouble ratio)
 		gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
 		/* pipeline sometimes block due to audio track issue off gstreamer.
 		If the pipeline is blocked up on pending state change to paused ,
-        this issue is solved be just reslecting the current audio track.*/
+		this issue is solved be just reslecting the current audio track.*/
 		gst_element_get_state(m_gst_playbin, &state, &pending, 1 * GST_SECOND);
 		if (state == GST_STATE_PLAYING && pending == GST_STATE_PAUSED)
 		{
@@ -1582,7 +1582,7 @@ RESULT eServiceMP3::selectChannel(int i)
 
 RESULT eServiceMP3::getTrackInfo(struct iAudioTrackInfo &info, unsigned int i)
 {
- 	if (i >= m_audioStreams.size())
+	if (i >= m_audioStreams.size())
 	{
 		return -2;
 	}
@@ -2105,26 +2105,15 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 			Restart the player-application or paused and then play the track fix this for once.)*/
 			if (!m_paused && codec_tofix)
 			{
-				std::string filename = "/proc/stb/info/boxtype";
-				FILE *f = fopen(filename.c_str(), "rb");
-				if (f)
+				//eDebug("[eServiceMP3] mp3 playback fix - set paused and then playing state");
+				GstStateChangeReturn ret;
+				ret = gst_element_set_state (m_gst_playbin, GST_STATE_PAUSED);
+				if (ret != GST_STATE_CHANGE_SUCCESS)
 				{
-					char boxtype[6];
-					fread(boxtype, 6, 1, f);
-					fclose(f);
-					if (!memcmp(boxtype, "et5000", 6) || !memcmp(boxtype, "et6000", 6) || !memcmp(boxtype, "et6500", 6) || !memcmp(boxtype, "et9000", 6) || !memcmp(boxtype, "et9100", 6) || !memcmp(boxtype, "et9200", 6) || !memcmp(boxtype, "et9500", 6))
-					{
-						eDebug("[eServiceMP3] mp3,aac playback fix for xtrend et5x00,et6x00,et9x00 - set paused and then playing state");
-						GstStateChangeReturn ret;
-						ret = gst_element_set_state (m_gst_playbin, GST_STATE_PAUSED);
-						if (ret != GST_STATE_CHANGE_SUCCESS)
-						{
-							eDebug("[eServiceMP3] mp3 playback fix - failure set paused state - sleep one second before set playing state");
-							sleep(1);
-						}
-						gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
-					}
+					eDebug("[eServiceMP3] mp3 playback fix - failure set paused state - sleep one second before set playing state");
+					sleep(1);
 				}
+				gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
 			}
 			/*+++*/
 			break;
@@ -2645,6 +2634,10 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 #else
 				std::string line((const char*)map.data, len);
 #endif
+				// some media muxers do add an extra new line at the end off a muxed/reencoded srt to ssa codec
+				if (!line.empty() && line[line.length()-1] == '\n')
+					line.erase(line.length()-1);
+
 				// eDebug("[eServiceMP3] got new text subtitle @ buf_pos = %lld ns (in pts=%lld), dur=%lld: '%s' ", buf_pos, buf_pos/11111, duration_ns, line.c_str());
 
 				uint32_t start_ms = buf_pos / 1000000ULL;

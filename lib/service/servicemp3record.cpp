@@ -22,13 +22,15 @@ eServiceMP3Record::eServiceMP3Record(const eServiceReference &ref):
 	m_error = 0;
 	m_simulate = false;
 	m_recording_pipeline = 0;
-	m_useragent = "Enigma2 Mediaplayer";
+	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;openLD;;;)";
 	m_extra_headers = "";
 
 	CONNECT(m_pump.recv_msg, eServiceMP3Record::gstPoll);
 	CONNECT(m_streamingsrc_timeout->timeout, eServiceMP3Record::sourceTimeout);
 	if (eConfigManager::getConfigBoolValue("config.mediaplayer.useAlternateUserAgent"))
 		m_useragent = eConfigManager::getConfigValue("config.mediaplayer.alternateUserAgent");
+	if (eConfigManager::getConfigBoolValue("config.movielist.useAlternateUserAgent"))
+		m_useragent = eConfigManager::getConfigValue("config.movielist.alternateUserAgent");
 }
 
 eServiceMP3Record::~eServiceMP3Record()
