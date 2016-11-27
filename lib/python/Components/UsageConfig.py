@@ -1056,6 +1056,10 @@ def InitUsageConfig():
 	config.mediaplayer.useAlternateUserAgent = ConfigYesNo(default = False)
 	config.mediaplayer.alternateUserAgent = ConfigText(default="")
 
+	config.movielist = ConfigSubsection()
+	config.movielist.useAlternateUserAgent = ConfigYesNo(default = False)
+	config.movielist.alternateUserAgent = ConfigText(default="")
+
 	config.pluginbrowser = ConfigSubsection()
 	config.pluginbrowser.po = ConfigYesNo(default = False)
 	config.pluginbrowser.src = ConfigYesNo(default = False)
