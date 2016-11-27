@@ -818,7 +818,7 @@ def InitUsageConfig():
 		("ltz", _("Luxembourgish")),
 		("nor", _("Norwegian")),
 		("pol", _("Polish")),
-		("por", _("Portuguese")),
+		("por dub DUB ud1", _("Portuguese")),
 		("fas per", _("Persian")),
 		("ron rum", _("Romanian")),
 		("rus", _("Russian")),
@@ -1055,10 +1055,6 @@ def InitUsageConfig():
 	config.mediaplayer = ConfigSubsection()
 	config.mediaplayer.useAlternateUserAgent = ConfigYesNo(default = False)
 	config.mediaplayer.alternateUserAgent = ConfigText(default="")
-
-	config.movielist = ConfigSubsection()
-	config.movielist.useAlternateUserAgent = ConfigYesNo(default = False)
-	config.movielist.alternateUserAgent = ConfigText(default="")
 
 	config.pluginbrowser = ConfigSubsection()
 	config.pluginbrowser.po = ConfigYesNo(default = False)
