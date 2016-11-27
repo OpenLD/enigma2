@@ -339,6 +339,12 @@ off_t eM2TSFile::offset()
 
 eServiceFactoryM2TS::eServiceFactoryM2TS()
 {
+	struct stat dummy;
+	if (stat("/usr/lib/libpassthrough.so", &dummy) != 0)
+	{
+		eDebug("eServiceFactoryM2TS aborted, no /usr/lib/libpassthrough.so");
+		return;
+	}
 	ePtr<eServiceCenter> sc;
 	eServiceCenter::getPrivInstance(sc);
 	if (sc)

@@ -22,7 +22,7 @@ eServiceMP3Record::eServiceMP3Record(const eServiceReference &ref):
 	m_error = 0;
 	m_simulate = false;
 	m_recording_pipeline = 0;
-	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;openLD;;;)";
+	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;openLD;;;)";
 	m_extra_headers = "";
 
 	CONNECT(m_pump.recv_msg, eServiceMP3Record::gstPoll);
@@ -135,7 +135,7 @@ int eServiceMP3Record::doPrepare()
 		gchar *uri;
 		size_t pos = m_ref.path.find('#');
 		std::string stream_uri;
-		if (pos != std::string::npos && (m_ref.path.compare(0, 4, "http") == 0 || m_ref.path.compare(0, 4, "rtsp") == 0))
+		if (pos != std::string::npos && (m_ref.path.compare(0, 4, "http") == 0 || m_ref.path.compare(0, 4, "rtsp") == 0 || m_ref.path.compare(0, 4, "rtmp") == 0 || m_ref.path.compare(0, 4, "rtp") == 0))))
 		{
 			stream_uri = m_ref.path.substr(0, pos);
 			m_extra_headers = m_ref.path.substr(pos + 1);
