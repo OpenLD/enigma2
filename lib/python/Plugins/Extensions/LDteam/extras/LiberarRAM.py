@@ -28,3 +28,5 @@ from os import system, remove as os_remove, rename as os_rename, popen, getcwd, 
 print ("Liberando RAM")
 commands.getstatusoutput('sync ; echo 3 > /proc/sys/vm/drop_caches')
 print ("RAM Liberada Correctamente")
+commands.getstatusoutput('sync ; echo 0 > /proc/sys/vm/drop_caches')
+print ("De vuelta al estado normal (no libera nada)")

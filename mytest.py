@@ -339,6 +339,11 @@ class Session:
 		else:
 			del self.current_dialog.callback
 
+		## hack for ready eDVBLocalTimeHandler
+		# Thanks morser and OpenSPA: https://github.com/OpenSPA/dvbapp/commit/b8af9e056062a3f7765e6709dc9a3ae434b70fcb
+		##
+		enigma.eDVBLocalTimeHandler.getInstance().syncDVBTime()
+
 		self.popCurrent()
 		if callback is not None:
 			callback(*retval)
