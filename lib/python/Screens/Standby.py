@@ -98,10 +98,7 @@ class Standby2(Screen):
 						self.standbyStopServiceTimer.startLongTimer(5)
 					self.timeHandler = None
 				else:
-					if config.misc.SyncTimeUsing.value == 0:
-						self.timeHandler.m_timeUpdated.get().append(self.stopService)
-					else:
-						self.standbyStopServiceTimer.startLongTimer(5)
+					self.timeHandler.m_timeUpdated.get().append(self.stopService)
 
 		if self.session.pipshown:
 			from Screens.InfoBar import InfoBar

@@ -425,7 +425,6 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 #if GST_VERSION_MAJOR >= 1
 	m_use_chapter_entries = false; /* TOC chapter support CVR */
 	m_last_seek_pos = 0; /* CVR last seek position */
-	m_last_play_pos = 0;
 #endif
 	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;openLD;;;)";
 	m_extra_headers = "";
@@ -822,15 +821,6 @@ RESULT eServiceMP3::stop()
 {
 	if (!m_gst_playbin || m_state == stStopped)
 		return -1;
-
-#if GST_VERSION_MAJOR >= 1
-	pts_t pts;
-	if (getPlayPosition(pts) >= 0)
-	{
-		m_last_play_pos = pts;
-	}
-	eDebug("[serviceMP3] tempo cvr last playpostion = %#"G_GINT64_MODIFIER "x", m_last_play_pos);
-#endif
 
 	eDebug("[eServiceMP3] stop %s", m_ref.path.c_str());
 	m_state = stStopped;
@@ -3129,22 +3119,6 @@ void eServiceMP3::loadCuesheet()
 /* cuesheet CVR */
 void eServiceMP3::saveCuesheet()
 {
-
-#if GST_VERSION_MAJOR >= 1
-	if (m_use_chapter_entries)
-	{
-		if (m_cuesheet_loaded)
-			m_cue_entries.clear();
-		if (m_last_play_pos > 0)
-		{
-			m_cue_entries.insert(cueEntry(m_last_play_pos, 3));
-			eDebug("[ServiceMP3] cvr tempo last pause position inserted %#"G_GINT64_MODIFIER "x", m_last_play_pos);
-		}
-		else
-			return;
-	}
-#endif
-
 	std::string filename = m_ref.path;
 
 		/* save cuesheet only when main file is accessible. */
