@@ -48,6 +48,49 @@ void eSlider::setForegroundColor(const gRGB &color)
 	invalidate();
 }
 
+void eSlider::setSliderBorderWidth(int pixel)
+{
+	m_sliderborder_width=pixel;
+	m_have_sliderborder_width = true;
+	invalidate();
+}
+
+void eSlider::setScrollbarSliderPicture(ePtr<gPixmap> &pixmap)
+{
+	setScrollbarSliderPicture(pixmap.operator->());
+}
+
+void eSlider::setScrollbarSliderPicture(gPixmap *pixmap)
+{
+	m_pixmap = pixmap;
+	event(evtChangedSlider);
+}
+
+void eSlider::setScrollbarBackgroundPicture(ePtr<gPixmap> &pixmap)
+{
+	setScrollbarBackgroundPicture(pixmap.operator->());
+}
+
+void eSlider::setScrollbarBackgroundPicture(gPixmap *pixmap)
+{
+	m_backgroundpixmap = pixmap;
+	invalidate();
+}
+
+void eSlider::setSliderBorderColor(const gRGB &color)
+{
+	m_sliderborder_color=color;
+	m_have_sliderborder_color=true;
+	invalidate();
+}
+
+void eSlider::setSliderForegroundColor(const gRGB &color)
+{
+	m_sliderforeground_color = color;
+	m_have_sliderforeground_color = true;
+	invalidate();
+}
+
 void eSlider::setAlphatest(int alphatest)
 {
 	m_alphatest = alphatest;
