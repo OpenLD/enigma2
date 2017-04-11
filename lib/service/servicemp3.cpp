@@ -2298,6 +2298,7 @@ void eServiceMP3::HandleTocEntry(GstMessage *msg)
 								m_cue_entries.clear();
 							else
 								loadCuesheet();
+								m_cue_entries.clear();
 						}
 						/* first chapter is movie start no cut needed */
 						else if (y >= 1)

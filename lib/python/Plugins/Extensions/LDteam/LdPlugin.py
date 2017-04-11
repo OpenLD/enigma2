@@ -65,10 +65,10 @@ class LDPluginPanel(Screen):
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on"/>
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on"/>
-			<widget name="key_red" position="30,592" zPosition="2" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="red" transparent="1" />
-			<widget name="key_green" position="200,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="green" transparent="1" />
-			<widget name="key_yellow" position="370,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="yellow" transparent="1" />
-			<widget name="key_blue" position="543,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="blue" transparent="1" />
+			<widget name="key_red" position="30,594" zPosition="2" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="red" transparent="1" />
+			<widget name="key_green" position="200,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="green" transparent="1" />
+			<widget name="key_yellow" position="370,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="yellow" transparent="1" />
+			<widget name="key_blue" position="543,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" valign="center" backgroundColor="blue" transparent="1" />
 
 </screen>"""
 	def __init__(self, session):
