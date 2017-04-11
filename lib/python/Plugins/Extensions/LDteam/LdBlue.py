@@ -108,10 +108,10 @@ class LDBluePanel(Screen):
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/green150x30.png" position="200,590" size="150,30" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/yellow150x30.png" position="370,590" size="150,30" alphatest="on" />
 <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/buttons/blue150x30.png" position="543,590" size="150,30" alphatest="on" />
-<widget name="key_red" position="30,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="red" transparent="1" />
-<widget name="key_green" position="200,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="green" transparent="1" />
-<widget name="key_yellow" position="370,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="yellow" transparent="1" />
-<widget name="key_blue" position="543,592" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="blue" transparent="1" />
+<widget name="key_red" position="30,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="red" transparent="1" />
+<widget name="key_green" position="200,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="green" transparent="1" />
+<widget name="key_yellow" position="370,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="yellow" transparent="1" />
+<widget name="key_blue" position="543,594" zPosition="1" size="150,25" font="Regular; 18" halign="center" backgroundColor="blue" transparent="1" />
 <widget name="lab1" position="190,80" size="235,25" font="Regular; 18" zPosition="2" backgroundColor="transpBlack" transparent="1" />
 <widget name="list" position="35,116" size="320,25" zPosition="2" scrollbarMode="showOnDemand" foregroundColor="#BDBDBD" backgroundColor="transpBlack" transparent="1" />
 <widget name="lab2" position="35,149" size="120,25" font="Regular; 19" halign="left" zPosition="2" backgroundColor="transpBlack" transparent="1" />
