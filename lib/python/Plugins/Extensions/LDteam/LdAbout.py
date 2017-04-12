@@ -67,7 +67,7 @@ class LdsysInfo(Screen):
 	skin = """
 <screen name="LdsysInfo" position="70,35" size="1150,650">
 <ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
-<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;17" scrollbarMode="showOnDemand">
+<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;16" scrollbarMode="showOnDemand">
 </widget>
 </screen>"""
 
