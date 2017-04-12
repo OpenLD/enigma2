@@ -91,12 +91,12 @@ void eFBCTunerManager::frontend_set_linkptr(const eDVBRegisteredFrontend *fe, li
 	fe->m_frontend->setData(data_type, data);
 }
 
-void eFBCTunerManager::setProcFBCID(int fe_id, int fbc_id)
+void eFBCTunerManager::setProcFBCID(int feid, int fbc_id)
 {
 	char tmp[64];
-	snprintf(tmp, sizeof(tmp), "/proc/stb/frontend/%d/fbc_id", fe_id);
+	snprintf(tmp, sizeof(tmp), "/proc/stb/frontend/%d/fbc_id", feid);
 
-	if(isLinkedByIndex(fe_id))
+	if(isLinkedByIndex(feid))
 		fbc_id |= 0x10; // 0x10 mask: linked, 0x0f (?) mask: fbc_id
 
 	CFile::writeIntHex(tmp, fbc_id);
@@ -455,7 +455,7 @@ void eFBCTunerManager::updateLNBSlotMask(int dest_slot, int src_slot, bool remov
 	}
 }
 
-int eFBCTunerManager::getLinkedSlotID(int fe_id)
+int eFBCTunerManager::getLinkedSlotID(int feid)
 {
 	eDVBRegisteredFrontend *prev_fe;
 	eSmartPtrList<eDVBRegisteredFrontend> &frontends = m_res_mgr->m_frontend;
@@ -467,7 +467,7 @@ int eFBCTunerManager::getLinkedSlotID(int fe_id)
 
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator it(frontends.begin()); it != frontends.end(); ++it)
 	{
-		if(it->m_frontend->getSlotID() == fe_id)
+		if(it->m_frontend->getSlotID() == feid)
 		{
 			if((prev_ptr = frontend_get_linkptr(it, link_prev)) != -1)
 			{
