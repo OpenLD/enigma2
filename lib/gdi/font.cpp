@@ -563,6 +563,7 @@ void eTextPara::newLine(int flags)
 		maximum.setHeight(cursor.y());
 	previous=0;
 	totalheight += height;
+	lineCount++;
 }
 
 eTextPara::~eTextPara()
@@ -635,7 +636,7 @@ int eTextPara::renderString(const char *string, int rflags, int border)
 	if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
 				current_font->scaler.face_id,
 				&current_face) < 0) ||
-	    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+		(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
 				&current_font->scaler,
 				&current_font->size) < 0))
 	{
@@ -663,6 +664,7 @@ int eTextPara::renderString(const char *string, int rflags, int border)
 			}
 		}
 		totalheight = height >> 6;
+		lineCount = 1;
 		cursor=ePoint(area.x(), area.y()+(ascender>>6));
 		left=cursor.x();
 	}
@@ -1124,24 +1126,24 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &background, cons
 					}
 					break;
 				case 2: // 16bit
-                                        {
-                                        int extra_buffer_stride = (buffer_stride >> 1) - sx;
-                                        register __u16 *td = (__u16*)d;
-                                        for (int ay = 0; ay != sy; ay++)
-                                        {
-                                                register int ax;
-                                                for (ax = 0; ax != sx; ax++)
-                                                {
-                                                        register int b = (*s++) >> 4;
+					{
+					int extra_buffer_stride = (buffer_stride >> 1) - sx;
+					register __u16 *td = (__u16*)d;
+					for (int ay = 0; ay != sy; ay++)
+					{
+						register int ax;
+						for (ax = 0; ax != sx; ax++)
+						{
+							register int b = (*s++) >> 4;
 							if (b)
 								*td = lookup16[b];
-                                                        ++td;
-                                                }
-                                                s += extra_source_stride;
-                                                td += extra_buffer_stride;
-                                        }
-                                        }
-                                        break;
+							++td;
+						}
+						s += extra_source_stride;
+						td += extra_buffer_stride;
+					}
+					}
+					break;
 				case 3: // 32bit
 					{
 					register int extra_buffer_stride = (buffer_stride >> 2) - sx;
@@ -1278,6 +1280,7 @@ void eTextPara::clear()
 	}
 	glyphs.clear();
 	totalheight = 0;
+	lineCount = 0;
 }
 
 eAutoInitP0<fontRenderClass> init_fontRenderClass(eAutoInitNumbers::graphic-1, "Font Render Class");
