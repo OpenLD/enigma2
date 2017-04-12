@@ -1,6 +1,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <string.h>
+#include <openssl/evp.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include <shadow.h>
@@ -12,6 +13,7 @@
 #include <lib/base/wrappers.h>
 #include <lib/base/nconfig.h>
 #include <lib/base/cfile.h>
+#include <lib/base/e2avahi.h>
 
 #include <lib/dvb/streamserver.h>
 #include <lib/dvb/encoder.h>
@@ -81,7 +83,24 @@ void eStreamClient::notifier(int what)
 				std::string hash = request.substr(pos + 21);
 				pos = hash.find('\r');
 				hash = hash.substr(0, pos);
-				authentication = base64decode(hash);
+				hash += "\n";
+				{
+					char *in, *out;
+					in = strdup(hash.c_str());
+					out = (char*)calloc(1, hash.size());
+					if (in && out)
+					{
+						BIO *b64, *bmem;
+						b64 = BIO_new(BIO_f_base64());
+						bmem = BIO_new_mem_buf(in, hash.size());
+						bmem = BIO_push(b64, bmem);
+						BIO_read(bmem, out, hash.size());
+						BIO_free_all(bmem);
+						authentication.append(out, hash.size());
+					}
+					free(in);
+					free(out);
+				}
 				pos = authentication.find(':');
 				if (pos != std::string::npos)
 				{
@@ -220,7 +239,14 @@ void eStreamClient::notifier(int what)
 	request.clear();
 }
 
-void eStreamClient::stopStream()
+void eStreamClient::streamStopped()
+{
+	ePtr<eStreamClient> ref = this;
+	rsn->stop();
+	parent->connectionLost(this);
+}
+
+void eStreamClient::tuneFailed()
 {
 	ePtr<eStreamClient> ref = this;
 	rsn->stop();
@@ -250,6 +276,7 @@ eStreamServer::eStreamServer()
  : eServerSocket(8001, eApp)
 {
 	m_instance = this;
+	e2avahi_announce(NULL, "_e2stream._tcp", 8001);
 }
 
 eStreamServer::~eStreamServer()
@@ -278,15 +305,6 @@ void eStreamServer::connectionLost(eStreamClient *client)
 	if (it != clients.end())
 	{
 		clients.erase(it);
-	}
-}
-
-void eStreamServer::stopStream()
-{
-	eSmartPtrList<eStreamClient>::iterator it = clients.begin();
-	if (it != clients.end())
-	{
-		it->stopStream();
 	}
 }
 
