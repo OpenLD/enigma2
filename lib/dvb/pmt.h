@@ -98,9 +98,11 @@ class eDVBServicePMTHandler: public eDVBPMTParser
 
 	int m_pmt_pid;
 	int m_dsmcc_pid;
+	int m_ait_pid;
 	HbbTVApplicationInfoList m_HbbTVApplications;
 	std::string m_HBBTVUrl;
 	std::string m_ApplicationName;
+	unsigned char m_AITData[4096];
 
 	int m_use_decode_demux;
 	uint8_t m_decode_demux_num;
@@ -144,7 +146,7 @@ public:
 	int getDecodeDemux(ePtr<iDVBDemux> &demux);
 	void getAITApplications(std::map<int, std::string> &aitlist);
 	void getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids);
-	PyObject *getHbbTVApplications(void);
+	PyObject *getHbbTVApplications();
 
 	int getPVRChannel(ePtr<iDVBPVRChannel> &pvr_channel);
 	int getServiceReference(eServiceReferenceDVB &service) { service = m_reference; return 0; }
