@@ -10406,6 +10406,19 @@ msgstr "Dígitos en el número de canal"
 msgid "This allows you to set the number of digits to 5, if you have more than 9999 channels."
 msgstr "Aquí se puede establecer el número de puntos en 5 si tiene más de 9999 canales."
 
+#: data/setup.xml
+msgid "Default 'Timer type'"
+msgstr "Predeterminado 'Tipo de temporizador'"
+
+#: data/setup.xml
+msgid "Default 'After event'"
+msgstr "Predeterminado 'Después del evento'"
+
+#: data/setup.xml
+msgid "Configure default setting for new timers. Need a restart after changing."
+msgstr "Determina la configuración por defecto para los temporizadores nuevos. Necesita un reinicio después del cambio."
+
+#: data/setup.xml
 msgid "Long press emulation with button"
 msgstr "Emulación de pulsación larga con el botón"
 
