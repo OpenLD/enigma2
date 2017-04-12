@@ -1,5 +1,6 @@
 from config import ConfigSelectionNumber, ConfigYesNo, ConfigSubsection, ConfigSelection, config
 from enigma import pNavigation
+from Components.SystemInfo import SystemInfo
 
 def InitRecordingConfig():
 	config.recording = ConfigSubsection()
@@ -24,6 +25,19 @@ def InitRecordingConfig():
 		("normal", _("normal")),
 		("descrambled+ecm", _("descramble and record ecm")),
 		("scrambled+ecm", _("don't descramble, record ecm")) ] )
+	config.recording.default_timertype = ConfigSelection(default = "record", choices = [
+		("zap", _("zap")),
+		("record", _("record")),
+		("zap+record", _("zap and record")) ] )
+	if SystemInfo["DeepstandbySupport"]:
+		shutdownString = _("go to deep standby")
+	else:
+		shutdownString = _("shut down")
+	config.recording.default_afterevent = ConfigSelection(default = "3", choices = [
+		("0", _("do nothing")),
+		("1", _("go to standby")),
+		("2", shutdownString),
+		("3", _("auto")) ] )
 	config.recording.include_ait = ConfigYesNo(default = False)
 	config.recording.show_rec_symbol_for_rec_types = ConfigSelection(default = "real", choices = [
 		("any", _("any recordings")),
