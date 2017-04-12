@@ -63,6 +63,7 @@ class Satfinder(ScanSetup, ServiceScan):
 	def openFrontend(self):
 		res_mgr = eDVBResourceManager.getInstance()
 		if res_mgr:
+			feid = int(self.scan_nims.value)
 			self.raw_channel = res_mgr.allocateRawChannel(self.feid)
 			if self.raw_channel:
 				self.frontend = self.raw_channel.getFrontend()
@@ -72,19 +73,22 @@ class Satfinder(ScanSetup, ServiceScan):
 
 	def prepareFrontend(self):
 		self.frontend = None
-		if not self.openFrontend():
-			self.session.nav.stopService()
+		try:
 			if not self.openFrontend():
-				if self.session.pipshown:
-					from Screens.InfoBar import InfoBar
-					InfoBar.instance and hasattr(InfoBar.instance, "showPiP") and InfoBar.instance.showPiP()
-					if not self.openFrontend():
-						self.frontend = None # in normal case this should not happen
-		self.tuner = Tuner(self.frontend)
-		if nimmanager.nim_slots[int(self.satfinder_scan_nims.value)].isCompatible("DVB-S"):
-			self.updatePreDefTransponders()
-		self.createSetup()
-		self.retune()
+				self.session.nav.stopService()
+				if not self.openFrontend():
+					if self.session.pipshown:
+						from Screens.InfoBar import InfoBar
+						InfoBar.instance and hasattr(InfoBar.instance, "showPiP") and InfoBar.instance.showPiP()
+						if not self.openFrontend():
+							self.frontend = None # in normal case this should not happen
+			self.tuner = Tuner(self.frontend)
+			if nimmanager.nim_slots[int(self.satfinder_scan_nims.value)].isCompatible("DVB-S"):
+				self.updatePreDefTransponders()
+			self.createSetup()
+			self.retune()
+		except:
+			pass
 
 	def __onClose(self):
 		self.session.nav.playService(self.session.postScanService)

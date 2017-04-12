@@ -1892,11 +1892,11 @@ def InitNimManager(nimmgr, update_slots = []):
 				nim.advanced.sat[x] = tmp
 
 	def scpcSearchRangeChanged(configElement):
-		fe_id = configElement.fe_id
+		feid = configElement.feid
 		slot_id = configElement.slot_id
 		name = nimmgr.nim_slots[slot_id].description
-		if os.path.exists("/proc/stb/frontend/%d/use_scpc_optimized_search_range" % fe_id):
-			f = open("/proc/stb/frontend/%d/use_scpc_optimized_search_range" % fe_id, "w")
+		if os.path.exists("/proc/stb/frontend/%d/use_scpc_optimized_search_range" % feid):
+			f = open("/proc/stb/frontend/%d/use_scpc_optimized_search_range" % feid, "w")
 			f.write(configElement.value)
 			f.close()
 
@@ -1913,10 +1913,10 @@ def InitNimManager(nimmgr, update_slots = []):
 			f.close()
 
 	def toneAmplitudeChanged(configElement):
-		fe_id = configElement.fe_id
+		feid = configElement.feid
 		slot_id = configElement.slot_id
-		if os.path.exists("/proc/stb/frontend/%d/tone_amplitude" % fe_id):
-			f = open("/proc/stb/frontend/%d/tone_amplitude" % fe_id, "w")
+		if os.path.exists("/proc/stb/frontend/%d/tone_amplitude" % feid):
+			f = open("/proc/stb/frontend/%d/tone_amplitude" % feid, "w")
 			f.write(configElement.value)
 			f.close()
 
@@ -1935,11 +1935,11 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.toneAmplitude
 		except:
 			nim.toneAmplitude = ConfigSelection([("11", "340mV"), ("10", "360mV"), ("9", "600mV"), ("8", "700mV"), ("7", "800mV"), ("6", "900mV"), ("5", "1100mV")], "7")
-			nim.toneAmplitude.fe_id = x - empty_slots
+			nim.toneAmplitude.feid = x - empty_slots
 			nim.toneAmplitude.slot_id = x
 			nim.toneAmplitude.addNotifier(toneAmplitudeChanged)
 			nim.scpcSearchRange = ConfigSelection([("0", _("no")), ("1", _("yes"))], "0")
-			nim.scpcSearchRange.fe_id = x - empty_slots
+			nim.scpcSearchRange.feid = x - empty_slots
 			nim.scpcSearchRange.slot_id = x
 			nim.scpcSearchRange.addNotifier(scpcSearchRangeChanged)
 			nim.forceLnbPower = ConfigSelection(default = "off", choices = [ ("on", _("Yes")), ("off", _("No"))] )
@@ -2039,9 +2039,9 @@ def InitNimManager(nimmgr, update_slots = []):
 	def tunerTypeChanged(nimmgr, configElement, initial=False):
 		print "[InitNimManager] dvb_api_version ",iDVBFrontend.dvb_api_version
 		configElement.save()
-		fe_id = configElement.fe_id
-		eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[fe_id].frontend_id, nimmgr.nim_slots[fe_id].getType())
-		frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
+		feid = configElement.feid
+		eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[feid].frontend_id, nimmgr.nim_slots[feid].getType())
+		frontend = eDVBResourceManager.getInstance().allocateRawChannel(feid).getFrontend()
 		if iDVBFrontend.dvb_api_version >= 5:
 			print "[InitNimManager] api >=5"
 			if frontend:
@@ -2057,20 +2057,20 @@ def InitNimManager(nimmgr, update_slots = []):
 				else:
 					ret = False
 				if not ret:
-					print "[InitNimManager] %d: tunerTypeChange to '%s' failed" %(fe_id, system)
+					print "[InitNimManager] %d: tunerTypeChange to '%s' failed" %(feid, system)
 			else:
-				print "[InitNimManager] %d: tunerTypeChange to '%s' failed (BUSY)" %(fe_id, configElement.getText())
+				print "[InitNimManager] %d: tunerTypeChange to '%s' failed (BUSY)" %(feid, configElement.getText())
 		else:
 			print "[InitNimManager] api <5"
-			frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
-			if not os.path.exists("/proc/stb/frontend/%d/mode" % fe_id) and frontend.setDeliverySystem(nimmgr.nim_slots[fe_id].getType()):
-				print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (fe_id, int(configElement.value))
+			frontend = eDVBResourceManager.getInstance().allocateRawChannel(feid).getFrontend()
+			if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
+				print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
 				InitNimManager(nimmgr)
 				return
-			if os.path.exists("/proc/stb/frontend/%d/mode" % fe_id):
-				cur_type = int(open("/proc/stb/frontend/%d/mode" % fe_id, "r").read())
+			if os.path.exists("/proc/stb/frontend/%d/mode" % feid):
+				cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
 				if cur_type != int(configElement.value):
-					print "[InitNimManager] tunerTypeChanged feid %d from %d to mode %d" % (fe_id, cur_type, int(configElement.value))
+					print "[InitNimManager] tunerTypeChanged feid %d from %d to mode %d" % (feid, cur_type, int(configElement.value))
 
 					try:
 						oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
@@ -2080,7 +2080,7 @@ def InitNimManager(nimmgr, update_slots = []):
 					except:
 						print "[InitNimManager] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
 					frontend.closeFrontend()
-					f = open("/proc/stb/frontend/%d/mode" % fe_id, "w")
+					f = open("/proc/stb/frontend/%d/mode" % feid, "w")
 					f.write(configElement.value)
 					f.close()
 					frontend.reopenFrontend()
@@ -2114,7 +2114,7 @@ def InitNimManager(nimmgr, update_slots = []):
 				typeList.append((id, type))
 			nim.multiType = ConfigSelection(typeList, "0")
 
-			nim.multiType.fe_id = x - empty_slots
+			nim.multiType.feid = x - empty_slots
 			nim.multiType.addNotifier(boundFunction(tunerTypeChanged, nimmgr), initial_call=False)
 			tunerTypeChanged(nimmgr, nim.multiType, initial=True)
 		print "[InitNimManager] slotname = %s, slotdescription = %s, multitype = %s, current type = %s" % (slot.input_name, slot.description, (slot.isMultiType() and addMultiType), slot.getType())
