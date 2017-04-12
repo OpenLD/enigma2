@@ -71,6 +71,8 @@ def getChipSetString():
 def getCPUSpeedString():
 	if getMachineBuild() in ('vusolo4k'):
 		return "1,5 GHz"
+	elif getMachineBuild() in ('formuler1'):
+		return "1,3 GHz"
 	else:
 		try:
 			file = open('/proc/cpuinfo', 'r')
@@ -201,6 +203,118 @@ def getRAMusageString():
 		import commands
 		status, output = commands.getstatusoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'")
 		return output.split(' ')[1]
+	except:
+		return _("unknown")
+
+def getRAMFreePorcString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $4,$2,$4*100/$2 }'")
+		return output.split(' ')[1]
+	except:
+		return _("unknown")
+
+def getRAMTotalString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $2}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMUsedString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $3}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMUsedKBString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free | grep Mem: | awk '{print $3}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMFreeString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $4}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMSharingString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $5}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMStoredString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $6}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMCachedString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $7}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMSwapTotalString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $2}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMSwapUsedString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $3}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMSwapFreeString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $4}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMTotalGlobalString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $2}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMUsedGlobalString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $3}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
+def getRAMFreeGlobalString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $4}'")
+		return output.split(' ')[0]
 	except:
 		return _("unknown")
 

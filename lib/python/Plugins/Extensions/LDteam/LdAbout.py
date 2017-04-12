@@ -51,7 +51,7 @@ from Tools.StbHardware import getFPVersion
 from Tools.LoadPixmap import LoadPixmap
 from ServiceReference import ServiceReference
 from enigma import eLabel, iServiceInformation, eTimer, eConsoleAppContainer, getEnigmaVersionString, RT_HALIGN_LEFT, eListboxPythonMultiContent, gFont, getDesktop, eSize, ePoint
-from boxbranding import getBoxType, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
+from boxbranding import getBoxType, getMachineBuild, getMachineBrand, getMachineName, getImageVersion, getImageBuild, getDriverDate
 from time import *
 from types import *
 import sys, socket, commands, re, new, os, gettext, _enigma, enigma, subprocess, threading, traceback, time, datetime
@@ -84,7 +84,7 @@ class LdsysInfo(Screen):
 		}, -1)
 
 	def updateInfo(self):
-		self.DynamicTimer.start(1000)
+		self.DynamicTimer.start(3000)
 		rc = system("df -h > /tmp/syinfo.tmp")
 		if config.osd.language.value == 'es_ES':
 			self.text = "RECEPTOR\n"
@@ -109,43 +109,48 @@ class LdsysInfo(Screen):
 			res2 = ""
 		cpuMHz = ""
 		bogoMIPS = ""
-		if res:
-			cpuMHz = "   \t(" + res.replace("\n", "") + " MHz)"
+		if getMachineBuild() in ('vusolo4k'):
+			cpuMHz = "  \t(1,5 GHz)"
+		elif getMachineBuild() in ('formuler1'):
+			cpuMHz = "  \t(1,3 GHz)"
+		elif res:
+			cpuMHz = "  \t(" + res.replace("\n", "") + " MHz)"
 		if res2:
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
 		self.text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
 		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
+		self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 		self.text += "BogoMIPS \t" + bogoMIPS + "\n"
 		f.close()
 		if config.osd.language.value == 'es_ES':
 			self.text += "\nMEMORIA\n"
 		else:
 			self.text += "\nMEMORY\n"
-		memTotal = memFree = swapTotal = swapFree = 0
-		for line in open("/proc/meminfo",'r'):
-			parts = line.split(':')
-			key = parts[0].strip()
-			if key == "MemTotal":
-				memTotal = parts[1].strip()
-			elif key in ("MemFree"):
-				memFree = parts[1].strip()
-			elif key == "SwapTotal":
-				swapTotal = parts[1].strip()
-			elif key == "SwapFree":
-				swapFree = parts[1].strip()
 		if config.osd.language.value == 'es_ES':
-			self.text += "Memoria Total:\t%s\n" % memTotal
+			self.text += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
 		else:
-			self.text += "Total memory:\t%s\n" % memTotal
+			self.text += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
 		if config.osd.language.value == 'es_ES':
-			self.text += "Memoria Libre:\t%s \n" % memFree
+			self.text += "Libre:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
 		else:
-			self.text += "Free memory:\t%s \n" % memFree
+			self.text += "Free:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
 		if config.osd.language.value == 'es_ES':
-			self.text += "Memoria Usada:\t%s" % str(about.getRAMusageString()) + "\n"
+			self.text += "Usada:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
 		else:
-			self.text += "Memory Usage:\t%s" % str(about.getRAMusageString()) + "\n"
+			self.text += "Usage:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
+		if config.osd.language.value == 'es_ES':
+			self.text += "Compartida:\t%s" % str(about.getRAMSharingString()) + " MB" + "\n"
+		else:
+			self.text += "Shared:\t%s" % str(about.getRAMSharingString()) + " MB" +  "\n"
+		if config.osd.language.value == 'es_ES':
+			self.text += "Almacenada:\t%s" % str(about.getRAMStoredString()) + " MB" + "\n"
+		else:
+			self.text += "Stored:\t%s" % str(about.getRAMStoredString()) + " MB" +  "\n"
+		if config.osd.language.value == 'es_ES':
+			self.text += "Cacheada:\t%s" % str(about.getRAMCachedString()) + " MB" + "\n"
+		else:
+			self.text += "Cached:\t%s" % str(about.getRAMCachedString()) + " MB" +  "\n"
 		out_lines = file("/proc/meminfo").readlines()
 		for lidx in range(len(out_lines) - 1):
 			tstLine = out_lines[lidx].split()
@@ -156,13 +161,13 @@ class LdsysInfo(Screen):
 				Cached = out_lines[lidx].split()
 				self.text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
 		if config.osd.language.value == 'es_ES':
-			self.text += "Swap total:\t%s \n" % swapTotal
+			self.text += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
 		else:
-			self.text += "Swap total:\t%s \n" % swapTotal
+			self.text += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
 		if config.osd.language.value == 'es_ES':
-			self.text += "Swap libre:\t%s \n" % swapFree
+			self.text += "Swap libre:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n"
 		else:
-			self.text += "Swap free:\t%s \n" % swapFree
+			self.text += "Swap free:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n"
 		if config.osd.language.value == 'es_ES':
 			self.text += "\nALMACENAMIENTO\n"
 		else:

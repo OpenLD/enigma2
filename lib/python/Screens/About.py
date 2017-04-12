@@ -65,6 +65,8 @@ def getAboutText():
 	cpuMHz = ""
 	if getMachineBuild() in ('vusolo4k'):
 		cpuMHz = "   (1,5 GHz)"
+	elif getMachineBuild() in ('formuler1'):
+		cpuMHz = "   (1,3 GHz)"
 	else:
 		if path.exists('/proc/cpuinfo'):
 			f = open('/proc/cpuinfo', 'r')
@@ -342,6 +344,9 @@ class SystemMemoryInfo(Screen):
 		Screen.setTitle(self, _("Memory Information"))
 		self.skinName = ["SystemMemoryInfo", "About"]
 		self["lab1"] = StaticText(_("INFO RAM / FLASH"))
+		self.DynamicTimer = eTimer()
+		self.DynamicTimer.callback.append(self.updateInfo)
+		self.onShow.append(self.updateInfo)
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "DirectionActions"],
@@ -352,34 +357,50 @@ class SystemMemoryInfo(Screen):
 				"down": self["AboutScrollLabel"].pageDown,
 			})
 
+	def updateInfo(self):
+		self.DynamicTimer.start(3000)
+		self.AboutText = _("MEMORY") + '\n'
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
+		else:
+			self.AboutText += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Libre:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
+		else:
+			self.AboutText += "Free:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Usada:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
+		else:
+			self.AboutText += "Usage:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Compartida:\t%s" % str(about.getRAMSharingString()) + " MB" + "\n"
+		else:
+			self.AboutText += "Shared:\t%s" % str(about.getRAMSharingString()) + " MB" +  "\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Almacenada:\t%s" % str(about.getRAMStoredString()) + " MB" + "\n"
+		else:
+			self.AboutText += "Stored:\t%s" % str(about.getRAMStoredString()) + " MB" +  "\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Cacheada:\t%s" % str(about.getRAMCachedString()) + " MB" + "\n"
+		else:
+			self.AboutText += "Cached:\t%s" % str(about.getRAMCachedString()) + " MB" +  "\n"
 		out_lines = file("/proc/meminfo").readlines()
-		self.AboutText = _("RAM") + '\n'
-		RamTotal = "-"
-		RamFree = "-"
 		for lidx in range(len(out_lines) - 1):
 			tstLine = out_lines[lidx].split()
-			if "MemTotal:" in tstLine:
-				MemTotal = out_lines[lidx].split()
-				self.AboutText += _("Total Memory:") + "\t" + MemTotal[1] + "\n"
-			if "MemFree:" in tstLine:
-				MemFree = out_lines[lidx].split()
-				self.AboutText += _("Free Memory:") + "\t" + MemFree[1] + "\n"
-				if config.osd.language.value == 'es_ES':
-					self.AboutText += _("Memoria Usada:\t%s") % str(about.getRAMusageString()) + "\n"
-				else:
-					self.AboutText += _("Memory Usage:\t%s") % str(about.getRAMusageString()) + "\n"
 			if "Buffers:" in tstLine:
 				Buffers = out_lines[lidx].split()
-				self.AboutText += _("Buffers:") + "\t" + Buffers[1] + "\n"
+				self.AboutText += _("Buffers:") + "\t" + Buffers[1] + ' kB'"\n"
 			if "Cached:" in tstLine:
 				Cached = out_lines[lidx].split()
-				self.AboutText += _("Cached:") + "\t" + Cached[1] + "\n"
-			if "SwapTotal:" in tstLine:
-				SwapTotal = out_lines[lidx].split()
-				self.AboutText += _("Total Swap:") + "\t" + SwapTotal[1] + "\n"
-			if "SwapFree:" in tstLine:
-				SwapFree = out_lines[lidx].split()
-				self.AboutText += _("Free Swap:") + "\t" + SwapFree[1] + "\n\n"
+				self.AboutText += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
+		else:
+			self.AboutText += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
+		if config.osd.language.value == 'es_ES':
+			self.AboutText += "Swap libre:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n\n"
+		else:
+			self.AboutText += "Swap free:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n\n"
 
 		self["actions"].setEnabled(False)
 		self.Console = Console()
