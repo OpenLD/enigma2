@@ -140,7 +140,7 @@ class UpdatePluginMenu(Screen):
 			self.list.append(("install-extensions", _("Manage extensions"), _("\nManage extensions or plugins for your receiver" ) + self.oktext, None))
 			self.list.append(("software-update", _("Software update"), _("\nOnline update of your receiver software." ) + self.oktext, None))
 			self.list.append(("software-restore", _("Software restore"), _("\nRestore your receiver with a new firmware." ) + self.oktext, None))
-			if not boxtype.startswith('azbox') and not boxtype.startswith('dm') and not brandoem.startswith('cube'):
+			if not boxtype.startswith('azbox') and not boxtype.startswith('dm') and not brandoem.startswith('cube') and not brandoem.startswith('wetek'):
 				self.list.append(("backup-image", _("Backup Image"), _("\nBackup your running %s image to HDD or USB.") % (getBoxType()) + self.oktext, None))
 			self.list.append(("system-backup", _("Backup system settings"), _("\nBackup your receiver settings." ) + self.oktext + "\n\n" + self.infotext, None))
 			self.list.append(("system-restore",_("Restore system settings"), _("\nRestore your receiver settings." ) + self.oktext, None))
