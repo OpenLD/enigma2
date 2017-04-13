@@ -19,6 +19,19 @@
 #define I2C_SLAVE_FORCE	0x0706
 #endif
 
+#define ioctlMeasureStart \
+	struct timeval start, end; \
+	int duration; \
+	gettimeofday(&start, NULL);
+
+#define ioctlMeasureEval(x) \
+	do { \
+		gettimeofday(&end, NULL); \
+		duration = (((end.tv_usec - start.tv_usec)/1000) + 1000 ) % 1000; \
+		if (duration>35) \
+			eWarning("Slow ioctl '%s', potential driver issue, %dms",x,duration); \
+	} while(0)
+
 #define eDebugNoSimulateNoNewLineEnd(x...) \
 	do { \
 		if (!m_simulate) \
@@ -610,11 +623,14 @@ int eDVBFrontend::openFrontend()
 			cmdseq.props = &p;
 			cmdseq.num = 1;
 			p.cmd = DTV_API_VERSION;
+			ioctlMeasureStart;
 			if (ioctl(m_fd, FE_GET_PROPERTY, &cmdseq) >= 0)
 			{
 				m_dvbversion = p.u.data;
-				eDebug("[eDVBFrontend] frontend %d has DVB API %02x ", m_dvbid, m_dvbversion);
 			}
+			else
+				eWarning("ioctl FE_GET_PROPERTY/DTV_API_VERSION failed: %m");
+			ioctlMeasureEval("FE_GET_PROPERTY(DTV_API_VERSION)");
 #endif
 		}
 		if (m_delsys.empty())
@@ -634,21 +650,28 @@ int eDVBFrontend::openFrontend()
 			struct dtv_properties cmdseq;
 			cmdseq.num = 1;
 			cmdseq.props = p;
+			ioctlMeasureStart;
 			if (::ioctl(m_fd, FE_GET_PROPERTY, &cmdseq) >= 0)
 			{
+				ioctlMeasureEval("FE_GET_PROPERTY(DTV_ENUM_DELSYS)");
 				m_delsys.clear();
 				for (; p[0].u.buffer.len > 0; p[0].u.buffer.len--)
 				{
 					fe_delivery_system_t delsys = (fe_delivery_system_t)p[0].u.buffer.data[p[0].u.buffer.len - 1];
 					m_delsys[delsys] = true;
+					setDeliverySystem(delsys);
+					if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[delsys]) < 0)
+						eWarning("ioctl FE_GET_INFO failed: %m");
 				}
 			}
 			else
+				eWarning("ioctl FE_GET_PROPERTY/DTV_ENUM_DELSYS failed: %m");
 #else
 			/* no DTV_ENUM_DELSYS support */
 			if (1)
 #endif
 			{
+				ioctlMeasureEval("DTV_ENUM_DELSYS");
 				/* old DVB API, fill delsys map with some defaults */
 				switch (fe_info.type)
 				{
@@ -1321,8 +1344,10 @@ int eDVBFrontend::readFrontendData(int type)
 				uint16_t snr = 0;
 				if (!m_simulate)
 				{
+					ioctlMeasureStart;
 					if (ioctl(m_fd, FE_READ_SNR, &snr) < 0 && errno != ERANGE)
 						eDebug("FE_READ_SNR failed (%m)");
+					ioctlMeasureEval("FE_READ_SNR");
 				}
 				return snr;
 			}
@@ -1343,12 +1368,14 @@ int eDVBFrontend::readFrontendData(int type)
 					props.props = prop;
 					props.num = 1;
 
+					ioctlMeasureStart;
 					if (::ioctl(m_fd, FE_GET_PROPERTY, &props) < 0 && errno != ERANGE)
 					{
 						eDebug("[eDVBFrontend] DTV_STAT_CNR failed: %m");
 					}
 					else
 					{
+						ioctlMeasureEval("FE_GET_PROPERTY(DTV_STAT_CNR)");
 						for(unsigned int i=0; i<prop[0].u.st.len; i++)
 						{
 							if (prop[0].u.st.stat[i].scale == FE_SCALE_DECIBEL &&
@@ -1397,12 +1424,14 @@ int eDVBFrontend::readFrontendData(int type)
 						props.props = prop;
 						props.num = 1;
 
+						ioctlMeasureStart;
 						if (::ioctl(m_fd, FE_GET_PROPERTY, &props) < 0 && errno != ERANGE)
 						{
 							eDebug("[eDVBFrontend] DTV_STAT_SIGNAL_STRENGTH failed: %m");
 						}
 						else
 						{
+							ioctlMeasureEval("FE_GET_PROPERTY(DTV_STAT_SIGNAL_STRENGTH)");
 							for(unsigned int i=0; i<prop[0].u.st.len; i++)
 							{
 								if (prop[0].u.st.stat[i].scale == FE_SCALE_RELATIVE)
@@ -1412,8 +1441,10 @@ int eDVBFrontend::readFrontendData(int type)
 					}
 #endif
 					// fallback to old DVB API
+					ioctlMeasureStart;
 					if (!strength && ioctl(m_fd, FE_READ_SIGNAL_STRENGTH, &strength) < 0 && errno != ERANGE)
 						eDebug("FE_READ_SIGNAL_STRENGTH failed (%m)");
+					ioctlMeasureEval("FE_READ_SIGNAL_STRENGTH");
 				}
 				return strength;
 			}
@@ -1429,8 +1460,10 @@ int eDVBFrontend::readFrontendData(int type)
 			fe_status_t status;
 			if (!m_simulate)
 			{
+				ioctlMeasureStart;
 				if ( ioctl(m_fd, FE_READ_STATUS, &status) < 0 && errno != ERANGE )
 					eDebug("FE_READ_STATUS failed (%m)");
+				ioctlMeasureEval("FE_READ_STATUS");
 				return (int)status;
 			}
 			return (FE_HAS_SYNC | FE_HAS_LOCK);
@@ -1444,10 +1477,13 @@ int eDVBFrontend::readFrontendData(int type)
 			cmdseq.props = &p;
 			cmdseq.num = 1;
 			p.cmd = DTV_FREQUENCY;
+			ioctlMeasureStart;
 			if (ioctl(m_fd, FE_GET_PROPERTY, &cmdseq) < 0)
 			{
+				ioctlMeasureEval("FE_GET_PROPERTY(DTV_FREQUENCY)");
 				return 0;
 			}
+			ioctlMeasureEval("FE_GET_PROPERTY(DTV_FREQUENCY)");
 			return type == feSatellite ? p.u.data + m_data[FREQ_OFFSET] : p.u.data;
 		}
 	}
@@ -1505,11 +1541,13 @@ void eDVBFrontend::getTransponderData(ePtr<iDVBTransponderData> &dest, bool orig
 		else if (type == feATSC)
 		{
 		}
+		ioctlMeasureStart;
 		if (ioctl(m_fd, FE_GET_PROPERTY, &cmdseq) < 0)
 		{
 			eDebug("FE_GET_PROPERTY failed (%m)");
 			original = true;
 		}
+		ioctlMeasureEval("FE_GET_PROPERTY(&cmdseq)");
 	}
 	switch (type)
 	{
