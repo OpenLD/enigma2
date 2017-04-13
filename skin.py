@@ -299,13 +299,41 @@ def morphRcImagePath(value):
 	return value
 
 def loadPixmap(path, desktop):
+	cached = False
 	option = path.find("#")
 	if option != -1:
+		options = path[option+1:].split(',')
 		path = path[:option]
-	ptr = LoadPixmap(morphRcImagePath(path), desktop)
+		cached = "cached" in options
+	ptr = LoadPixmap(morphRcImagePath(path), desktop, cached)
 	if ptr is None:
 		raise SkinError("pixmap file %s not found!" % path)
 	return ptr
+
+pngcache = []
+def cachemenu():
+	pixmaplist = []
+	for (path, skin) in dom_skins:
+		for x in skin.findall("screen"):
+			if x.attrib.get('name') == 'menu_mainmenu':
+				print x.attrib.get('name')
+				for s in x.findall("ePixmap"):
+					if s.attrib.get('pixmap','') is not '':
+						pixmaplist.append(s.attrib.get('pixmap',''))
+				for s in x.findall('widget'):
+					if s.attrib.get('pixmap','') is not '':
+						pixmaplist.append(s.attrib.get('pixmap',''))
+	desktop = getDesktop(0)
+	for s in pixmaplist:
+		value ='/usr/share/enigma2/'+s
+		ptr = loadPixmap(value, desktop)
+		pngcache.append((value,ptr))
+try:
+	if config.skin.primary_skin.value == "MetrixHD/skin.xml" or config.skin.primary_skin.value == DEFAULT_SKIN:
+		cachemenu()
+except:
+	print "fail cache main menu"
+
 
 class AttributeParser:
 	def __init__(self, guiObject, desktop, scale=((1,1),(1,1))):
