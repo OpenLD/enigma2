@@ -545,10 +545,13 @@ def InitAVSwitch():
 				f.close()
 			except:
 				pass
-		if getBoxType() in ('vusolo4k'):
+		if getBoxType() in ('vusolo4k','vuuno4k','vuultimo4k'):
 			config.av.hdmicolorspace = ConfigSelection(choices={
 					"Edid(Auto)": _("Auto"),
-					"Hdmi_Rgb": _("RGB")},
+					"Hdmi_Rgb": _("RGB"),
+					"444": _("YCbCr444"),
+					"422": _("YCbCr422"),
+					"420": _("YCbCr420")},
 					default = "Edid(Auto)")
 		else:
 			config.av.hdmicolorspace = ConfigSelection(choices={
@@ -589,6 +592,58 @@ def InitAVSwitch():
 		config.av.hdmicolorimetry.addNotifier(setHDMIColorimetry)
 	else:
 		config.av.hdmicolorimetry = ConfigNothing()
+
+	if os.path.exists("/proc/stb/info/boxmode"):
+		f = open("/proc/stb/info/boxmode", "r")
+		have_boxmode = f.read().strip().split(" ")
+		f.close()
+	else:
+		have_boxmode = False
+
+	SystemInfo["haveboxmode"] = have_boxmode
+
+	if have_boxmode:
+		def setBoxmode(configElement):
+			try:
+				f = open("/proc/stb/info/boxmode", "w")
+				f.write(configElement.value)
+				f.close()
+			except:
+				pass
+		config.av.boxmode = ConfigSelection(choices={
+				"12": _("enable PIP no HDR"),
+				"1": _("12bit 4:2:0/4:2:2 no PIP")},
+				default = "12")
+		config.av.boxmode.addNotifier(setBoxmode)
+	else:
+		config.av.boxmode = ConfigNothing()
+
+	if os.path.exists("/proc/stb/video/hdmi_colordepth"):
+		f = open("/proc/stb/video/hdmi_colordepth", "r")
+		have_HdmiColordepth = f.read().strip().split(" ")
+		f.close()
+	else:
+		have_HdmiColordepth = False
+
+	SystemInfo["havehdmicolordepth"] = have_HdmiColordepth
+
+	if have_HdmiColordepth:
+		def setHdmiColordepth(configElement):
+			try:
+				f = open("/proc/stb/video/hdmi_colordepth", "w")
+				f.write(configElement.value)
+				f.close()
+			except:
+				pass
+		config.av.hdmicolordepth = ConfigSelection(choices={
+				"auto": _("Auto"),
+				"8bit": _("8bit"),
+				"10bit": _("10bit"),
+				"12bit": _("12bit")},
+				default = "auto")
+		config.av.hdmicolordepth.addNotifier(setHdmiColordepth)
+	else:
+		config.av.hdmicolordepth = ConfigNothing()
 
 	if os.path.exists("/proc/stb/hdmi/audio_source"):
 		f = open("/proc/stb/hdmi/audio_source", "r")
