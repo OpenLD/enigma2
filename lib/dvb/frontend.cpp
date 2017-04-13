@@ -738,11 +738,23 @@ int eDVBFrontend::openFrontend()
 		|| (m_delsys[SYS_DVBC_ANNEX_AC] && m_delsys[SYS_DVBS])
 		|| (m_delsys[SYS_DVBC_ANNEX_AC] && m_delsys[SYS_DVBT]);
 #endif
-
-	if (!m_multitype)
-		m_type = feSatellite;
-
-	setTone(iDVBFrontend::toneOff);
+	if(!m_multitype)
+	{
+		if(m_delsys[SYS_DVBS])
+			m_type = feSatellite;
+		else if(m_delsys[SYS_DVBT])
+			m_type = feTerrestrial;
+#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+		else if(m_delsys[SYS_DVBC_ANNEX_A])
+#else
+		else if(m_delsys[SYS_DVBC_ANNEX_AC])
+#endif
+			m_type = feCable;
+		else if(m_delsys[SYS_ATSC])
+			m_type = feATSC;
+	}
+	if(m_type == feSatellite)
+		setTone(iDVBFrontend::toneOff);
 	setVoltage(iDVBFrontend::voltageOff);
 
 	return 0;
@@ -751,7 +763,7 @@ int eDVBFrontend::openFrontend()
 int eDVBFrontend::closeFrontend(bool force, bool no_delayed)
 {
 	bool isLinked = false;
-	bool isUnicable = m_data[SATCR] != -1;
+	bool isUnicable = (m_type == feSatellite) && (m_data[SATCR] != -1);
 	eDebugNoSimulate("try to close frontend %d", m_dvbid);
 
 	eDVBFrontend *sec_fe = this;
