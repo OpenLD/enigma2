@@ -29,6 +29,9 @@ class EventName(Converter, object):
 	THIRD_NAME2 = 23
 	THIRD_DESCRIPTION = 24
 
+	EVENT_EXTRADATA = 25
+	EPG_SOURCE = 26
+
 	AUSSHORT = 0
 	AUSLONG = 1
 	AUSTEXT = {
@@ -111,6 +114,10 @@ class EventName(Converter, object):
 			self.type = self.RAWRATING
 		elif type == "RatingCountry":
 			self.type = self.RATINGCOUNTRY
+		elif type == "EventExtraData":
+			self.type = self.EVENT_EXTRADATA
+		elif type == "EPGSource":
+			self.type = self.EPG_SOURCE
 		elif type == "NextDescription":
 			self.type = self.NEXT_DESCRIPTION
 		elif type == "ThirdName":
@@ -248,6 +255,14 @@ class EventName(Converter, object):
 					return "reserved for future use"
 				return "undefined"
 			return ""
+		elif self.type == self.EVENT_EXTRADATA:
+			pass
+			#not include yet
+			#ret = event.getExtraEventData()
+		elif self.type == self.EPG_SOURCE:
+			pass
+			#not include yet
+			#ret = event.getEPGSource()
 		elif int(self.type) in (6, 7) or int(self.type) >= 21:
 			try:
 				reference = self.source.service
