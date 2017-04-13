@@ -25,6 +25,9 @@
 #include <gst/pbutils/missing-plugins.h>
 #include <sys/stat.h>
 
+#include <time.h>
+#include <sys/time.h>
+
 #define HTTP_TIMEOUT 10
 
 /*
@@ -68,6 +71,32 @@ typedef enum
 static bool first_play_eServicemp3 = false;
 static GstElement *dvb_audiosink, *dvb_videosink, *dvb_subsink;
 static bool dvb_audiosink_ok, dvb_videosink_ok, dvb_subsink_ok;
+
+/*static functions */
+
+/* Handy asyncrone timers for developpers */
+/* It could be used for a hack to set somewhere a timeout which does not interupt or blocks signals */
+static void gst_sleepms(uint32_t msec)
+{
+	//does not interfere with signals like sleep and usleep do
+	struct timespec req_ts;
+	req_ts.tv_sec = msec / 1000;
+	req_ts.tv_nsec = (msec % 1000) * 1000000L;
+	int32_t olderrno = errno; // Some OS seem to set errno to ETIMEDOUT when sleeping
+	while (1)
+	{
+		/* Sleep for the time specified in req_ts. If interrupted by a
+		signal, place the remaining time left to sleep back into req_ts. */
+		int rval = nanosleep (&req_ts, &req_ts);
+		if (rval == 0)
+			break; // Completed the entire sleep time; all done.
+		else if (errno == EINTR)
+			continue; // Interrupted by a signal. Try again.
+		else 
+			break; // Some other error; bail out.
+	}
+	errno = olderrno;
+}
 
 
 // eServiceFactoryMP3
@@ -120,8 +149,9 @@ eServiceFactoryMP3::eServiceFactoryMP3()
 		extensions.push_back("wmv");
 		extensions.push_back("wma");
 		extensions.push_back("ape");
-		extensions.push_back("stream");
 		extensions.push_back("webm");
+		extensions.push_back("m3u8");
+		extensions.push_back("stream");
 		sc->addServiceFactory(eServiceFactoryMP3::id, this, extensions);
 	}
 
@@ -170,31 +200,6 @@ static void create_gstreamer_sinks()
 	}
 	else
 		eDebug("[eServiceFactoryMP3] **** dvb_subsink NOT created missing plugin subsink ****");
-/*#if GST_VERSION_MAJOR >= 1
-	m_gst_playbin = gst_element_factory_make("playbin", "playbin");
-#else
-	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
-#endif
-	if(m_gst_playbin)
-	{
-		eDebug("[eServiceFactoryMP3] **** m_gst_playbin created *****");
-		m_gst_playbin_ok = true;
-		if(dvb_audiosink)
-			g_object_set(m_gst_playbin, "audio-sink", dvb_audiosink, NULL);
-		if(dvb_videosink)
-			g_object_set(m_gst_playbin, "video-sink", dvb_videosink, NULL);
-		if(dvb_subsink)
-		{
-#if GST_VERSION_MAJOR < 1
-			g_object_set (dvb_subsink, "caps", gst_caps_from_string("text/plain; text/x-plain; text/x-raw; text/x-pango-markup; video/x-dvd-subpicture; subpicture/x-pgs"), NULL);
-#else
-			g_object_set (dvb_subsink, "caps", gst_caps_from_string("text/plain; text/x-plain; text/x-raw; text/x-pango-markup; subpicture/x-dvd; subpicture/x-pgs"), NULL);
-#endif
-			g_object_set (m_gst_playbin, "text-sink", dvb_subsink, NULL);
-		}
-	}
-	else
-		eDebug("[eServiceFactoryMP3] **** Could not create pipeline service unplayable ***");*/
 }
 
 	// iServiceHandler
@@ -489,17 +494,23 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_cachedSubtitleStream = -2; /* report subtitle stream to be 'cached'. TODO: use an actual cache. */
 	m_subtitle_widget = 0;
 	m_currentTrickRatio = 1.0;
-	m_buffer_size = 5 * 1024 * 1024;
+	m_buffer_size = 5LL * 1024LL * 1024LL;
 	m_ignore_buffering_messages = 0;
 	m_is_live = false;
 	m_use_prefillbuffer = false;
 	m_paused = false;
-	m_seek_paused = false;
+	m_first_paused = false;
 	m_cuesheet_loaded = false; /* cuesheet CVR */
+	m_audiosink_not_running = false;
 #if GST_VERSION_MAJOR >= 1
 	m_use_chapter_entries = false; /* TOC chapter support CVR */
-	m_last_seek_pos = 0; /* CVR last seek position */
-	m_last_play_pos = 0;
+	m_play_position_timer = eTimer::create(eApp);
+	CONNECT(m_play_position_timer->timeout, eServiceMP3::playPositionTiming);
+	m_last_seek_count = -10;
+	m_seeking_or_paused = false;
+	m_to_paused = false;
+	m_last_seek_pos = 0;
+	m_media_lenght = 0;
 #endif
 	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;openLD;;;)";
 	m_extra_headers = "";
@@ -591,6 +602,8 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 		m_sourceinfo.containertype = ctMP4;
 		m_sourceinfo.audiotype = atAAC;
 	}
+	else if ( strcasecmp(ext, ".m3u8") == 0 )
+		m_sourceinfo.is_hls = TRUE;
 	else if ( strcasecmp(ext, ".mp3") == 0 )
 	{
 		m_sourceinfo.audiotype = atMP3;
@@ -686,12 +699,24 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	{
 		if(dvb_audiosink)
 		{
-			if(m_sourceinfo.is_audio)
-				g_object_set(dvb_audiosink, "sync", TRUE, NULL);
+			if (m_sourceinfo.is_audio)
+			{
+				g_object_set(dvb_audiosink, "e2-sync", TRUE, NULL);
+				g_object_set(dvb_audiosink, "e2-async", TRUE, NULL);
+			}
+			else
+			{
+				g_object_set(dvb_audiosink, "e2-sync", FALSE, NULL);
+				g_object_set(dvb_audiosink, "e2-async", FALSE, NULL);
+			}
 			g_object_set(m_gst_playbin, "audio-sink", dvb_audiosink, NULL);
 		}
-		if(dvb_videosink)
+		if(dvb_videosink && !m_sourceinfo.is_audio)
+		{
+			g_object_set(dvb_videosink, "e2-sync", FALSE, NULL);
+			g_object_set(dvb_videosink, "e2-async", FALSE, NULL);
 			g_object_set(m_gst_playbin, "video-sink", dvb_videosink, NULL);
+		}
 		/*
 		 * avoid video conversion, let the dvbmediasink handle that using native video flag
 		 * volume control is done by hardware, do not use soft volume flag
@@ -715,12 +740,11 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 			 * (progressive download might not work for all formats)
 			 */
 			flags |= GST_PLAY_FLAG_BUFFERING;
-			/* increase the default 2 second / 2 MB buffer limitations to 5s / 5MB */
-			g_object_set(m_gst_playbin, "buffer-duration", 5LL * GST_SECOND, NULL);
+			/* increase the default 2 second / 2 MB buffer limitations to 10s / 10MB */
+			g_object_set(m_gst_playbin, "buffer-duration", (gint64)(5LL * GST_SECOND), NULL);
 			g_object_set(m_gst_playbin, "buffer-size", m_buffer_size, NULL);
-
-			/* use max connection-speed to start always from high quality */
-			g_object_set(m_gst_playbin, "connection-speed", 4294967, NULL);
+			if (m_sourceinfo.is_hls)
+				g_object_set(m_gst_playbin, "connection-speed", (guint64)(4495000LL), NULL);
 		}
 		g_object_set (m_gst_playbin, "flags", flags, NULL);
 		g_object_set (m_gst_playbin, "uri", uri, NULL);
@@ -827,6 +851,14 @@ eServiceMP3::~eServiceMP3()
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
 		m_ref.path.clear();
 		m_ref.name.clear();
+#if GST_VERSION_MAJOR >= 1
+		m_media_lenght = 0;
+		m_play_position_timer->stop();
+		m_last_seek_pos = 0;
+		m_last_seek_count = -10;
+		m_seeking_or_paused = false;
+		m_to_paused = false;
+#endif
 		eDebug("[eServiceMP3] **** PIPELINE DESTRUCTED ****");
 	}
 }
@@ -907,6 +939,7 @@ RESULT eServiceMP3::start()
 			m_is_live = false;
 			break;
 		case GST_STATE_CHANGE_NO_PREROLL:
+			gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
 			m_is_live = true;
 			break;
 		default:
@@ -922,24 +955,22 @@ RESULT eServiceMP3::stop()
 	if (!m_gst_playbin || m_state == stStopped)
 		return -1;
 
-#if GST_VERSION_MAJOR >= 1
-	pts_t pts;
-	if (getPlayPosition(pts) >= 0)
-	{
-		m_last_play_pos = pts;
-	}
-	eDebug("[serviceMP3] tempo cvr last playpostion = %#"G_GINT64_MODIFIER "x", m_last_play_pos);
-#endif
-
 	eDebug("[eServiceMP3] stop %s", m_ref.path.c_str());
 	m_state = stStopped;
 
 	GstStateChangeReturn ret;
+	GstState state, pending;
+	/* make sure that last state change was successfull */
+	ret = gst_element_get_state(m_gst_playbin, &state, &pending, 5 * GST_SECOND);
+	eDebug("[eServiceMP3] stop state:%s pending:%s ret:%s",
+		gst_element_state_get_name(state),
+		gst_element_state_get_name(pending),
+		gst_element_state_change_return_get_name(ret));
 	ret = gst_element_set_state(m_gst_playbin, GST_STATE_NULL);
 	if (ret != GST_STATE_CHANGE_SUCCESS)
 		eDebug("[eServiceMP3] stop GST_STATE_NULL failure");
-
-	saveCuesheet();
+	if(!m_sourceinfo.is_streaming && m_cuesheet_loaded)
+		saveCuesheet();
 	m_subtitles_paused = false;
 	m_nownext_timer->stop();
 	/* make sure that media is stopped before proceeding further */
@@ -952,9 +983,24 @@ RESULT eServiceMP3::stop()
 	return 0;
 }
 
+#if GST_VERSION_MAJOR >= 1
+void eServiceMP3::playPositionTiming()
+{
+	//eDebug("[eServiceMP3] ***** USE IOCTL POSITION ******");
+	if (m_last_seek_count >= 1)
+	{
+		if (m_last_seek_count == 19)
+			m_last_seek_count = 0;
+		else
+			m_last_seek_count++;
+	}
+}
+#endif
+
 RESULT eServiceMP3::pause(ePtr<iPauseableService> &ptr)
 {
 	ptr=this;
+	eDebug("[eServiceMP3] pause(ePtr<iPauseableService> &ptr)");
 	return 0;
 }
 
@@ -962,13 +1008,13 @@ RESULT eServiceMP3::setSlowMotion(int ratio)
 {
 	if (!ratio)
 		return 0;
-	eDebug("[eServiceMP3] setSlowMotion ratio=%f",1.0/(gdouble)ratio);
+	eDebug("[eServiceMP3] setSlowMotion ratio=%.1f",1.0/(gdouble)ratio);
 	return trickSeek(1.0/(gdouble)ratio);
 }
 
 RESULT eServiceMP3::setFastForward(int ratio)
 {
-	eDebug("[eServiceMP3] setFastForward ratio=%i",ratio);
+	eDebug("[eServiceMP3] setFastForward ratio=%.1f",(gdouble)ratio);
 	return trickSeek(ratio);
 }
 
@@ -981,7 +1027,10 @@ RESULT eServiceMP3::pause()
 	m_subtitles_paused = true;
 	m_subtitle_sync_timer->start(1, true);
 	eDebug("[eServiceMP3] pause");
-	trickSeek(0.0);
+	if(!m_paused)
+		trickSeek(0.0);
+	else
+		eDebug("[eServiceMP3] Already Paused no need to pause");
 
 	return 0;
 }
@@ -992,6 +1041,7 @@ RESULT eServiceMP3::unpause()
 		return -1;
 
 	m_subtitles_paused = false;
+	m_decoder_time_valid_state = 0;
 	m_subtitle_sync_timer->start(1, true);
 	/* no need to unpase if we are not paused already */
 	if (m_currentTrickRatio == 1.0 && !m_paused)
@@ -1029,49 +1079,70 @@ RESULT eServiceMP3::getLength(pts_t &pts)
 		/* len is in nanoseconds. we have 90 000 pts per second. */
 
 	pts = len / 11111LL;
+#if GST_VERSION_MAJOR >= 1
+	m_media_lenght = pts;
+#endif
 	return 0;
 }
 
 RESULT eServiceMP3::seekToImpl(pts_t to)
 {
+	//eDebug("[eServiceMP3] seekToImpl pts_t to %" G_GINT64_FORMAT, (gint64)to);
 		/* convert pts to nanoseconds */
 #if GST_VERSION_MAJOR < 1
 	gint64 time_nanoseconds = to * 11111LL;
 	if (!gst_element_seek (m_gst_playbin, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT),
 		GST_SEEK_TYPE_SET, time_nanoseconds,
 		GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE))
-#else
-	m_last_seek_pos = to * 11111LL;
-	if (!gst_element_seek (m_gst_playbin, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT),
-		GST_SEEK_TYPE_SET, m_last_seek_pos,
-		GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE))
-#endif
 	{
 		eDebug("[eServiceMP3] seekTo failed");
 		return -1;
 	}
-
-	if (m_paused)
-	{
-#if GST_VERSION_MAJOR < 1
-		m_seek_paused = true;
-		gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 #else
-		m_event((iPlayableService*)this, evUpdatedInfo);
+	m_last_seek_pos = to;
+	if (!gst_element_seek (m_gst_playbin, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT),
+		GST_SEEK_TYPE_SET, (gint64)(m_last_seek_pos * 11111LL),
+		GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE))
+	{
+		eDebug("[eServiceMP3] seekTo failed");
+		return -1;
 	}
 #endif
-
+#if GST_VERSION_MAJOR >= 1
+	if (m_paused || m_to_paused)
+	{
+		m_last_seek_count = 0;
+		m_event((iPlayableService*)this, evUpdatedInfo);
+	}
+#else
+	if (m_paused)
+		m_event((iPlayableService*)this, evUpdatedInfo);
+#endif
+#if GST_VERSION_MAJOR >= 1
+	//eDebug("[eServiceMP3] seekToImpl DONE position %" G_GINT64_FORMAT, (gint64)m_last_seek_pos);
+	if (!m_paused)
+	{
+		if (!m_to_paused)
+		{
+			m_seeking_or_paused = false;
+			m_last_seek_count = 1;
+		}
+	}
+#endif
 	return 0;
 }
 
 RESULT eServiceMP3::seekTo(pts_t to)
 {
 	RESULT ret = -1;
-
+	//eDebug("[eServiceMP3] seekTo(pts_t to)");
 	if (m_gst_playbin)
 	{
 		m_prev_decoder_time = -1;
 		m_decoder_time_valid_state = 0;
+#if GST_VERSION_MAJOR >= 1
+		m_seeking_or_paused = true;
+#endif
 		ret = seekToImpl(to);
 	}
 
@@ -1083,21 +1154,45 @@ RESULT eServiceMP3::trickSeek(gdouble ratio)
 {
 	if (!m_gst_playbin)
 		return -1;
+	//eDebug("[eServiceMP3] trickSeek %.1f", ratio);
 	GstState state, pending;
+	GstStateChangeReturn ret;
+	int pos_ret = -1;
+	pts_t pts;
+
 	if (ratio > -0.01 && ratio < 0.01)
 	{
+#if GST_VERSION_MAJOR >= 1
+		//m_last_seek_count = 0;
+		pos_ret = getPlayPosition(pts);
+		m_to_paused = true;
+#else
+		pos_ret = getPlayPosition(pts);
+#endif
 		gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
+		//m_paused = true;
+		if ( pos_ret >= 0)
+			seekTo(pts);
 		/* pipeline sometimes block due to audio track issue off gstreamer.
 		If the pipeline is blocked up on pending state change to paused ,
-		this issue is solved be just reslecting the current audio track.*/
-		gst_element_get_state(m_gst_playbin, &state, &pending, 1 * GST_SECOND);
+		 this issue is solved by seek to playposition*/
+		ret = gst_element_get_state(m_gst_playbin, &state, &pending, 3LL * GST_SECOND);
 		if (state == GST_STATE_PLAYING && pending == GST_STATE_PAUSED)
 		{
-			if (m_currentAudioStream >= 0)
-				selectTrack(m_currentAudioStream);
-			else
-				selectTrack(0);
+			if (pos_ret >= 0)
+			{
+				eDebug("[eServiceMP3] blocked pipeline we need to flush playposition in pts at last pos before paused is %" G_GINT64_FORMAT, (gint64)pts);
+				seekTo(pts);
+			}
+			else if (getPlayPosition(pts) >= 0)
+			{
+				eDebug("[eServiceMP3] blocked pipeline we need to flush playposition in pts at paused is %" G_GINT64_FORMAT, (gint64)pts);
+				seekTo(pts);
+			}
 		}
+#if GST_VERSION_MAJOR >= 1
+		//m_last_seek_count = 0;
+#endif
 		return 0;
 	}
 
@@ -1132,54 +1227,88 @@ RESULT eServiceMP3::trickSeek(gdouble ratio)
 		*/
 		if (!strcmp(name, "filesrc") || !strcmp(name, "souphttpsrc"))
 		{
-			GstStateChangeReturn ret;
-			/* make sure that last state change was successfull */
-			ret = gst_element_get_state(m_gst_playbin, &state, &pending, 0);
-			if (ret == GST_STATE_CHANGE_SUCCESS)
-			{
-				gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
-				ret = gst_element_get_state(m_gst_playbin, &state, &pending, 0);
-				if (ret == GST_STATE_CHANGE_SUCCESS)
-					return 0;
-			}
-			eDebugNoNewLineStart("[eServiceMP3] trickSeek - invalid state, state:%s pending:%s ret:%s",
+			/* previous state was already ok if we come here just give all elements time to unpause */
+			m_to_paused = false;
+			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+			ret = gst_element_get_state(m_gst_playbin, &state, &pending, 2 * GST_SECOND);
+#if GST_VERSION_MAJOR >= 1
+			m_seeking_or_paused = false;
+			m_last_seek_count = 0;
+#endif
+			eDebug("[eServiceMP3] unpause state:%s pending:%s ret:%s",
 				gst_element_state_get_name(state),
 				gst_element_state_get_name(pending),
 				gst_element_state_change_return_get_name(ret));
+			return 0;
 		}
 		else
 		{
 			eDebugNoNewLineStart("[eServiceMP3] trickSeek - source '%s' is not supported", name);
 		}
 seek_unpause:
-		eDebugNoNewLine(", doing seeking unpause\n");
+		eDebug(", doing seeking unpause\n");
 	}
 
 	m_currentTrickRatio = ratio;
 
 	bool validposition = false;
 	gint64 pos = 0;
-	pts_t pts;
+#if GST_VERSION_MAJOR >= 1
+	if (m_last_seek_pos > 0)
+	{
+		validposition = true;
+		pos = m_last_seek_pos * 11111LL;
+	}
+	else if (getPlayPosition(pts) >= 0)
+	{
+		validposition = true;
+		pos = pts * 11111LL;
+	}
+#else
 	if (getPlayPosition(pts) >= 0)
 	{
 		validposition = true;
 		pos = pts * 11111LL;
 	}
+#endif
 
-	gst_element_get_state(m_gst_playbin, &state, &pending, 1 * GST_SECOND);
+	ret = gst_element_get_state(m_gst_playbin, &state, &pending, 2 * GST_SECOND);
 	if (state != GST_STATE_PLAYING)
+	{
+		eDebug("[eServiceMP3] set unpause or change playrate when gst was state %s pending %s change return %s",
+				gst_element_state_get_name(state),
+				gst_element_state_get_name(pending),
+				gst_element_state_change_return_get_name(ret));
 		gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+#if GST_VERSION_MAJOR >= 1
+		m_seeking_or_paused = false;
+		m_last_seek_count = 0;
+		m_to_paused = false;
+#endif
+	}
 
 	if (validposition)
 	{
 		if (ratio >= 0.0)
 		{
+#if GST_VERSION_MAJOR >= 1
+			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME,
+				(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_TRICKMODE | GST_SEEK_FLAG_TRICKMODE_NO_AUDIO),
+				GST_SEEK_TYPE_SET, pos, GST_SEEK_TYPE_SET, -1);
+#else
 			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_SKIP), GST_SEEK_TYPE_SET, pos, GST_SEEK_TYPE_SET, -1);
+#endif
 		}
 		else
 		{
+#if GST_VERSION_MAJOR >= 1
 			/* note that most elements will not support negative speed */
+			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME,
+				(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_TRICKMODE | GST_SEEK_FLAG_TRICKMODE_NO_AUDIO),
+				GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_SET, pos);
+#else
 			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_SKIP), GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_SET, pos);
+#endif
 		}
 	}
 
@@ -1194,12 +1323,35 @@ RESULT eServiceMP3::seekRelative(int direction, pts_t to)
 	if (!m_gst_playbin)
 		return -1;
 
-	pts_t ppos;
+	//eDebug("[eServiceMP3]  seekRelative direction %d, pts_t to %" G_GINT64_FORMAT, direction, (gint64)to);
+	gint64 ppos = 0;
+#if GST_VERSION_MAJOR >= 1
+	//m_seeking_or_paused = true;
+	if (direction > 0)
+	{
+		if (getPlayPosition(ppos) < 0)
+			return -1;
+		ppos += to;
+		m_seeking_or_paused = true;
+		return seekTo(ppos);
+	}
+	else
+	{
+		if (getPlayPosition(ppos) < 0)
+			return -1;
+		ppos -= to;
+		if (ppos < 0)
+			ppos = 0;
+		m_seeking_or_paused = true;
+		return seekTo(ppos);
+	}
+#else
 	if (getPlayPosition(ppos) < 0) return -1;
 	ppos += to * direction;
 	if (ppos < 0)
 		ppos = 0;
 	return seekTo(ppos);
+#endif
 }
 
 #if GST_VERSION_MAJOR < 1
@@ -1311,20 +1463,62 @@ unsigned int eServiceMP3::get_pts_pcrscr(void)
 #endif
 RESULT eServiceMP3::getPlayPosition(pts_t &pts)
 {
-	gint64 pos;
-	pts = 0;
+	gint64 pos = 0;
 
 	if (!m_gst_playbin || m_state != stRunning)
 		return -1;
-
+#if GST_VERSION_MAJOR >= 1
+	// allow only one ioctl call per second
+	// in case of seek procedure , the position
+	// is updated by the seektoImpl function.
+	if(m_last_seek_count <= 0)
+	{
+		//eDebug("[eServiceMP3] ** START USE LAST SEEK TIMER");
+		if (m_last_seek_count == -10)
+		{
+			eDebug("[eServiceMP3] ** START USE LAST SEEK TIMER");
+			m_play_position_timer->start(50, false);
+			m_last_seek_count = 0;
+		}
+		else
+		{
+			if (m_paused)
+			{
+				pts = m_last_seek_pos;
+				m_last_seek_count = 0;
+				return 0;
+			}
+			else
+				m_last_seek_count = 1;
+		}
+	}
+	else
+	{
+		if (m_paused || m_seeking_or_paused)
+		{
+			m_last_seek_count = 0;
+			pts = m_last_seek_pos;
+		}
+		else
+		{
+			if (m_last_seek_count >= 1)
+				pts = m_last_seek_pos + ((m_last_seek_count - 1) * 4500);
+			else
+				pts = m_last_seek_pos;
+		}
+		return 0;
+	}
+#endif
+// todo :Check if amlogic stb's are always using gstreamer < 1
+// if not this procedure needs to be altered.
 #if HAVE_AMLOGIC
 	if ( (pos = get_pts_pcrscr()) > 0)
 		pos *= 11111LL;
 #else
 #if GST_VERSION_MAJOR < 1
-	if (dvb_audiosink || dvb_videosink)
+	if ((dvb_audiosink || dvb_videosink) && !m_paused && !m_sourceinfo.is_hls)
 #else
-	if ((dvb_audiosink || dvb_videosink) && !m_paused)
+	if ((dvb_audiosink || dvb_videosink) && !m_paused && !m_seeking_or_paused && !m_sourceinfo.is_hls)
 #endif
 	{
 		if (m_sourceinfo.is_audio)
@@ -1335,11 +1529,22 @@ RESULT eServiceMP3::getPlayPosition(pts_t &pts)
 		}
 		else
 		{
-			g_signal_emit_by_name(dvb_videosink, "get-decoder-time", &pos);
-			if (!GST_CLOCK_TIME_IS_VALID(pos) || 0)
-				 g_signal_emit_by_name(dvb_audiosink, "get-decoder-time", &pos);
-			if(!GST_CLOCK_TIME_IS_VALID(pos))
-				return -1;
+			/* most stb's work better when pts is taken by audio by some video must be taken cause audio is 0 or invalid */
+			/* avoid taking the audio play position if audio sink is in state NULL */
+			if(!m_audiosink_not_running)
+			{
+				g_signal_emit_by_name(dvb_audiosink, "get-decoder-time", &pos);
+				if (!GST_CLOCK_TIME_IS_VALID(pos) || 0)
+				 	g_signal_emit_by_name(dvb_videosink, "get-decoder-time", &pos);
+				if(!GST_CLOCK_TIME_IS_VALID(pos))
+					return -1;
+			}
+			else
+			{
+				g_signal_emit_by_name(dvb_videosink, "get-decoder-time", &pos);
+				if(!GST_CLOCK_TIME_IS_VALID(pos))
+					return -1;
+			}
 		}
 	}
 #endif
@@ -1348,17 +1553,34 @@ RESULT eServiceMP3::getPlayPosition(pts_t &pts)
 		GstFormat fmt = GST_FORMAT_TIME;
 #if GST_VERSION_MAJOR < 1
 		if (!gst_element_query_position(m_gst_playbin, &fmt, &pos))
-#else
-		if (!gst_element_query_position(m_gst_playbin, fmt, &pos))
-#endif
 		{
-			// eDebug("[eServiceMP3] gst_element_query_position failed in getPlayPosition");
+			//eDebug("[eServiceMP3] gst_element_query_position failed in getPlayPosition");
 			return -1;
 		}
+#else
+		if (!gst_element_query_position(m_gst_playbin, fmt, &pos))
+		{
+			//eDebug("[eServiceMP3] gst_element_query_position failed in getPlayPosition");
+			if (m_last_seek_pos > 0)
+			{
+				pts = m_last_seek_pos;
+				m_last_seek_count = 0;
+				return 0;
+			}
+			else
+				return -1;
+		}
+#endif
 	}
 
 	/* pos is in nanoseconds. we have 90 000 pts per second. */
+#if GST_VERSION_MAJOR < 1
 	pts = pos / 11111LL;
+#else
+	m_last_seek_pos = pos / 11111LL;
+	pts = m_last_seek_pos;
+#endif
+	//eDebug("[eServiceMP3] current play pts = %" G_GINT64_FORMAT, pts);
 	return 0;
 }
 
@@ -1766,6 +1988,11 @@ int eServiceMP3::getCurrentTrack()
 
 RESULT eServiceMP3::selectTrack(unsigned int i)
 {
+	m_currentAudioStream = getCurrentTrack();
+	if(m_currentAudioStream == (int)i)
+		return m_currentAudioStream;
+	eDebug("[eServiceMP3 selectTrack %d", i);
+
 	bool validposition = false;
 	pts_t ppos = 0;
 	if (getPlayPosition(ppos) >= 0)
@@ -1777,7 +2004,7 @@ RESULT eServiceMP3::selectTrack(unsigned int i)
 	}
 	if (validposition)
 	{
-		/* flush */
+		//flush
 		seekTo(ppos);
 	}
 	return selectAudioStream(i);
@@ -1794,7 +2021,7 @@ int eServiceMP3::selectAudioStream(int i)
 	g_object_get (m_gst_playbin, "current-audio", &current_audio, NULL);
 	if ( current_audio == i )
 	{
-		eDebug ("[eServiceMP3] switched to audio stream %i", current_audio);
+		eDebug ("[eServiceMP3] switched to audio stream %d", current_audio);
 		m_currentAudioStream = i;
 		return 0;
 	}
@@ -1900,14 +2127,20 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 	if (!GST_IS_OBJECT(source))
 		return;
 	sourceName = gst_object_get_name(source);
+	GstState state, pending, old_state, new_state;
+	GstStateChangeReturn ret;
+	GstStateChange transition;
 #if 0
-	gchar *string;
+	gchar *string = NULL;
 	if (gst_message_get_structure(msg))
 		string = gst_structure_to_string(gst_message_get_structure(msg));
 	else
 		string = g_strdup(GST_MESSAGE_TYPE_NAME(msg));
-	// eDebug("[eServiceMP3] eTsRemoteSource::gst_message from %s: %s", sourceName, string);
-	g_free(string);
+	if (string)
+	{
+		eDebug("[eServiceMP3] eTsRemoteSource::gst_message from %s: %s", sourceName, string);
+		g_free(string);
+	}
 #endif
 	switch (GST_MESSAGE_TYPE (msg))
 	{
@@ -1917,25 +2150,36 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 			break;
 		case GST_MESSAGE_STATE_CHANGED:
 		{
+
 			if(GST_MESSAGE_SRC(msg) != GST_OBJECT(m_gst_playbin))
 				break;
 
-			GstState old_state, new_state;
 			gst_message_parse_state_changed(msg, &old_state, &new_state, NULL);
 
 			if(old_state == new_state)
 				break;
-
 			eDebug("[eServiceMP3] ****STATE TRANSITION %s -> %s ****", gst_element_state_get_name(old_state), gst_element_state_get_name(new_state));
 
-			GstStateChange transition = (GstStateChange)GST_STATE_TRANSITION(old_state, new_state);
+			transition = (GstStateChange)GST_STATE_TRANSITION(old_state, new_state);
 
 			switch(transition)
 			{
 				case GST_STATE_CHANGE_NULL_TO_READY:
 				{
-					gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+					m_first_paused = true;
 					m_event(this, evStart);
+					if(!m_is_live)
+						gst_element_set_state (m_gst_playbin, GST_STATE_PAUSED);
+					ret = gst_element_get_state(m_gst_playbin, &state, &pending, 5LL * GST_SECOND);
+					eDebug("[eServiceMP3] PLAYBIN WITH BLOCK READY TO PAUSED state:%s pending:%s ret:%s",
+						gst_element_state_get_name(state),
+						gst_element_state_get_name(pending),
+						gst_element_state_change_return_get_name(ret));
+					if (ret == GST_STATE_CHANGE_NO_PREROLL)
+					{
+						gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
+						m_is_live = true;
+					}
 				}	break;
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
@@ -1955,6 +2199,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 						 */
 						g_object_set (dvb_subsink, "sync", FALSE, NULL);
 #endif
+
 #if 0
 						/* we should not use ts-offset to sync with the decoder time, we have to do our own decoder timekeeping */
 						g_object_set (G_OBJECT (subsink), "ts-offset", -2LL * GST_SECOND, NULL);
@@ -1965,18 +2210,28 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 #endif
 						// eDebug("[eServiceMP3] subsink properties set!");
 					}
-					/* if we are in preroll already do not check again the state */
-					if (!m_is_live)
-					{
-						m_is_live = (gst_element_get_state(m_gst_playbin, NULL, NULL, 0LL) == GST_STATE_CHANGE_NO_PREROLL);
-					}
 
 					setAC3Delay(ac3_delay);
 					setPCMDelay(pcm_delay);
-					if(!m_cuesheet_loaded) /* cuesheet CVR */
+					if(!m_sourceinfo.is_streaming && !m_cuesheet_loaded) /* cuesheet CVR */
 						loadCuesheet();
+					/* avoid position taking on audiosink when audiosink is not running */
+					ret = gst_element_get_state(dvb_audiosink, &state, &pending, 3 * GST_SECOND);
+					if (state == GST_STATE_NULL)
+						m_audiosink_not_running = true;
+					if(!m_is_live)
+						gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
+					/* tempo debug */
+					/* wait on async state change complete for max 5 seconds */
+					ret = gst_element_get_state(m_gst_playbin, &state, &pending, 3 * GST_SECOND);
+					eDebug("[eServiceMP3] PLAYBIN WITH BLOCK PLAYSTART state:%s pending:%s ret:%s",
+						gst_element_state_get_name(state),
+						gst_element_state_get_name(pending),
+						gst_element_state_change_return_get_name(ret));
+					if (!m_is_live && ret == GST_STATE_CHANGE_NO_PREROLL)
+						m_is_live = true;
+					m_event((iPlayableService*)this, evGstreamerPlayStarted);
 					updateEpgCacheNowNext();
-
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
@@ -2019,7 +2274,9 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 						if (autoaudio)
 							selectTrack(autoaudio);
 					}
-					m_event((iPlayableService*)this, evGstreamerPlayStarted);
+					if (!m_first_paused)
+						m_event((iPlayableService*)this, evGstreamerPlayStarted);
+					m_first_paused = false;
 				}	break;
 				case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
 				{
@@ -2075,8 +2332,8 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				eWarning("[eServiceMP3] Gstreamer warning : %s (%i) from %s" , warn->message, warn->code, sourceName);
 				if(dvb_subsink)
 				{
-					if (!gst_element_seek (dvb_subsink, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT),
-						GST_SEEK_TYPE_SET, m_last_seek_pos,
+					if (!gst_element_seek (dvb_subsink, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+						GST_SEEK_TYPE_SET, (gint64)(m_last_seek_pos * 11111LL),
 						GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE))
 					{
 						eDebug("[eServiceMP3] seekToImpl subsink failed");
@@ -2164,7 +2421,8 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 #if GST_VERSION_MAJOR >= 1
 		case GST_MESSAGE_TOC:
 		{
-			HandleTocEntry(msg);
+			if(!m_sourceinfo.is_audio && !m_sourceinfo.is_streaming)
+				HandleTocEntry(msg);
 			break;
 		}
 #endif
@@ -2174,7 +2432,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				break;
 
 			gint i, n_video = 0, n_audio = 0, n_text = 0;
-			bool codec_tofix = false;
+			//bool codec_tofix = false;
 
 			g_object_get (m_gst_playbin, "n-video", &n_video, NULL);
 			g_object_get (m_gst_playbin, "n-audio", &n_audio, NULL);
@@ -2231,7 +2489,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 					gst_tag_list_free(tags);
 				}
 				//eDebug("[eServiceMP3] audio stream=%i codec=%s language=%s", i, audio.codec.c_str(), audio.language_code.c_str());
-				codec_tofix = (audio.codec.find("MPEG-1 Layer 3 (MP3)") == 0 || audio.codec.find("MPEG-2 AAC") == 0) && n_audio - n_video == 1;
+				//codec_tofix = (audio.codec.find("MPEG-1 Layer 3 (MP3)") == 0 || audio.codec.find("MPEG-2 AAC") == 0) && n_audio - n_video == 1;
 				m_audioStreams.push_back(audio);
 				gst_caps_unref(caps);
 			}
@@ -2270,14 +2528,8 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				g_free(g_codec);
 				m_subtitleStreams.push_back(subs);
 			}
-
+			eDebug("[eServiceMP3] GST_MESSAGE_ASYNC_DONE before evUpdatedInfo");
 			m_event((iPlayableService*)this, evUpdatedInfo);
-			if (m_seek_paused)
-			{
-				m_seek_paused = false;
-				gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
-			}
-
 			if ( m_errorInfo.missing_codec != "" )
 			{
 				if (m_errorInfo.missing_codec.find("video/") == 0 || (m_errorInfo.missing_codec.find("audio/") == 0 && m_audioStreams.empty()))
@@ -2285,7 +2537,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 			}
 			/*+++*workaround for mp3 playback problem on some boxes - e.g. xtrend et9200 (if press stop and play or switch to the next track is the state 'playing', but plays not.
 			Restart the player-application or paused and then play the track fix this for once.)*/
-			if (!m_paused && codec_tofix)
+			/*if (!m_paused && codec_tofix)
 			{
 				//eDebug("[eServiceMP3] mp3 playback fix - set paused and then playing state");
 				GstStateChangeReturn ret;
@@ -2296,7 +2548,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 					sleep(1);
 				}
 				gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
-			}
+			}*/
 			/*+++*/
 			break;
 		}
@@ -2378,15 +2630,16 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				 * (in which case the sink will not produce data while paused, so we won't
 				 * recover from an empty buffer)
 				 */
-				if (m_use_prefillbuffer && !m_is_live && --m_ignore_buffering_messages <= 0)
+				if (m_use_prefillbuffer && !m_is_live && !m_sourceinfo.is_hls && --m_ignore_buffering_messages <= 0)
 				{
 					if (m_bufferInfo.bufferPercent == 100)
 					{
-						GstState state;
-						gst_element_get_state(m_gst_playbin, &state, NULL, 0LL);
-						if (state != GST_STATE_PLAYING)
+						GstState state, pending;
+						/* avoid setting to play while still in async state change mode */
+						gst_element_get_state(m_gst_playbin, &state, &pending, 5 * GST_SECOND);
+						if (state != GST_STATE_PLAYING && !m_first_paused)
 						{
-							eDebug("[eServiceMP3] *** PREFILL BUFFER action start playing ***");
+							eDebug("[eServiceMP3] *** PREFILL BUFFER action start playing *** pending state was %s" , pending == GST_STATE_VOID_PENDING ? "NO_PENDING" : "A_PENDING_STATE" );
 							gst_element_set_state (m_gst_playbin, GST_STATE_PLAYING);
 						}
 						/*
@@ -2396,9 +2649,9 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 						 * Ignore the first few buffering messages, giving the buffer the chance to recover
 						 * a bit, before we start handling empty buffer states again.
 						 */
-						m_ignore_buffering_messages = 5;
+						m_ignore_buffering_messages = 10;
 					}
-					else if (m_bufferInfo.bufferPercent == 0)
+					else if (m_bufferInfo.bufferPercent == 0 && !m_first_paused)
 					{
 						eDebug("[eServiceMP3] *** PREFILLBUFFER action start pause ***");
 						gst_element_set_state (m_gst_playbin, GST_STATE_PAUSED);
@@ -2464,18 +2717,16 @@ void eServiceMP3::HandleTocEntry(GstMessage *msg)
 						if (y == 0)
 						{
 							m_use_chapter_entries = true;
-							if (m_cuesheet_loaded)
-								m_cue_entries.clear();
-							else
+							if (!m_cuesheet_loaded)
 								loadCuesheet();
-								m_cue_entries.clear();
+							m_cue_entries.clear();
 						}
 						/* first chapter is movie start no cut needed */
 						else if (y >= 1)
 						{
 							gint64 start = 0;
 							gint64 pts = 0;
-							gint type = 0;
+							guint type = 0;
 							gst_toc_entry_get_start_stop_times(sub_entry, &start, NULL);
 							type = 2;
 							if(start > 0)
@@ -2800,12 +3051,12 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 #endif
 		gint64 duration_ns = GST_BUFFER_DURATION(buffer);
 		int subType = m_subtitleStreams[m_currentSubtitleStream].type;
-		// eDebug("[eServiceMP3] pullSubtitle type=%d size=%zu", subType, len);
+		//eDebug("[eServiceMP3] pullSubtitle type=%d size=%zu", subType, len);
 		if ( subType )
 		{
 			if ( subType < stVOB )
 			{
-				int delay = eConfigManager::getConfigIntValue("config.subtitles.pango_subtitles_delay");
+				int delay_ms = eConfigManager::getConfigIntValue("config.subtitles.pango_subtitles_delay") / 90;
 				int subtitle_fps = eConfigManager::getConfigIntValue("config.subtitles.pango_subtitles_fps");
 
 				double convert_fps = 1.0;
@@ -2825,6 +3076,21 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 
 				uint32_t start_ms = buf_pos / 1000000ULL;
 				uint32_t end_ms = start_ms + (duration_ns / 1000000ULL);
+				if (delay_ms > 0)
+				{
+					//eDebug("[eServiceMP3] sub title delay add is %d", delay_ms);
+					start_ms += delay_ms;
+					end_ms += delay_ms;
+				}
+				else if (delay_ms < 0)
+				{
+					if (start_ms >= (uint32_t)(delay_ms * -1))
+					{
+						//eDebug("[eServiceMP3] sub title delay substract is %d", delay_ms);
+						start_ms += delay_ms;
+						end_ms += delay_ms;
+					}
+				}
 				m_subtitle_pages.insert(subtitle_pages_map_pair_t(end_ms, subtitle_page_t(start_ms, end_ms, line)));
 				m_subtitle_sync_timer->start(1, true);
 			}
@@ -2845,24 +3111,32 @@ void eServiceMP3::pushSubtitles()
 	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms, delay_ms;
 	double convert_fps = 1.0;
 	subtitle_pages_map_t::iterator current;
-
-	// wait until clock is stable
-
+	// wait until clock is stable.
+#if GST_VERSION_MAJOR >= 1
 	if (getPlayPosition(running_pts) < 0)
 		m_decoder_time_valid_state = 0;
+	if (m_decoder_time_valid_state == 0)
+		m_decoder_time_valid_state = 2;
+	else
+		m_decoder_time_valid_state = 4;
+#else
+	if (getPlayPosition(running_pts) < 0)
+		m_decoder_time_valid_state = 0;
+#endif
 
 	if (m_decoder_time_valid_state < 4)
 	{
 		m_decoder_time_valid_state++;
-
-		if (m_prev_decoder_time == running_pts)
-			m_decoder_time_valid_state = 0;
+#if GST_VERSION_MAJOR < 1
+		if (m_prev_decoder_time == running_pts && !m_paused)
+			m_decoder_time_valid_state = 1;
+#endif
 
 		if (m_decoder_time_valid_state < 4)
 		{
 			//eDebug("[eServiceMP3] *** push subtitles, waiting for clock to stabilise");
 			m_prev_decoder_time = running_pts;
-			next_timer = 50;
+			next_timer = 100;
 			goto exit;
 		}
 
@@ -2961,9 +3235,13 @@ exit:
 
 RESULT eServiceMP3::enableSubtitles(iSubtitleUser *user, struct SubtitleTrack &track)
 {
+	bool starting_subtitle = false;
 	if (m_currentSubtitleStream != track.pid)
 	{
+		if (m_currentSubtitleStream == -1)
+			starting_subtitle = true;
 		g_object_set (m_gst_playbin, "current-text", -1, NULL);
+		m_cachedSubtitleStream = -1;
 		m_subtitle_sync_timer->stop();
 		m_subtitle_pages.clear();
 		m_prev_decoder_time = -1;
@@ -2988,8 +3266,18 @@ RESULT eServiceMP3::enableSubtitles(iSubtitleUser *user, struct SubtitleTrack &t
 		 */
 		seekRelative(-1, 90000);
 #endif
+
+#if GST_VERSION_MAJOR >= 1
+		if (m_last_seek_pos > 0 && !starting_subtitle)
+		{
+			seekTo(m_last_seek_pos);
+			gst_sleepms(50);
+		}
+#endif
+
 	}
 
+	eDebug("[eServiceMP3] seekToImpl(pts_t to) DONE");
 	return 0;
 }
 
@@ -3153,7 +3441,7 @@ void eServiceMP3::setCutList(ePyObject list)
 		pts_t pts = PyLong_AsLongLong(ppts);
 		int type = PyInt_AsLong(ptype);
 		m_cue_entries.insert(cueEntry(pts, type));
-		//eDebug("[eServiceMP3] adding %08llx, %d", pts, type);
+		//eDebug("[eServiceMP3] adding %" G_GINT64_FORMAT " type %d", (gint64)pts, type);
 	}
 	m_cuesheet_changed = 1;
 	m_event((iPlayableService*)this, evCuesheetChanged);
@@ -3273,6 +3561,9 @@ void eServiceMP3::loadCuesheet()
 	{
 		while (1)
 		{
+#if GST_VERSION_MAJOR >= 1
+			pts_t where_pts;
+#endif
 			unsigned long long where;
 			unsigned int what;
 
@@ -3280,6 +3571,29 @@ void eServiceMP3::loadCuesheet()
 				break;
 			if (!fread(&what, sizeof(what), 1, f))
 				break;
+#if GST_VERSION_MAJOR >= 1
+			where_pts = be64toh(where);
+			what = ntohl(what);
+
+			//if (what > 3)
+				//break;
+			if(what < 3 && m_cuesheet_changed == 2)
+			{
+				if (where_pts < m_media_lenght - 1800000)
+					m_cue_entries.insert(cueEntry(where_pts, what));
+			}
+			else if(what < 4 && m_cuesheet_changed != 2)
+			{
+				pts_t lenght_media = 0;
+				int res = getLength (lenght_media);
+				if (res >= 0 && where_pts < (lenght_media - 1800000))
+					m_cue_entries.insert(cueEntry(where_pts, what));
+				else
+					break;
+			}
+			else
+				break;
+#else
 
 			where = be64toh(where);
 			what = ntohl(what);
@@ -3288,6 +3602,7 @@ void eServiceMP3::loadCuesheet()
 				break;
 
 			m_cue_entries.insert(cueEntry(where, what));
+#endif
 		}
 		fclose(f);
 		eDebug("[eServiceMP3] cuts file has %zd entries", m_cue_entries.size());
@@ -3301,59 +3616,107 @@ void eServiceMP3::loadCuesheet()
 void eServiceMP3::saveCuesheet()
 {
 
+	std::string filename = m_ref.path;
+	bool removefile = false;
+	struct stat s;
 #if GST_VERSION_MAJOR >= 1
 	if (m_use_chapter_entries)
 	{
 		if (m_cuesheet_loaded)
 			m_cue_entries.clear();
-		if (m_last_play_pos > 0)
+		if (::access(filename.c_str(), R_OK) < 0)
+			return;
+
+		filename.append(".cuts");
+		if (stat(filename.c_str(), &s) == 0)
 		{
-			m_cue_entries.insert(cueEntry(m_last_play_pos, 3));
-			eDebug("[ServiceMP3] cvr tempo last pause position inserted %#"G_GINT64_MODIFIER "x", m_last_play_pos);
+			/* hack for emc 2 */
+			if (m_last_seek_pos < (m_media_lenght - 1800000))
+			{
+				m_cue_entries.insert(cueEntry(m_last_seek_pos, 3));
+				eDebug("[ServiceMP3] cvr tempo last pause position inserted %#" G_GINT64_MODIFIER "x", m_last_seek_pos);
+			}
+			else
+			{
+				removefile = true;
+				eDebug("[eServiceMP3] *** REMOVING EXISTING CUTS FILE ***");
+			}
 		}
 		else
 			return;
 	}
-#endif
-
-	std::string filename = m_ref.path;
-
-		/* save cuesheet only when main file is accessible. */
-#if GST_VERSION_MAJOR < 1
+	else
+	{
+		if (::access(filename.c_str(), R_OK) < 0)
+			return;
+		filename.append(".cuts");
+		/* hack for emc 3*/
+		if (stat(filename.c_str(), &s) == 0 && m_cue_entries.size() == 0 && !m_sourceinfo.is_audio)
+		{
+			m_cuesheet_loaded = false;
+			m_cuesheet_changed = 2;
+			loadCuesheet();
+			if (m_cue_entries.size() == 0 && m_last_seek_pos > (m_media_lenght - 1800000))
+			{
+				removefile = true;
+				eDebug("[eServiceMP3] *** REMOVING EXISTING CUTS FILE NO LAST PLAY NO MANUAL CUTS***");
+			}
+			else if (m_last_seek_pos < (m_media_lenght - 1800000))
+				m_cue_entries.insert(cueEntry(m_last_seek_pos, 3));
+		}
+		else if (m_sourceinfo.is_audio)
+		{
+			removefile = true;
+			eDebug("[eServiceMP3] *** REMOVING EXISTING CUTS FILE MEDIA IS_AUDIO***");
+		}
+		/* do nothing we are working without emc */
+		else if (m_cue_entries.size() == 0)
+			return;
+	}
+#else
 	if (::access(filename.c_str(), R_OK) < 0)
 		return;
-#else
-		/* save cuesheet only when main file is accessible. and no TOC chapters avbl*/
-	if ((::access(filename.c_str(), R_OK) < 0) || m_use_chapter_entries)
+	filename.append(".cuts");
+	if (stat(filename.c_str(), &s) == 0 && m_cue_entries.size() == 0)
+		removefile = true;
+	else if (m_cue_entries.size() == 0)
 		return;
 #endif
-	filename.append(".cuts");
-	/* do not save to file if there are no cuts */
-	/* remove the cuts file if cue is empty */
-	if(m_cue_entries.begin() == m_cue_entries.end())
-	{
-		if (::access(filename.c_str(), F_OK) == 0)
-			remove(filename.c_str());
-		return;
-	}
+
+
 
 	FILE *f = fopen(filename.c_str(), "wb");
 
 	if (f)
 	{
-		unsigned long long where;
-		int what;
+		if (removefile)
+		{
+			fclose(f);
+			remove(filename.c_str());
+			eDebug("[eServiceMP3] cuts file has been removed");
+			return;
+		}
+
+		signed long long where = 0;
+		guint what = 0;
 
 		for (std::multiset<cueEntry>::iterator i(m_cue_entries.begin()); i != m_cue_entries.end(); ++i)
 		{
-			where = htobe64(i->where);
-			what = htonl(i->what);
-			fwrite(&where, sizeof(where), 1, f);
-			fwrite(&what, sizeof(what), 1, f);
-
+			if (where == i->where && what == i->what)
+				/* ignore double entries */
+				continue;
+			else
+			{
+				where = htobe64(i->where);
+				what = htonl(i->what);
+				fwrite(&where, sizeof(where), 1, f);
+				fwrite(&what, sizeof(what), 1, f);
+				/* temorary save for comparing */
+				where = i->where;
+				what = i->what;
+			}
 		}
 		fclose(f);
 	}
-
 	m_cuesheet_changed = 0;
 }
