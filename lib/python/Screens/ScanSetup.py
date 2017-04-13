@@ -146,6 +146,10 @@ def GetDeviceId(filter, nim_idx):
 		socket_id += 1
 	return device_id
 
+def GetTerrestrial5VEnable(nim_idx):
+	nim = nimmanager.nim_slots[nim_idx]
+	return int(nim.config.dvbt.terrestrial_5V.value)
+
 class CableTransponderSearchSupport:
 
 	def __init__(self):
@@ -570,8 +574,11 @@ class TerrestrialTransponderSearchSupport:
 			self.terrestrial_search_binName = self.terrestrialTransponderGetCmd(nim_idx)
 			self.terrestrial_search_bus = nimmanager.getI2CDevice(nim_idx)
 			if self.terrestrial_search_bus is None:
-#			print "ERROR: could not get I2C device for nim", nim_idx, "for terrestrial transponder search"
+#				print "ERROR: could not get I2C device for nim", nim_idx, "for terrestrial transponder search"
 				self.terrestrial_search_bus = 2
+
+			self.terrestrial_search_feid = nim_idx
+			self.terrestrial_search_enable_5v = GetTerrestrial5VEnable(nim_idx)
 
 			self.terrestrial_search_list = []
 			self.terrestrialTransponderInitSearchList(self.terrestrial_search_list ,region)
@@ -584,6 +591,8 @@ class TerrestrialTransponderSearchSupport:
 	def terrestrialTransponderSearch(self, freq, bandWidth):
 		self.terrestrial_search_data = ""
 		cmd = "%s --freq %d --bw %d --bus %d --ds 2" % (self.terrestrial_search_binName, freq, bandWidth, self.terrestrial_search_bus)
+		if self.terrestrial_search_enable_5v:
+			cmd += " --feid %d --5v %d" % (self.terrestrial_search_feid, self.terrestrial_search_enable_5v)
 		print "SCAN CMD : ",cmd
 		self.terrestrial_search_container.execute(cmd)
 
