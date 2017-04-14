@@ -179,10 +179,10 @@ public:
 	bool supportsDeliverySystem(const fe_delivery_system_t &sys, bool obeywhitelist);
 	std::string getDeliverySystem();
 	void setDeliverySystemWhitelist(const std::vector<fe_delivery_system_t> &whitelist);
+	bool setDeliverySystem(fe_delivery_system_t delsys);
 #if defined DTV_ENUM_DELSYS
 	bool setDeliverySystem(const char *type);
 #endif
-	bool setDeliverySystem(fe_delivery_system_t delsys);
 
 	void reopenFrontend();
 	int openFrontend();

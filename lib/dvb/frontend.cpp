@@ -3294,6 +3294,24 @@ void eDVBFrontend::setDeliverySystemWhitelist(const std::vector<fe_delivery_syst
 	}
 }
 
+bool eDVBFrontend::setDeliverySystem(fe_delivery_system_t delsys)
+{
+	eDebugDeliverySystem("frontend %d setDeliverySystem %d", m_slotid, delsys);
+	struct dtv_property p[2];
+	memset(p, 0, sizeof(p));
+	struct dtv_properties cmdseq;
+	cmdseq.props = p;
+	cmdseq.num = 2;
+	p[0].cmd = DTV_CLEAR;
+	p[1].cmd = DTV_DELIVERY_SYSTEM;
+	p[1].u.data = delsys;
+	if (ioctl(m_fd, FE_SET_PROPERTY, &cmdseq) == -1)
+	{
+		eDebug("FE_SET_PROPERTY failed %m");
+	}
+	return true;
+}
+
 std::string eDVBFrontend::getDeliverySystem()
 {
 	struct dtv_property p[1];
