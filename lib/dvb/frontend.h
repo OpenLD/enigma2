@@ -85,6 +85,10 @@ public:
 		NUM_DATA_ENTRIES
 	};
 	Signal1<void,iDVBFrontend*> m_stateChanged;
+	enum class enumDebugOptions:uint64_t {
+		DISSABLE_ALL_DEBUG_OUTPUTS,	//prevents all debug issues with respect to this object
+		DEBUG_DELIVERY_SYSTEM,
+		NUM_DATA_ENTRIES};
 private:
 	DECLARE_REF(eDVBFrontend);
 	bool m_simulate;
@@ -138,6 +142,8 @@ private:
 
 	static int PriorityOrder;
 	static int PreferredFrontendIndex;
+
+	uint64_t m_DebugOptions;
 
 public:
 	eDVBFrontend(const char *devidenodename, int fe, int &ok, bool simulate=false, eDVBFrontend *simulate_fe=NULL);
