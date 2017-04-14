@@ -48,7 +48,8 @@ class AVSwitch:
 							"multi":	{ 50: "2160p50", 60: "2160p" } }
 
 	rates["2160p30"] =	{ 	"25Hz":		{ 50: "2160p25" },
-							"30Hz":		{ 60: "2160p30"} }
+							"30Hz":		{ 60: "2160p30"} ,
+							"multi":	{ 50: "2160p25", 60: "2160p30" } }
 
 	rates["PC"] = {
 		"1024x768": { 60: "1024x768" }, # not possible on DM7025
@@ -544,10 +545,13 @@ def InitAVSwitch():
 				f.close()
 			except:
 				pass
-		if getBoxType() in ('vusolo4k'):
+		if getBoxType() in ('vusolo4k','vuuno4k','vuultimo4k'):
 			config.av.hdmicolorspace = ConfigSelection(choices={
 					"Edid(Auto)": _("Auto"),
-					"Hdmi_Rgb": _("RGB")},
+					"Hdmi_Rgb": _("RGB"),
+					"444": _("YCbCr444"),
+					"422": _("YCbCr422"),
+					"420": _("YCbCr420")},
 					default = "Edid(Auto)")
 		else:
 			config.av.hdmicolorspace = ConfigSelection(choices={
@@ -588,6 +592,58 @@ def InitAVSwitch():
 		config.av.hdmicolorimetry.addNotifier(setHDMIColorimetry)
 	else:
 		config.av.hdmicolorimetry = ConfigNothing()
+
+	if os.path.exists("/proc/stb/info/boxmode"):
+		f = open("/proc/stb/info/boxmode", "r")
+		have_boxmode = f.read().strip().split(" ")
+		f.close()
+	else:
+		have_boxmode = False
+
+	SystemInfo["haveboxmode"] = have_boxmode
+
+	if have_boxmode:
+		def setBoxmode(configElement):
+			try:
+				f = open("/proc/stb/info/boxmode", "w")
+				f.write(configElement.value)
+				f.close()
+			except:
+				pass
+		config.av.boxmode = ConfigSelection(choices={
+				"12": _("enable PIP no HDR"),
+				"1": _("12bit 4:2:0/4:2:2 no PIP")},
+				default = "12")
+		config.av.boxmode.addNotifier(setBoxmode)
+	else:
+		config.av.boxmode = ConfigNothing()
+
+	if os.path.exists("/proc/stb/video/hdmi_colordepth"):
+		f = open("/proc/stb/video/hdmi_colordepth", "r")
+		have_HdmiColordepth = f.read().strip().split(" ")
+		f.close()
+	else:
+		have_HdmiColordepth = False
+
+	SystemInfo["havehdmicolordepth"] = have_HdmiColordepth
+
+	if have_HdmiColordepth:
+		def setHdmiColordepth(configElement):
+			try:
+				f = open("/proc/stb/video/hdmi_colordepth", "w")
+				f.write(configElement.value)
+				f.close()
+			except:
+				pass
+		config.av.hdmicolordepth = ConfigSelection(choices={
+				"auto": _("Auto"),
+				"8bit": _("8bit"),
+				"10bit": _("10bit"),
+				"12bit": _("12bit")},
+				default = "auto")
+		config.av.hdmicolordepth.addNotifier(setHdmiColordepth)
+	else:
+		config.av.hdmicolordepth = ConfigNothing()
 
 	if os.path.exists("/proc/stb/hdmi/audio_source"):
 		f = open("/proc/stb/hdmi/audio_source", "r")
@@ -730,6 +786,24 @@ def InitAVSwitch():
 					config.av.pcm_multichannel.setValue(False)
 		config.av.downmix_ac3 = ConfigYesNo(default = True)
 		config.av.downmix_ac3.addNotifier(setAC3Downmix)
+
+	if os.path.exists("/proc/stb/audio/ac3plus_choices"):
+		f = open("/proc/stb/audio/ac3plus_choices", "r")
+		can_ac3plustranscode = f.read().strip().split(" ")
+		f.close()
+	else:
+		can_ac3plustranscode = False
+
+	SystemInfo["CanAC3plusTranscode"] = can_ac3plustranscode
+
+	if can_ac3plustranscode:
+		def setAC3plusTranscode(configElement):
+			f = open("/proc/stb/audio/ac3plus", "w")
+			f.write(configElement.value)
+			f.close()
+		choice_list = [("use_hdmi_caps", _("controlled by HDMI")), ("force_ac3", _("always"))]
+		config.av.transcodeac3plus = ConfigSelection(choices = choice_list, default = "use_hdmi_caps")
+		config.av.transcodeac3plus.addNotifier(setAC3plusTranscode)
 
 	try:
 		f = open("/proc/stb/audio/aac_choices", "r")

@@ -5,7 +5,7 @@ exec_prefix=@exec_prefix@
 datarootdir=@datarootdir@
 
 #wetek kodi start
-if [ -e /usr/lib/kodi/kodi.sh ]; then
+if [ -e /usr/bin/kodi ]; then
 	if [ -e /etc/.kodistart ]; then
 		rm -f /etc/.kodistart
 		echo 0 >  /sys/class/video/disable_video
@@ -54,6 +54,7 @@ if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
 fi
 
 if [ -x @bindir@/showiframe ]; then
+	killall -9 showiframe; sleep 1
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
@@ -161,6 +162,9 @@ case $ret in
 		/sbin/halt
 		;;
 	2)
+		if [ -f /proc/stb/fp/force_restart ]; then
+			echo 1 > /proc/stb/fp/force_restart
+		fi
 		/sbin/reboot
 		;;
 	3)

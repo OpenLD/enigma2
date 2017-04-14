@@ -38,6 +38,7 @@ class ServiceInfo(Converter, object):
 	IS_576 = 29
 	IS_480 = 30
 	IS_4K = 31
+	IS_IPSTREAM = 32
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -73,6 +74,7 @@ class ServiceInfo(Converter, object):
 				"Is576": (self.IS_576, (iPlayableService.evVideoSizeChanged,)),
 				"Is480": (self.IS_480, (iPlayableService.evVideoSizeChanged,)),
 				"Is4K": (self.IS_4K, (iPlayableService.evVideoSizeChanged,)),
+				"IsIPStream": (self.IS_IPSTREAM, (iPlayableService.evUpdatedInfo,)),
 			}[type]
 
 	def getServiceInfoString(self, info, what, convert = lambda x: "%d" % x):
@@ -170,7 +172,7 @@ class ServiceInfo(Converter, object):
 		elif self.type == self.IS_SD:
 			return video_height < 720
 		elif self.type == self.IS_HD:
-			return video_height >= 720 and video_height < 2160
+			return video_height >= 720 and video_height < 2151
 		elif self.type == self.IS_1080:
 			return video_height > 1000 and video_height <= 1080
 		elif self.type == self.IS_720:
@@ -180,7 +182,9 @@ class ServiceInfo(Converter, object):
 		elif self.type == self.IS_480:
 			return video_height > 0 and video_height <= 480
 		elif self.type == self.IS_4K:
-			return video_height >= 2160
+			return video_height > 2152 and video_height <= 2160
+		elif self.type == self.IS_IPSTREAM:
+			return service.streamed() is not None
 		return False
 
 	boolean = property(getBoolean)

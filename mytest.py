@@ -732,6 +732,9 @@ def runScreenTest():
 	if not RestoreSettings:
 		configfile.save()
 
+	# kill showiframe if it is running (sh4 hack...)
+	os.system("killall -9 showiframe")
+
 	runReactor()
 
 	print "[mytest.py] normal shutdown"

@@ -146,18 +146,30 @@ def GetDeviceId(filter, nim_idx):
 		socket_id += 1
 	return device_id
 
+def GetTerrestrial5VEnable(nim_idx):
+	nim = nimmanager.nim_slots[nim_idx]
+	return int(nim.config.dvbt.terrestrial_5V.value)
+
 class CableTransponderSearchSupport:
 
 	def __init__(self):
 		pass
 
-	def tryGetRawFrontend(self, feid):
+	def tryGetRawFrontend(self, feid, delsys = None):
 		res_mgr = eDVBResourceManager.getInstance()
 		if res_mgr:
 			raw_channel = res_mgr.allocateRawChannel(self.feid)
 			if raw_channel:
 				frontend = raw_channel.getFrontend()
 				if frontend:
+					if delsys == 'DVB-C':
+						frontend.changeType(iDVBFrontend.feCable)
+					elif delsys in ('DVB-T','DVB-T2'):
+						frontend.changeType(iDVBFrontend.feTerrestrial)
+					elif delsys in ('DVB-S','DVB-S2'):
+						frontend.changeType(iDVBFrontend.feSatellite)
+					elif delsys == 'ATSC':
+						frontend.changeType(iDVBFrontend.feATSC)
 					frontend.closeFrontend() # immediate close...
 					del frontend
 					del raw_channel
@@ -255,12 +267,12 @@ class CableTransponderSearchSupport:
 				print "GetCommand ->", err
 			return "tda1002x"
 
-		if not self.tryGetRawFrontend(nim_idx):
+		if not self.tryGetRawFrontend(nim_idx, "DVB-C"):
 			self.session.nav.stopService()
-			if not self.tryGetRawFrontend(nim_idx):
+			if not self.tryGetRawFrontend(nim_idx, "DVB-C"):
 				if self.session.pipshown:
 					self.session.infobar.showPiP()
-				if not self.tryGetRawFrontend(nim_idx):
+				if not self.tryGetRawFrontend(nim_idx, "DVB-C"):
 					self.cableTransponderSearchFinished()
 					return
 		self.__tlist = []
@@ -540,12 +552,12 @@ class TerrestrialTransponderSearchSupport:
 		return ""
 
 	def startTerrestrialTransponderSearch(self, nim_idx, region):
-		if not self.tryGetRawFrontend(nim_idx):
+		if not self.tryGetRawFrontend(nim_idx, "DVB-T"):
 			self.session.nav.stopService()
-			if not self.tryGetRawFrontend(nim_idx):
+			if not self.tryGetRawFrontend(nim_idx, "DVB-T"):
 				if self.session.pipshown:
 					self.session.infobar.showPiP()
-				if not self.tryGetRawFrontend(nim_idx):
+				if not self.tryGetRawFrontend(nim_idx, "DVB-T"):
 					self.terrestrialTransponderSearchFinished()
 					return
 		self.__tlist = [ ]
@@ -562,8 +574,11 @@ class TerrestrialTransponderSearchSupport:
 			self.terrestrial_search_binName = self.terrestrialTransponderGetCmd(nim_idx)
 			self.terrestrial_search_bus = nimmanager.getI2CDevice(nim_idx)
 			if self.terrestrial_search_bus is None:
-#			print "ERROR: could not get I2C device for nim", nim_idx, "for terrestrial transponder search"
+#				print "ERROR: could not get I2C device for nim", nim_idx, "for terrestrial transponder search"
 				self.terrestrial_search_bus = 2
+
+			self.terrestrial_search_feid = nim_idx
+			self.terrestrial_search_enable_5v = GetTerrestrial5VEnable(nim_idx)
 
 			self.terrestrial_search_list = []
 			self.terrestrialTransponderInitSearchList(self.terrestrial_search_list ,region)
@@ -576,6 +591,8 @@ class TerrestrialTransponderSearchSupport:
 	def terrestrialTransponderSearch(self, freq, bandWidth):
 		self.terrestrial_search_data = ""
 		cmd = "%s --freq %d --bw %d --bus %d --ds 2" % (self.terrestrial_search_binName, freq, bandWidth, self.terrestrial_search_bus)
+		if self.terrestrial_search_enable_5v:
+			cmd += " --feid %d --5v %d" % (self.terrestrial_search_feid, self.terrestrial_search_enable_5v)
 		print "SCAN CMD : ",cmd
 		self.terrestrial_search_container.execute(cmd)
 

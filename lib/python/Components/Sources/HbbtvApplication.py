@@ -6,6 +6,7 @@ class HbbtvApplication(Source):
 		Source.__init__(self)
 		self._available = False
 		self._appname = ""
+		self._useait = True
 
 	def setApplicationName(self, name):
 		self._appname = name
@@ -13,6 +14,9 @@ class HbbtvApplication(Source):
 		if name is not None and name != "":
 			self._available = True
 		self.changed((self.CHANGED_ALL,))
+
+	def getUseAit(self):
+		return self._useait
 
 	@cached
 	def getBoolean(self):
@@ -22,5 +26,5 @@ class HbbtvApplication(Source):
 	@cached
 	def getName(self):
 		return self._appname
-	name = property(getName)
+	name = property(getName) 
 

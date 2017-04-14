@@ -1813,6 +1813,9 @@ msgstr "Elige si las pistas de audio multicanal deben mezclarse a estéreo."
 msgid "Choose whether AAC sound tracks should be transcoded."
 msgstr "Elige si las pistas de audio AAC deben transcodificarse."
 
+msgid "Choose whether AC3 Plus sound tracks should be transcoded to AC3."
+msgstr "Elige si las pistas de audio AC3 Plus deben ser transcodificadas a AC3."
+
 msgid "Choose whether or not to show an icon when a motorized dish is moving."
 msgstr "Elige si se muestra o no un icono cuando se mueve una antena motorizada."
 
@@ -17213,3 +17216,15 @@ msgstr "Esto le permite ver los módulos de configuración regional en las desca
 
 msgid "Show Covers in Movielist"
 msgstr "Mostrar Carátulas en Movielist"
+
+msgid "HDMI Colordepth"
+msgstr "Profundidad de color HDMI"
+
+msgid "This option allows you can config the Colordepth for UHD"
+msgstr "Esta opción le permite configurar la profundidad de color (Colordepth) para UHD"
+
+msgid "controlled by HDMI"
+msgstr "Controlado por HDMI"
+
+msgid "always"
+msgstr "siempre"

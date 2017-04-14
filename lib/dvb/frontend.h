@@ -85,6 +85,10 @@ public:
 		NUM_DATA_ENTRIES
 	};
 	Signal1<void,iDVBFrontend*> m_stateChanged;
+	enum class enumDebugOptions:uint64_t {
+		DISSABLE_ALL_DEBUG_OUTPUTS,	//prevents all debug issues with respect to this object
+		DEBUG_DELIVERY_SYSTEM,
+		NUM_DATA_ENTRIES};
 private:
 	DECLARE_REF(eDVBFrontend);
 	bool m_simulate;
@@ -105,6 +109,7 @@ private:
 	bool m_need_rotor_workaround;
 	bool m_multitype;
 	std::map<fe_delivery_system_t, bool> m_delsys, m_delsys_whitelist;
+	std::map<fe_delivery_system_t, dvb_frontend_info> m_fe_info;
 	std::string m_filename;
 	char m_description[128];
 	dvb_frontend_info fe_info;
@@ -137,6 +142,8 @@ private:
 
 	static int PriorityOrder;
 	static int PreferredFrontendIndex;
+
+	uint64_t m_DebugOptions;
 
 public:
 	eDVBFrontend(const char *devidenodename, int fe, int &ok, bool simulate=false, eDVBFrontend *simulate_fe=NULL);
@@ -178,6 +185,7 @@ public:
 	bool supportsDeliverySystem(const fe_delivery_system_t &sys, bool obeywhitelist);
 	std::string getDeliverySystem();
 	void setDeliverySystemWhitelist(const std::vector<fe_delivery_system_t> &whitelist);
+	bool setDeliverySystem(fe_delivery_system_t delsys);
 #if defined DTV_ENUM_DELSYS
 	bool setDeliverySystem(const char *type);
 #endif
@@ -187,12 +195,14 @@ public:
 	int closeFrontend(bool force=false, bool no_delayed=false);
 	const char *getDescription() const { return m_description; }
 	const dvb_frontend_info getFrontendInfo() const { return fe_info; }
+	const dvb_frontend_info getFrontendInfo(fe_delivery_system_t delsys)  { return m_fe_info[delsys]; }
 	bool is_simulate() const { return m_simulate; }
 	bool is_FBCTuner() { return m_fbc; }
 	bool getEnabled() { return m_enabled; }
 	void setEnabled(bool enable) { m_enabled = enable; }
 	bool is_multistream();
 	std::string getCapabilities();
+	std::string getCapabilities(fe_delivery_system_t delsys);
 	bool has_prev() { return (m_data[LINKED_PREV_PTR] != -1); }
 	bool has_next() { return (m_data[LINKED_NEXT_PTR] != -1); }
 
