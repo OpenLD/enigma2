@@ -133,7 +133,7 @@ def getBqRootStr(ref):
 
 # please do not translate log messages
 class RecordTimerEntry(timer.TimerEntry, object):
-	def __init__(self, serviceref, begin, end, name, description, eit, disabled = False, justplay = TIMERTYPE.JUSTPLAY, afterEvent = AFTEREVENT.DEFAULT, checkOldTimers = False, dirname = None, tags = None, descramble = 'notset', record_ecm = 'notset', rename_repeat = True, isAutoTimer = False, always_zap = TIMERTYPE.ALWAYS_ZAP, MountPath = None):
+	def __init__(self, serviceref, begin, end, name, description, eit, disabled = False, justplay = TIMERTYPE.JUSTPLAY, afterEvent = AFTEREVENT.DEFAULT, checkOldTimers = False, dirname = None, tags = None, descramble = 'notset', record_ecm = 'notset', rename_repeat = True, conflict_detection = True, isAutoTimer = False, always_zap = TIMERTYPE.ALWAYS_ZAP, MountPath = None):
 		timer.TimerEntry.__init__(self, int(begin), int(end))
 		if checkOldTimers:
 			if self.begin < time() - 1209600:
@@ -1371,7 +1371,7 @@ class RecordTimer(timer.Timer):
 			self.saveTimer()
 		return answer
 
-	def isInTimer(self, eventid, begin, duration, service):
+	def isInTimer(self, eventid, begin, duration, service, getTimer = False):
 		returnValue = None
 		type = 0
 		time_match = 0
@@ -1531,7 +1531,10 @@ class RecordTimer(timer.Timer):
 							type = type_offset + 2
 
 				if time_match:
-					returnValue = (time_match, type, isAutoTimer)
+					if getTimer:
+						returnValue = (time_match, type, isAutoTimer, x)
+					else:
+						returnValue = (time_match, type, isAutoTimer)
 					if type in (2,7,12): # when full recording do not look further
 						break
 		return returnValue
