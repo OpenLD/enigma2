@@ -3,20 +3,14 @@
 
 #include <lib/dvb_ci/dvbci_session.h>
 
-class eDVBCIDateTimeSession: public eDVBCISession, public Object
+class eDVBCIDateTimeSession: public eDVBCISession
 {
 	enum {
 		stateFinal=statePrivate, stateSendDateTime
 	};
-
-	ePtr<eTimer> m_timer;
-	int m_interval;
-
 	int receivedAPDU(const unsigned char *tag, const void *data, int len);
 	int doAction();
 public:
-	eDVBCIDateTimeSession();
-	void sendDateTime();
 };
 
 #endif
