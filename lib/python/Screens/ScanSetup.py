@@ -872,6 +872,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 			"fec": eDVBFrontendParametersSatellite.FEC_Auto,
 			"fec_s2": eDVBFrontendParametersSatellite.FEC_9_10,
 			"modulation": eDVBFrontendParametersSatellite.Modulation_QPSK,
+			"is_id": -1,
 			"pls_mode": eDVBFrontendParametersSatellite.PLS_Root,
 			"pls_code": 0 }
 		defaultCab = {
@@ -912,9 +913,9 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 					defaultSat["fec_s2"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
 					defaultSat["rolloff"] = frontendData.get("rolloff", eDVBFrontendParametersSatellite.RollOff_alpha_0_35)
 					defaultSat["pilot"] = frontendData.get("pilot", eDVBFrontendParametersSatellite.Pilot_Unknown)
-					defaultSat["is_id"] = frontendData.get("is_id", 0)
+					defaultSat["is_id"] = frontendData.get("is_id", defaultSat["is_id"])
 					defaultSat["pls_mode"] = frontendData.get("pls_mode", eDVBFrontendParametersSatellite.PLS_Root)
-					defaultSat["pls_code"] = frontendData.get("pls_code", 0)
+					defaultSat["pls_code"] = frontendData.get("pls_code", defaultSat["pls_code"])
 				else:
 					defaultSat["fec"] = frontendData.get("fec_inner", eDVBFrontendParametersSatellite.FEC_Auto)
 				defaultSat["modulation"] = frontendData.get("modulation", eDVBFrontendParametersSatellite.Modulation_QPSK)
@@ -1492,7 +1493,23 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 				fec = self.scan_sat.fec_s2.value
 			else:
 				fec = self.scan_sat.fec.value
-			compare = [0, self.scan_sat.frequency.value*1000, self.scan_sat.symbolrate.value*1000, self.scan_sat.polarization.value, fec]
+			compare = [
+				0, # DVB type
+				self.scan_sat.frequency.value*1000,  # 1
+				self.scan_sat.symbolrate.value*1000, # 2
+				self.scan_sat.polarization.value,    # 3
+				fec,                                 # 4
+				self.scan_sat.system.value,          # 5
+				self.scan_sat.modulation.value,      # 6
+				self.scan_sat.inversion.value,       # 7
+				self.scan_sat.rolloff.value,         # 8
+				self.scan_sat.pilot.value,           # 9
+				self.scan_sat.is_id.value,           # 10
+				self.scan_sat.pls_mode.value,        # 11
+				self.scan_sat.pls_code.value         # 12
+				# tsid
+				# onid
+			]
 			i = 0
 			tps = nimmanager.getTransponders(orbpos)
 			for tp in tps:
@@ -1508,13 +1525,16 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 		if tp[3] in range (4) and tp[4] in range (11):
 			pol_list = ['H','V','L','R']
 			fec_list = ['Auto','1/2','2/3','3/4','5/6','7/8','8/9','3/5','4/5','9/10','None']
-			return str(tp[1] / 1000) + " " + pol_list[tp[3]] + " " + str(tp[2] / 1000) + " " + fec_list[tp[4]]
+			stream = ''
+			if tp[10] > -1 and tp[5] == eDVBFrontendParametersSatellite.System_DVB_S2: # not default input stream id
+				stream = _(" Stream %s") % str(tp[10])
+			return str(tp[1] / 1000) + " " + pol_list[tp[3]] + " " + str(tp[2] / 1000) + " " + fec_list[tp[4]] + stream
 		return _("Invalid transponder data")
 
 	def compareTransponders(self, tp, compare):
 		frequencyTolerance = 2000 #2 MHz
 		symbolRateTolerance = 10
-		return abs(tp[1] - compare[1]) <= frequencyTolerance and abs(tp[2] - compare[2]) <= symbolRateTolerance and tp[3] == compare[3] and (not tp[4] or tp[4] == compare[4])
+		return abs(tp[1] - compare[1]) <= frequencyTolerance and abs(tp[2] - compare[2]) <= symbolRateTolerance and tp[3] == compare[3] and (not tp[4] or tp[4] == compare[4]) and (tp[5] == eDVBFrontendParametersSatellite.System_DVB_S or tp[10] == -1 or tp[10] == compare[10])
 
 	def predefinedTerrTranspondersList(self):
 		default = None
@@ -1768,6 +1788,8 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 							else:
 								skip_t2 = False
 					getInitialTerrestrialTransponderList(tlist, nimmanager.getTerrestrialDescription(nim.slot), skip_t2=skip_t2)
+				elif nim.isCompatible("ATSC"):
+					getInitialATSCTransponderList(tlist, nim.slot)
 				else:
 					assert False
 
