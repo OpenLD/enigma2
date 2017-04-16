@@ -494,7 +494,7 @@ class LdExtraInfo(Poll, Converter, object):
 				if int(self.current_caid,16) == 0:
 					return caid_name
 				elif int(caid_entry[0], 16) <= int(self.current_caid, 16) <= int(caid_entry[1], 16):
-					caid_name = caid_entry[2] 
+					caid_name = caid_entry[2]
 					break
 			return caid_name + ":%04x" % (int(self.current_caid,16))
 		except:
@@ -631,13 +631,13 @@ class LdExtraInfo(Poll, Converter, object):
 				orbpos += 1
 			else:
 				orbpos -= 1
-				
+
 		sat_names = {
 			30:   'Rascom/Eutelsat 3E',
 			48:   'SES 5',
 			70:   'Eutelsat 7E',
 			90:   'Eutelsat 9E',
-			100:  'Eutelsat 10E',  
+			100:  'Eutelsat 10E',
 			130:  'Hot Bird',
 			160:  'Eutelsat 16E',
 			192:  'Astra 1KR/1L/1M/1N',

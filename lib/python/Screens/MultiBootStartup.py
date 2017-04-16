@@ -94,7 +94,7 @@ class MultiBootStartup(ConfigListScreen, Screen):
 				if idx: blv += ', '
 				blv += x
 				idx += 1
-			message = (_("Your box needs Bootloaderversion(s)\n\n%s\n\nto make compatible with Bootoptions!")%blv,) 
+			message = (_("Your box needs Bootloaderversion(s)\n\n%s\n\nto make compatible with Bootoptions!")%blv,)
 		self.session.open(MessageBox, message[self.option], MessageBox.TYPE_INFO)
 
 	def rename(self):
@@ -134,7 +134,7 @@ class MultiBootStartup(ConfigListScreen, Screen):
 			f.close()
 			return True
 		except IOError:
-			print "[MultiBootStartup] write error file: %s" %FILE 
+			print "[MultiBootStartup] write error file: %s" %FILE
 			return False
 
 	def readlineFile(self, FILE):
@@ -157,7 +157,7 @@ class MultiBootStartup(ConfigListScreen, Screen):
 		Experimental: hd51_4.boxmode=12
 		#example
 		boot emmcflash0.kernel1 'root=/dev/mmcblk0p3 rw rootwait hd51_4.boxmode=12'
-		
+
 		'''
 
 		self.optionsList = (('boxmode=1', _('2160p60 without PiP (Standard)')), ('boxmode=12', _('2160p50 with PiP (Experimental)')))

@@ -1253,7 +1253,7 @@ class RecordTimer(timer.Timer):
 					list.append('>')
 					list.append(str(stringToXML(msg)))
 					list.append('</log>\n')
-			
+
 			list.append('</timer>\n')
 
 		list.append('</timers>\n')

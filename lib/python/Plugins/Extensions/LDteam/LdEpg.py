@@ -380,4 +380,3 @@ class Viewmhw(Screen):
 		 'left': self['text'].pageUp,
 		 'down': self['text'].pageDown,
 		 'right': self['text'].pageDown}, -1)
-

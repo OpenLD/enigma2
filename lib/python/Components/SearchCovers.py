@@ -407,7 +407,7 @@ class BackgroundCoverScanner(Thread):
 
 class coverMenuList(GUIComponent, object):
 	GUI_WIDGET = eListbox
-	
+
 	def __init__(self):
 		GUIComponent.__init__(self)
 		self.l = eListboxPythonMultiContent()
@@ -607,7 +607,7 @@ class FindMovieList(Screen):
 		self['key_yellow'] = Label("")
 		self['key_blue'] = Label(_("Set Scan Path"))
 		self['list'] = coverMenuList()
-		
+
 		self.fileScanner = BackgroundCoverScanner.instance
 		self.fileScanner.setCallbacks(self.msgCallback, self.foundCallback, self.notFoundCallback, self.errorCallback, self.listCallback, self.msgDone)
 		self.scanning = False
@@ -625,7 +625,7 @@ class FindMovieList(Screen):
 
 	def notFoundCallback(self, txt):
 		self['notfound'].setText(_("Not Found: %s") % str(txt))
-	
+
 	def errorCallback(self, txt):
 		self['error'].setText(_("Download Error: %s") % str(txt))
 
@@ -739,7 +739,7 @@ class FindMovieListScanPath(Screen):
 
 	def __init__(self, session, initDir, plugin_path = None):
 		Screen.__init__(self, session)
-		
+
 		if not os.path.isdir(initDir):
 			initDir = "/media/hdd/movie/"
 
