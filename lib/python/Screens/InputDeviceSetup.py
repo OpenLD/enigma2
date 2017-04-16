@@ -259,7 +259,7 @@ class InputDeviceSetup(Screen, ConfigListScreen):
 
 
 class RemoteControlType(Screen, ConfigListScreen):
-	if getBrandOEM() in ('broadmedia','octagon','odin','protek','ultramini','ultramini') or getBoxType() in ('et7x00','et8500'):
+	if getBrandOEM() in ('broadmedia','octagon','odin','protek','ultramini') or getBoxType() in ('et7x00','et8500','et1x000'):
 		rcList = [
 				("0", _("Default")),
 				("3", _("MaraM9")),
@@ -272,12 +272,12 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("11", _("et9200/9500/6500")),
 				("13", _("et4000")),
 				("14", _("XP1000")),
-				("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/HD530C/et7x00/et8500")),
+				("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/HD530C/et7x00/et8500/VS1000/VS1500")),
 				("17", _("XP3000")),
 				("18", _("F1/F3/F4/F4-TURBO/TRIPLEX")),
 				("19", _("HD2400")),
 				("20", _("Zgemma Star S/2S/H1/H2")),
-				("21", _("Zgemma H.S/H.2S/H.2H/H5")),
+				("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
 				("500", _("WWIO_BRE2ZE_TC")),
 				("501", _("OCTAGON_SFXXX8")),
 				("502", _("GIGABLUE Black")),
@@ -310,6 +310,8 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("hd1265",16),
 				("hd500c",16),
 				("hd530c",16),
+				("vs1000",16),
+				("vs1500",16),
 				("hd2400",19),
 				("triplex",18),
 				("xp1000", 14),
@@ -317,6 +319,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("sh1", 20),
 				("h3", 21),
 				("h5", 21),
+				("h7", 21),
 				("bre2ze_tc", 500),
 				("sf4008", 501),
 				("g100", 501),
@@ -325,6 +328,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("g300", 503),
 				("e3hd", 504),
 				("et7000mini", 504),
+				("et1x000", 504),
 				("xpeedc.", 504),
 				("odinm7", 505)
 				]
@@ -341,12 +345,12 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("11", _("et9200/9500/6500")),
 				("13", _("et4000")),
 				("14", _("XP1000")),
-				("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/HD530C")),
+				("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/HD530C/VS1000/VS1500")),
 				("17", _("XP3000")),
 				("18", _("F1/F3/F4/F4-TURBO/TRIPLEX")),
 				("19", _("HD2400")),
 				("20", _("Zgemma Star S/2S/H1/H2")),
-				("21", _("Zgemma H.S/H.2S/H.2H/H5"))
+				("21", _("Zgemma H.S/H.2S/H.2H/H5/H7"))
 				]
 		defaultRcList = [
 				("et4000", 13),
@@ -370,13 +374,16 @@ class RemoteControlType(Screen, ConfigListScreen):
 				("hd1265",16),
 				("hd500c",16),
 				("hd530c",16),
+				("vs1000",16),
+				("vs1500",16),
 				("hd2400",19),
 				("triplex",18),
 				("xp1000", 14),
 				("xp3000", 17),
 				("sh1", 20),
 				("h3", 21),
-				("h5", 21)
+				("h5", 21),
+				("h7", 21)
 				]
 
 	def __init__(self, session):
