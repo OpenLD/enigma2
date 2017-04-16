@@ -257,7 +257,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 					  getConfigListEntry(_("Use extended List"), config.movielist.useextlist, _("Use the extended List")),
 					  getConfigListEntry(_("Update delay for Events in List"), config.movielist.eventinfo_delay, _("Update delay for Events in List. Scrolling in List is faster with higher delay, specialy on big Lists !")),
 					  getConfigListEntry(_("Use slim screen"), config.movielist.useslim, _("Use the alternative screen")),
-					  getConfigListEntry(_("Sort"), cfg.moviesort, _("Set the default sorting method.")), 
+					  getConfigListEntry(_("Sort"), cfg.moviesort, _("Set the default sorting method.")),
 					  getConfigListEntry(_("Show extended description"), cfg.description, _("Show or hide the extended description, (skin dependent).")),
 					  getConfigListEntry(_("Use individual settings for each directory"), config.movielist.settings_per_directory, _("When set each folder will show the previous state used, when off the default values will be shown.")),
 					  getConfigListEntry(_("Behavior when a movie reaches the end"), config.usage.on_movie_eof, _("On reaching the end of a file during playback, you can choose the box's behavior.")),

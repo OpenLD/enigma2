@@ -451,13 +451,13 @@ class PliExtraInfo(Poll, Converter, object):
 				orbpos += 1
 			else:
 				orbpos -= 1
-				
+
 		sat_names = {
 			30:   'Rascom/Eutelsat 3E',
 			48:   'SES 5',
 			70:   'Eutelsat 7E',
 			90:   'Eutelsat 9E',
-			100:  'Eutelsat 10E',  
+			100:  'Eutelsat 10E',
 			130:  'Hot Bird',
 			160:  'Eutelsat 16E',
 			192:  'Astra 1KR/1L/1M/1N',

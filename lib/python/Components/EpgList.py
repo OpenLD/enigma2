@@ -591,7 +591,7 @@ class EPGList(HTMLComponent, GUIComponent):
 				if self.showServiceNumber:
 					font = gFont(self.serviceFontNameGraph, self.serviceFontSizeGraph + config.epgselection.infobar_servfs.value)
 					channelw = getTextBoundarySize(self.instance, font, self.instance.size(), "0000" ).width()
-			
+
 			w = (channelw + piconw + servicew)
 			self.service_rect = Rect(0, 0, w, height)
 			self.event_rect = Rect(w, 0, width - w, height)
@@ -855,7 +855,7 @@ class EPGList(HTMLComponent, GUIComponent):
 		if self.showServiceNumber:
 			if not isinstance(channel, int):
 				channel = self.getChannelNumber(channel)
-			
+
 			if channel:
 				namefont = 0
 				namefontflag = int(config.epgselection.graph_servicenumber_alignment.value)
@@ -1346,7 +1346,7 @@ class EPGList(HTMLComponent, GUIComponent):
 				if tmp_list is not None:
 					picon = None if piconIdx == 0 else serviceList[serviceIdx][piconIdx]
 					# We pass the serviceref if we don't have the channel number yet, so it can be grabbed
-					channel = serviceList[serviceIdx] if (channelIdx == None) else serviceList[serviceIdx][channelIdx] 
+					channel = serviceList[serviceIdx] if (channelIdx == None) else serviceList[serviceIdx][channelIdx]
 					self.list.append((service, sname, tmp_list[0][0] is not None and tmp_list or None, picon, channel))
 					serviceIdx += 1
 				service = x[0]
@@ -1375,7 +1375,7 @@ class EPGList(HTMLComponent, GUIComponent):
 			self.moveToEventId(event_id)
 
 	def getChannelNumber(self,service):
-		if hasattr(service, "ref") and service.ref and '0:0:0:0:0:0:0:0:0' not in service.ref.toString(): 
+		if hasattr(service, "ref") and service.ref and '0:0:0:0:0:0:0:0:0' not in service.ref.toString():
 			numservice = service.ref
 			num = numservice and numservice.getChannelNum() or None
 			if num is not None:

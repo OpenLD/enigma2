@@ -39,13 +39,13 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 profile("LOAD:HelpableScreen")
 from Screens.HelpMenu import HelpableScreen
 
-class InfoBar(InfoBarBase, InfoBarShowHide, InfoBarNumberZap, InfoBarChannelSelection, 
-	InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder, InfoBarRedButton, InfoBarTimerButton, InfoBarVmodeButton, 
-	InfoBarSeek, InfoBarInstantRecord, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarAudioSelection, 
-	InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection, 
-	InfoBarSubserviceSelection, InfoBarTimeshift, InfoBarCueSheetSupport, InfoBarBuffer, InfoBarSummarySupport, 
-	InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions, HelpableScreen, InfoBarPiP, InfoBarPlugins, 
-	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer, 
+class InfoBar(InfoBarBase, InfoBarShowHide, InfoBarNumberZap, InfoBarChannelSelection,
+	InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder, InfoBarRedButton, InfoBarTimerButton, InfoBarVmodeButton,
+	InfoBarSeek, InfoBarInstantRecord, LDBluePanel, InfoBarResolutionSelection, InfoBarAspectSelection, InfoBarAudioSelection,
+	InfoBarAdditionalInfo, InfoBarNotifications, InfoBarDish, InfoBarUnhandledKey, InfoBarLongKeyDetection,
+	InfoBarSubserviceSelection, InfoBarTimeshift, InfoBarCueSheetSupport, InfoBarBuffer, InfoBarSummarySupport,
+	InfoBarTimeshiftState, InfoBarTeletextPlugin, InfoBarExtensions, HelpableScreen, InfoBarPiP, InfoBarPlugins,
+	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarJobman, InfoBarZoom, InfoBarSleepTimer,
 	InfoBarOpenOnTopHelper, InfoBarHdmi, InfoBarButtonSetup, Screen):
 
 	ALLOW_SUSPEND = True
