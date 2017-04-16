@@ -45,7 +45,7 @@ class Standby2(Screen):
 			self.Power()
 
 	# with the option "standby_noTVshutdown", use 'break' event / allow turning off the TV by a 'long' key press in standby
-	# avoid waking from standby by ignoring the key's 'break' event after the 'long' and subsequent 'repeat' events.  
+	# avoid waking from standby by ignoring the key's 'break' event after the 'long' and subsequent 'repeat' events.
 	def Power_long(self):
 		if (config.usage.on_short_powerpress.value == "standby_noTVshutdown"):
 			self.TVoff()
