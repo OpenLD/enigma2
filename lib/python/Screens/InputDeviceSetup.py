@@ -412,7 +412,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Remote control type"), self.rctype))
 		self["config"].list = self.list
 
-		self.defaultRcType = 0
+		self.defaultRcType = None
 		self.getDefaultRcType()
 
 	def getDefaultRcType(self):
