@@ -3520,6 +3520,18 @@ msgstr "Desviar teclas de volumen"
 msgid "Frame size in full view"
 msgstr "Tamaño de fotograma en vista completa"
 
+msgid "Background color"
+msgstr "Color de fondo"
+
+msgid "Text color"
+msgstr "Color de texto"
+
+msgid "Fulview resulution"
+msgstr "Resolución de pantalla completa"
+
+msgid "Same resolution as skin"
+msgstr "La misma que el Skin"
+
 msgid "Free Memory:"
 msgstr "Memoria libre:"
 
@@ -7851,6 +7863,9 @@ msgstr "Estándar"
 #
 msgid "Standby"
 msgstr "Modo de espera"
+
+msgid "Standby without TV shutdown"
+msgstr "Modo de espera sin apagar TV"
 
 #
 msgid "Standby / restart"

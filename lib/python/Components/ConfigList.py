@@ -318,6 +318,8 @@ class ConfigListScreen:
 
 	def cancelConfirm(self, result):
 		if not result:
+			if self.help_window_was_shown:
+				self["config"].getCurrent()[1].help_window.show()
 			return
 
 		for x in self["config"].list:

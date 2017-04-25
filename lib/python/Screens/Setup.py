@@ -10,16 +10,17 @@ from Components.Label import Label
 from Components.Sources.Boolean import Boolean
 
 from enigma import eEnv
+from gettext import dgettext
 from boxbranding import getMachineBrand, getMachineName
 
 import xml.etree.cElementTree
 
 def setupdom(plugin=None):
 	# read the setupmenu
-	try:
+	if plugin:
 		# first we search in the current path
 		setupfile = file(resolveFilename(SCOPE_CURRENT_PLUGIN, plugin + '/setup.xml'), 'r')
-	except:
+	else:
 		# if not found in the current path, we use the global datadir-path
 		setupfile = file(eEnv.resolve('${datadir}/enigma2/setup.xml'), 'r')
 	setupfiledom = xml.etree.cElementTree.parse(setupfile)
@@ -92,7 +93,7 @@ class Setup(ConfigListScreen, Screen):
 			self.setup_title = x.get("title", "").encode("UTF-8")
 			self.seperation = int(x.get('separation', '0'))
 
-	def __init__(self, session, setup, plugin=None):
+	def __init__(self, session, setup, plugin=None, PluginLanguageDomain=None):
 		Screen.__init__(self, session)
 		# for the skin: first try a setup_<setupID>, then Setup
 		self.skinName = ["setup_" + setup, "Setup" ]
@@ -106,6 +107,7 @@ class Setup(ConfigListScreen, Screen):
 		self.item = None
 		self.setup = setup
 		self.plugin = plugin
+		self.PluginLanguageDomain = PluginLanguageDomain
 		list = []
 		self.onNotifiers = [ ]
 		self.refill(list)
@@ -114,7 +116,7 @@ class Setup(ConfigListScreen, Screen):
 
 		#check for list.entries > 0 else self.close
 		self["key_red"] = StaticText(_("Cancel"))
-		self["key_green"] = StaticText(_("OK"))
+		self["key_green"] = StaticText(_("Save"))
 		self["description"] = Label("")
 
 		self["actions"] = NumberActionMap(["SetupActions", "MenuActions"],
@@ -184,10 +186,12 @@ class Setup(ConfigListScreen, Screen):
 				self["VKeyIcon"].boolean = False
 
 	def HideHelp(self):
+		self.help_window_was_shown = False
 		try:
 			if isinstance(self["config"].getCurrent()[1], ConfigText) or isinstance(self["config"].getCurrent()[1], ConfigPassword):
 				if self["config"].getCurrent()[1].help_window.instance is not None:
 					self["config"].getCurrent()[1].help_window.hide()
+					self.help_window_was_shown = True
 		except:
 			pass
 
@@ -241,9 +245,14 @@ class Setup(ConfigListScreen, Screen):
 				if requires and not SystemInfo.get(requires, False):
 					continue
 
-				item_text = _(x.get("text", "??").encode("UTF-8"))
+				if self.PluginLanguageDomain:
+					item_text = dgettext(self.PluginLanguageDomain, x.get("text", "??").encode("UTF-8"))
+					item_description = dgettext(self.PluginLanguageDomain, x.get("description", " ").encode("UTF-8"))
+				else:
+					item_text = _(x.get("text", "??").encode("UTF-8"))
+					item_description = _(x.get("description", " ").encode("UTF-8"))
+
 				item_text = item_text.replace("%s %s","%s %s" % (getMachineBrand(), getMachineName()))
-				item_description = _(x.get("description", " ").encode("UTF-8"))
 				item_description = item_description.replace("%s %s","%s %s" % (getMachineBrand(), getMachineName()))
 				b = eval(x.text or "")
 				if b == "":

@@ -1137,9 +1137,14 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	else if (strstr(m_description, "BCM4506")
 		|| strstr(m_description, "BCM4506 (internal)")
 		|| strstr(m_description, "BCM4505")
+		|| strstr(m_description, "BCM73625 (G3)")
 		)
 	{
 		ret = (snr * 100) >> 8;
+	}
+	else if (!strcmp(m_description, "ATBM781x"))
+	{
+		ret = snr*10;
 	}
 	else if (strstr(m_description, "Si2166B"))
 	{
@@ -1237,10 +1242,6 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 			break;
 		}
 	}
-	else if (!strcmp(m_description, "BCM73625 (G3)")) // DM520
-	{
-		ret = snr * 100 / 256;
-	}
 	else if (!strcmp(m_description, "Broadcom BCM73XX")
 		|| !strcmp(m_description, "FTS-260 (Montage RS6000)")
 		|| !strcmp(m_description, "Panasonic MN88472")
@@ -1292,12 +1293,24 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		}
 		ret = snr * 10;
 	}
+	else if (!strcmp(m_description, "FTM-4862 (Availink AVL6862)")) // Osmega /S2/T2/C
+	{
+		int type = -1;
+		oparm.getSystem(type);
+		switch (type)
+		{
+			case feSatellite:
+				ret = (snr + 2300) / 11.5;
+				sat_max = 1550;
+				break;
+		}
+	}
 	else if (!strcmp(m_description, "Si21662")) // SF4008 S2
 	{
 		ret = (int)(snr / 46.8);
 		sat_max = 1620;
 	}
-	else if (!strcmp(m_description, "Si21682")) // SF4008 T/T2/C
+	else if (!strcmp(m_description, "Si21682") || !strcmp(m_description, "Si2168")) // SF4008 T/T2/C and Zgemma TC Models
 	{
 		int type = -1;
 		oparm.getSystem(type);
@@ -1312,6 +1325,10 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 				ter_max = 2900;
 				break;
 		}
+	}
+	else if (!strncmp(m_description, "Si216", 5)) // all new Models with SI Tuners
+	{
+		ret = snr;
 	}
 
 	signalqualitydb = ret;
@@ -1378,7 +1395,7 @@ int eDVBFrontend::readFrontendData(int type)
 				int signalquality = 0;
 				int signalqualitydb = 0;
 #if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 10
-				if (m_dvbversion >= DVB_VERSION(5, 10))
+				if (m_dvbversion >= DVB_VERSION(5, 10) && !strstr(m_description, "FTM-4862 (Availink AVL6862)") && !strstr(m_description, "Sundtek"))
 				{
 					dtv_property prop[1];
 					memset(prop, 0, sizeof(prop));
@@ -3072,6 +3089,15 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 		if (parm.system == eDVBFrontendParametersSatellite::System_DVB_S && !can_handle_dvbs)
 		{
 			return 0;
+		}
+		bool multistream = (parm.is_id != NO_STREAM_ID_FILTER) && !(
+			   (parm.is_id == 0 && (parm.pls_mode & 3) == eDVBFrontendParametersSatellite::PLS_Root  && (parm.pls_code & 0x3FFFF) == 1)
+			|| (parm.is_id == 0 && (parm.pls_mode & 3) == eDVBFrontendParametersSatellite::PLS_Gold  && (parm.pls_code & 0x3FFFF) == 0)
+			|| (parm.is_id == 0 && (parm.pls_mode & 3) == eDVBFrontendParametersSatellite::PLS_Combo && (parm.pls_code & 0x3FFFF) == 1)
+		);
+		if (parm.system == eDVBFrontendParametersSatellite::System_DVB_S2 && multistream && !is_multistream())
+		{
+				return 0;
 		}
 /*		bool multistream = (parm.is_id != NO_STREAM_ID_FILTER || (parm.pls_code & 0x3FFFF) != 1 ||
 			(parm.pls_mode & 3) != eDVBFrontendParametersSatellite::PLS_Root);

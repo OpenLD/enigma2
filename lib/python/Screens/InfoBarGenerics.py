@@ -729,6 +729,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 		self.show()
 		self.hideTimer.stop()
 		self.DimmingTimer.stop()
+		self.doWriteAlpha(config.av.osd_alpha.value)
 		self.startHideTimer()
 
 	def doTimerHide(self):
@@ -2540,9 +2541,7 @@ class InfoBarSeek:
 				self.unPauseService()
 
 	def pauseService(self):
-		if self.seekstate != self.SEEK_STATE_EOF:
-			self.lastseekstate = self.seekstate
-		self.setSeekState(self.SEEK_STATE_PAUSE)
+		self.playpauseService()
 
 	def unPauseService(self):
 		if self.seekstate == self.SEEK_STATE_PLAY:
@@ -2597,6 +2596,7 @@ class InfoBarSeek:
 						return
 					if position + pts >= length:
 						InfoBarTimeshift.evEOF(self, position + pts - length)
+						self.showAfterSeek()
 						return
 					elif position + pts < 0:
 						InfoBarTimeshift.evSOF(self, position + pts)
@@ -2878,6 +2878,8 @@ class InfoBarPVRState:
 			self["statusicon"].setPixmapNum(6)
 			self["speed"].setText("")
 		if self.shown and self.seekstate != self.SEEK_STATE_EOF and not config.usage.movieplayer_pvrstate.value:
+			self.DimmingTimer.stop()
+			self.doWriteAlpha(config.av.osd_alpha.value)
 			self.pvrStateDialog.show()
 			self.startHideTimer()
 
