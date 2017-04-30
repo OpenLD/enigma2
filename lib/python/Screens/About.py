@@ -7,7 +7,7 @@ from Components.Button import Button
 from Components.Sources.StaticText import StaticText
 from Components.Harddisk import Harddisk
 from Components.NimManager import nimmanager
-from Components.About import about, getVersionString, getChipSetString, getKernelVersionString, getCPUString, getCpuCoresString, getPythonVersionString, getGStreamerVersionString, getDriverInstalledDate
+from Components.About import about, getVersionString, getChipSetString, getKernelVersionString, getCPUString, getCpuCoresString, getPythonVersionString, getFFmpegVersionString, getGStreamerVersionString, getDriverInstalledDate
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console
 from Components.Converter.Poll import Poll
@@ -94,7 +94,7 @@ def getAboutText():
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("GStreamer:\t%s") % str(getGStreamerVersionString().replace('GStreamer','')) + "\n"
-	#AboutText += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
+	AboutText += _("FFmpeg:\t %s") % str(getFFmpegVersionString()) + "\n"
 	AboutText += _("Python:\t %s") % getPythonVersionString() + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
@@ -351,8 +351,8 @@ class SystemMemoryInfo(Screen):
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "DirectionActions"],
 			{
-				"cancel": self.close,
-				"ok": self.close,
+				"cancel": self.end,
+				"ok": self.end,
 				"up": self["AboutScrollLabel"].pageUp,
 				"down": self["AboutScrollLabel"].pageDown,
 			})
@@ -405,6 +405,11 @@ class SystemMemoryInfo(Screen):
 		self["actions"].setEnabled(False)
 		self.Console = Console()
 		self.Console.ePopen("df -mh / | grep -v '^Filesystem'", self.Stage1Complete)
+
+	def end(self):
+		self.DynamicTimer.stop()
+		del self.DynamicTimer
+		self.close()
 
 	def Stage1Complete(self, result, retval, extra_args=None):
 		flash = str(result).replace('\n', '')
