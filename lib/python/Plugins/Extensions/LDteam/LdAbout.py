@@ -67,7 +67,7 @@ class LdsysInfo(Screen):
 	skin = """
 <screen name="LdsysInfo" position="70,35" size="1150,650">
 <ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
-<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;16" scrollbarMode="showOnDemand">
+<widget name="lab1" halign="left" position="15,10" size="660,650" font="Regular;15" scrollbarMode="showOnDemand">
 </widget>
 </screen>"""
 
@@ -79,8 +79,8 @@ class LdsysInfo(Screen):
 		self.onShow.append(self.updateInfo)
 		self["myactions"] = ActionMap(["OkCancelActions"],
 		{
-			"ok": self.close,
-			"cancel": self.close,
+			"ok": self.end,
+			"cancel": self.end,
 		}, -1)
 
 	def updateInfo(self):
@@ -195,7 +195,12 @@ class LdsysInfo(Screen):
 		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 		self.text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-		#self.text += _("FFmpeg:\t%s") % str((' 3.1.4')) + "\n"
+		self.text += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
 		self.text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
 
 		self["lab1"].setText(self.text)
+
+	def end(self):
+		self.DynamicTimer.stop()
+		del self.DynamicTimer
+		self.close()

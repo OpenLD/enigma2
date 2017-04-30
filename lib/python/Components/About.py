@@ -181,6 +181,14 @@ def getPythonVersionString():
 	except:
 		return _("unknown")
 
+def getFFmpegVersionString():
+	try:
+		import commands
+		status, output = commands.getstatusoutput("ffmpeg -version | awk 'NR==1{print $3}'")
+		return output.split(' ')[0]
+	except:
+		return _("unknown")
+
 def getCPUTempString():
 	try:
 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
