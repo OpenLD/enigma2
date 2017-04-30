@@ -66,6 +66,7 @@ public:
 
 	static eStreamServer *getInstance();
 	void stopStream();
+	bool stopStreamClient(const std::string remotehost, const std::string serviceref);
 	PyObject *getConnectedClients();
 };
 

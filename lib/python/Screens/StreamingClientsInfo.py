@@ -30,16 +30,18 @@ class StreamingClientsInfo(Screen):
 		self["ScrollLabel"] = ScrollLabel()
 
 		self["key_red"] = Button(_("Close"))
+		self["key_blue"] = Button()
 		self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions"],
 			{
 				"cancel": self.exit,
 				"ok": self.exit,
 				"red": self.exit,
+				"blue": self.stopStreams,
 				"up": self["ScrollLabel"].pageUp,
 				"down": self["ScrollLabel"].pageDown
 			})
 
-		self.onLayoutFinish.append(self.update_info)
+		self.onLayoutFinish.append(self.start)
 
 	def exit(self):
 		self.stop()
@@ -48,6 +50,7 @@ class StreamingClientsInfo(Screen):
 	def start(self):
 		if self.update_info not in self.DynamicTimer.callback:
 			self.DynamicTimer.callback.append(self.update_info)
+		self.DynamicTimer.start(0)
 
 	def stop(self):
 		if self.update_info in self.DynamicTimer.callback:
@@ -64,4 +67,12 @@ class StreamingClientsInfo(Screen):
 		text = clients.getText()
 		self["liste"].setText(text or _("No stream clients"))
 		self["ScrollLabel"].setText(text or _("No stream clients"))
+		self["key_blue"].setText(text and _("Stop Streams") or "")
 		self.DynamicTimer.start(5000)
+
+	def stopStreams(self):
+		streamServer = eStreamServer.getInstance()
+		if not streamServer:
+			return
+		for x in streamServer.getConnectedClients():
+			streamServer.stopStream()
