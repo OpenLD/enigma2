@@ -69,12 +69,12 @@ void eDVBServicePMTHandler::channelStateChanged(iDVBChannel *channel)
 				m_pvr_demux_tmp = NULL;
 			}
 			else if (m_channel->getDemux(m_demux, (!m_use_decode_demux) ? 0 : iDVBChannel::capDecode))
-				eDebug("Allocating %s-decoding a demux for now tuned-in channel failed.", m_use_decode_demux ? "" : "non-");
+				eDebug("[eDVBServicePMTHandler] Allocating %s-decoding a demux for now tuned-in channel failed.", m_use_decode_demux ? "" : "non-");
 		}
 
 		if (m_demux)
 		{
-			eDebug("ok ... now we start!!");
+			eDebug("[eDVBServicePMTHandler] ok ... now we start!!");
 			m_have_cached_program = false;
 
 			if (m_service && !m_service->cacheEmpty())
@@ -89,6 +89,11 @@ void eDVBServicePMTHandler::channelStateChanged(iDVBChannel *channel)
 					if (m_ca_servicePtr && !m_service->usePMT())
 					{
 						eDebug("[eDVBServicePMTHandler] create cached caPMT");
+						eDVBCAHandler::getInstance()->handlePMT(m_reference, m_service);
+					}
+					else if (m_ca_servicePtr && (m_service->m_flags & eDVBService::dxIsScrambledPMT))
+					{
+						eDebug("[eDVBServicePMTHandler] create caPMT to descramble PMT");
 						eDVBCAHandler::getInstance()->handlePMT(m_reference, m_service);
 					}
 				}
@@ -107,7 +112,7 @@ void eDVBServicePMTHandler::channelStateChanged(iDVBChannel *channel)
 	} else if ((m_last_channel_state != iDVBChannel::state_failed) &&
 			(state == iDVBChannel::state_failed))
 	{
-		eDebug("tune failed.");
+		eDebug("[eDVBServicePMTHandler] tune failed.");
 		serviceEvent(eventTuneFailed);
 	}
 }
