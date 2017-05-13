@@ -389,6 +389,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.skinName = ["RemoteControlType", "Setup" ]
+		self.setTitle(_("Remote control type setup"))
 
 		self["actions"] = ActionMap(["SetupActions"],
 		{
@@ -412,7 +413,7 @@ class RemoteControlType(Screen, ConfigListScreen):
 		self.list.append(getConfigListEntry(_("Remote control type"), self.rctype))
 		self["config"].list = self.list
 
-		self.defaultRcType = None
+		self.defaultRcType = 0
 		self.getDefaultRcType()
 
 	def getDefaultRcType(self):
@@ -421,6 +422,8 @@ class RemoteControlType(Screen, ConfigListScreen):
 			if x[0] in data:
 				self.defaultRcType = x[1]
 				break
+		if self.defaultRcType == 0:
+			self.defaultRcType = iRcTypeControl.readRcType()
 
 	def setDefaultRcType(self):
 		iRcTypeControl.writeRcType(self.defaultRcType)
