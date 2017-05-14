@@ -488,7 +488,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
 			data->m_mhw2_title_pid = 0x233; // change for fix 7 days epg Movistar+
-			data->m_mhw2_summary_pid = 0x236; // change for fix 7 days epg Movistar+
+			data->m_mhw2_summary_pid = 0x282; // change for fix 7 days epg Movistar+
 		}
 #endif
 		singleLock s(channel_map_lock);
