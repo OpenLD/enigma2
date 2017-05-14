@@ -9,7 +9,8 @@ from config import config, ConfigSubsection, ConfigSelection, ConfigFloat, \
 	ConfigSatlist, ConfigYesNo, ConfigInteger, ConfigSubList, ConfigNothing, \
 	ConfigSubDict, ConfigOnOff, ConfigDateTime, ConfigText
 
-from enigma import eDVBSatelliteEquipmentControl as secClass, \
+from enigma import  eDVBFrontendParametersSatellite, \
+	eDVBSatelliteEquipmentControl as secClass, \
 	eDVBSatelliteLNBParameters as lnbParam, \
 	eDVBSatelliteDiseqcParameters as diseqcParam, \
 	eDVBSatelliteSwitchParameters as switchParam, \
@@ -852,9 +853,12 @@ class NimManager:
 	def getConfiguredSats(self):
 		return self.sec.getConfiguredSats()
 
-	def getTransponders(self, pos):
+	def getTransponders(self, pos, feid = None):
 		if self.transponders.has_key(pos):
-			return self.transponders[pos]
+			if feid is None or self.nim_slots[feid].isMultistream():
+				return self.transponders[pos]
+			else: # remove multistream transponders
+				return [tp for tp in self.transponders[pos] if not (tp[5] == eDVBFrontendParametersSatellite.System_DVB_S2 and (tp[10] > -1 or tp[11] > 0 or tp[12] > 1))]
 		else:
 			return []
 
@@ -874,10 +878,10 @@ class NimManager:
 		return []
 
 	def getCableDescription(self, nim):
-		return self.cablesList[config.Nims[nim].scan_provider.index][0]
+		return self.cablesList[config.Nims[nim].cable.scan_provider.index][0]
 
 	def getCableFlags(self, nim):
-		return self.cablesList[config.Nims[nim].scan_provider.index][1]
+		return self.cablesList[config.Nims[nim].cable.scan_provider.index][1]
 
 	def getTerrestrialDescription(self, nim):
 		return self.terrestrialsList[config.Nims[nim].terrestrial.index][0]
@@ -1647,7 +1651,7 @@ def InitNimManager(nimmgr, update_slots = []):
 
 	advanced_lnb_csw_choices = [("none", _("None")), ("AA", _("Port A")), ("AB", _("Port B")), ("BA", _("Port C")), ("BB", _("Port D"))]
 
-	advanced_lnb_ucsw_choices = [("0", _("None"))] + [(str(y), "Input " + str(y)) for y in range(1, 17)]
+	advanced_lnb_ucsw_choices = [("0", _("None"))] + [(str(y), _("Input ") + str(y)) for y in range(1, 17)]
 
 	diseqc_mode_choices = [
 		("single", _("Single")), ("toneburst_a_b", _("Toneburst A/B")),
@@ -1991,7 +1995,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			default_scan_type = "bands"
 			if n:
 				possible_scan_types.append(("provider", _("Provider")))
-				nim.cable.scan_provider = ConfigSelection(default = "0", choices = list)
+				nim.cable.scan_provider = ConfigSelection(choices = list)
 			nim.cable.config_scan_details = ConfigYesNo(default = False)
 			nim.cable.scan_type = ConfigSelection(default = "provider", choices = possible_scan_types)
 			nim.cable.scan_band_EU_VHF_I = ConfigYesNo(default = True)
