@@ -384,7 +384,7 @@ eEPGCache::eEPGCache()
 
 	enabledSources = 0;
 	historySeconds = 0;
-	maxdays = 7;
+	maxdays = 5;
 
 	CONNECT(messages.recv_msg, eEPGCache::gotMessage);
 	CONNECT(eDVBLocalTimeHandler::getInstance()->m_timeUpdated, eEPGCache::timeUpdated);
@@ -487,7 +487,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
-			data->m_mhw2_title_pid = 0x233; // change for fix 7 days epg Movistar+
+			data->m_mhw2_title_pid = 0x28b; // change for fix 7 days epg Movistar+
 			data->m_mhw2_summary_pid = 0x282; // change for fix 7 days epg Movistar+
 		}
 #endif
