@@ -100,12 +100,6 @@ if [ -e @libdir@/libpassthrough.so ]; then
 	LIBS="$LIBS @libdir@/libpassthrough.so"
 fi
 
-# check for init_openld.sh to restart enigma2
-if [ -e /etc/init.d/init_openld.sh ]; then
-	chmod 755 /etc/init.d/init_openld.sh 2>/dev/null
-	nohup sh /etc/init.d/init_openld.sh > /dev/null 2>&1 &
-fi
-
 # check for settings files
 if [ ! -e /etc/enigma2/settings ]; then
 	touch /etc/enigma2/settings
@@ -146,6 +140,12 @@ else
 	else
 		LD_PRELOAD=$LIBS @bindir@/enigma2
 	fi
+fi
+
+# check for init_openld.sh to restart enigma2
+if [ -e /etc/init.d/init_openld.sh ]; then
+	chmod 755 /etc/init.d/init_openld.sh 2>/dev/null
+	sync && sleep 5; nohup sh /etc/init.d/init_openld.sh > /dev/null 2>&1 &
 fi
 
 # enigma2 exit codes:
