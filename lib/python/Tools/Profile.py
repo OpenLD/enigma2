@@ -3,7 +3,7 @@ import time
 from Directories import resolveFilename, SCOPE_CONFIG
 from boxbranding import getBoxType
 
-PERCENTAGE_START = 10
+PERCENTAGE_START = 0
 PERCENTAGE_END = 100
 
 profile_start = time.time()
@@ -43,7 +43,7 @@ def profile(id):
 		dev_fmt = ("/dev/dbox/oled0", "  %d ")
 	elif box_type in ('gb800solo', 'gb800se', 'gb800seplus', 'gbultrase'):
 		dev_fmt = ("/dev/mcu", "%d \n")
-	elif box_type in ("mixosf5", "gi9196m", "osmini", "spycatmini", "osminiplus"):
+	elif box_type in ("mixosf5", "gi9196m", "osmini", "spycatmini", "osminiplus", "spycatminiplus"):
 		dev_fmt = ("/proc/progress", "%d")
 	elif box_type in ("xpeedlx3", "sezammarvel", "atemionemesis", "fegasusx3", "fegasusx5s", "fegasusx5t"):
 		dev_fmt = ("/proc/vfd", "Loading %d %%")
