@@ -63,9 +63,11 @@ def getAboutText():
 			pass
 
 	cpuMHz = ""
-	if getMachineBuild() in ('vusolo4k'):
+	if getMachineBuild() in ('vusolo4k', 'vuultimo4k'):
 		cpuMHz = "   (1,5 GHz)"
-	elif getMachineBuild() in ('formuler1'):
+	elif getMachineBuild() in ('vuuno4k', 'gbquad4k'):
+		cpuMHz = "   (1,7 GHz)"
+	elif getMachineBuild() in ('formuler1tc', 'formuler1'):
 		cpuMHz = "   (1,3 GHz)"
 	else:
 		if path.exists('/proc/cpuinfo'):

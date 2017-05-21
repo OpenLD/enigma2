@@ -57,8 +57,14 @@ def getModelString():
 		return _("unknown")
 
 def getChipSetString():
-	if getMachineBuild() in ('dm7080','dm820'):
+	if getMachineBuild() in ('dm7080', 'dm820'):
 		return "7435"
+	elif getMachineBuild() in ('dm520'):
+		return "73625"
+	elif getMachineBuild() in ('dm900'):
+		return "7252S"
+	elif getMachineBuild() in ('hd51'):
+		return "7251S"
 	else:
 		try:
 			f = open('/proc/stb/info/chipset', 'r')
@@ -69,10 +75,21 @@ def getChipSetString():
 			return _("unavailable")
 
 def getCPUSpeedString():
-	if getMachineBuild() in ('vusolo4k'):
+	if getMachineBuild() in ('vusolo4k', 'vuultimo4k'):
 		return "1,5 GHz"
-	elif getMachineBuild() in ('formuler1'):
+	elif getMachineBuild() in ('formuler1tc', 'formuler1', 'triplex'):
 		return "1,3 GHz"
+	elif getMachineBuild() in ('vuuno4k', 'dm900', 'gbquad4k'):
+		return "1,7 GHz"
+	elif getMachineBuild() in ('hd51', 'hd52', 'sf4008'):
+		try:
+			import binascii
+			f = open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb')
+			clockfrequency = f.read()
+			f.close()
+			return "%s MHz" % str(round(int(binascii.hexlify(clockfrequency), 16)/1000000,1))
+		except:
+			return "1,7 GHz"
 	else:
 		try:
 			file = open('/proc/cpuinfo', 'r')
@@ -93,7 +110,7 @@ def getCPUSpeedString():
 			return _("unavailable")
 
 def getCPUString():
-	if getMachineBuild() in ('xc7362', 'vusolo4k'):
+	if getMachineBuild() in ('vuuno4k', 'vuultimo4k', 'vusolo4k', 'hd51', 'hd52', 'sf4008', 'dm900', 'gbquad4k'):
 		return "Broadcom"
 	else:
 		try:

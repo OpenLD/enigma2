@@ -21,7 +21,7 @@ from boxbranding import getBoxType, getMachineBrand, getMachineName, getDriverDa
 VERSION = "Version 3.0 OpenLD"
 
 HaveGZkernel = True
-if getBrandOEM() in ("fulan"):
+if getBrandOEM() in ("fulan") or getBoxType() in ("vuuno4k", "vuultimo4k", "vusolo4k"):
 	HaveGZkernel = False
 
 def Freespace(dev):
@@ -192,6 +192,7 @@ class ImageBackup(Screen):
 		if "jffs2" in self.ROOTFSTYPE.split():
 			cmd1 = "%s --root=/tmp/bi/root --faketime --output=%s/root.jffs2 %s" % (self.MKFS, self.WORKDIR, self.MKUBIFS_ARGS)
 			cmd2 = None
+			cmd3 = None
 		else:
 			f = open("%s/ubinize.cfg" %self.WORKDIR, "w")
 			f.write("[ubifs]\n")
@@ -210,16 +211,31 @@ class ImageBackup(Screen):
 
 		cmdlist = []
 		cmdlist.append(self.message)
-		cmdlist.append('echo "Create: root.%s\n"' %self.ROOTFSTYPE)
+		cmdlist.append('echo "Create: %s\n"' %self.ROOTFSBIN)
 		cmdlist.append(cmd1)
 		if cmd2:
 			cmdlist.append(cmd2)
+		if cmd3:
 			cmdlist.append(cmd3)
-		cmdlist.append("chmod 644 %s/root.%s" %(self.WORKDIR, self.ROOTFSTYPE))
+		cmdlist.append("chmod 644 %s/%s" %(self.WORKDIR, self.ROOTFSBIN))
+
+		if self.MODEL in ("gbquad4k"):
+			cmdlist.append('echo " "')
+			cmdlist.append('echo "Create: boot dump"')
+			cmdlist.append('echo " "')
+			cmdlist.append("dd if=/dev/mmcblk0p1 of=%s/boot.bin" % self.WORKDIR)
+			cmdlist.append('echo " "')
+			cmdlist.append('echo "Create: rescue dump"')
+			cmdlist.append('echo " "')
+			cmdlist.append("dd if=/dev/mmcblk0p5 of=%s/rescue.bin" % self.WORKDIR)
+
 		cmdlist.append('echo " "')
 		cmdlist.append('echo "Create: kerneldump"')
 		cmdlist.append('echo " "')
-		cmdlist.append("nanddump -a -f %s/vmlinux.gz /dev/%s" % (self.WORKDIR, self.MTDKERNEL))
+		if self.MTDKERNEL == "mmcblk0p1" or self.MTDKERNEL == "mmcblk0p3":
+			cmdlist.append("dd if=/dev/%s of=%s/%s" % (self.MTDKERNEL ,self.WORKDIR, self.KERNELBIN))
+		else:
+			cmdlist.append("nanddump -a -f %s/vmlinux.gz /dev/%s" % (self.WORKDIR, self.MTDKERNEL))
 		cmdlist.append('echo " "')
 
 		if HaveGZkernel:
@@ -257,11 +273,26 @@ class ImageBackup(Screen):
 		f.write(self.IMAGEVERSION)
 		f.close()
 
-		system('mv %s/root.%s %s/%s' %(self.WORKDIR, self.ROOTFSTYPE, self.MAINDEST, self.ROOTFSBIN))
-		system('mv %s/vmlinux.gz %s/%s' %(self.WORKDIR, self.MAINDEST, self.KERNELBIN))
-		cmdlist.append('echo "rename this file to "force" to force an update without confirmation" > %s/noforce' %self.MAINDEST)
+		if self.ROOTFSBIN == "rootfs.tar.bz2":
+			system('mv %s/rootfs.tar.bz2 %s/rootfs.tar.bz2' %(self.WORKDIR, self.MAINDEST))
+		else:
+			system('mv %s/root.%s %s/%s' %(self.WORKDIR, self.ROOTFSTYPE, self.MAINDEST, self.ROOTFSBIN))
+		if self.MTDKERNEL == "mmcblk0p1" or self.MTDKERNEL == "mmcblk0p3":
+			system('mv %s/%s %s/%s' %(self.WORKDIR, self.KERNELBIN, self.MAINDEST, self.KERNELBIN))
+		else:
+			system('mv %s/vmlinux.gz %s/%s' %(self.WORKDIR, self.MAINDEST, self.KERNELBIN))
+		if self.MODEL in ("vuultimo4k","vusolo4k", "vuduo2", "vusolo2", "vusolo", "vuduo", "vuultimo", "vuuno"):
+			cmdlist.append('echo "This file forces a reboot after the update." > %s/reboot.update' %self.MAINDEST)
+		elif self.MODEL in ("vuzero" , "vusolose", "vuuno4k"):
+			cmdlist.append('echo "This file forces the update." > %s/force.update' %self.MAINDEST)
+		else:
+			cmdlist.append('echo "rename this file to "force" to force an update without confirmation" > %s/noforce' %self.MAINDEST)
 
-		if self.MODEL in ("gbquad", "gbquadplus", "gb800ue", "gb800ueplus", "gbultraue", "twinboxlcd", "twinboxlcdci", "singleboxlcd", "sf208", "sf228"):
+		if self.MODEL in ("gbquad4k"):
+			system('mv %s/boot.bin %s/boot.bin' %(self.WORKDIR, self.MAINDEST))
+			system('mv %s/rescue.bin %s/rescue.bin' %(self.WORKDIR, self.MAINDEST))
+
+		if self.MODEL in ("gbquad", "gbquadplus", "gb800ue", "gb800ueplus", "gbultraue", "gbultraueh", "twinboxlcd", "twinboxlcdci", "singleboxlcd", "sf208", "sf228"):
 			lcdwaitkey = '/usr/share/lcdwaitkey.bin'
 			lcdwarning = '/usr/share/lcdwarning.bin'
 			if path.exists(lcdwaitkey):
