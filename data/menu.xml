@@ -254,6 +254,7 @@ else:
 		<item weight="25" level="0" text="Power Timer" entryID="powertimer_edit"><screen module="PowerTimerEdit" screen="PowerTimerEditList" /></item>
 		<item weight="30" level="0" text="Restart" entryID="restart"><screen module="Standby" screen="TryQuitMainloop">2</screen></item>
 		<item weight="35" level="0" text="Restart Gui" entryID="restart_enigma"><screen module="Standby" screen="TryQuitMainloop">3</screen></item>
+		<item weight="40" level="0" text="Recovery Mode" requires="RecoveryMode" entryID="maintenance_mode"><screen module="Standby" screen="TryQuitMainloop">16</screen></item>
 		</menu>
 </menu>
 

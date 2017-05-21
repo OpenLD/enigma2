@@ -83,4 +83,8 @@ SystemInfo["CommonInterfaceCIDelay"] = fileCheck("/proc/stb/tsmux/rmx_delay")
 SystemInfo["CommonInterfaceSupportsHighBitrates"] = fileCheck("/proc/stb/tsmux/ci0_tsclk")
 SystemInfo["HaveMultiBoot"] = fileCheck("/boot/STARTUP") and getMachineBuild() not in ('gb7252')
 SystemInfo["HaveCISSL"] = fileCheck("/etc/ssl/certs/customer.pem") and fileCheck("/etc/ssl/certs/device.pem")
+SystemInfo["HaveTouchSensor"] = getBoxType() in ('dm520', 'dm525', 'dm900')
+SystemInfo["DefaultDisplayBrightness"] = getBoxType() == 'dm900' and 8 or 5
+SystemInfo["RecoveryMode"] = fileCheck("/proc/stb/fp/boot_mode")
 SystemInfo["HasMMC"] = HardwareInfo().get_device_model() in ('vusolo4k', 'hd51', 'hd52')
+SystemInfo["HDMIin"] = getMachineBuild() in ('inihdp', 'hd2400', 'et10000', 'dm7080', 'dm820', 'dm900', 'gb7252', 'vuultimo4k')
