@@ -2064,9 +2064,9 @@ PyObject * eDVBServicePlay::getHbbTVApplications()
 	return m_service_handler.getHbbTVApplications();
 }
 
-void eDVBServicePlay::getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids)
+void eDVBServicePlay::getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids, std::vector<std::string> &ecmdatabytes)
 {
-	m_service_handler.getCaIds(caids, ecmpids);
+	m_service_handler.getCaIds(caids, ecmpids, ecmdatabytes);
 }
 
 int eDVBServicePlay::getNumberOfTracks()
