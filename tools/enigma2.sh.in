@@ -59,6 +59,10 @@ if [ -x @bindir@/showiframe ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
 		@bindir@/showiframe @datadir@/backdrop.mvi
+	elif [ -f @sysconfdir@/enigma2/bootlogo.mvi ]; then
+		@bindir@/showiframe @sysconfdir@/enigma2/bootlogo.mvi
+	elif [ -f @datadir@/bootlogo.mvi ]; then
+		@bindir@/showiframe @datadir@/bootlogo.mvi
 	fi
 fi
 
@@ -114,13 +118,16 @@ if [ -e /etc/defaultsat.tar.gz ] && [ ! -e /etc/enigma2/lamedb ] && [ ! $stbchec
 	tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2
 fi
 
-sync
-
-# in case sysctl.conf is not properly loaded - load sysctl.conf here again...
-sysctl -p
-
 (sleep 2; echo "enigma2 is the main pvr application... adjust oom score!"; PID=$(pidof enigma2); \
 		[ -e /proc/$PID/oom_score_adj ] && echo "-999" > /proc/$PID/oom_score_adj || echo "-17" > /proc/$PID/oom_adj;) &
+
+# check for init_openld.sh to restart enigma2
+if [ -e /etc/init.d/init_openld.sh ]; then
+	chmod 755 /etc/init.d/init_openld.sh 2>/dev/null
+	sync && sleep 3; nohup sh /etc/init.d/init_openld.sh > /dev/null 2>&1 &
+fi
+
+sync
 
 if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.enabledebug=True" ]; then
 	RANDOMIZE1970=''
@@ -140,12 +147,6 @@ else
 	else
 		LD_PRELOAD=$LIBS @bindir@/enigma2
 	fi
-fi
-
-# check for init_openld.sh to restart enigma2
-if [ -e /etc/init.d/init_openld.sh ]; then
-	chmod 755 /etc/init.d/init_openld.sh 2>/dev/null
-	sync && sleep 5; nohup sh /etc/init.d/init_openld.sh > /dev/null 2>&1 &
 fi
 
 # enigma2 exit codes:
@@ -183,7 +184,15 @@ case $ret in
 		/sbin/reboot
 		;;
 	42)
-		python /usr/lib/enigma2/python/upgrade.pyo
+		if [ -e /usr/lib/enigma2/python/upgrade.pyo ]; then
+			python /usr/lib/enigma2/python/upgrade.pyo
+		else
+		# bind the console (when available)
+		[ -f /sys/class/vtconsole/vtcon1/bind ] && echo 1 > /sys/class/vtconsole/vtcon1/bind
+		opkg update 2> /dev/null
+		opkg upgrade 2>&1 | tee /home/root/ipkgupgrade.log
+		/sbin/reboot
+		fi
 		;;
 	43)
 		init 1
