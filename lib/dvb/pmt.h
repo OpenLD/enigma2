@@ -145,7 +145,7 @@ public:
 	int getDataDemux(ePtr<iDVBDemux> &demux);
 	int getDecodeDemux(ePtr<iDVBDemux> &demux);
 	void getAITApplications(std::map<int, std::string> &aitlist);
-	void getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids);
+	void getCaIds(std::vector<int> &caids, std::vector<int> &ecmpids, std::vector<std::string> &ecmdatabytes);
 	PyObject *getHbbTVApplications(void);
 
 	int getPVRChannel(ePtr<iDVBPVRChannel> &pvr_channel);
