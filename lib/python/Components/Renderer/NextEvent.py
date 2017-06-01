@@ -47,7 +47,7 @@ class NextEvent(Renderer, VariableText):
 				self.text = ""
 				return
 			ENext = ""
-			eventNext = self.epgcache.lookupEvent(['IBDCTSERNX', (ref.toString(), 1, -1)])
+			eventNext = self.epgcache.lookupEvent(['IBDCTSERNXM', (ref.toString(), 1, -1)])
 			if eventNext:
 				if eventNext[0][4]:
 					t = localtime(eventNext[0][1])
@@ -56,5 +56,4 @@ class NextEvent(Renderer, VariableText):
 						ENext = _("Siguiente evento: ") + ' ' + "%02d:%02d  %s\n%s" % (t[3], t[4], duration, eventNext[0][4])
 					else:
 						ENext = _("Next event: ") + ' ' + "%02d:%02d  %s\n%s" % (t[3], t[4], duration, eventNext[0][4])
-
 			self.text = ENext
