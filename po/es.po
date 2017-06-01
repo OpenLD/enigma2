@@ -6953,8 +6953,8 @@ msgstr[1] "Escaneo completado, %d canales encontrados"
 #, python-format
 msgid "Scanning - %d%% completed"
 msgid_plural "Scanning - %d%% completed"
-msgstr[0] "Escanenado - %d%% completado"
-msgstr[1] "Escanenado - %d%% completado"
+msgstr[0] "Escaneando - %d%% completado"
+msgstr[1] "Escaneando - %d%% completado"
 
 #, python-format
 msgid "%d channel found"
