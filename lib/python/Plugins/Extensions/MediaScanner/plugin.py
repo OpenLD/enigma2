@@ -91,9 +91,9 @@ def movielist_open(list, session, **kwargs):
 	from Screens.InfoBar import InfoBar
 	f = list[0]
 	if f.mimetype == "video/MP2T":
-		stype = 1
+		stype = eServiceReference.idDVB
 	else:
-		stype = 4097
+		stype = eServiceReference.idGS
 	if InfoBar.instance:
 		path = os.path.split(f.path)[0]
 		if not path.endswith('/'):
