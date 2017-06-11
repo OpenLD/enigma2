@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ##
 ##
-## Copyright (c) 2012-2016 OpenLD
+## Copyright (c) 2012-2017 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
@@ -34,6 +34,63 @@ import os
 import time
 import re
 
+def addspace(text):
+	if text:
+		text += "  "
+	return text
+
+def caidnames(caid, prov):
+	if caid  == '098C' and prov == '000000':name = 'SKY NDS V14'
+	elif caid == '09C4' and prov == '000000':name = 'SKY NDS V13'
+	elif caid == '09C7' and prov == '000000':name = 'KD G02/G09'
+	elif caid == '09AF' and prov == '000000':name = 'KabelKiosk'
+	elif caid == '1702' and prov == '000000':name = 'SKY BC S02'
+	elif caid == '1833' and prov == '000000':name = 'SKY(BTun)S02'
+	elif caid == '1722' and prov == '000000':name = 'KD D01/D02'
+	elif caid == '1802' and prov == '000000':name = 'TVCABO'
+	elif caid == '1802' and prov == '002011':name = 'TVCABO'
+	elif caid == '1802' and prov == '002111':name = 'TVCABO'
+	elif caid == '1802' and prov == '002113':name = 'TVCABO'
+	elif caid == '1802' and prov == '004801':name = 'TVCABO'
+	elif caid == '1802' and prov == '004901':name = 'TVCABO'
+	elif caid == '1810' and prov == '000000':name = 'Movistar+'
+	elif caid == '1810' and prov == '004101':name = 'Movistar+'
+	elif caid == '1810' and prov == '004001':name = 'Movistar+'
+	elif caid == '1815' and prov == '000000':name = 'UPC Direct'
+	elif caid == '1830' and prov == '000000':name = 'HD+ HD01'
+	elif caid == '1843' and prov == '000000':name = 'HD+ HD02'
+	elif caid == '1834' and prov == '000000':name = 'KD D02/D09'
+	elif caid == '098E' and prov == '000000':name = 'UMKBW V23'
+	elif caid == '1831' and prov == '000000':name = 'UMKBW UM1/3'
+	elif caid == '1838' and prov == '000000':name = 'UMKBW UM02'
+	elif caid == '183D' and prov == '000000':name = 'Mediaset Premium'
+	elif caid == '183E' and prov == '000000':name = 'Mediaset Premium'
+	elif caid == '0D95' and prov == '000004':name = 'ORF-CW'
+	elif caid == '0648' and prov == '000000':name = 'ORF-Irdeto'
+	elif caid == '0D96' and prov == '000004':name = 'SkyLink CZ'
+	elif caid == '0500' and prov == '023800':name = 'SRGv2'
+	elif caid == '0500' and prov == '040810':name = 'SRGv4'
+	elif caid == '0500' and prov == '032500':name = 'BRAZZERS TV'
+	elif caid == '0500' and prov == '042700':name = 'MCT/SCT'
+	elif caid == '0500' and prov == '042800':name = 'BisTV'
+	elif caid == '0500' and prov == '043800':name = 'RedlightHD'
+	elif caid == '0500' and prov == '050800':name = 'SRGv5'
+	elif caid == '0500' and prov == '050F00':name = 'Dorcel TV'
+	elif caid == '0500' and prov == '030B00':name = 'TNTSAT'
+	elif caid == '0500' and prov == '032940':name = 'CSAT'
+	elif caid == '0B00' and prov == '000000':name = 'Conax Card'
+	elif caid == '0BAA' and prov == '000000':name = 'Conax Card'
+	elif caid == '0B01' and prov == '000000':name = 'UPC Direct'
+	elif caid == '0100' and prov == '00006A':name = 'C+ Nederland'
+	elif caid == '0100' and prov == '00006C':name = 'TV Vlaanderen'
+	elif caid == '0100' and prov == '004106':name = 'Movistar+'
+	elif caid == '0100' and prov == '004108':name = 'Movistar+'
+	elif caid == '0100' and prov == '005001':name = 'Movistar+'
+	elif caid == '0100' and prov == '005211':name = 'Meo'
+	elif caid == '0100' and prov == '005221':name = 'Meo'
+	elif caid == '0100' and prov == '005225':name = 'Meo'
+	else: name = ''
+	return name
 
 class LdExtraInfo(Poll, Converter, object):
 	ecmDict = { }
@@ -470,8 +527,12 @@ class LdExtraInfo(Poll, Converter, object):
 		return res
 
 	def createCryptoSpecial(self, info):
+		service = self.source.service
+		Is_Stream = service.streamed()
 		is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
-		if is_crypted != 1:
+		if Is_Stream:
+			return _("IPTV")
+		elif is_crypted != 1:
 			return _("Free To Air")
 		caid_name = _("Encrypt")
 		try:
@@ -485,8 +546,12 @@ class LdExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createCryptoNameCaid(self, info):
+		service = self.source.service
+		Is_Stream = service.streamed()
 		is_crypted = info.getInfo(iServiceInformation.sIsCrypted)
-		if is_crypted != 1:
+		if Is_Stream:
+			return _("IPTV")
+		elif is_crypted != 1:
 			return _("Free To Air")
 		caid_name = _("Encrypt")
 		try:
@@ -536,12 +601,23 @@ class LdExtraInfo(Poll, Converter, object):
 		return "Pid: %d-%d:%05d:%04d:%04d:%04d" % (onid, tsid, sidpid, vpid, apid, pcrpid)
 
 	def createTransponderInfo(self, fedata, feraw):
-		if "DVB-T" in feraw.get("tuner_type"):
+		if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
 			tmp = addspace(self.createChannelNumber(fedata, feraw)) + self.createFrequency(fedata) + "/" + self.createPolarization(fedata)
 		else:
 			tmp = addspace(self.createFrequency(fedata)) + addspace(self.createPolarization(fedata))
 		return addspace(self.createTunerSystem(fedata)) + tmp + addspace(self.createSymbolRate(fedata, feraw)) + addspace(self.createFEC(fedata, feraw)) \
 			+ addspace(self.createModulation(fedata)) + self.createOrbPos(feraw)
+
+	def createTransponderInfo2(self, fedata, feraw):
+		if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
+			tmp = addspace(self.createChannelNumber(fedata, feraw)) + self.createFrequency(fedata) + "/" + self.createPolarization(fedata)
+		else:
+			tmp = addspace(self.createFrequency(fedata)) + addspace(self.createPolarization(fedata))
+		if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
+			return tmp + addspace(self.createSymbolRate(fedata, feraw))
+		else:
+			return tmp + addspace(self.createSymbolRate(fedata, feraw)) + addspace(self.createFEC(fedata, feraw)) \
+				+ addspace(self.createModulation(fedata)) + self.createOrbPos(feraw)
 
 	def createFrequency(self, feraw):
 		frequency = feraw.get("frequency")
@@ -556,7 +632,7 @@ class LdExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createSymbolRate(self, fedata, feraw):
-		if "DVB-T" in feraw.get("tuner_type"):
+		if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
 			bandwidth = fedata.get("bandwidth")
 			if bandwidth:
 				return bandwidth
@@ -573,7 +649,7 @@ class LdExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createFEC(self, fedata, feraw):
-		if "DVB-T" in feraw.get("tuner_type"):
+		if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
 			code_rate_lp = fedata.get("code_rate_lp")
 			code_rate_hp = fedata.get("code_rate_hp")
 			if code_rate_lp and code_rate_hp:
@@ -745,7 +821,6 @@ class LdExtraInfo(Poll, Converter, object):
 				if available_caids:
 					for cs in self.caid_data:
 						caidlist[cs] = (self.caid_data.get(cs),0)
-
 					for caid in available_caids:
 						c = "%x" % int(caid)
 						if len(c) == 3:
@@ -753,7 +828,6 @@ class LdExtraInfo(Poll, Converter, object):
 						c = c[:2].upper()
 						if self.caid_data.has_key(c):
 							caidlist[c] = (self.caid_data.get(c),1)
-
 					ecm_info = self.GetEcmInfo2()
 					if ecm_info:
 						emu_caid = ecm_info.get("caid", "")
@@ -791,6 +865,30 @@ class LdExtraInfo(Poll, Converter, object):
 					caid = caid.lstrip("0x")
 					caid = caid.upper()
 					caid = caid.zfill(4)
+					caid = "%s" % caid
+
+					# prov
+					prov = ecm_info.get("prov", "")
+					prov = prov.lstrip("0x")
+					prov = prov.upper()
+					if prov == '':
+					 prov = ''
+					 prov = "%s" % prov.zfill(6)
+					else:
+					 prov = prov.zfill(6)
+					 prov = "%s" % prov
+
+					#provid cccam
+					provid = ecm_info.get("provid", "")
+					provid = provid.lstrip("0x")
+					provid = provid.upper()
+					provid = provid.zfill(6)
+					provid = "%s" % provid
+					
+					#provider cccam
+					provider = ecm_info.get("provider", "")
+					provider = "%s" % provider
+					provider = provider[:25]
 				else:
 					return ""
 
@@ -1003,23 +1101,31 @@ class LdExtraInfo(Poll, Converter, object):
 			if is_crypted != 1:
 				return ''
 			data = self.GetEcmInfo2()
-			return "Provider: %s" % (data['provider'])
+			name = caidnames(caid, provid)
+			name = name[:15]
+			return "Provider: %s %s " % (data['provider'], name)
 
 		elif self.type == "EcmInfo2":
 			if is_crypted != 1:
 				return ''
 			data = self.GetEcmInfo2()
+			name = caidnames(caid, provid)
+			name = name[:15]
 			if data['using'] == "newcamd" or data['using'] == "NewCamd":
-				return "Provider: %s" % (data['provider'])
+				return "Provider: %s %s " % (data['provider'], name)
 			elif data['using'] == "CCcam" or data['using'] == "CCcam-s2s":
-				return "Provider: %s" % (data['provider'])
+				return "Provider: %s %s " % (data['provider'], name)
 			elif data['using'] == "gbox" or data['address'] == "127.0.0.1:*":
-				return "Provider: %s" % (data['provider'])
+				return "Provider: %s %s " % (data['provider'], name)
 			elif data['decode'] == "Network" or data['decode'] == "Local":
 				ecm_info = self.GetEcmInfo2()
-				return "CAID: %s     BoxId: %s" % (caid, data['provider'])
+				return "CAID: %s     BoxId: %s %s " % (caid, data['provider'], name)
 			else:
-				return "CAID: %s     Provider: %s" % (data['caid'], data['provider'])
+				if prov == '000000':
+					return "CAID: %s     Provider: %s " % (data['caid'], name)
+				else:
+					return "CAID: %s     Provider: %s %s " % (data['caid'], data['provider'], name)
+			return ""
 
 		elif self.type == "E-C-N":
 			if is_crypted != 1:
@@ -1095,13 +1201,26 @@ class LdExtraInfo(Poll, Converter, object):
 				+ addspace(self.createCryptoBar(info)) + self.current_source + "\n" \
 				+ addspace(self.createCryptoSpecial(info)) + addspace(self.createVideoCodec(info)) + self.createResolution(info)
 
+		if self.type == "AllSimpleLD":
+			self.getCryptoInfo(info)
+			if int(config.usage.show_cryptoinfo.value) > 0:
+				if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
+					return addspace(self.createProviderName(info)) + self.createTransponderInfo2(fedata,feraw)
+				else:
+					return addspace(self.createProviderName(info)) + self.createTransponderInfo2(fedata,feraw) + '  (' + self.createTransponderName(feraw) + ') '
+			else:
+				if "DVB-T" in feraw.get("tuner_type") or "DVB-T2" in feraw.get("tuner_type"):
+					return addspace(self.createProviderName(info)) + self.createTransponderInfo2(fedata,feraw)
+				else:
+					return addspace(self.createProviderName(info)) + self.createTransponderInfo2(fedata,feraw) + '  (' + self.createTransponderName(feraw) + ') '
+
 		if self.type == "ServiceInfo":
 			return addspace(self.createProviderName(info)) + addspace(self.createTunerSystem(fedata)) + addspace(self.createFrequency(feraw)) + addspace(self.createPolarization(fedata)) \
 			+ addspace(self.createSymbolRate(fedata, feraw)) + addspace(self.createFEC(fedata, feraw)) + addspace(self.createModulation(fedata)) + addspace(self.createOrbPos(feraw)) + addspace(self.createTransponderName(feraw))\
 			+ addspace(self.createVideoCodec(info)) + self.createResolution(info)
 
 		if self.type == "TransponderInfo2line":
-			return addspace(self.createProviderName(info)) + addspace(self.createTunerSystem(fedata)) + addspace(self.createTransponderName(feraw)) + '\n'\
+			return addspace(self.createProviderName(info)) + addspace(self.createTunerSystem(fedata)) + addspace(self.createTransponderName(feraw)) + "\n" \
 			+ addspace(self.createFrequency(fedata)) + addspace(self.createPolarization(fedata))\
 			+ addspace(self.createSymbolRate(fedata, feraw)) + self.createModulation(fedata) + '-' + addspace(self.createFEC(fedata, feraw))
 
@@ -1116,6 +1235,9 @@ class LdExtraInfo(Poll, Converter, object):
 
 		if self.type == "TransponderInfo":
 			return self.createTransponderInfo(fedata,feraw)
+
+		if self.type == "TransponderInfo2":
+			return self.createTransponderInfo2(fedata,feraw)
 
 		if self.type == "TransponderFrequency":
 			return self.createFrequency(feraw)
