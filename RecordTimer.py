@@ -1,29 +1,32 @@
 from boxbranding import getMachineBrand, getMachineName
-import xml.etree.cElementTree
-from datetime import datetime
-from time import localtime, strftime, ctime, time
-from bisect import insort
-from sys import maxint
 import os
 
-from enigma import eEPGCache, getBestPlayableServiceReference, eStreamServer, eServiceReference, iRecordableService, quitMainloop, eActionMap, setPreferredTuner, eServiceCenter
+from enigma import eEPGCache, getBestPlayableServiceReference, eStreamServer, \
+	eServiceReference, iRecordableService, quitMainloop, eActionMap, setPreferredTuner, eServiceCenter, pNavigation
 
 from Components.config import config
 from Components import Harddisk
 from Components.UsageConfig import defaultMoviePath
 from Components.SystemInfo import SystemInfo
 from Components.TimerSanityCheck import TimerSanityCheck
+
 import Components.RecordingConfig
 Components.RecordingConfig.InitRecordingConfig()
 from Screens.MessageBox import MessageBox
 import Screens.Standby
+import Screens.InfoBar
 from Tools import Directories, Notifications, ASCIItranslit, Trashcan
 from Tools.XMLTools import stringToXML
+
 import timer
+import xml.etree.cElementTree
 import NavigationInstance
 from ServiceReference import ServiceReference
-from enigma import pNavigation
 
+from datetime import datetime
+from time import localtime, strftime, ctime, time
+from bisect import insort
+from sys import maxint
 
 # ok, for descriptions etc we have:
 # service reference	 (to get the service name)
@@ -1011,7 +1014,10 @@ class RecordTimerEntry(timer.TimerEntry, object):
 			# TODO: this has to be done.
 		elif event == iRecordableService.evStart:
 			text = _("A recording has been started:\n%s") % self.name
-			notify = config.usage.show_message_when_recording_starts.value and not Screens.Standby.inStandby
+			notify = config.usage.show_message_when_recording_starts.value and \
+				not Screens.Standby.inStandby and \
+				Screens.InfoBar.InfoBar.instance and \
+				Screens.InfoBar.InfoBar.instance.execing
 			if self.dirnameHadToFallback:
 				text = '\n'.join((text, _("Please note that the previously selected media could not be accessed and therefore the default directory is being used instead.")))
 				notify = True
@@ -1208,11 +1214,15 @@ class RecordTimer(timer.Timer):
 			AddPopup(_("Timer overlap in timers.xml detected!\nPlease recheck it!") + timer_text, type = MessageBox.TYPE_ERROR, timeout = 0, id = "TimerLoadFailed")
 
 	def saveTimer(self):
-		list = ['<?xml version="1.0" ?>\n', '<timers>\n']
+		list = []
+
+		list.append('<?xml version="1.0" ?>\n')
+		list.append('<timers>\n')
 
 		for timer in self.timer_list + self.processed_timers:
 			if timer.dontSave:
 				continue
+
 			list.append('<timer')
 			list.append(' begin="' + str(int(timer.begin)) + '"')
 			list.append(' end="' + str(int(timer.end)) + '"')
@@ -1263,6 +1273,7 @@ class RecordTimer(timer.Timer):
 			file.write(x)
 		file.flush()
 
+		import os
 		os.fsync(file.fileno())
 		file.close()
 		os.rename(self.Filename + ".writing", self.Filename)

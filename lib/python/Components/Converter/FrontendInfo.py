@@ -33,6 +33,7 @@ class FrontendInfo(Converter, object):
 			type = type.split(",")
 			self.space_for_tuners = len(type) > 1 and int(type[1]) or 10
 			self.space_for_tuners_with_spaces = len(type) > 2 and int(type[2]) or 6
+			self.show_all_non_link_tuners = True if len(type) <= 3 else type[3] == "True"
 		elif type == "USE_TUNERS_STRING":
 			self.type = self.USE_TUNERS_STRING
 		else:
@@ -68,7 +69,7 @@ class FrontendInfo(Converter, object):
 						color = "\c0000??00"
 					elif self.source.tuner_mask & 1 << n.slot:
 						color = "\c00??????"
-					elif len(nimmanager.nim_slots) <= self.space_for_tuners:
+					elif len(nimmanager.nim_slots) <= self.space_for_tuners or self.show_all_non_link_tuners and not (n.isFBCLink() or n.internally_connectable):
 						color = "\c007?7?7?"
 					else:
 						continue
@@ -126,11 +127,11 @@ class FrontendInfo(Converter, object):
 				return self.range
 		elif self.type == self.TUNER_TYPE:
 			type = self.source.frontend_type
-			if type == 'DVB-S':
+			if type == 'DVB-S' or type == 'DVB-S2' or type == 'DVB-S2X':
 				return 0
-			elif type == 'DVB-C':
+			elif type == 'DVB-C' or type == 'DVB-C2':
 				return 1
-			elif type == 'DVB-T':
+			elif type == 'DVB-T' or type == 'DVB-T2':
 				return 2
 			elif type == 'ATSC':
 				return 3

@@ -639,7 +639,7 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 			self.savePlaylistOnExit = False
 			self.isAudioCD = True
 			for x in self.cdAudioTrackFiles:
-				ref = eServiceReference(4097, 0, x)
+				ref = eServiceReference(eServiceReference.idGST, 0, x)
 				self.playlist.addFile(ref)
 			try:
 				from Plugins.Extensions.CDInfo.plugin import Query
@@ -771,7 +771,7 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 				if recursive:
 					if x[0][0] != directory:
 						self.copyDirectory(x[0][0])
-			elif filelist.getServiceRef() and filelist.getServiceRef().type == 4097:
+			elif filelist.getServiceRef() and filelist.getServiceRef().type == eServiceReference.idGST:
 				self.playlist.addFile(x[0][0])
 		self.playlist.updateList()
 
@@ -850,7 +850,7 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 					inst = self.filelist.getSelection()[0]
 					if isinstance(inst, eServiceReference):
 						path = inst.getPath()
-						service = eServiceReference(4097, 0, path)
+						service = eServiceReference(eServiceReference.idGST, 0, path)
 						self.playlist.addFile(service)
 						self.playlist.updateList()
 						if len(self.playlist) == 1:
@@ -1090,9 +1090,9 @@ def filescan_open(list, session, **kwargs):
 
 	for file in list:
 		if file.mimetype == "video/MP2T":
-			stype = 1
+			stype = eServiceReference.idDVB
 		else:
-			stype = 4097
+			stype = eServiceReference.idGST
 		ref = eServiceReference(stype, 0, file.path)
 		mp.playlist.addFile(ref)
 
@@ -1143,9 +1143,9 @@ def movielist_open(list, session, **kwargs):
 	from Screens.InfoBar import InfoBar
 	f = list[0]
 	if f.mimetype == "video/MP2T":
-		stype = 1
+		stype = eServiceReference.idDVB
 	else:
-		stype = 4097
+		stype = eServiceReference.idGST
 	if InfoBar.instance:
 		path = os.path.split(f.path)[0]
 		if not path.endswith('/'):

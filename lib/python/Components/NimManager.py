@@ -2045,16 +2045,23 @@ def InitNimManager(nimmgr, update_slots = []):
 		configElement.save()
 		feid = configElement.feid
 		eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[feid].frontend_id, nimmgr.nim_slots[feid].getType())
-		frontend = eDVBResourceManager.getInstance().allocateRawChannel(feid).getFrontend()
-		if iDVBFrontend.dvb_api_version >= 5:
-			print "[InitNimManager] api >=5"
+		raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
+		if raw_channel is None:
+			print "[ERROR] no raw channel, type change failed"
+			return False
+		frontend = raw_channel.getFrontend()
+		if frontend is None:
+			print "[ERROR] no frontend, type change failed"
+			return False
+		if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and iDVBFrontend.dvb_api_version >= 5:
+			print "[InitNimManager] api >=5 and new style tuner driver"
 			if frontend:
 				system = configElement.getText()
 				if system in ('DVB-C','DVB-C2'):
 					ret = frontend.changeType(iDVBFrontend.feCable)
 				elif system in ('DVB-T','DVB-T2'):
 					ret = frontend.changeType(iDVBFrontend.feTerrestrial)
-				elif system in ('DVB-S','DVB-S2'):
+				elif system in ('DVB-S','DVB-S2', 'DVB-S2X'):
 					ret = frontend.changeType(iDVBFrontend.feSatellite)
 				elif system == 'ATSC':
 					ret = frontend.changeType(iDVBFrontend.feATSC)
@@ -2065,8 +2072,15 @@ def InitNimManager(nimmgr, update_slots = []):
 			else:
 				print "[InitNimManager] %d: tunerTypeChange to '%s' failed (BUSY)" %(feid, configElement.getText())
 		else:
-			print "[InitNimManager] api <5"
-			frontend = eDVBResourceManager.getInstance().allocateRawChannel(feid).getFrontend()
+			print "[InitNimManager] api <5 or old style tuner driver"
+			raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
+			if raw_channel is None:
+				print "[ERROR] no raw channel, type change failed"
+				return False
+			frontend = raw_channel.getFrontend()
+			if frontend is None:
+				print "[ERROR] no frontend, type change failed"
+				return False
 			if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
 				print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
 				InitNimManager(nimmgr)
@@ -2098,6 +2112,7 @@ def InitNimManager(nimmgr, update_slots = []):
 					if initial:
 						print "tunerTypeChanged force update setting"
 						nimmgr.sec.update()
+					configElement.save()
 				else:
 					print "[InitNimManager] tuner type is already already %d" %cur_type
 

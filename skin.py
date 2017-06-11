@@ -4,7 +4,8 @@ import xml.etree.cElementTree
 import os
 
 profile("LOAD:enigma_skin")
-from enigma import eSize, ePoint, eRect, gFont, eWindow, eLabel, ePixmap, eWindowStyleManager, addFont, gRGB, eWindowStyleSkinned, getDesktop
+from enigma import eSize, ePoint, eRect, gFont, eWindow, eLabel, ePixmap, eWindowStyleManager, \
+	addFont, gRGB, eWindowStyleSkinned, getDesktop, eListboxPythonStringContent, eListboxPythonConfigContent
 from Components.config import ConfigSubsection, ConfigText, config, ConfigYesNo, ConfigSelection, ConfigNothing
 from Components.Converter.Converter import Converter
 from Components.Sources.Source import Source, ObsoleteSource
@@ -85,7 +86,9 @@ def skin_user_skinname():
 
 # example: loadSkin("nemesis_greenline/skin.xml")
 config.skin = ConfigSubsection()
-DEFAULT_SKIN = "MetrixHD/skin.xml"
+DEFAULT_SKIN = "SimpleLD/skin.xml"
+if not fileExists(resolveFilename(SCOPE_SKIN, DEFAULT_SKIN)):
+	DEFAULT_SKIN = "MetrixHD/skin.xml"
 if not fileExists(resolveFilename(SCOPE_SKIN, DEFAULT_SKIN)):
 	# in that case, fallback to Magic (which is an SD skin)
 	DEFAULT_SKIN = "skin.xml"
@@ -202,6 +205,20 @@ def parseCoordinate(s, e, size=0, font=None):
 	#	return 0 # shadowoffset might have negative value
 	return int(val)  # make sure an integer value is returned
 
+def parsePercent(val, base):
+	return int(val.replace("%", "")) / 100 * base
+
+def evalPos(pos, wsize, ssize, scale):
+	if pos == "center":
+		pos = (ssize - wsize) / 2
+	elif pos == "max":
+		pos = ssize - wsize
+	elif pos.endswith("%"):
+		pos = parsePercent(pos, ssize - wsize)
+	else:
+		pos = int(pos) * scale[0] / scale[1]
+	return int(pos)
+
 def getParentSize(object, desktop):
 	size = eSize()
 	if object:
@@ -256,6 +273,12 @@ def parseColor(s):
 		except:
 			raise SkinError("color '%s' must be #aarrggbb or valid named color" % s)
 	return gRGB(int(s[1:], 0x10))
+
+def parseValue(str):
+	try:
+		return int(str)
+	except:
+		raise SkinError("value '%s' is not integer" % (str))
 
 def collectAttributes(skinAttributes, node, context, skin_path_prefix=None, ignore=(), filenames=frozenset(("pixmap", "pointer", "seek_pointer", "backgroundPixmap", "selectionPixmap", "sliderPixmap", "scrollbarbackgroundPixmap"))):
 	# walk all attributes
@@ -329,7 +352,7 @@ def cachemenu():
 		ptr = loadPixmap(value, desktop)
 		pngcache.append((value,ptr))
 try:
-	if config.skin.primary_skin.value == "MetrixHD/skin.xml" or config.skin.primary_skin.value == DEFAULT_SKIN:
+	if config.skin.primary_skin.value == "SimpleLD/skin.xml" or config.skin.primary_skin.value == "MetrixHD/skin.xml" or config.skin.primary_skin.value == DEFAULT_SKIN:
 		cachemenu()
 except:
 	print "fail cache main menu"
@@ -676,6 +699,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 		style.setTitleFont(font)
 		style.setTitleOffset(offset)
 		#print "  ", font, offset
+
 		for borderset in windowstyle.findall("borderset"):
 			bsName = str(borderset.attrib.get("name"))
 			for pixmap in borderset.findall("pixmap"):
@@ -689,6 +713,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 					png = loadPixmap(pngfile, desktop)
 					style.setPixmap(eWindowStyleSkinned.__dict__[bsName], eWindowStyleSkinned.__dict__[bpName], png)
 				#print "  borderset:", bpName, filename
+
 		for color in windowstyle.findall("color"):
 			get_attr = color.attrib.get
 			colorType = get_attr("name")
@@ -697,10 +722,21 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 				style.setColor(eWindowStyleSkinned.__dict__["col" + colorType], color)
 			except:
 				raise SkinError("Unknown color %s" % colorType)
-				#pass
-			#print "  color:", type, color
+
+		for listfont in windowstyle.findall("listfont"):
+			get_attr = listfont.attrib.get
+			fontType = get_attr("type")
+			fontSize = int(get_attr("size"))
+			fontFace = get_attr("font")
+			try:
+				Log.i("########### ADDING %s: %s" %(fontType, fontSize))
+				style.setListFont(eWindowStyleSkinned.__dict__["listFont" + fontType], fontSize, fontFace)
+			except:
+				raise SkinError("Unknown listFont %s" % (fontType))
+
 		x = eWindowStyleManager.getInstance()
 		x.setStyle(style_id, style)
+
 	for margin in skin.findall("margin"):
 		style_id = margin.attrib.get("id")
 		if style_id:
@@ -723,6 +759,12 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 		# the "desktop" parameter is hardcoded to the UI screen, so we must ask
 		# for the one that this actually applies to.
 		getDesktop(style_id).setMargins(r)
+
+	for components in skin.findall("components"):
+		for component in components.findall("component"):
+			componentSizes.apply(component.attrib)
+			for template in component.findall("template"):
+				componentSizes.addTemplate(component.attrib, template.text)
 
 dom_screens = {}
 
@@ -780,6 +822,56 @@ def loadSkinData(desktop):
 				elem.clear()
 	# no longer needed, we know where the screens are now.
 	del dom_skins
+
+def lookupScreen(name, style_id):
+	for (path, skin) in dom_skins:
+		# first, find the corresponding screen element
+		for x in skin.findall("screen"):
+			if x.attrib.get('name', '') == name:
+				screen_style_id = x.attrib.get('id', '-1')
+				if screen_style_id == '-1' and name.find('ummary') > 0:
+					screen_style_id = '1'
+				if (style_id != 2 and int(screen_style_id) == -1) or int(screen_style_id) == style_id:
+					return x, path
+	return None, None
+
+class WidgetGroup():
+	def __init__(self, screen):
+		self.children = []
+		self._screen = screen
+		self.visible = 1
+
+	def append(self, child):
+		self.children.append(child)
+
+	def hide(self):
+		self.visible = 0
+		for child in self.children:
+			if isinstance(child, additionalWidget):
+				child.instance.hide()
+			elif isinstance(child, basestring):
+				self._screen[child].hide()
+			else:
+				child.hide()
+
+	def show(self):
+		self.visible = 1
+		for child in self.children:
+			if isinstance(child, additionalWidget):
+				child.instance.show()
+			elif isinstance(child, basestring):
+				self._screen[child].show()
+			else:
+				child.show()
+
+	def execBegin(self):
+		pass
+
+	def execEnd(self):
+		pass
+
+	def destroy(self):
+		pass
 
 class additionalWidget:
 	def __init__(self):
@@ -871,6 +963,53 @@ class SkinContextStack(SkinContext):
 				pos = (self.x + parseCoordinate(pos[0], self.w, size[0], font), self.y + parseCoordinate(pos[1], self.h, size[1], font))
 		return SizeTuple(pos), SizeTuple(size)
 
+class ComponentSizes():
+	CONFIG_LIST = "ConfigList"
+	CHOICELIST = "ChoiceList"
+	FILE_LIST = "FileList"
+	MULTI_FILE_SELECT_LIST = "MultiFileSelectList"
+	HELP_MENU_LIST = "HelpMenuList"
+	PARENTAL_CONTROL_LIST = "ParentalControlList"
+	SELECTION_LIST = "SelectionList"
+	SERVICE_LIST = "ServiceList"
+	SERVICE_INFO_LIST = "ServiceInfoList"
+	TIMER_LIST = "TimerList"
+	MOVIE_LIST = "MovieList"
+	TIMELINE_TEXT = "TimelineText"
+	ITEM_HEIGHT = "itemHeight"
+	ITEM_WIDTH = "itemWidth"
+	TEMPLATE = "template"
+
+	def __init__(self, style_id = 0):
+		self.components = {}
+
+	def apply(self, attribs):
+		values = {}
+		key = None
+		for a in attribs.items():
+			if a[0] == "type":
+				key = a[1]
+			else:
+				values[a[0]] = int(a[1])
+		if key:
+			self.components[key] = values
+
+	def addTemplate(self, attribs, template):
+		key = attribs.get("type", None)
+		if key:
+			self.components[key][self.TEMPLATE] = template.strip()
+
+	def __getitem__(self, component_id):
+		return component_id in self.components and self.components[component_id] or {}
+
+	def itemHeight(self, component_id, default=30):
+		return component_id in self.components and self.components[component_id].get(self.ITEM_HEIGHT, default) or default
+
+	def template(self, component_id):
+		return component_id in self.components and self.components[component_id].get(self.TEMPLATE, None) or None
+
+componentSizes = ComponentSizes()
+
 def readSkin(screen, skin, names, desktop):
 	if not isinstance(names, list):
 		names = [names]
@@ -910,9 +1049,11 @@ def readSkin(screen, skin, names, desktop):
 			screen.parsedSkin = myscreen
 	if myscreen is None:
 		print "[SKIN] No skin to read..."
-		myscreen = screen.parsedSkin = xml.etree.cElementTree.fromstring("<screen></screen>")
+		emptySkin = "<screen></screen>"
+		myscreen = screen.parsedSkin = xml.etree.cElementTree.fromstring(emptySkin)
 
 	screen.skinAttributes = [ ]
+
 	skin_path_prefix = getattr(screen, "skin_path", path)
 
 	context = SkinContextStack()
@@ -927,6 +1068,7 @@ def readSkin(screen, skin, names, desktop):
 
 	screen.additionalWidgets = [ ]
 	screen.renderer = [ ]
+
 	visited_components = set()
 
 	# now walk all widgets and stuff
@@ -1094,3 +1236,41 @@ def readSkin(screen, skin, names, desktop):
 	# things around.
 	screen = None
 	visited_components = None
+
+class TemplatedColors():
+	def __init__(self, style_id = 0):
+		x = eWindowStyleManager.getInstance()
+		style = x.getStyle(style_id)
+		self.colors = {}
+		for color_name in ("Background", "LabelForeground", "ListboxForeground", "ListboxSelectedForeground", "ListboxBackground", "ListboxSelectedBackground", "ListboxMarkedForeground", "ListboxMarkedAndSelectedForeground", "ListboxMarkedBackground", "ListboxMarkedAndSelectedBackground", "WindowTitleForeground", "WindowTitleBackground"):
+			color = gRGB(0)
+			style.getColor(eWindowStyleSkinned.__dict__["col"+color_name], color)
+			self.colors[color_name] = color
+
+	def __getitem__(self, color_name):
+		return color_name in self.colors and self.colors[color_name] or gRGB(0)
+
+class TemplatedListFonts():
+	BIGGER = "Bigger"
+	BIG = "Big"
+	MEDIUM = "Medium"
+	SMALL = "Small"
+	SMALLER = "Smaller"
+
+	def __init__(self, style_id = 0):
+		x = eWindowStyleManager.getInstance()
+		style = x.getStyle(style_id)
+		self.sizes = {}
+		self.faces = {}
+		for font_id in (self.BIGGER, self.BIG, self.MEDIUM, self.SMALL, self.SMALLER):
+			size = int(style.getListFontSize(eWindowStyleSkinned.__dict__["listFont" + font_id]))
+			face = style.getListFontFace(eWindowStyleSkinned.__dict__["listFont" + font_id])
+			Log.i("%s: %s, %s" %(font_id, size, face))
+			self.sizes[font_id] = size
+			self.faces[font_id] = face
+
+	def size(self, font_id):
+		return font_id in self.sizes and self.sizes[font_id] or 20
+
+	def face(self, font_id):
+		return font_id in self.faces and self.faces[font_id] or "Regular"

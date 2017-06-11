@@ -1274,7 +1274,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			# so we need the right id to play now the mp3-file
 			if current.type == 4116:
 				path = current.getPath()
-				service = eServiceReference(4097, 0, path)
+				service = eServiceReference(eServiceReference.idGST, 0, path)
 				self.session.nav.playService(service)
 			else:
 				self.session.nav.playService(current)
