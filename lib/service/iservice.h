@@ -21,9 +21,7 @@ public:
 		idDVB,
 		idFile,
 		idUser=0x1000,
-		idGST=0x1001,	// == 4097
-		idDVD=0x1111,
-		idServiceMP3=0x1001	// == 4097
+		idServiceMP3=0x1001
 	};
 	int type;
 
@@ -90,20 +88,11 @@ public:
 #ifndef SWIG
 	std::string name;
 	int number;
-	std::string userAgent;
-	stringMap transportHeaders;
 #endif
 	std::string getName() const { return name; }
 	void setName( const std::string &n ) { name=n; }
-
 	int getChannelNum() const { return number; }
 	void setChannelNum(const int n) { number = n; }
-
-	void setUserAgent(const std::string &uA) { userAgent = uA; }
-	const std::string getUserAgent() { return userAgent; }
-
-	void setTransportHeaders(const stringMap &headers) { transportHeaders = headers; }
-	const stringMap getTransportHeaders() { return transportHeaders; }
 
 	eServiceReference()
 		: type(idInvalid), flags(0)
@@ -860,7 +849,6 @@ class iStreamedService: public iObject
 public:
 	virtual ePtr<iStreamBufferInfo> getBufferCharge()=0;
 	virtual int setBufferSize(int size)=0;
-	virtual void setTransportHeaders(stringMap headers)=0;
 };
 SWIG_TEMPLATE_TYPEDEF(ePtr<iStreamedService>, iStreamedServicePtr);
 
