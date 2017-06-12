@@ -4,7 +4,6 @@
 class eWindow;
 class eSize;
 class gFont;
-class gRGBA;
 
 #include <lib/base/object.h>
 
