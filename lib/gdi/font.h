@@ -28,10 +28,7 @@ class FontRenderClass;
 class Font;
 class gDC;
 class gFont;
-class gRegion;
 class gRGB;
-class gRGBA;
-class gSurface;
 
 #endif
 class fontRenderClass
@@ -171,7 +168,6 @@ public:
 	int getLineCount(void) const { return lineCount; }
 
 	void blit(gDC &dc, const ePoint &offset, const gRGB &background, const gRGB &foreground, bool border = false);
-	void blit(gSurface *surface, const gRegion &clip, const ePoint &offset, const gRGBA &background, const gRGBA &foreground);
 
 	enum
 	{
