@@ -41,12 +41,10 @@ gdiinclude_HEADERS = \
 	gdi/gfont.h \
 	gdi/glcddc.h \
 	gdi/gpixmap.h \
-	gdi/gpixelformat.h \
 	gdi/grc.h \
 	gdi/lcd.h \
 	gdi/picexif.h \
 	gdi/picload.h \
-	gdi/rgba.h \
 	gdi/region.h
 
 if HAVE_LIBSDL
