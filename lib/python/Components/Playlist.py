@@ -35,7 +35,7 @@ class PlaylistIO:
 			for proto in self.REMOTE_PROTOS:
 				if entry.startswith(proto):
 					path = entry
-		ref = eServiceReference(eServiceReference.idGST, 0, path)
+		ref = eServiceReference(4097, 0, path)
 		return ServiceReference(ref)
 
 class PlaylistIOInternal(PlaylistIO):
