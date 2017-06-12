@@ -49,7 +49,7 @@ public:
 	virtual void drawFrame(gPainter &painter, const eRect &frame, int type) = 0;
 	virtual RESULT getFont(int what, ePtr<gFont> &font) = 0;
 #endif
-	virtual RESULT getColor(int what, gRGB &color) = 0;
+	virtual RESULT getColor(int what, gRGBA &color) = 0;
 	virtual int getListFontSize(int what) = 0;
 	virtual const std::string getListFontFace(int what) = 0;
 	virtual ~eWindowStyle() = 0;
@@ -101,7 +101,7 @@ public:
 	void setStyle(gPainter &painter, int what);
 	void drawFrame(gPainter &painter, const eRect &frame, int what);
 	RESULT getFont(int what, ePtr<gFont> &font);
-	RESULT getColor(int what, gRGB &color);
+	RESULT getColor(int what, gRGBA &color);
 	int getListFontSize(int what);
 	const std::string getListFontFace(int what);
 };
