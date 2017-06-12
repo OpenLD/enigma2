@@ -4,8 +4,8 @@ from twisted.internet import reactor, defer, ssl
 from twisted.python import failure
 
 class HTTPProgressDownloader(client.HTTPDownloader):
-	def __init__(self, url, outfile, headers = None):
-		client.HTTPDownloader.__init__(self, url, outfile, headers=headers, agent="Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;openLD;;;)")
+	def __init__(self, url, outfile, headers=None):
+		client.HTTPDownloader.__init__(self, url, outfile, headers=headers, agent="%s %s Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;openLD;;;)" % (getMachineBrand(), getMachineName()))
 		self.status = None
 		self.progress_callback = None
 		self.deferred = defer.Deferred()
@@ -20,7 +20,7 @@ class HTTPProgressDownloader(client.HTTPDownloader):
 
 	def gotHeaders(self, headers):
 		if self.status == "200":
-			if headers.has_key("content-length"):
+			if "content-length" in headers:
 				self.totalbytes = int(headers["content-length"][0])
 			else:
 				self.totalbytes = 0
@@ -38,7 +38,7 @@ class HTTPProgressDownloader(client.HTTPDownloader):
 		return client.HTTPDownloader.pageEnd(self)
 
 class downloadWithProgress:
-	def __init__(self, url, outputfile, contextFactory = None, *args, **kwargs):
+	def __init__(self, url, outputfile, contextFactory=None, *args, **kwargs):
 		if hasattr(client, '_parse'):
 			scheme, host, port, path = client._parse(url)
 		else:
