@@ -5,9 +5,9 @@ AM_CXXFLAGS = \
 	-Wall \
 	-fno-exceptions
 
-libdir = $(libdir)/enigma2/python/Components/Converter
+plugindir = $(libdir)/enigma2/python/Components/Converter
 
-lib_LTLIBRARIES = libbitratecalc.la
+plugin_LTLIBRARIES = libbitratecalc.la
 
 libbitratecalc_la_SOURCES = \
 	bitratecalc.cpp \
