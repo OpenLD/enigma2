@@ -21,6 +21,3 @@ bitratecalc_la_LDFLAGS = \
 	-module \
 	-shared
 
-bitratecalc_la_LIBADD = \
-	@LIBCRYPTO_LIBS@
-
