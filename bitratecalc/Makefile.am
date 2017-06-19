@@ -7,12 +7,12 @@ AM_CXXFLAGS = \
 
 libdir = $(libdir)/enigma2/python/Components/Converter
 
-lib_LTLIBRARIES = bitratecalc.la
+lib_LTLIBRARIES = libbitratecalc.la
 
-bitratecalc_la_SOURCES = \
+libbitratecalc_la_SOURCES = \
 	bitratecalc.cpp \
 	bitratecalc.h
 
-bitratecalc_la_LIBADD = \
+libbitratecalc_la_LIBADD = \
 	@LIBCRYPTO_LIBS@
 
