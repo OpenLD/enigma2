@@ -742,6 +742,7 @@ AX_SWIG_PYTHON_OPT="$AX_SWIG_PYTHON_OPT -DSWIG_PYTHON_LEGACY_BOOL"
 
 AC_CONFIG_FILES([
 Makefile
+bitratecalc/Makefile
 data/Makefile
 data/fonts/Makefile
 data/keymaps/Makefile

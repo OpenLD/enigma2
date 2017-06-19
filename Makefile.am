@@ -1,4 +1,4 @@
-SUBDIRS = include lib main data po tools
+SUBDIRS = bitratecalc include lib main data po tools
 
 ACLOCAL_AMFLAGS = -I m4
 
