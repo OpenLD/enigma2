@@ -22,6 +22,7 @@ pluginexec_PROGRAMS=
 
 include actions/Makefile.inc
 include base/Makefile.inc
+include bitratecalc/Makefile.am
 include components/Makefile.inc
 include dvb/Makefile.inc
 include dvb/lowlevel/Makefile.inc
