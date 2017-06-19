@@ -39,6 +39,11 @@ class EventViewContextMenu(Screen):
 				for entry in menu:
 					menu[count] = ("        " + entry[0], entry[1])
 					count += 1
+			elif config.skin.primary_skin.value.startswith('SimpleLD/'):
+				count = 0
+				for entry in menu:
+					menu[count] = ("        " + entry[0], entry[1])
+					count += 1
 		except:
 			pass
 
@@ -185,6 +190,10 @@ class EventViewBase:
 						if change_time:
 							simulTimerList = self.session.nav.RecordTimer.record(entry)
 					if simulTimerList is not None:
+						try:
+							from Screens.TimerEdit import TimerSanityConflict
+						except: # maybe already been imported from another module
+							pass
 						self.session.openWithCallback(self.finishSanityCorrection, TimerSanityConflict, simulTimerList)
 			self["key_green"].setText(_("Change timer"))
 			self.key_green_choice = self.REMOVE_TIMER

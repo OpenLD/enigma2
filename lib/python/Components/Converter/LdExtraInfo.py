@@ -884,7 +884,7 @@ class LdExtraInfo(Poll, Converter, object):
 					provid = provid.upper()
 					provid = provid.zfill(6)
 					provid = "%s" % provid
-					
+
 					#provider cccam
 					provider = ecm_info.get("provider", "")
 					provider = "%s" % provider
