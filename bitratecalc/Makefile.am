@@ -2,8 +2,7 @@ AM_CPPFLAGS = \
 	-include Python.h
 
 AM_CXXFLAGS = \
-	-Wall \
-	-fno-exceptions
+	-Wall
 
 plugindir = $(libdir)/enigma2/python/Components/Converter
 
