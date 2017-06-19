@@ -17,7 +17,7 @@ class CpuUsage(Converter, object):
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
-		
+
 		self.percentlist = [ ]
 		self.pfmt = "%3d%%"
 		if not type or type == "Total":
@@ -140,4 +140,3 @@ class CpuUsageMonitor(Poll, object):
 
 
 cpuUsageMonitor = CpuUsageMonitor()
-

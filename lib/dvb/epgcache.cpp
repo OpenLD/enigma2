@@ -487,9 +487,28 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
-			data->m_mhw2_title_pid = 0x28b; // change for fix 7 days epg Movistar+
+			data->m_mhw2_title_pid = 0x284; // change for fix 7 days epg Movistar+
 			data->m_mhw2_summary_pid = 0x282; // change for fix 7 days epg Movistar+
 		}
+/*
+ - Javier Sayago <admin@lonasdigital.com>
+ Sniffer result from dvbsnoop, trying to identify the new pattern:
+ --------------------------------------------------
+ PID found:  560 (0x0230)  [SECTION: ATSC reserved] // ??
+ PID found:  561 (0x0231)  [SECTION: ATSC reserved] // m_mhw2_channel_pid
+ PID found:  562 (0x0232)  [SECTION: ATSC reserved] // ??
+ PID found:  563 (0x0233)  [SECTION: ATSC reserved] // ??
+ PID found:  564 (0x0234)  [SECTION: ATSC reserved] // m_mhw2_title_pid 3 days
+ PID found:  565 (0x0235)  [SECTION: ATSC reserved] // ??
+ PID found:  566 (0x0236)  [SECTION: User private]  // m_mhw2_summary_pid 3 days
+ --------------------------------------------------
+ PID found:  642 (0x0282)  [SECTION: User private]  // m_mhw2_summary_pid 7 days (OLD?)
+ PID found:  644 (0x0284)  [SECTION: ATSC reserved] // m_mhw2_title_pid 7 days
+ PID found:  651 (0x028b)  [SECTION: ATSC reserved] // ??
+ --------------------------------------------------
+ I need to know the new tables MHW2 for 7 days.
+ But .... The information obtained is somewhat confusing.
+*/
 #endif
 		singleLock s(channel_map_lock);
 		m_knownChannels.insert( std::pair<iDVBChannel*, channel_data* >(chan, data) );
