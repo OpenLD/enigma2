@@ -163,6 +163,7 @@ self.session.open(RemoteControlCode)
 				</item>
 				</menu>
 				<item level="0" text="Language" entryID="language_setup"><screen module="LanguageSelection" /></item>
+				<item level="0" text="Weather SimpleLD" entryID="simpleweather_setup"><screen module="SimpleWeatherSetup" /></item>
 				<menu level="0" text="Network" entryID="network_menu">
 					<id val="network" />
 					<item level="0" text="Device Setup" entryID="device_setup"><screen module="NetworkSetup" screen="NetworkAdapterSelection"/></item>
