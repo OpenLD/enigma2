@@ -2064,11 +2064,11 @@ void eEPGCache::channel_data::abortNonAvail()
 		}
 #endif
 		if ( isRunning & VIASAT )
-			abortTimer->start(600000, true);
+			abortTimer->start(300000, true);
 		else if ( isRunning & MHW )
-			abortTimer->start(700000, true);
+			abortTimer->start(500000, true);
 		else if ( isRunning )
-			abortTimer->start(140000, true);
+			abortTimer->start(100000, true);
 		else
 		{
 			++state;
@@ -2099,8 +2099,8 @@ void eEPGCache::channel_data::startChannel()
 		update = ZAP_DELAY;
 
 	zapTimer->start(update, 1);
-	if (update >= 80000)
-		eDebug("[EPGC] next update in %i min", update/80000);
+	if (update >= 60000)
+		eDebug("[EPGC] next update in %i min", update/60000);
 	else if (update >= 1000)
 		eDebug("[EPGC] next update in %i sec", update/1000);
 }
@@ -4967,7 +4967,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 				if (checkMHWTimeout())
 					goto abort;
 				if (!m_MHWTimeoutTimer->isActive())
-					startMHWTimeout(50000);
+					startMHWTimeout(20000);
 				return; // continue reading
 			}
 
@@ -5013,7 +5013,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 					if ( it == m_titles.end() )
 					{
 						//eDebug("[EPGC] mhw2 reading TileID %d for channelID %d & summaryID %d", title_id, title.channel_id, summary_id);
-						startMHWTimeout(60000);
+						startMHWTimeout(40000);
 						m_titles[ title_id ] = title;
 						m_titlesID[ title_id ] = title_id;
 						if (summary_id != 0xFFFF)
@@ -5102,7 +5102,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 						}
 						if (nb>0 && !checkMHWTimeout())
 						{
-							startMHWTimeout(17000);
+							startMHWTimeout(15000);
 						}
 					}
 				}
@@ -5118,7 +5118,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 				// Titles table has been read, there are summaries to read.
 				// Start reading summaries, store corresponding titles on the fly.
 				startMHWReader2(m_mhw2_summary_pid, 0x96);
-				startMHWTimeout(80000);
+				startMHWTimeout(60000);
 				return;
 			}
 		}
@@ -5174,7 +5174,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 				}
 				else
 				{
-					startMHWTimeout(19000);
+					startMHWTimeout(17000);
 					std::string the_text = (char *) (data + pos + 2);
 
 					pos=pos+len+12;
@@ -5479,7 +5479,7 @@ void eEPGCache::channel_data::readMHWData2_old(const uint8_t *data)
 				// Titles table has been read, there are summaries to read.
 				// Start reading summaries, store corresponding titles on the fly.
 				startMHWReader2(m_mhw2_summary_pid, 0x96);
-				startMHWTimeout(17000);
+				startMHWTimeout(15000);
 				return;
 			}
 		}
@@ -5557,7 +5557,7 @@ void eEPGCache::channel_data::readMHWData2_old(const uint8_t *data)
 				}
 				else
 				{
-					startMHWTimeout(17000);
+					startMHWTimeout(15000);
 					std::string the_text = (char *) (data + pos + 1);
 
 					pos=pos+len+1;
