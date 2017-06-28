@@ -77,3 +77,6 @@ dvbinclude_HEADERS = \
 	dvb/encoder.h \
 	dvb/fbc.h \
 	dvb/atsc.h
+if HAVE_AMLOGIC
+dvbinclude_HEADERS += dvb/amldecoder.h
+endif
