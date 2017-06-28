@@ -49,7 +49,8 @@ eDVBDemux::eDVBDemux(int adapter, int demux):
 #ifdef HAVE_AMLOGIC
 	m_pvr_fd(-1),
 #endif
-	m_dvr_busy(0)
+	m_dvr_busy(0),
+	m_dvr_id(-1)
 {
 }
 
@@ -112,6 +113,7 @@ RESULT eDVBDemux::setSourcePVR(int pvrnum)
 	int n = DMX_SOURCE_DVR0 + pvrnum;
 	int res = ::ioctl(fd, DMX_SET_SOURCE, &n);
 	source = -1;
+	m_dvr_id = pvrnum;
 	::close(fd);
 	return res;
 }
