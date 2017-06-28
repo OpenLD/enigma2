@@ -4482,47 +4482,47 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 		{
 			switch (itTitle->second.mhw2_theme) // convert to standar theme
 			{
-			case 0x0: content_id = 0x10;break; // Cine
-			case 0x1: content_id = 0x40;break; // Deportes
-			case 0x2: content_id = 0x10;break; // Series
-			case 0x3: content_id = 0x50;break; // Infantiles
-			case 0x20: content_id = 0x70;break;
-			case 0x21: content_id = 0x80;break;
-			case 0x22: content_id = 0x70;break;
-			case 0x23: content_id = 0x80;break;
-			case 0x24: content_id = 0x90;break;
-			case 0x25: content_id = 0x90;break;
-			case 0x26: content_id = 0x70;break;
-			case 0x27: content_id = 0x80;break;
-			case 0x28: content_id = 0x80;break;
-			case 0x29: content_id = 0x70;break;
-			case 0x2A: content_id = 0x90;break;
-			case 0x2B: content_id = 0x80;break;
-			case 0x2C: content_id = 0x90;break;
-			case 0x2D: content_id = 0x80;break;
-			case 0x2E: content_id = 0x80;break;
-			case 0x2F: content_id = 0x90;break;
-			case 0x30: content_id = 0x70;break;
-			case 0x5: content_id = 0x60;break; // Musica
-			case 0x6: content_id = 0x20;break; // informacion
-			case 0x7: content_id = 0x30;break; // Entretenimiento
-			case 0x8: content_id = 0xA0;break; // Ocio
-			case 0x40: content_id = 0x90;break;
-			case 0x41: content_id = 0x70;break;
-			case 0x42: content_id = 0x70;break;
-			case 0x43: content_id = 0x90;break;
-			case 0x44: content_id = 0x90;break;
-			case 0x45: content_id = 0x70;break;
-			case 0x46: content_id = 0x70;break;
-			case 0x47: content_id = 0x70;break;
-			case 0x48: content_id = 0x70;break;
-			case 0x49: content_id = 0x90;break;
-			case 0x4A: content_id = 0x70;break;
-			case 0x4B: content_id = 0x90;break;
-			case 0x4C: content_id = 0x70;break;
-			case 0x4D: content_id = 0x90;break;
-			case 0xA: content_id = 0xB0;break; // Otros
-			default: content_id = 0xB0;
+				case 0x0: content_id = 0x10; break; // Cine
+				case 0x1: content_id = 0x40; break; // Deportes
+				case 0x2: content_id = 0x10; break; // Series
+				case 0x3: content_id = 0x50; break; // Infantiles
+				case 0x20: content_id = 0x70; break;
+				case 0x21: content_id = 0x80; break;
+				case 0x22: content_id = 0x70; break;
+				case 0x23: content_id = 0x80; break;
+				case 0x24: content_id = 0x90; break;
+				case 0x25: content_id = 0x90; break;
+				case 0x26: content_id = 0x70; break;
+				case 0x27: content_id = 0x80; break;
+				case 0x28: content_id = 0x80; break;
+				case 0x29: content_id = 0x70; break;
+				case 0x2A: content_id = 0x90; break;
+				case 0x2B: content_id = 0x80; break;
+				case 0x2C: content_id = 0x90; break;
+				case 0x2D: content_id = 0x80; break;
+				case 0x2E: content_id = 0x80; break;
+				case 0x2F: content_id = 0x90; break;
+				case 0x30: content_id = 0x70; break;
+				case 0x5: content_id = 0x60; break; // Musica
+				case 0x6: content_id = 0x20; break; // informacion
+				case 0x7: content_id = 0x30; break; // Entretenimiento
+				case 0x8: content_id = 0xA0; break; // Ocio
+				case 0x40: content_id = 0x90; break;
+				case 0x41: content_id = 0x70; break;
+				case 0x42: content_id = 0x70; break;
+				case 0x43: content_id = 0x90; break;
+				case 0x44: content_id = 0x90; break;
+				case 0x45: content_id = 0x70; break;
+				case 0x46: content_id = 0x70; break;
+				case 0x47: content_id = 0x70; break;
+				case 0x48: content_id = 0x70; break;
+				case 0x49: content_id = 0x90; break;
+				case 0x4A: content_id = 0x70; break;
+				case 0x4B: content_id = 0x90; break;
+				case 0x4C: content_id = 0x70; break;
+				case 0x4D: content_id = 0x90; break;
+				case 0xA: content_id = 0xB0; break; // Otros
+				default: content_id = 0xB0;
 			}
 		}
 		else
@@ -4530,31 +4530,31 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 			switch (itTitle->second.mhw2_theme) // convert to standar theme
 			{
 			// New clasification for 7 days epg
-			case 0x0: content_id = 0x10;break;  // Cine
-			case 0x10: content_id = 0x10;break; // Cine
-			case 0x20: content_id = 0x10;break; // Series
-			case 0x30: content_id = 0x20;break; // Informacion
-			case 0x40: content_id = 0x30;break; // Entretenimiento
-			case 0x50: content_id = 0x40;break; // Deportes
-			case 0x60: content_id = 0x50;break; // infantiles
-			case 0x78: content_id = 0x60;break; // Musica
-			case 0x80: content_id = 0x91;break; // Documentales / Educacion
-			case 0x90: content_id = 0x70;break; // Cultura
-			case 0xA0: content_id = 0xA0;break; // Ocio
-			case 0xB0: content_id = 0xA0;break; // test 1
-			case 0xC0: content_id = 0xB0;break; // test 2
-			case 0xD0: content_id = 0xC0;break; // test 3
-			case 0xE0: content_id = 0xD0;break; // test 4
-			case 0xF0: content_id = 0xE0;break; // test 5
-			case 0x64: content_id = 0xF0;break; // test 6
-			case 0x6E: content_id = 0x64;break; // test 7
-			case 0x82: content_id = 0x78;break; // test 8
-			case 0x8C: content_id = 0x82;break; // test 9
-			case 0x96: content_id = 0x8C;break; // test 10
-			case 0xAA: content_id = 0xA0;break; // test 11
-			case 0xB4: content_id = 0xAA;break; // test 12
-			case 0xBE: content_id = 0xB4;break; // test 13
-			default: content_id = 0x0F;
+				case 0x0: content_id = 0x10; break;  // Cine
+				case 0x10: content_id = 0x10; break; // Cine
+				case 0x20: content_id = 0x10; break; // Series
+				case 0x30: content_id = 0x20; break; // Informacion
+				case 0x40: content_id = 0x30; break; // Entretenimiento
+				case 0x50: content_id = 0x40; break; // Deportes
+				case 0x60: content_id = 0x50; break; // infantiles
+				case 0x78: content_id = 0x60; break; // Musica
+				case 0x80: content_id = 0x91; break; // Documentales / Educacion
+				case 0x90: content_id = 0x70; break; // Cultura
+				case 0xA0: content_id = 0xA0; break; // Ocio
+				case 0xB0: content_id = 0xA0; break; // test 1
+				case 0xC0: content_id = 0xB0; break; // test 2
+				case 0xD0: content_id = 0xC0; break; // test 3
+				case 0xE0: content_id = 0xD0; break; // test 4
+				case 0xF0: content_id = 0xE0; break; // test 5
+				case 0x64: content_id = 0xF0; break; // test 6
+				case 0x6E: content_id = 0x64; break; // test 7
+				case 0x82: content_id = 0x78; break; // test 8
+				case 0x8C: content_id = 0x82; break; // test 9
+				case 0x96: content_id = 0x8C; break; // test 10
+				case 0xAA: content_id = 0xA0; break; // test 11
+				case 0xB4: content_id = 0xAA; break; // test 12
+				case 0xBE: content_id = 0xB4; break; // test 13
+				default: content_id = 0x0F;
 			}
 		}
 
