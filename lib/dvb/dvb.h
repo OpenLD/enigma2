@@ -304,6 +304,7 @@ public:
 
 	RESULT requestTsidOnid();
 	int reserveDemux();
+	int getDvrId();
 private:
 	ePtr<eDVBAllocatedFrontend> m_frontend;
 	ePtr<eDVBAllocatedDemux> m_demux, m_decoder_demux;
@@ -323,7 +324,7 @@ private:
 	ePtr<eConnection> m_conn_frontendStateChanged;
 
 		/* for PVR playback */
-	eDVBChannelFilePush *m_pvr_thread;
+	ePtr<eDVBChannelFilePush> m_pvr_thread;
 	void pvrEvent(int event);
 
 	int m_pvr_fd_dst;

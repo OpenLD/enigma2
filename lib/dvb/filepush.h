@@ -21,6 +21,7 @@ public:
 
 class eFilePushThread: public eThread, public Object
 {
+	DECLARE_REF(eFilePushThread);
 public:
 	eFilePushThread(int blocksize, size_t buffersize);
 	~eFilePushThread();

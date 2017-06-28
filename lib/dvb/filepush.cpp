@@ -15,6 +15,8 @@
 #endif
 //#define SHOW_WRITE_TIME
 
+DEFINE_REF(eFilePushThread);
+
 eFilePushThread::eFilePushThread(int blocksize, size_t buffersize):
 	 m_sg(NULL),
 	 m_stop(1),
