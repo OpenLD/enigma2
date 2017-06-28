@@ -384,7 +384,7 @@ eEPGCache::eEPGCache()
 
 	enabledSources = 0;
 	historySeconds = 0;
-	maxdays = 5;
+	maxdays = 7;
 
 	CONNECT(messages.recv_msg, eEPGCache::gotMessage);
 	CONNECT(eDVBLocalTimeHandler::getInstance()->m_timeUpdated, eEPGCache::timeUpdated);
@@ -729,7 +729,7 @@ bool eEPGCache::FixOverlapping(EventCacheItem &servicemap, time_t TM, int durati
 {
 	bool ret = false;
 	timeMap::iterator tmp = tm_it;
-	while ((tmp->first + tmp->second->getDuration() - 420) > TM)
+	while ((tmp->first + tmp->second->getDuration() - 360) > TM)
 	{
 		if(tmp->first != TM
 #ifdef ENABLE_PRIVATE_EPG
@@ -2068,7 +2068,7 @@ void eEPGCache::channel_data::abortNonAvail()
 		else if ( isRunning & MHW )
 			abortTimer->start(500000, true);
 		else if ( isRunning )
-			abortTimer->start(100000, true);
+			abortTimer->start(180000, true);
 		else
 		{
 			++state;
@@ -4967,7 +4967,7 @@ void eEPGCache::channel_data::readMHWData2(const uint8_t *data)
 				if (checkMHWTimeout())
 					goto abort;
 				if (!m_MHWTimeoutTimer->isActive())
-					startMHWTimeout(20000);
+					startMHWTimeout(30000);
 				return; // continue reading
 			}
 

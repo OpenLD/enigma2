@@ -82,7 +82,7 @@ config.plugins.LDteam.epgmhw2wait = ConfigNumber(default=350) # 350 seconds = 5,
 config.epg = ConfigSubsection()
 config.epg.eit = ConfigYesNo(default = True)
 config.epg.mhw = ConfigYesNo(default = True)
-config.epg.freesat = ConfigYesNo(default = True)
+config.epg.freesat = ConfigYesNo(default = False)
 config.epg.viasat = ConfigYesNo(default = True)
 config.epg.netmed = ConfigYesNo(default = True)
 config.epg.virgin = ConfigYesNo(default = False)
