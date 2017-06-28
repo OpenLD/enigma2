@@ -4173,25 +4173,25 @@ void eEPGCache::channel_data::GetEquiv(void)
 		{
 			if (linea[0]!='#')
 			{
-			int r1,r2,r3,osid,otid,onid,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,esid,etid,enid;
-			char name[20];
-			if (sscanf(linea,"%x:%x:%x:%x:%x:%x:%x:%x:%x:%x: %x:%x:%x:%x:%x:%x:%x:%x:%x:%x: %s",&r1,&r2,&r3,&osid,&otid,&onid,&r4,&r5,&r6,&r7,&r8,&r9,&r10,&esid,&etid,&enid,&r11,&r12,&r13,&r14,name)==21)
-			{
-				mhw_channel_equiv_t channel;
-				channel.original_nid_hi = (onid >> 8) &0xFF;
-				channel.original_nid_lo = onid & 0xFF;
-				channel.original_tid_hi = (otid >> 8) &0xFF;
-				channel.original_tid_lo = otid & 0xFF;
-				channel.original_sid_hi = (osid >> 8) &0xFF;
-				channel.original_sid_lo = osid & 0xFF;
-				channel.equiv_nid_hi = (enid >> 8) &0xFF;
-				channel.equiv_nid_lo = enid & 0xFF;
-				channel.equiv_tid_hi = (etid >> 8) &0xFF;
-				channel.equiv_tid_lo = etid & 0xFF;
-				channel.equiv_sid_hi = (esid >> 8) &0xFF;
-				channel.equiv_sid_lo = esid & 0xFF;
-				m_equiv[nb_equiv++] = channel;
-			}
+				int r1,r2,r3,osid,otid,onid,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,esid,etid,enid;
+				char name[20];
+				if (sscanf(linea,"%x:%x:%x:%x:%x:%x:%x:%x:%x:%x: %x:%x:%x:%x:%x:%x:%x:%x:%x:%x: %s",&r1,&r2,&r3,&osid,&otid,&onid,&r4,&r5,&r6,&r7,&r8,&r9,&r10,&esid,&etid,&enid,&r11,&r12,&r13,&r14,name)==21)
+				{
+					mhw_channel_equiv_t channel;
+					channel.original_nid_hi = (onid >> 8) &0xFF;
+					channel.original_nid_lo = onid & 0xFF;
+					channel.original_tid_hi = (otid >> 8) &0xFF;
+					channel.original_tid_lo = otid & 0xFF;
+					channel.original_sid_hi = (osid >> 8) &0xFF;
+					channel.original_sid_lo = osid & 0xFF;
+					channel.equiv_nid_hi = (enid >> 8) &0xFF;
+					channel.equiv_nid_lo = enid & 0xFF;
+					channel.equiv_tid_hi = (etid >> 8) &0xFF;
+					channel.equiv_tid_lo = etid & 0xFF;
+					channel.equiv_sid_hi = (esid >> 8) &0xFF;
+					channel.equiv_sid_lo = esid & 0xFF;
+					m_equiv[nb_equiv++] = channel;
+				}
 			}
 		}
 		fclose(eq);
