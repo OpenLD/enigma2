@@ -4541,21 +4541,19 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 			case 0x80: content_id = 0x91;break; // Documentales / Educacion
 			case 0x90: content_id = 0x70;break; // Cultura
 			case 0xA0: content_id = 0xA0;break; // Ocio
-			case 0xB0: content_id = 0xA0;break;// test 1
-			case 0xC0: content_id = 0xB0;break;// test 2
-			case 0xD0: content_id = 0xC0;break;// test 3
-			case 0xE0: content_id = 0xD0;break;// test 4
-			case 0xF0: content_id = 0xE0;break;// test 5
-			case 0x64: content_id = 0xF0;break;// test 6
-			case 0x6E: content_id = 0x64;break;// test 7
-			case 0x78: content_id = 0x6E;break;// test 8
-			case 0x82: content_id = 0x78;break;// test 9
-			case 0x8C: content_id = 0x82;break;// test 10
-			case 0x96: content_id = 0x8C;break;// test 11
-			case 0xA0: content_id = 0x96;break;// test 12
-			case 0xAA: content_id = 0xA0;break;// test 13
-			case 0xB4: content_id = 0xAA;break;// test 14
-			case 0xBE: content_id = 0xB4;break;// test 15
+			case 0xB0: content_id = 0xA0;break; // test 1
+			case 0xC0: content_id = 0xB0;break; // test 2
+			case 0xD0: content_id = 0xC0;break; // test 3
+			case 0xE0: content_id = 0xD0;break; // test 4
+			case 0xF0: content_id = 0xE0;break; // test 5
+			case 0x64: content_id = 0xF0;break; // test 6
+			case 0x6E: content_id = 0x64;break; // test 7
+			case 0x82: content_id = 0x78;break; // test 8
+			case 0x8C: content_id = 0x82;break; // test 9
+			case 0x96: content_id = 0x8C;break; // test 10
+			case 0xAA: content_id = 0xA0;break; // test 11
+			case 0xB4: content_id = 0xAA;break; // test 12
+			case 0xBE: content_id = 0xB4;break; // test 13
 			default: content_id = 0x0F;
 			}
 		}
