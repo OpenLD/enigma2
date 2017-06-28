@@ -25,6 +25,9 @@ import os
 if os.path.isfile('/usr/lib/enigma2/python/Components/Converter/bitratecalc.so'):
 	from bitratecalc import eBitrateCalculator
 	binaryfound = True
+elif os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/BitrateViewer/bitratecalc.so'):
+	from bitratecalc import eBitrateCalculator
+	binaryfound = True
 else:
 	binaryfound = False
 
