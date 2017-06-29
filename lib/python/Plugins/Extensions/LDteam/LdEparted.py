@@ -31,7 +31,6 @@ from Components.config import getConfigListEntry, config, ConfigSubsection, Conf
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
 from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, MultiContentEntryPixmapAlphaBlend
-from Components.Sources.StaticText import StaticText
 from Components.Network import iNetwork
 from Components.Language import language
 from Components.Console import Console

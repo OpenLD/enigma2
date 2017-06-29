@@ -4,12 +4,13 @@
 from Renderer import Renderer
 from Components.VariableText import VariableText
 import urllib2
-from enigma import eLabel, ePixmap
+from enigma import eLabel, ePixmap, eTimer, eListboxPythonMultiContent, gFont, eEnv, getDesktop, pNavigation
 from datetime import datetime
 from Components.Element import cached
 from xml.dom.minidom import parseString
 from Components.config import config, configfile, ConfigSubsection, ConfigSelection, ConfigNumber, ConfigSelectionNumber, ConfigYesNo, ConfigText, ConfigInteger
 from threading import Timer, Thread
+from types import *
 from time import time, strftime, localtime
 
 g_updateRunning = False
@@ -95,6 +96,7 @@ class SimpleWeatherWidget(Renderer, VariableText):
 				self.Timer.cancel()
 		except AttributeError:
 			pass
+			#print "[SimpleWeatherWidget] Timer not available"
 
 	def startTimer(self, refresh=False):
 		seconds = int(config.plugins.SimpleWeather.refreshInterval.value) * 60
