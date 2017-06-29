@@ -7,11 +7,11 @@ class ChannelNumbers:
 
 	def getChannelNumber(self, frequency, nim):
 
-		f = self.getMHz(frequency)
+		f = int(self.getMHz(frequency))
 		descr = self.getTunerDescription(nim)
 
 		if "Europe" in descr:
-			if "DVB-T" in descr:
+			if "DVB-T" or "DVB-T2" in descr:
 				if 174 < f < 230: 	# III
 					d = (f + 1) % 7
 					return str(int(f - 174)/7 + 5) + (d < 3 and "-" or d > 4 and "+" or "")
@@ -51,11 +51,18 @@ class ChannelNumbers:
 		descr = self.getTunerDescription(nim)
 		if "Europe" in descr and "DVB-T" in descr:
 			return True
+		elif "Europe" in descr and "DVB-T2" in descr:
+			return True
 		return False
 
 	def channel2frequency(self, channel, nim):
 		descr = self.getTunerDescription(nim)
 		if "Europe" in descr and "DVB-T" in descr:
+			if 5 <= channel <= 12:
+				return (177500 + 7000*(channel- 5))*1000
+			elif 21 <= channel <= 69:
+				return (474000 + 8000*(channel-21))*1000
+		elif "Europe" in descr and "DVB-T2" in descr:
 			if 5 <= channel <= 12:
 				return (177500 + 7000*(channel- 5))*1000
 			elif 21 <= channel <= 69:
