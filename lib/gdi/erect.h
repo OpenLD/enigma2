@@ -102,8 +102,8 @@ public:
 
 	eRect operator|(const eRect &r) const;
 	eRect operator&(const eRect &r) const;
- 	eRect& operator|=(const eRect &r);
- 	eRect& operator&=(const eRect &r);
+	eRect& operator|=(const eRect &r);
+	eRect& operator&=(const eRect &r);
 
 	bool contains( const ePoint &p) const;
 	bool contains( int x, int y) const;
