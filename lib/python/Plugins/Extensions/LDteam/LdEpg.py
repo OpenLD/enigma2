@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ##
 ##
-## Copyright (c) 2012-2016 OpenLD
+## Copyright (c) 2012-2017 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
@@ -66,18 +66,22 @@ import Components.UsageConfig
 count = 0
 hddchoises = [('/media/hdd/', '/media/hdd/'),
  ('/media/usb/', '/media/usb/'),
- ('/media/mmc', '/media/mmc'),
+ ('/media/mmc1/', '/media/mmc1/'),
  ('/media/uSDextra/', '/media/uSDextra/'),
  ('/media/upnp/', '/media/upnp/'),
  ('/media/net/', '/media/net/'),
  ('/usr/share/enigma2/', '/usr/share/enigma2/'),
  ('/etc/enigma2/', '/etc/enigma2/')]
 config.misc.epgcachepath = ConfigSelection(default='/etc/enigma2/', choices=hddchoises)
-config.plugins.LDteam = ConfigSubsection()
-config.plugins.LDteam.auto2 = ConfigSelection(default='no', choices=[('no', _('no')), ('yes', _('yes'))])
-config.plugins.LDteam.dropmode = ConfigSelection(default='3', choices=[('1', _('free pagecache')), ('2', _('free dentries and inodes')), ('3', _('free pagecache, dentries and inodes'))])
-config.plugins.LDteam.epgtime2 = ConfigClock(default=58500)
-config.plugins.LDteam.epgmhw2wait = ConfigNumber(default=350) # 350 seconds = 5,83 minutes
+config.plugins.ldteam = ConfigSubsection()
+config.plugins.ldteam.auto2 = ConfigSelection(default='no', choices=[('no', _('no')), ('yes', _('yes'))])
+config.plugins.ldteam.dropmode = ConfigSelection(default = '1', choices = [
+		('1', _("free pagecache")),
+		('2', _("free dentries and inodes")),
+		('3', _("free pagecache, dentries and inodes")),
+		])
+config.plugins.ldteam.epgtime2 = ConfigClock(default=58500)
+config.plugins.ldteam.epgmhw2wait = ConfigNumber(default=350) # 350 seconds = 5,83 minutes
 
 config.epg = ConfigSubsection()
 config.epg.eit = ConfigYesNo(default = True)
@@ -160,7 +164,7 @@ class Ttimer(Screen):
 		else:
 			self.setTitle(_('Update EPG'))
 		self['progress'] = Progress(int(count))
-		self['progress'].setRange(int(config.plugins.LDteam.epgmhw2wait.value - 5))
+		self['progress'].setRange(int(config.plugins.ldteam.epgmhw2wait.value - 5))
 		self.session = session
 		self.ctimer = enigma.eTimer()
 		count = 0
@@ -172,7 +176,7 @@ class Ttimer(Screen):
 		count += 1
 		print '%s Epg Downloaded' % count
 		self['progress'].setValue(count)
-		if count > config.plugins.LDteam.epgmhw2wait.value:
+		if count > config.plugins.ldteam.epgmhw2wait.value:
 			self.ctimer.stop()
 			self.session.nav.playService(eServiceReference(config.tv.lastservice.value))
 			rDialog.stopDialog(self.session)
@@ -297,9 +301,9 @@ class LDepgScreen(Screen, ConfigListScreen):
 		else:
 			self.list.append(getConfigListEntry(_('Maintain old EPG data for'), config.epg.histminutes))
 		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Tiempo Duracion en Portada'), config.plugins.LDteam.epgmhw2wait))
+			self.list.append(getConfigListEntry(_('Tiempo Duracion en Portada'), config.plugins.ldteam.epgmhw2wait))
 		else:
-			self.list.append(getConfigListEntry(_('Time at title page'), config.plugins.LDteam.epgmhw2wait))
+			self.list.append(getConfigListEntry(_('Time at title page'), config.plugins.ldteam.epgmhw2wait))
 		self['config'].list = self.list
 		self['config'].l.setList(self.list)
 
@@ -336,7 +340,7 @@ class LDepgScreen(Screen, ConfigListScreen):
 		config.misc.epgcachepath.save()
 		epgcache = new.instancemethod(_enigma.eEPGCache_save, None, eEPGCache)
 		epgcache = eEPGCache.getInstance().save()
-		config.plugins.LDteam.epgmhw2wait.save()
+		config.plugins.ldteam.epgmhw2wait.save()
 		config.epg.save()
 		config.epg.maxdays.save()
 		configfile.save()
