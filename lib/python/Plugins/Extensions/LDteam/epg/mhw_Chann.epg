@@ -1,7 +1,7 @@
 #########################################
 #                                       #
 #       Channels list in mhw EPG        #
-#    Generated at 10/09/2016 15:45:26   #
+#    Generated at 30/06/2017 19:42:12   #
 #                                       #
 #      Format: (NAME) SID:TSID:NID      #
 #                                       #
@@ -47,6 +47,7 @@
 (BEIN LALIGA2) 7580:412:1
 (BEIN SPORTS) 757b:412:1
 (BEIN MAX1) 769f:41e:1
+(M. ESPORTS) 76c5:40e:1
 (R. MADRID TV) 7601:408:1
 (BARÇA TV) 74a0:41c:1
 (M. DEPORTES1) 778f:424:1
@@ -78,13 +79,12 @@
 (BABY TV) 749c:41c:1
 (DISNEY JR) 746b:3f0:1
 (CANAL PANDA) 75ff:408:1
-(NICK JR) 6ff5:42a:1
+(NICK JR) 7697:41e:1
 (NICKELODEON) 6ff4:42a:1
 (DISNEY XD) 772a:416:1
 (DISNEY CH.) 76c3:40e:1
 (BOING) 749e:41c:1
 (CLAN TVE) 77be:40a:1
-(LOS40) 76c5:40e:1
 (VH1) 6ff0:42a:1
 (MTV ROCKS) 6ff3:42a:1
 (MEZZO) 7699:41e:1
@@ -104,7 +104,6 @@
 (SKY NEWS) 1c7a:457:1
 (ORBE 21) 76a4:41e:1
 (RT) 1af8:3fe:1
-(I24 NEWS) 7a4b:410:1
 (TV RECORD) 1b62:3fc:1
 (CUBAVISIÓN) 1b60:3fc:1
 (TELESUR) 7a48:410:1
@@ -114,12 +113,12 @@
 (CANAL SUR A.) 7729:416:1
 (TV GALICIA) 7a4a:410:1
 (ARAGÓNTV INT) 75fd:408:1
-(TAQUILLA  1) 768e:41e:1
-(TAQUILLA  2) 768f:41e:1
-(TAQUILLA  3) 7567:412:1
-(TAQUILLA  4) 756f:412:1
-(TAQUILLA  5) 7565:412:1
-(TAQUILLA  6) 7566:412:1
-(TAQUILLA HD) 7854:41a:1
-(TAQUILLA2 HD) 785e:41a:1
+(ALQUILER  1) 768e:41e:1
+(ALQUILER  2) 768f:41e:1
+(ALQUILER  3) 7567:412:1
+(ALQUILER  4) 756f:412:1
+(ALQUILER  5) 7565:412:1
+(ALQUILER  6) 7566:412:1
+(ALQUILER HD) 7854:41a:1
+(ALQUILER2 HD) 785e:41a:1
 

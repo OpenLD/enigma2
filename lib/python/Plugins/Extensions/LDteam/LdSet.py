@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ##
 ##
-## Copyright (c) 2012-2016 OpenLD
+## Copyright (c) 2012-2017 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
@@ -63,8 +63,12 @@ from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 import NavigationInstance
 import Components.UsageConfig
 
-config.plugins.LDteam = ConfigSubsection()
-config.plugins.LDteam.dropmode = ConfigSelection(default='3', choices=[('1', _('free pagecache')), ('2', _('free dentries and inodes')), ('3', _('free pagecache, dentries and inodes'))])
+config.plugins.ldteam = ConfigSubsection()
+config.plugins.ldteam.dropmode = ConfigSelection(default = '1', choices = [
+		('1', _("free pagecache")),
+		('2', _("free dentries and inodes")),
+		('3', _("free pagecache, dentries and inodes")),
+		])
 
 def _(txt):
 	t = gettext.dgettext('messages', txt)
@@ -380,7 +384,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		 'green': self.save_values,
 		 'yellow': self.ClearNow,
 		 'ok': self.save_values}, -2)
-		self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.LDteam.dropmode))
+		self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.ldteam.dropmode))
 		ConfigListScreen.__init__(self, self.list)
 		self.onShow.append(self.Title)
 
@@ -391,7 +395,6 @@ class LDmemoria(ConfigListScreen, Screen):
 	def cancel(self):
 		for i in self['config'].list:
 			i[1].cancel()
-
 		self.close()
 
 	def infomem(self):
@@ -407,21 +410,19 @@ class LDmemoria(ConfigListScreen, Screen):
 					buffers = line.split()[1]
 				elif 'Cached:' in line:
 					cached = line.split()[1]
-
 			if '' is not memtotal and '' is not memfree:
 				persent = int(memfree) / (int(memtotal) / 100)
 			self['memTotal'].text = _('Total: %s Kb  Free: %s Kb (%s %%)') % (memtotal, memfree, persent)
 			self['bufCache'].text = _('Buffers: %s Kb  Cached: %s Kb') % (buffers, cached)
 
 	def save_values(self):
-		for i in self['config'].list:
+		for i in self["config"].list:
 			i[1].save()
-
 		configfile.save()
 		self.mbox = self.session.open(MessageBox, _('configuration is saved'), MessageBox.TYPE_INFO, timeout=4)
 
 	def ClearNow(self):
-		self.iConsole.ePopen('sync ; echo %s > /proc/sys/vm/drop_caches' % config.plugins.LDteam.dropmode.value, self.Finish)
+		self.iConsole.ePopen('sync ; echo %s > /proc/sys/vm/drop_caches' % config.plugins.ldteam.dropmode.value, self.Finish)
 
 	def Finish(self, result, retval, extra_args):
 		if retval is 0:

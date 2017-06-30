@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ##
 ##
-## Copyright (c) 2012-2016 OpenLD
+## Copyright (c) 2012-2017 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
 ## Contact: javilonas@esp-desarrolladores.com
 ##
@@ -44,7 +44,7 @@ from Screens.NetworkSetup import *
 from random import random
 import os, sys, gettext, commands, gettext, subprocess, threading, traceback, time, datetime
 
-config.plugins.LDteam = ConfigSubsection()
+config.plugins.ldteam = ConfigSubsection()
 SkinDefaultPath = resolveFilename(SCOPE_SKIN, "skin_default/")
 
 LIST_TYPE_DEV=0
@@ -218,13 +218,13 @@ class AddPart(Screen, ConfigListScreen):
 			menu.append("fat32")
 		if pathExists("/sbin/mkfs.msdos"):
 			menu.append("fat16")
-		config.plugins.LDteam.fs = NoSave(ConfigSelection(default = default, choices = menu))
-		config.plugins.LDteam.size = NoSave(ConfigInteger(default=maxsize, limits=[1,maxsize]))
+		config.plugins.ldteam.fs = NoSave(ConfigSelection(default = default, choices = menu))
+		config.plugins.ldteam.size = NoSave(ConfigInteger(default=maxsize, limits=[1,maxsize]))
 
 		list = []
 		if countpart<4:
-			list.append(getConfigListEntry(_("size in %s (max %d %s):") %(unit, maxsize, unit), config.plugins.LDteam.size))
-		list.append(getConfigListEntry(_("filesystem:"), config.plugins.LDteam.fs))
+			list.append(getConfigListEntry(_("size in %s (max %d %s):") %(unit, maxsize, unit), config.plugins.ldteam.size))
+		list.append(getConfigListEntry(_("filesystem:"), config.plugins.ldteam.fs))
 		ConfigListScreen.__init__(self, list, session = session)
 
 		self["key_red"] = StaticText(_("cancel"))
@@ -243,8 +243,8 @@ class AddPart(Screen, ConfigListScreen):
 		self.close()
 
 	def keySave(self):
-		if config.plugins.LDteam.size.value>0:
-			self.close((config.plugins.LDteam.size.value, config.plugins.LDteam.fs.value))
+		if config.plugins.ldteam.size.value>0:
+			self.close((config.plugins.ldteam.size.value, config.plugins.ldteam.fs.value))
 
 class Cpart(Screen):
 	PA_TYPE_USE=1

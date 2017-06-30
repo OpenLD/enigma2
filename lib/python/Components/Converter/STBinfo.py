@@ -21,35 +21,17 @@ class STBinfo(Converter, object):
 		if Screens.Standby.inStandby:
 			return ""
 		elif self.type == "CPUload":
-			try:
-				return self.getCPUload()
-			except:
-				pass
+			return self.getCPUload()
 		elif self.type == "RAMfree":
-			try:
-				return self.getRAMfree()
-			except:
-				pass
+			return self.getRAMfree()
 		elif self.type == "CPUtemp":
-			try:
-				return self.getCPUtemp()
-			except:
-				pass
+			return self.getCPUtemp()
 		elif self.type == "SYStemp":
-			try:
-				return self.getSYStemp()
-			except:
-				pass
+			return self.getSYStemp()
 		elif self.type == "FLASHfree":
-			try:
-				return self.getFLASHfree()
-			except:
-				pass
+			return self.getFLASHfree()
 		elif self.type == "CPUspeed":
-			try:
-				return self.getCPUspeed()
-			except:
-				pass
+			return self.getCPUspeed()
 		return ""
 
 	def getCPUload(self):
