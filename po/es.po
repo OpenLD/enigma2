@@ -17245,7 +17245,7 @@ msgid "always"
 msgstr "siempre"
 
 msgid "Cores"
-msgstr "Núcleos"
+msgstr "Núcleo(s)"
 
 msgid "Allow IPK Upload"
 msgstr "Permitir la subida de IPK"
