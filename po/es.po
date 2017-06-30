@@ -17247,6 +17247,9 @@ msgstr "siempre"
 msgid "Cores"
 msgstr "Núcleos"
 
+msgid "Allow IPK Upload"
+msgstr "Permitir la subida de IPK"
+
 msgid "Show Weather Widget"
 msgstr "Mostrar el widget del tiempo"
 
