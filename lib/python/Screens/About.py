@@ -14,7 +14,7 @@ from Components.Converter.Poll import Poll
 
 from ServiceReference import ServiceReference
 from enigma import iServiceInformation, eServiceReference, eServiceCenter, iPlayableService, iPlayableServicePtr, eTimer, eConsoleAppContainer, getEnigmaVersionString, eLabel, getBestPlayableServiceReference, eDVBFrontendParametersSatellite, eEPGCache
-from boxbranding import getBoxType, getMachineBuild, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
+from boxbranding import getBoxType, getImageCodeName, getMachineBuild, getMachineBrand, getMachineName, getImageVersion, getImageType, getImageBuild, getDriverDate
 
 from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
@@ -92,6 +92,7 @@ def getAboutText():
 	AboutText += _("Firmware:\t %s") % openLD + str(getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
+	#AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
 	AboutText += _("Kernel:\t %s") % str(getKernelVersionString()) + "\n"
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
@@ -168,8 +169,9 @@ class About(Screen):
 			})
 
 	def populate(self):
-		self["lab1"] = StaticText(_("Developer:\t Javilonas (Javier Sayago)"))
-		self["lab2"] = StaticText(_("Support:\t www.lonasdigital.com"))
+		self["lab1"] = StaticText(_("Developer:\t Javier Sayago (Javilonas)"))
+		self["lab2"] = StaticText(_("Support:\t https://www.lonasdigital.com"))
+		self["lab3"] = StaticText(_("CodeName:\t %s") % str(getImageCodeName()))
 		model = None
 
 		AboutText = getAboutText()[0]
