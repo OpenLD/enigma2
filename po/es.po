@@ -16192,11 +16192,11 @@ msgstr "Preguntar al usuario (con ‘sí’ como predeterminado)"
 msgid "Ask user (with default as 'no')"
 msgstr "Preguntar al usuario (con ‘no’ como predeterminado)"
 
-msgid "Developer:\t Javilonas (Javier Sayago)"
-msgstr "Desarrollador:\t Javilonas (Javier Sayago)"
+msgid "Developer:\t Javier Sayago (Javilonas)"
+msgstr "Desarrollador:\t Javier Sayago (Javilonas)"
 
-msgid "Support:\t www.lonasdigital.com"
-msgstr "Soporte:\t www.lonasdigital.com"
+msgid "Support:\t https://www.lonasdigital.com"
+msgstr "Soporte:\t https://www.lonasdigital.com"
 
 msgid "Please wait "
 msgstr "Por favor, espere "
