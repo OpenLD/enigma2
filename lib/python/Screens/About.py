@@ -172,6 +172,8 @@ class About(Screen):
 		self["lab1"] = StaticText(_("Developer:\t Javier Sayago (Javilonas)"))
 		self["lab2"] = StaticText(_("Support:\t https://www.lonasdigital.com"))
 		self["lab3"] = StaticText(_("CodeName:\t %s") % str(getImageCodeName()))
+		self["lab4"] = StaticText(_("Git:\t https://github.com/OpenLD"))
+		self["lab5"] = StaticText(_("Web:\t http://www.odisealinux.com"))
 		model = None
 
 		AboutText = getAboutText()[0]
