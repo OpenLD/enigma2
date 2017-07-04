@@ -120,7 +120,11 @@ class LdExtraInfo(Poll, Converter, object):
 		self.ecmdata = GetEcmInfo()
 		self.feraw = self.fedata = self.updateFEdata = None
 		self.DynamicTimer = eTimer()
-		self.DynamicTimer.callback.append(self.doSwitch)
+		if self.doSwitch:
+			try:
+				self.DynamicTimer.callback.append(self.doSwitch)
+			except:
+				return
 
 	def getCryptoInfo(self, info):
 		if info.getInfo(iServiceInformation.sIsCrypted) == 1:

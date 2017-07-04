@@ -655,6 +655,7 @@ def autorestoreLoop():
 
 def runScreenTest():
 	config.misc.startCounter.value += 1
+	config.misc.startCounter.save()
 
 	profile("readPluginList")
 	plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
@@ -681,22 +682,20 @@ def runScreenTest():
 			os.system('rm -f /media/hdd/images/config/autorestore')
 		screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
 		screensToRun += wizardManager.getWizards()
-
 	screensToRun.append((100, InfoBar.InfoBar))
 	screensToRun.sort()
-	print screensToRun
+	#print screensToRun
 
 	enigma.ePythonConfigQuery.setQueryFunc(configfile.getResolvedKey)
 
 	def runNextScreen(session, screensToRun, *result):
 		if result:
-			print "[mytest.py] quitMainloop #3"
+			#print "[mytest.py] quitMainloop #3"
 			enigma.quitMainloop(*result)
 			return
 
 		screen = screensToRun[0][1]
 		args = screensToRun[0][2:]
-
 		if screensToRun:
 			session.openWithCallback(boundFunction(runNextScreen, session, screensToRun[1:]), screen, *args)
 		else:
@@ -755,7 +754,6 @@ def runScreenTest():
 	runReactor()
 
 	print "[mytest.py] normal shutdown"
-	config.misc.startCounter.save()
 	config.usage.shutdownOK.setValue(True)
 	config.usage.shutdownOK.save()
 

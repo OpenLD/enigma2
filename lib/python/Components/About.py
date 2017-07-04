@@ -56,6 +56,27 @@ def getModelString():
 	except IOError:
 		return _("unknown")
 
+def getIsBroadcom():
+	try:
+		file = open('/proc/cpuinfo', 'r')
+		lines = file.readlines()
+		for x in lines:
+			splitted = x.split(': ')
+			if len(splitted) > 1:
+				splitted[1] = splitted[1].replace('\n','')
+				if splitted[0].startswith("Hardware"):
+					system = splitted[1].split(' ')[0]
+				elif splitted[0].startswith("system type"):
+					if splitted[1].split(' ')[0].startswith('BCM'):
+						system = 'Broadcom'
+		file.close()
+		if 'Broadcom' in system:
+			return True
+		else:
+			return False
+	except:
+		return False
+
 def getChipSetString():
 	if getMachineBuild() in ('dm7080', 'dm820'):
 		return "7435"
@@ -109,6 +130,17 @@ def getCPUSpeedString():
 		except IOError:
 			return _("unavailable")
 
+def getCPUArch():
+	import os
+	if os.uname()[4].startswith("arm"):
+		return _("ARM")
+	elif os.uname()[4].startswith("sh4"):
+		return _("SH4")
+	elif os.uname()[4].startswith("mips"):
+		return _("Mipsel")
+	else:
+		return _("unknown")
+
 def getCPUString():
 	if getMachineBuild() in ('vuuno4k', 'vuultimo4k', 'vusolo4k', 'hd51', 'hd52', 'sf4008', 'dm900', 'gbquad4k'):
 		return "Broadcom"
@@ -123,12 +155,36 @@ def getCPUString():
 					splitted[1] = splitted[1].replace('\n','')
 					if splitted[0].startswith("system type"):
 						system = splitted[1].split(' ')[0]
+					elif splitted[0].startswith("model name"):
+						system = splitted[1].split(' ')[0]
 					elif splitted[0].startswith("Processor"):
 						system = splitted[1].split(' ')[0]
 			file.close()
 			return system
 		except IOError:
 			return _("unavailable")
+
+def getCpuCoresString2():
+	MachinesCores = {
+					1 : 'Single core',
+					2 : 'Dual core',
+					4 : 'Quad core',
+					8 : 'Octa core'
+					}
+	try:
+		cores = 1
+		file = open('/proc/cpuinfo', 'r')
+		lines = file.readlines()
+		file.close()
+		for x in lines:
+			splitted = x.split(': ')
+			if len(splitted) > 1:
+				splitted[1] = splitted[1].replace('\n','')
+				if splitted[0].startswith("processor"):
+					cores = int(splitted[1]) + 1
+		return MachinesCores[cores]
+	except IOError:
+		return _("unavailable")
 
 def getCpuCoresString():
 	try:
@@ -191,17 +247,14 @@ def getDriverInstalledDate():
 		return _("unknown")
 
 def getPythonVersionString():
-	try:
-		import commands
-		status, output = commands.getstatusoutput("python -V")
-		return output.split(' ')[1]
-	except:
-		return _("unknown")
+	import sys
+	return "%s.%s.%s" % (sys.version_info.major,sys.version_info.minor,sys.version_info.micro)
 
 def getFFmpegVersionString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("ffmpeg -version | awk 'NR==1{print $3}'")
+		ffmpegV = commands.getoutput("ffmpeg -version | awk 'NR==1{print $3}'")
+		output = ffmpegV
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
@@ -216,129 +269,129 @@ def getCPUTempString():
 	return ""
 
 def getLoadCPUString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'")
+		output = commands.getoutput("top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMusageString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'")
+		output = commands.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'")
 		return output.split(' ')[1]
 	except:
 		return _("unknown")
 
 def getRAMFreePorcString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $4,$2,$4*100/$2 }'")
+		output = commands.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $4,$2,$4*100/$2 }'")
 		return output.split(' ')[1]
 	except:
 		return _("unknown")
 
 def getRAMTotalString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $2}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $3}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedKBString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free | grep Mem: | awk '{print $3}'")
+		output = commands.getoutput("free | grep Mem: | awk '{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMFreeString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $4}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSharingString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $5}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $5}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMStoredString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $6}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $6}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMCachedString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==2{print $7}'")
+		output = commands.getoutput("free -m | awk 'NR==2{print $7}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapTotalString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $2}'")
+		output = commands.getoutput("free -m | awk 'NR==3{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapUsedString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $3}'")
+		output = commands.getoutput("free -m | awk 'NR==3{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapFreeString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -m | awk 'NR==3{print $4}'")
+		output = commands.getoutput("free -m | awk 'NR==3{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMTotalGlobalString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $2}'")
+		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedGlobalString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $3}'")
+		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMFreeGlobalString():
+	import commands
 	try:
-		import commands
-		status, output = commands.getstatusoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $4}'")
+		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")

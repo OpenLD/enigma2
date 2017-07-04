@@ -84,7 +84,7 @@ class LdsysInfo(Screen):
 		}, -1)
 
 	def updateInfo(self):
-		self.DynamicTimer.start(3000)
+		self.DynamicTimer.start(6000)
 		rc = system("df -h > /tmp/syinfo.tmp")
 		if config.osd.language.value == 'es_ES':
 			self.text = "RECEPTOR\n"
@@ -109,16 +109,18 @@ class LdsysInfo(Screen):
 			res2 = ""
 		cpuMHz = ""
 		bogoMIPS = ""
-		if getMachineBuild() in ('vusolo4k'):
+		if getMachineBuild() in ('vusolo4k', 'vuultimo4k'):
 			cpuMHz = "  \t(1,5 GHz)"
-		elif getMachineBuild() in ('formuler1'):
+		elif getMachineBuild() in ('vuuno4k', 'gbquad4k'):
+			cpuMHz = "  \t(1,7 GHz)"
+		elif getMachineBuild() in ('formuler1tc', 'formuler1'):
 			cpuMHz = "  \t(1,3 GHz)"
 		elif res:
 			cpuMHz = "  \t(" + res.replace("\n", "") + " MHz)"
 		if res2:
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
-		self.text += "CPU: \t" + about.getCPUString() + cpuMHz + "\n"
+		self.text += "CPU: \t" + str(about.getCPUString()) + cpuMHz + " " + str(about.getCpuCoresString2()) + " - " + str(about.getCPUArch()) + "\n"
 		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
 		self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 		self.text += "BogoMIPS \t" + bogoMIPS + "\n"

@@ -132,7 +132,7 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		global g_updateRunning
 		if g_updateRunning:
 			woeid = config.plugins.SimpleWeather.woeid.value
-			print "[SimpleWeather] lookup for ID " + str(woeid) + " skipped, allready running..."
+			#print "[SimpleWeather] lookup for ID " + str(woeid) + " skipped, allready running..."
 			return
 		g_updateRunning = True
 		Thread(target = self.getWeatherThread).start()
@@ -140,7 +140,7 @@ class SimpleWeatherWidget(Renderer, VariableText):
 	def getWeatherThread(self):
 		global g_updateRunning
 		woeid = config.plugins.SimpleWeather.woeid.value
-		print "[SimpleWeather] lookup for ID " + str(woeid)
+		#print "[SimpleWeather] lookup for ID " + str(woeid)
 		url = "https://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
 
 		# where location in (select id from weather.search where query="oslo, norway")
