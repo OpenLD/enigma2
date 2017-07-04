@@ -172,21 +172,25 @@ class LdsysInfo(Screen):
 			self.text += "\nALMACENAMIENTO\n"
 		else:
 			self.text += "\nSTORAGE\n"
-		f = open("/tmp/syinfo.tmp",'r')
-		line = f.readline()
-		parts = line.split()
-		self.text += parts[0] + "\t" + parts[1].strip() + "      " + parts[2].strip() + "    " + parts[3].strip() + "    " + parts[4] + "\n"
-		line = f.readline()
-		parts = line.split()
-		self.text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
-		for line in f.readlines():
-			if line.find('/media/') != -1:
-				line = line.replace('/media/', '   ')
+		if os.path.exists('/tmp/syinfo.tmp'):
+			try:
+				f = open("/tmp/syinfo.tmp",'r')
+				line = f.readline()
 				parts = line.split()
-				if len(parts) == 6:
-					self.text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
-		f.close()
-		os_remove("/tmp/syinfo.tmp")
+				self.text += parts[0] + "\t" + parts[1].strip() + "      " + parts[2].strip() + "    " + parts[3].strip() + "    " + parts[4] + "\n"
+				line = f.readline()
+				parts = line.split()
+				self.text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
+				for line in f.readlines():
+					if line.find('/media/') != -1:
+						line = line.replace('/media/', '   ')
+						parts = line.split()
+						if len(parts) == 6:
+							self.text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
+				f.close()
+				os_remove("/tmp/syinfo.tmp")
+			except:
+				return
 
 		self.text += "\nSOFTWARE\n"
 		openLD = "OpenLD "

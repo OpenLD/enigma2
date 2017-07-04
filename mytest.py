@@ -8,10 +8,11 @@ from Tools.Profile import profile, profile_final
 profile("PYTHON_START")
 
 import Tools.RedirectOutput
-from boxbranding import getBoxType, getBrandOEM, getImageType, getImageVersion, getImageBuild, getMachineBuild
+from boxbranding import getBoxType, getBrandOEM, getImageCodeName, getImageType, getImageVersion, getImageBuild, getMachineBuild
 print "[Image Type] %s" % getImageType()
 print "[Image Version] %s" % getImageVersion()
 print "[Image Build] %s" % getImageBuild()
+print "[Image CodeName] %s" % getImageCodeName()
 
 import enigma
 import eConsoleImpl
@@ -345,8 +346,11 @@ class Session:
 		enigma.eDVBLocalTimeHandler.getInstance().syncDVBTime()
 
 		self.popCurrent()
-		if callback is not None:
-			callback(*retval)
+		try:
+			if callback is not None:
+				callback(*retval)
+		except:
+			pass
 
 	def execBegin(self, first=True, do_show = True):
 		assert not self.in_exec
@@ -387,8 +391,11 @@ class Session:
 	def deleteDialogWithCallback(self, callback, screen, *retval):
 		screen.hide()
 		screen.doClose()
-		if callback is not None:
-			callback(*retval)
+		try:
+			if callback is not None:
+				callback(*retval)
+		except:
+			pass
 
 	def instantiateSummaryDialog(self, screen, **kwargs):
 		if self.summary_desktop is not None:
@@ -984,6 +991,5 @@ except:
 	print 'EXCEPTION IN PYTHON STARTUP CODE:'
 	print '-'*60
 	print_exc(file=stdout)
-	print "[mytest.py] quitMainloop #4"
 	enigma.quitMainloop(5)
 	print '-'*60
