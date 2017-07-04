@@ -180,15 +180,16 @@ class ServiceInfo(Screen):
 				f = open("/proc/stb/video/videomode")
 				videomode = f.read()[:-1].replace('\n','')
 				f.close()
-
 			import subprocess
+			codenumbers = None
+			codesystem = None
+			caidssyst = None
 			try:
-				codenumbers = subprocess.check_output(['timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F "=" "{print $2}" | awk -F "]" "{print $1}" | wc -l'], shell=True)
+				codenumbers = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '=' '{print $2}' | awk -F ']' '{print $1}' | wc -l"], shell=True)
 				codesystem = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '=' '{print $2}' | awk -F ']' '{print $1}'"], shell=True)
 				caidssyst = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '(' '{print $2}' | awk -F ')' '{print $1}'"], shell=True)
-			except subprocess.CalledProcessError as e:
-				return
-
+			except:
+				pass
 			Labels = ( (_("Name"), name, TYPE_TEXT),
 					(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
 					(_("Videoformat"), aspect, TYPE_TEXT),
@@ -198,17 +199,18 @@ class ServiceInfo(Screen):
 					(_("Namespace"), self.getServiceInfoValue(iServiceInformation.sNamespace), TYPE_VALUE_HEX, 8),
 					(_("Service reference"), refstr, TYPE_TEXT),
 					(_("Coding Systems"), codenumbers, TYPE_TEXT))
-
 			if codenumbers > 0:
-				i = 0
-				caidssyst1 = caidssyst.splitlines()
-				codesystem1 = codesystem.splitlines()
-				while i < int(codenumbers):
+				try:
+					i = 0
+					caidssyst1 = caidssyst.splitlines()
+					codesystem1 = codesystem.splitlines()
+					while i < int(codenumbers):
 						caidsystem = caidssyst1[i] + " " + codesystem1[i]
 						i += 1
 						newlabel = ( (_("%s " %i), caidsystem, TYPE_TEXT))
 						Labels = Labels + (newlabel,)
-
+				except:
+					pass
 			self.fillList(Labels)
 		else:
 			if self.transponder_info:

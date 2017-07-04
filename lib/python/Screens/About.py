@@ -7,7 +7,10 @@ from Components.Button import Button
 from Components.Sources.StaticText import StaticText
 from Components.Harddisk import Harddisk
 from Components.NimManager import nimmanager
-from Components.About import about, getVersionString, getChipSetString, getKernelVersionString, getCPUString, getCpuCoresString, getPythonVersionString, getFFmpegVersionString, getGStreamerVersionString, getDriverInstalledDate
+from Components.About import about, getVersionString, getChipSetString, getKernelVersionString, getCPUString, \
+    getCpuCoresString, getPythonVersionString, getFFmpegVersionString, getGStreamerVersionString, getDriverInstalledDate, \
+    getRAMTotalString, getRAMFreeString, getRAMUsedString, getRAMSharingString, getRAMStoredString, getRAMCachedString, \
+    getRAMSwapTotalString, getRAMSwapFreeString
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console
 from Components.Converter.Poll import Poll
@@ -44,8 +47,11 @@ def getAboutText():
 
 	AboutText += _("Model:\t %s %s\n") % (getMachineBrand(), getMachineName())
 
-	if path.exists('/proc/stb/info/chipset'):
-		AboutText += _("Chipset:\t %s") % str(getChipSetString()) + "\n"
+	if about.getChipSetString() != _("unavailable"):
+		if about.getIsBroadcom():
+			AboutText += _("Chipset:\t BCM%s\n") % about.getChipSetString().upper()
+		else:
+			AboutText += _("Chipset:\t %s\n") % about.getChipSetString().upper()
 
 	bogoMIPS = ""
 	if path.exists('/proc/cpuinfo'):
@@ -86,19 +92,20 @@ def getAboutText():
 
 	openLD = "OpenLD "
 
-	AboutText += _("CPU:\t %s") % str(getCPUString()) + cpuMHz + "\n"
-	AboutText += _("Cores:\t %s") % str(getCpuCoresString()) + "\n"
+	AboutText += _("CPU:\t %s") % str(about.getCPUString()) + cpuMHz + " " + str(about.getCpuCoresString2()) + "\n"
+	AboutText += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
+	AboutText += _("Arch:\t %s") % str(about.getCPUArch()) + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
 	AboutText += _("Firmware:\t %s") % openLD + str(getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
 	#AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
-	AboutText += _("Kernel:\t %s") % str(getKernelVersionString()) + "\n"
+	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
-	AboutText += _("GStreamer:\t%s") % str(getGStreamerVersionString().replace('GStreamer','')) + "\n"
-	AboutText += _("FFmpeg:\t %s") % str(getFFmpegVersionString()) + "\n"
-	AboutText += _("Python:\t %s") % getPythonVersionString() + "\n\n"
+	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
+	AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
+	AboutText += _("Python:\t %s") % str(about.getPythonVersionString()) + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
 	#AboutText += _("Installed:\t ") + about.getFlashDateString() + "\n"
@@ -353,11 +360,16 @@ class SystemMemoryInfo(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Memory Information"))
+		self.DynamicSwitch = False
 		self.skinName = ["SystemMemoryInfo", "About"]
 		self["lab1"] = StaticText(_("INFO RAM / FLASH"))
 		self.DynamicTimer = eTimer()
-		self.DynamicTimer.callback.append(self.updateInfo)
-		self.onShow.append(self.updateInfo)
+		if self.updateInfo:
+			try:
+				self.DynamicTimer.callback.append(self.updateInfo)
+				self.onShow.append(self.updateInfo)
+			except:
+				return
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "DirectionActions"],
@@ -369,7 +381,7 @@ class SystemMemoryInfo(Screen):
 			})
 
 	def updateInfo(self):
-		self.DynamicTimer.start(3000)
+		self.DynamicTimer.start(6000)
 		self.AboutText = _("MEMORY") + '\n'
 		if config.osd.language.value == 'es_ES':
 			self.AboutText += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
@@ -418,6 +430,7 @@ class SystemMemoryInfo(Screen):
 		self.Console.ePopen("df -mh / | grep -v '^Filesystem'", self.Stage1Complete)
 
 	def end(self):
+		self.DynamicSwitch = True
 		self.DynamicTimer.stop()
 		del self.DynamicTimer
 		self.close()
@@ -465,6 +478,9 @@ class SystemNetworkInfo(Screen):
 		self["statuspic"] = MultiPixmap()
 		self["statuspic"].setPixmapNum(1)
 		self["statuspic"].show()
+		self["devicepic"] = MultiPixmap()
+
+		self["AboutScrollLabel"] = ScrollLabel()
 
 		self.iface = None
 		self.createscreen()
@@ -478,7 +494,6 @@ class SystemNetworkInfo(Screen):
 				pass
 			self.resetList()
 			self.onClose.append(self.cleanup)
-		self.updateStatusbar()
 
 		self["key_red"] = StaticText(_("Close"))
 
@@ -489,6 +504,7 @@ class SystemNetworkInfo(Screen):
 				"up": self["AboutScrollLabel"].pageUp,
 				"down": self["AboutScrollLabel"].pageDown
 			})
+		self.onLayoutFinish.append(self.updateStatusbar)
 
 	def createscreen(self):
 		self.AboutText = ""
@@ -545,13 +561,36 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _("MAC:") + "\t" + wlan0['hwaddr'] + "\n"
 			self.iface = 'wlan0'
 
+		wlan3 = about.getIfConfig('wlan3')
+		if wlan3.has_key('addr'):
+			if wlan3.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + wlan3['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + wlan3['addr'] + "\n"
+			if wlan3.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + wlan3['netmask'] + "\n"
+			if wlan3.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + wlan3['brdaddr'] + "\n")
+			if wlan3.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + wlan3['hwaddr'] + "\n"
+			self.iface = 'wlan3'
+
 		rx_bytes, tx_bytes = about.getIfTransferredData(self.iface)
 		self.AboutText += "\n" + _("Bytes received:") + "\t" + rx_bytes + '  (~'  + str(int(rx_bytes)/1024/1024)  + ' MB)'  + "\n"
 		self.AboutText += _("Bytes sent:") + "\t" + tx_bytes + '  (~'  + str(int(tx_bytes)/1024/1024)+ ' MB)'  + "\n"
 
+		self.console = Console()
+		self.console.ePopen('ethtool %s' % self.iface, self.SpeedFinished)
+
+	def SpeedFinished(self, result, retval, extra_args):
+		result_tmp = result.split('\n')
+		for line in result_tmp:
+			if 'Speed:' in line:
+				speed = line.split(': ')[1][:-4]
+				self.AboutText += _("Speed:") + "\t" + speed + _('Mb/s')
+
 		hostname = file('/proc/sys/kernel/hostname').read()
 		self.AboutText += "\n" + _("Hostname:") + "\t" + hostname + "\n"
-		self["AboutScrollLabel"] = ScrollLabel(self.AboutText)
+		self["AboutScrollLabel"].setText(self.AboutText)
 
 	def cleanup(self):
 		if self.iStatus:
@@ -566,7 +605,7 @@ class SystemNetworkInfo(Screen):
 		if data is not None:
 			if data is True:
 				if status is not None:
-					if self.iface == 'wlan0' or self.iface == 'ra0':
+					if self.iface == 'wlan0' or self.iface == 'wlan3' or self.iface == 'ra0':
 						if status[self.iface]["essid"] == "off":
 							essid = _("No Connection")
 						else:
@@ -623,6 +662,7 @@ class SystemNetworkInfo(Screen):
 		self["IF"].setText(iNetwork.getFriendlyAdapterName(self.iface))
 		self["Statustext"].setText(_("Link:"))
 		if iNetwork.isWirelessInterface(self.iface):
+			self["devicepic"].setPixmapNum(1)
 			try:
 				self.iStatus.getDataForInterface(self.iface, self.getInfoCB)
 			except:
@@ -630,6 +670,8 @@ class SystemNetworkInfo(Screen):
 				self["statuspic"].show()
 		else:
 			iNetwork.getLinkState(self.iface, self.dataAvail)
+			self["devicepic"].setPixmapNum(0)
+		self["devicepic"].show()
 
 	def dataAvail(self, data):
 		self.LinkState = None
@@ -654,13 +696,11 @@ class SystemNetworkInfo(Screen):
 						self["statuspic"].setPixmapNum(0)
 					else:
 						self["statuspic"].setPixmapNum(1)
-					self["statuspic"].show()
 				else:
 					self["statuspic"].setPixmapNum(1)
-					self["statuspic"].show()
 			else:
 				self["statuspic"].setPixmapNum(1)
-				self["statuspic"].show()
+			self["statuspic"].show()
 		except:
 			pass
 
