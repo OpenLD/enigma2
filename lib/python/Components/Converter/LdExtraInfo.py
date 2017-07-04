@@ -98,6 +98,7 @@ class LdExtraInfo(Poll, Converter, object):
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		Poll.__init__(self)
+		self.DynamicSwitch = False
 		self.type = type
 		self.poll_interval = 1000
 		self.poll_enabled = True
@@ -1413,7 +1414,7 @@ class LdExtraInfo(Poll, Converter, object):
 			self.updateFEdata = False
 			if what[1] == iPlayableService.evNewProgramInfo:
 				self.updateFEdata = True
-			elif what[1] == iPlayableService.evEnd:
+			if what[1] == iPlayableService.evEnd:
 				self.feraw = self.fedata = None
 			Converter.changed(self, what)
 		elif what[0] == self.CHANGED_POLL and self.updateFEdata is not None:
@@ -1424,5 +1425,6 @@ class LdExtraInfo(Poll, Converter, object):
 			Converter.changed(self, what)
 
 	def doSwitch(self):
+		self.DynamicSwitch = True
 		self.DynamicTimer.stop()
 		Converter.changed(self, self.what)
