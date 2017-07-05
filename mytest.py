@@ -682,9 +682,10 @@ def runScreenTest():
 			os.system('rm -f /media/hdd/images/config/autorestore')
 		screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
 		screensToRun += wizardManager.getWizards()
+
 	screensToRun.append((100, InfoBar.InfoBar))
 	screensToRun.sort()
-	#print screensToRun
+	print screensToRun
 
 	enigma.ePythonConfigQuery.setQueryFunc(configfile.getResolvedKey)
 
@@ -989,5 +990,6 @@ except:
 	print 'EXCEPTION IN PYTHON STARTUP CODE:'
 	print '-'*60
 	print_exc(file=stdout)
+	print "[mytest.py] quitMainloop #4"
 	enigma.quitMainloop(5)
 	print '-'*60

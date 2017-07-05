@@ -1274,7 +1274,14 @@ class ConfigNumber(ConfigText):
 		ConfigText.__init__(self, str(default), fixed_size = False)
 
 	def getValue(self):
-		return int(self.text)
+		try:
+			return int(self.text)
+		except ValueError:
+			if self.text == "true":
+				self.text = "1"
+			else:
+				self.text = str(default)
+			return int(self.text)
 
 	def setValue(self, val):
 		self.text = str(val)
@@ -1501,6 +1508,76 @@ class ConfigSet(ConfigElement):
 		return eval(val)
 
 	description = property(lambda self: descriptionList(self.choices.choices, choicesList.LIST_TYPE_LIST))
+
+class ConfigDictionarySet(ConfigElement):
+	def __init__(self, default = {}):
+		ConfigElement.__init__(self)
+		self.default = default
+		self.dirs = {}
+		self.value = self.default
+
+	def getKeys(self):
+		return self.dir_pathes
+
+	def setValue(self, value):
+		if isinstance(value, dict):
+			self.dirs = value
+			self.changed()
+
+	def getValue(self):
+		return self.dirs
+
+	value = property(getValue, setValue)
+
+	def tostring(self, value):
+		return str(value)
+
+	def fromstring(self, val):
+		return eval(val)
+
+	def load(self):
+		sv = self.saved_value
+		if sv is None:
+			tmp = self.default
+		else:
+			tmp = self.fromstring(sv)
+		self.dirs = tmp
+
+	def changeConfigValue(self, value, config_key, config_value):
+		if isinstance(value, str) and isinstance(config_key, str):
+			if value in self.dirs:
+				self.dirs[value][config_key] = config_value
+			else:
+				self.dirs[value] = {config_key : config_value}
+			self.changed()
+
+	def getConfigValue(self, value, config_key):
+		if isinstance(value, str) and isinstance(config_key, str):
+			if value in self.dirs and config_key in self.dirs[value]:
+				return self.dirs[value][config_key]
+		return None
+
+	def removeConfigValue(self, value, config_key):
+		if isinstance(value, str) and isinstance(config_key, str):
+			if value in self.dirs and config_key in self.dirs[value]:
+				try:
+					del self.dirs[value][config_key]
+				except KeyError:
+					pass
+				self.changed()
+
+	def save(self):
+		del_keys = []
+		for key in self.dirs:
+			if not len(self.dirs[key]):
+				del_keys.append(key)
+		for del_key in del_keys:
+			try:
+				del self.dirs[del_key]
+			except KeyError:
+				pass
+			self.changed()
+		self.saved_value = self.tostring(self.dirs)
 
 class ConfigLocations(ConfigElement):
 	def __init__(self, default=None, visible_width=False):
@@ -1861,7 +1938,22 @@ class Config(ConfigSubsection):
 			(name, val) = result
 			val = val.strip()
 
+			#convert old settings
+			if l.startswith("config.Nims."):
+				tmp = name.split('.')
+				if tmp[3] == "cable":
+					tmp[3] = "dvbc"
+				elif tmp[3].startswith ("cable"):
+					tmp[3] = "dvbc." + tmp[3]
+				elif tmp[3].startswith("terrestrial"):
+					tmp[3] = "dvbt." + tmp[3]
+				else:
+					if tmp[3] not in ('dvbs', 'dvbc', 'dvbt', 'multiType'):
+						tmp[3] = "dvbs." + tmp[3]
+				name =".".join(tmp)
+
 			names = name.split('.')
+
 			base = configbase
 
 			for n in names[1:-1]:

@@ -36,6 +36,9 @@ SCOPE_LCDSKIN = 20
 SCOPE_ACTIVE_LCDSKIN = 21
 SCOPE_AUTORECORD = 22
 SCOPE_VOD = 23
+SCOPE_DEFAULTDIR = 24
+SCOPE_DEFAULTPARTITION = 25
+SCOPE_DEFAULTPARTITIONMOUNTDIR = 26
 
 PATH_CREATE = 0
 PATH_DONTCREATE = 1
@@ -60,7 +63,9 @@ defaultPaths = {
 		SCOPE_PLAYLIST: (eEnv.resolve("${sysconfdir}/enigma2/playlist/"), PATH_CREATE),
 
 		SCOPE_USERETC: ("", PATH_DONTCREATE), # user home directory
-
+		SCOPE_DEFAULTDIR: (eEnv.resolve("${datadir}/enigma2/defaults/"), PATH_CREATE),
+		SCOPE_DEFAULTPARTITION: ("/dev/mtdblock6", PATH_DONTCREATE),
+		SCOPE_DEFAULTPARTITIONMOUNTDIR: (eEnv.resolve("${datadir}/enigma2/dealer"), PATH_CREATE),
 		SCOPE_METADIR: (eEnv.resolve("${datadir}/meta"), PATH_CREATE),
 	}
 

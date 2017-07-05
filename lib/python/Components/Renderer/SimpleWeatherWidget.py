@@ -78,7 +78,7 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		self.Timer = None
 		self.refreshcnt = 0
 		#self.startTimer()
-		self.getWeather()
+		#self.getWeather()
 
 	def changed(self, what):
 		if self.instance:
@@ -111,12 +111,16 @@ class SimpleWeatherWidget(Renderer, VariableText):
 			else:
 				seconds = 10
 
-		if self.Timer:
-			self.Timer.cancel()
-			self.Timer = None
-
-		self.Timer = Timer(seconds, self.getWeather)
-		self.Timer.start()
+		from threading import Timer
+		try:
+			if self.Timer:
+				self.Timer.cancel()
+				self.Timer = None
+			self.Timer = Timer(seconds, self.getWeather)
+			self.Timer.start()
+		except AttributeError:
+			pass
+			#print "[SimpleWeatherWidget] Timer not available"
 
 	def onShow(self):
 		self.text = config.plugins.SimpleWeather.currentWeatherCode.value
