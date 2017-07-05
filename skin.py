@@ -9,6 +9,7 @@ from enigma import eSize, ePoint, eRect, gFont, eWindow, eLabel, ePixmap, eWindo
 from Components.config import ConfigSubsection, ConfigText, config, ConfigYesNo, ConfigSelection, ConfigNothing
 from Components.Converter.Converter import Converter
 from Components.Sources.Source import Source, ObsoleteSource
+from Components.SystemInfo import SystemInfo
 from Tools.Directories import resolveFilename, SCOPE_SKIN, SCOPE_SKIN_IMAGE, SCOPE_FONTS, SCOPE_ACTIVE_SKIN, SCOPE_ACTIVE_LCDSKIN, SCOPE_CURRENT_SKIN, SCOPE_CONFIG, fileExists
 from Tools.Import import my_import
 from Tools.LoadPixmap import LoadPixmap
@@ -343,7 +344,7 @@ def parseValue(str):
 	try:
 		return int(str)
 	except:
-		print "value '%s' is not integer" % (str))
+		print("value '%s' is not integer" % (str))
 
 def collectAttributes(skinAttributes, node, context, skin_path_prefix=None, ignore=(), filenames=frozenset(("pixmap", "pointer", "seek_pointer", "backgroundPixmap", "selectionPixmap", "sliderPixmap", "scrollbarbackgroundPixmap"))):
 	# walk all attributes
@@ -714,7 +715,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 					if len(humancolor) >= 6:
 						colorNamesHuman[name] = int(humancolor,16)
 			else:
-				print "need color and name, got %s %s" % (name, color))
+				print("need color and name, got %s %s" % (name, color))
 
 	for c in skin.findall("fonts"):
 		for font in c.findall("font"):
@@ -863,7 +864,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 				Log.i("########### ADDING %s: %s" %(fontType, fontSize))
 				style.setListFont(eWindowStyleSkinned.__dict__["listFont" + fontType], fontSize, fontFace)
 			except:
-				print "Unknown listFont %s" % (fontType))
+				print("Unknown listFont %s" % (fontType))
 
 		x = eWindowStyleManager.getInstance()
 		x.setStyle(style_id, style)
@@ -1245,7 +1246,7 @@ def readSkin(screen, skin, names, desktop):
 			try:
 				attributes = screen[wname].skinAttributes = [ ]
 			except:
-				print "component with name '" + wname + "' was not found in skin of screen '" + name + "'!")
+				print("component with name '" + wname + "' was not found in skin of screen '" + name + "'!")
 			# assert screen[wname] is not Source
 			collectAttributes(attributes, widget, context, skin_path_prefix, ignore=('name',))
 		elif wsource:
@@ -1262,7 +1263,7 @@ def readSkin(screen, skin, names, desktop):
 					if scr is None:
 						#print wsource
 						#print name
-						print "specified related screen '" + wsource + "' was not found in screen '" + name + "'!")
+						print("specified related screen '" + wsource + "' was not found in screen '" + name + "'!")
 					path = path[1:]
 				# resolve the source.
 				source = scr.get(path[0])
@@ -1319,7 +1320,7 @@ def readSkin(screen, skin, names, desktop):
 		if widgetType == "onLayoutFinish":
 			screen.onLayoutFinish.append(code)
 		else:
-			print "applet type '%s' unknown!" % widgetType)
+			print("applet type '%s' unknown!" % widgetType)
 
 
 	def process_elabel(widget, context):
