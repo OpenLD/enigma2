@@ -1938,22 +1938,7 @@ class Config(ConfigSubsection):
 			(name, val) = result
 			val = val.strip()
 
-			#convert old settings
-			if l.startswith("config.Nims."):
-				tmp = name.split('.')
-				if tmp[3] == "cable":
-					tmp[3] = "dvbc"
-				elif tmp[3].startswith ("cable"):
-					tmp[3] = "dvbc." + tmp[3]
-				elif tmp[3].startswith("terrestrial"):
-					tmp[3] = "dvbt." + tmp[3]
-				else:
-					if tmp[3] not in ('dvbs', 'dvbc', 'dvbt', 'multiType'):
-						tmp[3] = "dvbs." + tmp[3]
-				name =".".join(tmp)
-
 			names = name.split('.')
-
 			base = configbase
 
 			for n in names[1:-1]:
