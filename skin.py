@@ -33,7 +33,6 @@ parameters = {}
 constant_widgets = {}
 variables = {}
 DEFAULT_SKIN = "SimpleLD/skin.xml"
-DEFAULT_SKIN = "SimpleLD/skin.xml"
 if not fileExists(resolveFilename(SCOPE_SKIN, DEFAULT_SKIN)):
 	DEFAULT_SKIN = "MetrixHD/skin.xml"
 if not fileExists(resolveFilename(SCOPE_SKIN, DEFAULT_SKIN)):
