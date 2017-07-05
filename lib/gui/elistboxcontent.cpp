@@ -333,6 +333,7 @@ void eListboxPythonConfigContent::paint(gPainter &painter, eWindowStyle &style, 
 		border_size = local_style->m_border_size;
 		border_color = local_style->m_border_color;
 		fnt = local_style->m_font;
+		fnt2 = local_style->m_secondfont;
 		if (selected)
 		{
 			/* if we have a local background color set, use that. */
@@ -353,15 +354,10 @@ void eListboxPythonConfigContent::paint(gPainter &painter, eWindowStyle &style, 
 		}
 	}
 
-	if (fnt)
-	{
-		fnt2 = new gFont(fnt->family, fnt->pointSize - fnt->pointSize/5);
-	}
-	else
-	{
+	if (!fnt)
 		fnt = new gFont("Regular", 20);
-		fnt2 = new gFont("Regular", 16);
-	}
+	if (!fnt2)
+		fnt2 = new gFont(fnt->family, fnt->pointSize - fnt->pointSize/5);
 
 	if (!local_style || !local_style->m_transparent_background)
 		/* if we have no transparent background */
@@ -464,7 +460,8 @@ void eListboxPythonConfigContent::paint(gPainter &painter, eWindowStyle &style, 
 						int size = (pvalue && PyInt_Check(psize)) ? PyInt_AsLong(psize) : 100;
 
 							/* calc. slider length */
-						valueWidth = (itemsize.width() - m_seperation -40) * value / size;
+						//valueWidth = (itemsize.width() - m_seperation -40) * value / size;
+						valueWidth = (itemsize.width() - m_seperation - (itemsize.width()*0.1)) * value / size;
 						int height = itemsize.height();
 
 							/* draw slider */
