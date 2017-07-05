@@ -103,6 +103,7 @@ def getAboutText():
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
+	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
 	AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
 	AboutText += _("Python:\t %s") % str(about.getPythonVersionString()) + "\n\n"

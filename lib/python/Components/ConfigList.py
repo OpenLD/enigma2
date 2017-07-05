@@ -5,12 +5,14 @@ from Components.ActionMap import NumberActionMap, ActionMap
 from enigma import eListbox, eListboxPythonConfigContent, eRCInput, eTimer, quitMainloop
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
+import skin
 
 class ConfigList(HTMLComponent, GUIComponent, object):
 	def __init__(self, list, session = None):
 		GUIComponent.__init__(self)
 		self.l = eListboxPythonConfigContent()
-		self.l.setSeperation(350)
+		seperation, = skin.parameters.get("ConfigListSeperator", (350, ))
+		self.l.setSeperation(seperation)
 		self.timer = eTimer()
 		self.list = list
 		self.onSelectionChanged = [ ]
@@ -106,10 +108,7 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 	def isChanged(self):
 		is_changed = False
 		for x in self.list:
-			print 'X:',x
 			is_changed |= x[1].isChanged()
-			print 'is_changed1:',is_changed
-		print 'is_changed2:',is_changed
 		return is_changed
 
 	def pageUp(self):
@@ -327,6 +326,11 @@ class ConfigListScreen:
 		self.close()
 
 	def closeMenuList(self, recursive = False):
+		self.help_window_was_shown = False
+		try:
+			self.HideHelp()
+		except:
+			pass
 		if self["config"].isChanged():
 			self.session.openWithCallback(self.cancelConfirm, MessageBox, _("Really close without saving settings?"), default = False)
 		else:
