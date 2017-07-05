@@ -159,7 +159,7 @@ void eListboxPythonStringContent::paint(gPainter &painter, eWindowStyle &style, 
 		border_size = local_style->m_border_size;
 		border_color = local_style->m_border_color;
 		fnt = local_style->m_font;
-		fnt2 = local_style->m_secondfont;
+		//fnt2 = local_style->m_secondfont;
 		if (selected)
 		{
 			/* if we have a local background color set, use that. */
@@ -180,8 +180,10 @@ void eListboxPythonStringContent::paint(gPainter &painter, eWindowStyle &style, 
 		}
 	}
 
-	if (!fnt) fnt = new gFont("Regular", 20);
-	if (!fnt2) fnt2 = new gFont(fnt->family, fnt->pointSize - fnt->pointSize/5);
+	if (!fnt)
+		fnt = new gFont("Regular", 20);
+	/*if (!fnt2)
+		fnt2 = new gFont(fnt->family, fnt->pointSize - fnt->pointSize/5); */
 
 	/* if we have no transparent background */
 	if (!local_style || !local_style->m_transparent_background)
