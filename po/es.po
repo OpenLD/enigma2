@@ -16333,6 +16333,12 @@ msgstr "Reinicios:\t%s"
 msgid "Restarts:\t %s"
 msgstr "Reinicios:\t %s"
 
+msgid "Restarts:\t %d "
+msgstr "Reinicios:\t %d "
+
+msgid "Architecture:\t %s"
+msgstr "Arquitectura:\t %s"
+
 msgid "Frontprocessor version: %s"
 msgstr "Versión del frontprocessor: %s"
 

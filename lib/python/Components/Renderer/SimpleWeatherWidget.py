@@ -75,8 +75,8 @@ class SimpleWeatherWidget(Renderer, VariableText):
 	def __init__(self):
 		Renderer.__init__(self)
 		VariableText.__init__(self)
-		self.Timer = None
-		self.refreshcnt = 0
+		#self.Timer = None
+		#self.refreshcnt = 0
 		#self.startTimer()
 		#self.getWeather()
 
@@ -90,36 +90,40 @@ class SimpleWeatherWidget(Renderer, VariableText):
 					self.instance.hide()
 	GUI_WIDGET = eLabel
 
-	def __del__(self):
-		try:
-			if self.Timer is not None:
-				self.Timer.cancel()
-		except AttributeError:
-			pass
-			#print "[SimpleWeatherWidget] Timer not available"
+	#def __del__(self):
+	#	try:
+	#		if self.Timer is not None:
+	#			self.Timer.cancel()
+	#	except AttributeError:
+	#		pass
+	#		#print "[SimpleWeatherWidget] Timer not available"
 
 	def startTimer(self, refresh=False):
-		seconds = int(config.plugins.SimpleWeather.refreshInterval.value) * 60
+		# skip if weather-widget is already up to date
+		tdelta = datetime.now() - datetime.strptime(config.plugins.SimpleWeather.lastUpdated.value,"%Y-%m-%d %H:%M:%S")
+		if int(tdelta.seconds) < (config.plugins.SimpleWeather.refreshInterval.value * 60):   ##### 1=60 for testing purpose #####
+			return
+		#seconds = tdelta.seconds
 
-		if seconds < 60:
-			seconds = 300
+		#if seconds < 60:
+		#	seconds = 300
 
-		if refresh:
-			if self.refreshcnt >= 6:
-				self.refreshcnt = 0
-				seconds = 300
-			else:
-				seconds = 10
+		#if refresh:
+		#	if self.refreshcnt >= 6:
+		#		self.refreshcnt = 0
+		#		seconds = 300
+		#	else:
+		#		seconds = 10
 
-		from threading import Timer
-		try:
-			if self.Timer:
-				self.Timer.cancel()
-				self.Timer = None
-			self.Timer = Timer(seconds, self.getWeather)
-			self.Timer.start()
-		except AttributeError:
-			pass
+		#from threading import Timer
+		#try:
+		#	if self.Timer:
+		#		self.Timer.cancel()
+		#		self.Timer = None
+		#	self.Timer = Timer(seconds, self.getWeather)
+		#	self.Timer.start()
+		#except AttributeError:
+		#	pass
 			#print "[SimpleWeatherWidget] Timer not available"
 
 	def onShow(self):
@@ -146,20 +150,18 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		woeid = config.plugins.SimpleWeather.woeid.value
 		#print "[SimpleWeather] lookup for ID " + str(woeid)
 		url = "https://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
-
 		# where location in (select id from weather.search where query="oslo, norway")
 		try:
-			file = urllib2.urlopen(url, timeout=2)
+			file = urllib2.urlopen(url, timeout=10)
 			data = file.read()
 			file.close()
 		except Exception as error:
 			print "Cant get weather data: %r" % error
-
 			# cancel weather function
+			config.plugins.SimpleWeather.lastUpdated.value = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
 			g_updateRunning = False
 			return
-
 
 		dom = parseString(data)
 		try:
@@ -167,7 +169,7 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		except IndexError as error:
 			print "Cant get weather data: %r" % error
 			g_updateRunning = False
-			self.startTimer(True,30)
+			#self.startTimer(True,30)
 			if self.check:
 				text = "%s|" % str(error)
 				self.writeCheckFile(text)
@@ -253,11 +255,14 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		currentWeatherDay = currentWeather.getAttributeNode('day')
 		config.plugins.SimpleWeather.forecast4daysDay.value = currentWeatherDay.nodeValue
 
-		config.plugins.SimpleWeather.save()
-		configfile.save()
+		self.save()
 
 		g_updateRunning = False
-		self.refreshcnt = 0
+		#self.refreshcnt = 0
+
+	def save(self):
+		config.plugins.SimpleWeather.save()
+		configfile.save()
 
 	def getText(self,nodelist):
 		rc = []
