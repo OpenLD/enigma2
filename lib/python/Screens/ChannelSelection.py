@@ -45,6 +45,7 @@ from Screens.ButtonSetup import InfoBarButtonSetup, ButtonSetupActionMap, getBut
 profile("ChannelSelection.py 4")
 from Screens.PictureInPicture import PictureInPicture
 from Screens.RdsDisplay import RassInteractive
+import Screens.Standby
 from ServiceReference import ServiceReference
 from Tools.BoundFunction import boundFunction
 from Tools import Notifications
@@ -2123,7 +2124,10 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 			self.setModeTv()
 		lastservice = eServiceReference(self.lastservice.value)
 		if lastservice.valid():
-			self.zap()
+			if not Screens.Standby.inStandby:
+				self.zap()
+			else:
+				Screens.Standby.inStandby.onClose.append(self.zap)
 
 	def channelSelected(self):
 		ref = self.getCurrentSelection()

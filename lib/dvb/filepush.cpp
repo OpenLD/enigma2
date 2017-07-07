@@ -29,7 +29,7 @@ eFilePushThread::eFilePushThread(int blocksize, size_t buffersize):
 	 m_run_state(0)
 {
 	if (m_buffer == NULL)
-		eFatal("Failed to allocate %d bytes", buffersize);
+		eFatal("[eFilePushThread] Failed to allocate %d bytes", buffersize);
 	CONNECT(m_messagepump.recv_msg, eFilePushThread::recvEvent);
 }
 
@@ -57,7 +57,7 @@ void eFilePushThread::thread()
 	ignore_but_report_signals();
 	hasStarted(); /* "start()" blocks until we get here */
 	setIoPrio(IOPRIO_CLASS_BE, 0);
-	eDebug("FILEPUSH THREAD START");
+	eDebug("[eFilePushThread] START thread");
 
 	do
 	{
@@ -134,10 +134,10 @@ void eFilePushThread::thread()
 				continue;
 			if (errno == EOVERFLOW)
 			{
-				eWarning("OVERFLOW while playback?");
+				eWarning("[eFilePushThread] OVERFLOW while playback?");
 				continue;
 			}
-			eDebug("eFilePushThread *read error* (%m)");
+			eDebug("[eFilePushThread] read error: %m");
 			sleep(1);
 			sendEvent(evtReadError);
 			break;
@@ -159,7 +159,7 @@ void eFilePushThread::thread()
 				switch (poll(&pfd, 1, 250)) // wait for 250ms
 				{
 					case 0:
-						eDebug("wait for driver eof timeout");
+						eDebug("[eFilePushThread] wait for driver eof timeout");
 #if defined(__sh__) // Fix to ensure that event evtEOF is called at end of playbackl part 2/3
 						if (already_empty)
 						{
@@ -174,10 +174,10 @@ void eFilePushThread::thread()
 						continue;
 #endif
 					case 1:
-						eDebug("wait for driver eof ok");
+						eDebug("[eFilePushThread] wait for driver eof ok");
 						break;
 					default:
-						eDebug("wait for driver eof aborted by signal");
+						eDebug("[eFilePushThread] wait for driver eof aborted by signal");
 						/* Check m_stop after interrupted syscall. */
 						if (m_stop)
 							break;
@@ -196,13 +196,13 @@ void eFilePushThread::thread()
 
 			if (m_stream_mode && ++eofcount < 5)
 			{
-				eDebug("reached EOF, but we are in stream mode. delaying 1 second.");
+				eDebug("[eFilePushThread] reached EOF, but we are in stream mode. delaying 1 second.");
 				sleep(1);
 				continue;
 			}
 			else if (++eofcount < 10)
 			{
-				eDebug("reached EOF, but the file may grow. delaying 1 second.");
+				eDebug("[eFilePushThread] reached EOF, but the file may grow. delaying 1 second.");
 				sleep(1);
 				continue;
 			}
@@ -241,7 +241,7 @@ void eFilePushThread::thread()
 #endif
 						continue;
 					}
-					eDebug("eFilePushThread WRITE ERROR");
+					eDebug("[eFilePushThread] write: %m");
 					sendEvent(evtWriteError);
 					break;
 				}
@@ -268,7 +268,7 @@ void eFilePushThread::thread()
 		m_run_state = 0;
 		m_run_cond.signal(); /* Tell them we're here */
 		while (m_stop == 2) {
-			eDebug("FILEPUSH THREAD PAUSED");
+			eDebug("[eFilePushThread] PAUSED");
 			m_run_cond.wait(m_run_mutex);
 		}
 		if (m_stop == 0)
@@ -276,7 +276,7 @@ void eFilePushThread::thread()
 	}
 
 	} while (m_stop == 0);
-	eDebug("FILEPUSH THREAD STOP");
+	eDebug("[eFilePushThread] STOP");
 }
 
 void eFilePushThread::start(ePtr<iTsSource> &source, int fd_dest)
@@ -295,7 +295,7 @@ void eFilePushThread::stop()
 	if (m_stop == 1)
 		return;
 	m_stop = 1;
-	eDebug("eFilePushThread stopping thread");
+	eDebug("[eFilePushThread] stopping thread");
 	m_run_cond.signal(); /* Break out of pause if needed */
 	sendSignal(SIGUSR1);
 	kill(); /* Kill means join actually */
@@ -305,7 +305,7 @@ void eFilePushThread::pause()
 {
 	if (m_stop == 1)
 	{
-		eWarning("eFilePushThread::pause called while not running");
+		eWarning("[eFilePushThread] pause called while not running");
 		return;
 	}
 	/* Set thread into a paused state by setting m_stop to 2 and wait
@@ -315,7 +315,7 @@ void eFilePushThread::pause()
 	sendSignal(SIGUSR1);
 	m_run_cond.signal(); /* Trigger if in weird state */
 	while (m_run_state) {
-		eDebug("FILEPUSH waiting for pause");
+		eDebug("[eFilePushThread] waiting for pause");
 		m_run_cond.wait(m_run_mutex);
 	}
 }
@@ -324,7 +324,7 @@ void eFilePushThread::resume()
 {
 	if (m_stop != 2)
 	{
-		eWarning("eFilePushThread::resume called while not paused");
+		eWarning("[eFilePushThread] resume called while not paused");
 		return;
 	}
 	/* Resume the paused thread by resetting the flag and
