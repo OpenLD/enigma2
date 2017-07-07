@@ -76,7 +76,10 @@ class ServiceInfo(Converter, object):
 				"Is4K": (self.IS_4K, (iPlayableService.evVideoSizeChanged,)),
 				"IsIPStream": (self.IS_IPSTREAM, (iPlayableService.evUpdatedInfo,)),
 			}[type]
+		self.need_wa = iPlayableService.evVideoSizeChanged in self.interesting_events
 
+	def reuse(self):
+		self.need_wa = iPlayableService.evVideoSizeChanged in self.interesting_events
 	def getServiceInfoString(self, info, what, convert = lambda x: "%d" % x):
 		v = info.getInfo(what)
 		if v == -1:
@@ -305,6 +308,8 @@ class ServiceInfo(Converter, object):
 			if not video_rate:
 				video_rate = info.getInfo(iServiceInformation.sFrameRate)
 			return str(video_rate)
+		elif self.type == self.IS_WIDESCREEN:
+			return info.getInfo(iServiceInformation.sAspect)
 
 		return -1
 
@@ -313,3 +318,7 @@ class ServiceInfo(Converter, object):
 	def changed(self, what):
 		if what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
 			Converter.changed(self, what)
+		elif self.need_wa:
+			if self.getValue() != -1:
+				Converter.changed(self, (self.CHANGED_SPECIFIC, iPlayableService.evVideoSizeChanged))
+				self.need_wa = False

@@ -44,6 +44,10 @@ class NotificationQueueEntry():
 			self.text = screen.__name__
 		#print "[NotificationQueueEntry] QueueEntry created", self.timestamp, "function:", self.fnc, "screen:", self.screen, "id:", self.id, "args:", self.args, "kwargs:", self,kwargs, "domain:", self.domain, "text:", self.text
 
+def isPendingOrVisibleNotificationID(id):
+	q = notificationQueue
+	return q.isVisibleID(id) or q.isPendingID(id)
+
 def __AddNotification(fnc, screen, id, *args, **kwargs):
 	if ".MessageBox'>" in `screen`:
 		kwargs["simple"] = True
@@ -140,6 +144,18 @@ class NotificationQueue():
 		self.queue.append(entry)
 		for x in self.addedCB:
 			x()
+
+	def isPendingID(self, id):
+		for entry in self.queue:
+			if entry.pending and entry.id == id:
+				return True
+		return False
+
+	def isVisibleID(self, id):
+		for entry, dlg in self.current:
+			if entry.id == id:
+				return True
+		return False
 
 	def removeSameID(self, id):
 		for entry in self.queue:

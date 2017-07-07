@@ -44,7 +44,13 @@ class MovieInfo(Converter, object):
 				    or service.getPath())
 			elif self.type == self.MOVIE_REC_SERVICE_NAME:
 				rec_ref_str = info.getInfoString(service, iServiceInformation.sServiceref)
-				return ServiceReference(rec_ref_str).getServiceName()
+				service_name = ServiceReference(rec_ref_str).getServiceName()
+				if not service_name:
+					path = service.getPath().split(' - ')
+					if len(path) >=3 and path[0][-13:].replace(' ','').isdigit():
+						return path[1]
+				else:
+					return service_name
 			elif self.type == self.MOVIE_REC_SERVICE_REF:
 				rec_ref_str = info.getInfoString(service, iServiceInformation.sServiceref)
 				return str(ServiceReference(rec_ref_str))

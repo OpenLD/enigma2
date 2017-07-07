@@ -86,7 +86,7 @@ int eDVBMetaParser::parseMeta(const std::string &tsname)
 			--len;
 			line[len] = 0;
 		}
- 		if (len && line[len-1] == '\r')
+		if (len && line[len-1] == '\r')
 		{
 			--len;
 			line[len] = 0;
