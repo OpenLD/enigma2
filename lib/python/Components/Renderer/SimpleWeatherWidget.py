@@ -169,16 +169,10 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		except IndexError as error:
 			print "Cant get weather data: %r" % error
 			g_updateRunning = False
-			#self.startTimer(True,30)
-			if self.check:
-				text = "%s|" % str(error)
-				self.writeCheckFile(text)
-			return
 
 		config.plugins.SimpleWeather.currentLocation.value = str(title).split(',')[0].replace("Conditions for ","")
 
 		currentWeather = dom.getElementsByTagName('yweather:condition')[0]
-		#check returned date from weather values
 		t=time()
 		lastday = strftime("%d %b %Y", localtime(t-3600*24)).strip("0")
 		currday = strftime("%d %b %Y", localtime(t)).strip("0")
