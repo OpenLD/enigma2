@@ -94,7 +94,7 @@ def getAboutText():
 
 	AboutText += _("CPU:\t %s") % str(about.getCPUString()) + cpuMHz + " " + str(about.getCpuCoresString2()) + "\n"
 	AboutText += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
-	AboutText += _("Arch:\t %s") % str(about.getCPUArch()) + "\n"
+	AboutText += _("Architecture:\t %s") % str(about.getCPUArch()) + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
 	AboutText += _("Firmware:\t %s") % openLD + str(getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
