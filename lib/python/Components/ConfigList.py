@@ -11,7 +11,7 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 	def __init__(self, list, session = None):
 		GUIComponent.__init__(self)
 		self.l = eListboxPythonConfigContent()
-		seperation, = skin.parameters.get("ConfigListSeperator", (350, ))
+		seperation = skin.parameters.get("ConfigListSeperator", 200)
 		self.l.setSeperation(seperation)
 		self.timer = eTimer()
 		self.list = list
@@ -67,9 +67,18 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 	GUI_WIDGET = eListbox
 
 	def selectionChanged(self):
-		if isinstance(self.current,tuple) and len(self.current) >= 2:
-			self.current[1].onDeselect(self.session)
+# Only run onDeselect/onSelect if self.current != self.getCurrent()
+# i.e. if the selection has *actually* changed...
+# This means that Notifiers with immediate_feedback = False actually
+# do only get called once at the end of an item change, not for every
+# step along the way.
+#
+		orig_current = self.current;
 		self.current = self.getCurrent()
+		if (orig_current == self.current):
+			return
+		if isinstance(orig_current,tuple) and len(orig_current) >= 2:
+			orig_current[1].onDeselect(self.session)
 		if isinstance(self.current,tuple) and len(self.current) >= 2:
 			self.current[1].onSelect(self.session)
 		else:
@@ -106,10 +115,10 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 		self.handleKey(KEY_TIMEOUT)
 
 	def isChanged(self):
-		is_changed = False
 		for x in self.list:
-			is_changed |= x[1].isChanged()
-		return is_changed
+			if x[1].isChanged():
+				return True
+		return False
 
 	def pageUp(self):
 		if self.instance is not None:

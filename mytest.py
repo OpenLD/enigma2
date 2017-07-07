@@ -9,10 +9,12 @@ profile("PYTHON_START")
 
 import Tools.RedirectOutput
 from boxbranding import getBoxType, getBrandOEM, getImageCodeName, getImageType, getImageVersion, getImageBuild, getMachineBuild
+print "----------------------------"
 print "[Image Type] %s" % getImageType()
 print "[Image Version] %s" % getImageVersion()
 print "[Image Build] %s" % getImageBuild()
 print "[Image CodeName] %s" % getImageCodeName()
+print "----------------------------"
 
 import enigma
 import eConsoleImpl
@@ -20,6 +22,17 @@ import eBaseImpl
 enigma.eTimer = eBaseImpl.eTimer
 enigma.eSocketNotifier = eBaseImpl.eSocketNotifier
 enigma.eConsoleAppContainer = eConsoleImpl.eConsoleAppContainer
+
+print "Init Import modules for test"
+from enigma import eTimer
+
+from Screens.MessageBox import MessageBox
+from Screens.Screen import Screen
+from Components.config import config, configfile, ConfigSubsection, getConfigListEntry, ConfigSelectionNumber, ConfigSelection, ConfigSlider, ConfigYesNo, NoSave, ConfigNumber, ConfigText
+from Components.ConfigList import ConfigListScreen
+from Tools.Directories import fileExists
+print "End Import modules for test"
+
 boxtype = getBoxType()
 
 if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype in ('dm7080','dm820','dm520','dm525','dm900'):
@@ -346,11 +359,8 @@ class Session:
 		enigma.eDVBLocalTimeHandler.getInstance().syncDVBTime()
 
 		self.popCurrent()
-		try:
-			if callback is not None:
-				callback(*retval)
-		except:
-			pass
+		if callback is not None:
+			callback(*retval)
 
 	def execBegin(self, first=True, do_show = True):
 		assert not self.in_exec
@@ -391,11 +401,8 @@ class Session:
 	def deleteDialogWithCallback(self, callback, screen, *retval):
 		screen.hide()
 		screen.doClose()
-		try:
-			if callback is not None:
-				callback(*retval)
-		except:
-			pass
+		if callback is not None:
+			callback(*retval)
 
 	def instantiateSummaryDialog(self, screen, **kwargs):
 		if self.summary_desktop is not None:

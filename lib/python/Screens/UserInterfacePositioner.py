@@ -1,6 +1,7 @@
+from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Components.ActionMap import ActionMap
-from Components.config import config, configfile, getConfigListEntry
+from Components.config import config, configfile, ConfigSubsection, getConfigListEntry, ConfigSelectionNumber, ConfigSelection, ConfigSlider, ConfigYesNo, NoSave, ConfigNumber, ConfigText
 from Components.ConfigList import ConfigListScreen
 from Components.SystemInfo import SystemInfo
 from Components.Sources.StaticText import StaticText
@@ -28,15 +29,43 @@ def setPositionParameter(parameter, configElement):
 		f.close()
 
 def InitOsd():
-	SystemInfo["CanChange3DOsd"] = access('/proc/stb/fb/3dmode', R_OK) and True or False
+	SystemInfo["CanChange3DOsd"] = (access('/proc/stb/fb/3dmode', R_OK) or access('/proc/stb/fb/primary/3d', R_OK)) and True or False
 	SystemInfo["CanChangeOsdAlpha"] = access('/proc/stb/video/alpha', R_OK) and True or False
-	if SystemInfo["CanChangeOsdAlpha"] == True:
+	SystemInfo["CanChangeOsdPosition"] = access('/proc/stb/fb/dst_left', R_OK) and True or False
+	SystemInfo["OsdSetup"] = SystemInfo["CanChangeOsdPosition"]
+
+	if SystemInfo["CanChangeOsdAlpha"] == True or SystemInfo["CanChangeOsdPosition"] == True:
 		SystemInfo["OsdMenu"] = True
 	else:
 		SystemInfo["OsdMenu"] = False
 
 	if getBrandOEM() in ('fulan'):
+		SystemInfo["CanChangeOsdPosition"] = False
 		SystemInfo["CanChange3DOsd"] = False
+
+	if getBrandOEM() in ('dreambox'):
+		SystemInfo["CanChangeOsdPosition"] = True
+
+	def setOSDLeft(configElement):
+		if SystemInfo["CanChangeOsdPosition"]:
+			setPositionParameter("left", configElement)
+	config.osd.dst_left.addNotifier(setOSDLeft)
+
+	def setOSDWidth(configElement):
+		if SystemInfo["CanChangeOsdPosition"]:
+			setPositionParameter("width", configElement)
+	config.osd.dst_width.addNotifier(setOSDWidth)
+
+	def setOSDTop(configElement):
+		if SystemInfo["CanChangeOsdPosition"]:
+			setPositionParameter("top", configElement)
+	config.osd.dst_top.addNotifier(setOSDTop)
+
+	def setOSDHeight(configElement):
+		if SystemInfo["CanChangeOsdPosition"]:
+			setPositionParameter("height", configElement)
+	config.osd.dst_height.addNotifier(setOSDHeight)
+	print 'Setting OSD position: %s %s %s %s' %  (config.osd.dst_left.value, config.osd.dst_width.value, config.osd.dst_top.value, config.osd.dst_height.value)
 
 	def setOSDAlpha(configElement):
 		if SystemInfo["CanChangeOsdAlpha"]:
@@ -252,12 +281,19 @@ class UserInterfacePositioner2(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("User interface visibility"), config.osd.alpha, _("This option lets you adjust the transparency of the user interface")))
 			self.list.append(getConfigListEntry(_("Teletext base visibility"), config.osd.alpha_teletext, _("Base transparency for teletext, more options available within teletext screen.")))
 			self.list.append(getConfigListEntry(_("Web browser base visibility"), config.osd.alpha_webbrowser, _("Base transparency for OpenOpera web browser")))
+		if SystemInfo["CanChangeOsdPosition"]:
+			self.list.append(getConfigListEntry(_("Move Left/Right"), config.osd.dst_left, _("Use the Left/Right buttons on your remote to move the user interface left/right")))
+			self.list.append(getConfigListEntry(_("Width"), config.osd.dst_width, _("Use the Left/Right buttons on your remote to adjust the size of the user interface. Left button decreases the size, Right increases the size.")))
+			self.list.append(getConfigListEntry(_("Move Up/Down"), config.osd.dst_top, _("Use the Left/Right buttons on your remote to move the user interface up/down")))
+			self.list.append(getConfigListEntry(_("Height"), config.osd.dst_height, _("Use the Left/Right buttons on your remote to adjust the size of the user interface. Left button decreases the size, Right increases the size.")))
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 
 		self.onLayoutFinish.append(self.layoutFinished)
 		if not self.selectionChanged in self["config"].onSelectionChanged:
 			self["config"].onSelectionChanged.append(self.selectionChanged)
+		if self.restoreService not in self.onClose:
+			self.onClose.append(self.restoreService)
 		self.selectionChanged()
 
 	def selectionChanged(self):
@@ -269,114 +305,13 @@ class UserInterfacePositioner2(Screen, ConfigListScreen):
 	def layoutFinished(self):
 		self.setTitle(_(self.setup_title))
 
-	def createSummary(self):
-		from Screens.Setup import SetupSummary
-		return SetupSummary
-
-	# for summary:
-	def changedEntry(self):
-		for x in self.onChangedEntry:
-			x()
-
-	def getCurrentEntry(self):
-		return self["config"].getCurrent()[0]
-
-	def getCurrentValue(self):
-		return str(self["config"].getCurrent()[1].getText())
-
-	def keyLeft(self):
-		ConfigListScreen.keyLeft(self)
-		self.setPreviewPosition()
-
-	def keyRight(self):
-		ConfigListScreen.keyRight(self)
-		self.setPreviewPosition()
-
-	def keyDefault(self):
-		config.osd.alpha.setValue(255)
-		config.osd.alpha_teletext.setValue(255)
-		config.osd.alpha_webbrowser.setValue(255)
-		self["config"].l.setList(self.list)
-
-	def setPreviewPosition(self):
-		size_w = getDesktop(0).size().width()
-		size_h = getDesktop(0).size().height()
-		dsk_w = int(float(size_w)) / float(720)
-		dsk_h = int(float(size_h)) / float(576)
-
-	def saveAll(self):
-		for x in self["config"].list:
-			x[1].save()
-		configfile.save()
-
-	# keySave and keyCancel are just provided in case you need them.
-	# you have to call them by yourself.
-	def keySave(self):
-		self.saveAll()
-		self.close()
-
-	def cancelConfirm(self, result):
-		if not result:
-			return
-
-		for x in self["config"].list:
-			x[1].cancel()
-		self.close()
-
-	def keyCancel(self):
-		if self["config"].isChanged():
-			from Screens.MessageBox import MessageBox
-			self.session.openWithCallback(self.cancelConfirm, MessageBox, _("Really close without saving settings?"), default = False)
-		else:
-			self.close()
-
-	def run(self):
-		configfile.save()
-		self.close()
-
-class UserInterfacePositioner(Screen, ConfigListScreen):
-	def __init__(self, session):
-		Screen.__init__(self, session)
-		self.setup_title = _("Position Setup")
-#		self.Console = Console()
-		self["status"] = StaticText()
-		self["key_red"] = StaticText(_("Cancel"))
-		self["key_green"] = StaticText(_("save"))
-		self["key_yellow"] = StaticText(_("Defaults"))
-
-
-		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
-			{
-				"cancel": self.keyCancel,
-				"save": self.keySave,
-				"left": self.keyLeft,
-				"right": self.keyRight,
-				"yellow": self.keyDefault,
-			}, -2)
-
-		self.onChangedEntry = [ ]
-		self.list = []
-		ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
-		if SystemInfo["CanChangeOsdAlpha"] == True:
-			self.list.append(getConfigListEntry(_("User interface visibility"), config.osd.alpha, _("This option lets you adjust the transparency of the user interface")))
-			self.list.append(getConfigListEntry(_("Teletext base visibility"), config.osd.alpha_teletext, _("Base transparency for teletext, more options available within teletext screen.")))
-			self.list.append(getConfigListEntry(_("Web browser base visibility"), config.osd.alpha_webbrowser, _("Base transparency for OpenOpera web browser")))
-		self["config"].list = self.list
-		self["config"].l.setList(self.list)
-
-		self.onLayoutFinish.append(self.layoutFinished)
-		if not self.selectionChanged in self["config"].onSelectionChanged:
-			self["config"].onSelectionChanged.append(self.selectionChanged)
-		self.selectionChanged()
-
-	def selectionChanged(self):
-		if getBoxType().startswith('azbox'):
+	def restoreService(self):
+		try:
+			serviceRef = self.session.nav.getCurrentlyPlayingServiceReference()
+			self.session.nav.stopService()
+			self.session.nav.playService(serviceRef)
+		except:
 			pass
-		else:
-			self["status"].setText(self["config"].getCurrent()[2])
-
-	def layoutFinished(self):
-		self.setTitle(_(self.setup_title))
 
 	def createSummary(self):
 		from Screens.Setup import SetupSummary
@@ -410,7 +345,6 @@ class UserInterfacePositioner(Screen, ConfigListScreen):
 		config.osd.dst_width.setValue(720)
 		config.osd.dst_top.setValue(0)
 		config.osd.dst_height.setValue(576)
-
 		self["config"].l.setList(self.list)
 
 	def setPreviewPosition(self):
@@ -476,7 +410,6 @@ class UserInterfacePositioner(Screen, ConfigListScreen):
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("save"))
 		self["key_yellow"] = StaticText(_("Defaults"))
-		
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
 			{
@@ -549,7 +482,9 @@ class UserInterfacePositioner(Screen, ConfigListScreen):
 		config.osd.dst_width.setValue(720)
 		config.osd.dst_top.setValue(0)
 		config.osd.dst_height.setValue(576)
-		self["config"].l.setList(self.list)
+		for item in self["config"].list:
+			self["config"].invalidate(item)
+		print 'Setting default OSD position: %s %s %s %s' %  (config.osd.dst_left.value, config.osd.dst_width.value, config.osd.dst_top.value, config.osd.dst_height.value)
 
 	def setPreviewPosition(self):
 		size_w = getDesktop(0).size().width()
@@ -569,6 +504,8 @@ class UserInterfacePositioner(Screen, ConfigListScreen):
 		config.osd.dst_width.setValue(dst_width)
 		config.osd.dst_top.setValue(dst_top)
 		config.osd.dst_height.setValue(dst_height)
+		for item in self["config"].list:
+			self["config"].invalidate(item)
 		print 'Setting OSD position: %s %s %s %s' %  (config.osd.dst_left.value, config.osd.dst_width.value, config.osd.dst_top.value, config.osd.dst_height.value)
 
 	def saveAll(self):
@@ -604,6 +541,7 @@ class UserInterfacePositioner(Screen, ConfigListScreen):
 		config.osd.dst_height.save()
 		configfile.save()
 		self.close()
+
 
 class OSD3DSetupScreen(Screen, ConfigListScreen):
 	def __init__(self, session):

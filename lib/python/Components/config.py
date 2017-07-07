@@ -94,23 +94,13 @@ class ConfigElement(object):
 			self.changedFinal()  # call none immediate_feedback notifiers, immediate_feedback Notifiers are called as they are chanaged, so do not need to be called here.
 
 	def isChanged(self):
-		print '\n Config: isChanged'
 		sv = self.saved_value
-		print 'Config: SV1:',str(sv)
-		print 'Config: SV2:',self.tostring(sv)
-		print 'Config: self.value1:',str(self.value)
-		print 'Config: self.value2:',self.tostring(self.value)
-		print 'Config: self.default1:',str(self.default)
-		print 'Config: self.default2:',self.tostring(self.default)
-
-		if sv is None and str(self.value) == str(self.default):
-			print 'Config A1: FALSE'
-			return False
-		elif sv is None and self.tostring(self.value) != self.tostring(self.default):
-			print 'Config: A2:',self.tostring(self.value) != self.tostring(self.default)
-			return self.tostring(self.value) != self.tostring(self.default)
-		print 'Config: A3:',self.tostring(self.value) != self.tostring(sv)
-		return self.tostring(self.value) != self.tostring(sv)
+		strv = self.tostring(self.value)
+		if sv is None:
+			retval = strv != self.tostring(self.default)
+		else:
+			retval = strv != sv
+		return retval
 
 	def changed(self):
 		if self.__notifiers:
@@ -1292,9 +1282,11 @@ class ConfigNumber(ConfigText):
 	def isChanged(self):
 		sv = self.saved_value
 		strv = self.tostring(self.value)
-		if sv is None and strv == str(self.default):
-			return False
-		return strv != self.tostring(sv)
+		if sv is None:
+			retval = strv != self.default
+		else:
+			retval = strv != sv
+		return retval
 
 	def conform(self):
 		pos = len(self.text) - self.marked_pos
@@ -1382,7 +1374,7 @@ class ConfigSlider(ConfigElement):
 			value = self.min
 		elif value > self.max:
 			value = self.max
-		if self.value != value:		#avoid call of setter if value not changed
+		if self.value != value:
 			self.value = value
 
 	def handleKey(self, key):
@@ -1641,7 +1633,8 @@ class ConfigLocations(ConfigElement):
 		locations = self.locations
 		if val is None and not locations:
 			return False
-		return self.tostring([x[0] for x in locations]) != sv
+		retval = self.tostring([x[0] for x in locations]) != sv
+		return retval
 
 	def addedMount(self, mp):
 		for x in self.locations:
@@ -1994,7 +1987,12 @@ class ConfigFile:
 
 	def save(self):
 #		config.save()
-		config.saveToFile(self.CONFIG_FILE)
+		try:
+			config.saveToFile(self.CONFIG_FILE)
+			#print "[Config] Config file saved ok..."
+		except:
+			print "[Config] Config file saevd NOT FOUND..."
+			return
 
 	def __resolveValue(self, pickles, cmap):
 		key = pickles[0]

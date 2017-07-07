@@ -49,9 +49,9 @@ def getAboutText():
 
 	if about.getChipSetString() != _("unavailable"):
 		if about.getIsBroadcom():
-			AboutText += _("Chipset:\t BCM%s\n") % about.getChipSetString().upper()
+			AboutText += _("Chipset:\t BCM%s\n") % str(about.getChipSetString().upper())
 		else:
-			AboutText += _("Chipset:\t %s\n") % about.getChipSetString().upper()
+			AboutText += _("Chipset:\t %s\n") % str(about.getChipSetString().upper())
 
 	bogoMIPS = ""
 	if path.exists('/proc/cpuinfo'):
@@ -184,7 +184,14 @@ class About(Screen):
 		self["lab5"] = StaticText(_("Web:\t http://www.odisealinux.com"))
 		model = None
 
-		AboutText = getAboutText()[0]
+		if getAboutText:
+			try:
+				AboutText = getAboutText()[0]
+			except:
+				pass
+		else:
+			return
+		#AboutText = getAboutText()[0]
 
 		self["AboutScrollLabel"] = ScrollLabel(AboutText)
 
@@ -711,7 +718,7 @@ class SystemNetworkInfo(Screen):
 class AboutSummary(Screen):
 	def __init__(self, session, parent):
 		Screen.__init__(self, session, parent=parent)
-		self["selected"] = StaticText("openLD:" + getImageVersion())
+		self["selected"] = StaticText("openLD:" + str(getImageVersion()))
 
 		AboutText = getAboutText()[1]
 
@@ -782,6 +789,7 @@ class CommitInfo(Screen):
 			("branding-module", "Branding Module"),
 			("3rdparty-plugins", "3rdparty Plugins"),
 			("e2openplugin-OpenWebif", "OpenWebif"),
+			("enigma2-plugin-skins-simpleld", "Skin SimpleLD"),
 			("enigma2-plugin-skins-metrixhd", "Skin MetrixHD OpenLD"),
 			("enigma2-plugin-picons-openld-19edark_on_white", "Picons (TSCNEO) Dark_on_white"),
 			("enigma2-plugin-picons-openld-19elight_on_transparent", "Picons (TSCNEO) Elight_on_transparent"),
