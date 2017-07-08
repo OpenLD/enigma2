@@ -1,19 +1,23 @@
 from os import path
+from time import time, ctime
+
 from enigma import eServiceCenter, eServiceReference, eTimer, pNavigation, getBestPlayableServiceReference, iPlayableService, eStreamServer, eActionMap, setPreferredTuner
+
 from Components.ParentalControl import parentalControl
-from Components.SystemInfo import SystemInfo
 from Components.config import config
+from Components.SystemInfo import SystemInfo
 from Components.PluginComponent import plugins
 from Plugins.Plugin import PluginDescriptor
 from Tools.BoundFunction import boundFunction
 from Tools.StbHardware import getFPWasTimerWakeup
-from time import time, ctime
+from Tools import Notifications
 import RecordTimer
 import PowerTimer
 import Screens.Standby
 import NavigationInstance
 import ServiceReference
 from Screens.InfoBar import InfoBar, MoviePlayer
+from Components.Sources.StreamService import StreamServiceList
 from boxbranding import getBoxType, getBrandOEM
 
 # TODO: remove pNavgation, eNavigation and rewrite this stuff in python.
@@ -370,7 +374,12 @@ class Navigation:
 		return ret
 
 	def getRecordings(self, simulate=False, type=pNavigation.isAnyRecording):
-		return self.pnav and self.pnav.getRecordings(simulate, type)
+		recs = self.pnav and self.pnav.getRecordings(simulate, type)
+		if not simulate and StreamServiceList:
+			for rec in recs[:]:
+				if rec.__deref__() in StreamServiceList:
+					recs.remove(rec)
+		return recs
 
 	def getRecordingsServices(self, type=pNavigation.isAnyRecording):
 		return self.pnav and self.pnav.getRecordingsServices(type)
