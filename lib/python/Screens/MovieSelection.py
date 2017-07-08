@@ -1360,7 +1360,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 
 	def itemSelectedCheckTimeshiftCallback(self, ext, path, answer):
 		if answer:
-			if ext == '.iso':
+			if ext in (".iso", ".img", ".nrg") and BlurayPlayer is not None:
 				# Mount iso for blu-ray check only if BlurayPlayer installed
 				try:
 					from Plugins.Extensions.BlurayPlayer import BlurayUi
