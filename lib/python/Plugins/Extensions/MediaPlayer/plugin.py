@@ -123,7 +123,7 @@ class MediaPlayer(Screen, InfoBarBase, InfoBarScreenSaver, InfoBarSeek, InfoBarA
 
 		# 'None' is magic to start at the list of mountpoints
 		defaultDir = config.mediaplayer.defaultDir.getValue()
-		self.filelist = FileList(defaultDir, matchingPattern = "(?i)^.*\.(mp2|mp3|ogg|ts|mts|m2ts|wav|wave|m3u|pls|e2pls|mpg|vob|avi|divx|m4v|mkv|mp4|m4a|dat|flac|flv|mov|dts|3gp|3g2|asf|wmv|wma|webm)", useServiceRef = True, additionalExtensions = "4098:m3u 4098:e2pls 4098:pls")
+		self.filelist = FileList(defaultDir, matchingPattern = "(?i)^.*\.(mp2|m2a|mp3|mpeg|mpe|rm|rmvb|oga|ogg|ogm|ogv|ts|mts|m2ts|wav|wave|m3u|pls|e2pls|mpg|vob|avi|divx|m4v|aac|ape|alac|ac3|mka|mkv|mp4|m4a|dat|flac|flv|mov|dts|3gp|3g2|asf|wmv|wma|webm)", useServiceRef = True, additionalExtensions = "4098:m3u 4098:e2pls 4098:pls")
 		self["filelist"] = self.filelist
 
 		self.playlist = MyPlayList()
@@ -1089,7 +1089,7 @@ def filescan_open(list, session, **kwargs):
 	mp.savePlaylistOnExit = False
 
 	for file in list:
-		if file.mimetype == "video/MP2T":
+		if file.mimetype == "video/mp2t":
 			stype = 1
 		else:
 			stype = 4097
@@ -1142,7 +1142,7 @@ def movielist_open(list, session, **kwargs):
 	from enigma import eServiceReference
 	from Screens.InfoBar import InfoBar
 	f = list[0]
-	if f.mimetype == "video/MP2T":
+	if f.mimetype == "video/mp2t":
 		stype = 1
 	else:
 		stype = 4097
@@ -1167,7 +1167,7 @@ def audiocdscan(menuid, **kwargs):
 def filescan(**kwargs):
 	from Components.Scanner import Scanner, ScanPath
 	return [
-		Scanner(mimetypes = ["video/mpeg", "video/MP2T", "video/x-msvideo", "video/mkv", "video/webm", "video/ogg", "video/avi"],
+		Scanner(mimetypes = ["video/mpeg", "video/mp2t", "video/x-msvideo", "video/mkv", "video/webm", "video/x-ms-wmv", "video/x-matroska", "video/ogg", "video/dvd", "video/mp4", "video/avi", "video/divx", "video/x-mpeg", "video/x-flv", "video/quicktime", "video/x-ms-asf", "video/3gpp", "video/3gpp2", "application/vnd.rn-realmedia", "application/vnd.rn-realmedia-vbr", "video/mts"],
 			paths_to_scan =
 				[
 					ScanPath(path = "", with_subdirs = False),
@@ -1187,7 +1187,7 @@ def filescan(**kwargs):
 			description = _("View video CD..."),
 			openfnc = filescan_open,
 		),
-		Scanner(mimetypes = ["audio/mpeg", "audio/x-wav", "application/ogg", "audio/x-flac"],
+		Scanner(mimetypes = ["audio/mpeg", "audio/x-wav", "audio/dts", "audio/ogg", "audio/flac", "audio/mp4", "audio/x-ms-wma", "audio/ac3", "audio/x-matroska", "audio/x-aac", "audio/x-monkeys-audio"],
 			paths_to_scan =
 				[
 					ScanPath(path = "", with_subdirs = False),

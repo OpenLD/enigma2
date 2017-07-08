@@ -20,10 +20,10 @@ from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformat
 	RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER, eServiceReference, eServiceCenter, eTimer, \
 	getDesktop, loadPNG, BT_SCALE, BT_KEEP_ASPECT_RATIO
 
-AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".3gp", ".3g2", ".wma"))
-DVD_EXTENSIONS = ('.iso', '.img')
+AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".oga", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".wma", ".ac3", ".mka", ".aac", ".ape", ".alac"))
+DVD_EXTENSIONS = frozenset((".iso", ".img", ".nrg"))
 IMAGE_EXTENSIONS = frozenset((".jpg", ".jpeg", ".png", ".gif", ".gifv", ".bmp"))
-MOVIE_EXTENSIONS = frozenset((".264", ".265", ".amv", ".bik", ".camrec", ".mfv", ".mpg", ".mpg4", ".mpeg", ".vob", ".wav", ".ogv", ".m4s", ".m4u", ".m4v", ".mv4", ".mks", ".mkv", ".mk3d", ".avi", ".dash", ".dav", ".divx", ".dat", ".drc", ".dvr", ".dv4", ".dvx", ".tts", ".ts", ".ts4", ".flv", ".qt", ".nsv", ".n3r", ".mp4", ".mov", ".wmv", ".mod", ".mpv", ".m2v", ".m2t", ".m2ts", ".m2p", ".mts", ".dxa", ".mxf", ".svi", ".swf", ".trec", ".avchd", ".avc", ".h264", ".h265", ".mmv", ".asf", ".arf", ".webm", ".yuv" ".vvf", ".vid", ".vp8", ".vcd", ".wmv", ".xwmv"))
+MOVIE_EXTENSIONS = frozenset((".264", ".265", ".amv", ".bik", ".camrec", ".mfv", ".mpg", ".mpg4", ".mpeg", ".vob", ".wav", ".ogv", ".m4s", ".m4u", ".m4v", ".mv4", ".mks", ".mkv", ".mk3d", ".avi", ".dash", ".dav", ".divx", ".dat", ".drc", ".dvr", ".dv4", ".dvx", ".tts", ".ts", ".ts4", ".flv", ".qt", ".nsv", ".n3r", ".mp4", ".mov", ".wmv", ".mod", ".mpv", ".mpe", ".rm", ".rmvb", ".ogm", ".ogv", ".m2v", ".m2t", ".m2ts", ".m2p", ".mts", ".dxa", ".mxf", ".svi", ".swf", ".trec", ".avchd", ".avc", ".h264", ".h265", ".mmv", ".asf", ".3gp", ".3g2", ".arf", ".webm", ".yuv" ".vvf", ".vid", ".vp8", ".vcd", ".wmv", ".xwmv"))
 KNOWN_EXTENSIONS = MOVIE_EXTENSIONS.union(IMAGE_EXTENSIONS, DVD_EXTENSIONS, AUDIO_EXTENSIONS)
 RECORD_EXTENSIONS = (".ts")
 
