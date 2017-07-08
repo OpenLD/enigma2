@@ -17264,3 +17264,6 @@ msgstr "Obtenga su Weather ID local en weather.open-store.net"
 
 msgid "Unit"
 msgstr "Unidades"
+
+msgid "Speed:"
+msgstr "Velocidad:"
