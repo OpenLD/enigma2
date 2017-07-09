@@ -391,11 +391,12 @@ class RemoteControlType(Screen, ConfigListScreen):
 		self.skinName = ["RemoteControlType", "Setup" ]
 		self.setTitle(_("Remote control type setup"))
 
-		self["actions"] = ActionMap(["SetupActions"],
-		{
-			"cancel": self.keyCancel,
-			"save": self.keySave,
-		}, -1)
+		self["actions"] = ActionMap(["SetupActions", "MenuActions"],
+			{
+				"cancel": self.keyCancel,
+				"save": self.keySave,
+				"menu": self.keyCancel,
+			}, -2)
 
 		self["HelpWindow"] = Pixmap()
 		self["HelpWindow"].hide()
