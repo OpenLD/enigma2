@@ -1,18 +1,17 @@
+from GUIComponent import GUIComponent
+from Tools.FuzzyDate import FuzzyTime
+from ServiceReference import ServiceReference
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, \
+	MultiContentEntryPixmapAlphaBlend, MultiContentEntryProgress
+from Components.Renderer.Picon import getPiconName
+from Components.config import config
 import os
 import struct
 import random
-
-from GUIComponent import GUIComponent
-from Tools.FuzzyDate import FuzzyTime
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest, \
-	MultiContentEntryPixmapAlphaBlend, MultiContentEntryProgress
-from Components.config import config
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import SCOPE_ACTIVE_SKIN, resolveFilename
 from Tools.TextBoundary import getTextBoundarySize
 from Screens.LocationBox import defaultInhibitDirs
-from ServiceReference import ServiceReference
-from Components.Renderer.Picon import getPiconName
 import NavigationInstance
 import skin
 
@@ -22,8 +21,8 @@ from enigma import eListboxPythonMultiContent, eListbox, gFont, iServiceInformat
 
 AUDIO_EXTENSIONS = frozenset((".dts", ".mp3", ".wav", ".wave", ".oga", ".ogg", ".flac", ".m4a", ".mp2", ".m2a", ".wma", ".ac3", ".mka", ".aac", ".ape", ".alac"))
 DVD_EXTENSIONS = frozenset((".iso", ".img", ".nrg"))
-IMAGE_EXTENSIONS = frozenset((".jpg", ".jpeg", ".png", ".gif", ".gifv", ".bmp"))
-MOVIE_EXTENSIONS = frozenset((".264", ".265", ".amv", ".bik", ".camrec", ".mfv", ".mpg", ".mpg4", ".mpeg", ".vob", ".wav", ".ogv", ".m4s", ".m4u", ".m4v", ".mv4", ".mks", ".mkv", ".mk3d", ".avi", ".dash", ".dav", ".divx", ".dat", ".drc", ".dvr", ".dv4", ".dvx", ".tts", ".ts", ".ts4", ".flv", ".qt", ".nsv", ".n3r", ".mp4", ".mov", ".wmv", ".mod", ".mpv", ".mpe", ".rm", ".rmvb", ".ogm", ".ogv", ".m2v", ".m2t", ".m2ts", ".m2p", ".mts", ".dxa", ".mxf", ".svi", ".swf", ".trec", ".avchd", ".avc", ".h264", ".h265", ".mmv", ".asf", ".3gp", ".3g2", ".arf", ".webm", ".yuv" ".vvf", ".vid", ".vp8", ".vcd", ".wmv", ".xwmv"))
+IMAGE_EXTENSIONS = frozenset((".jpg", ".png", ".gif", ".bmp", ".jpeg"))
+MOVIE_EXTENSIONS = frozenset((".mpg", ".mpeg",".vob", ".m4v", ".mkv", ".avi", ".divx", ".dat", ".flv", ".mp4", ".mov", ".wmv", ".asf", ".webm", ".3gp", ".3g2", ".mpe", ".rm", ".rmvb", ".ogm", ".ogv", ".m2ts", ".mts"))
 KNOWN_EXTENSIONS = MOVIE_EXTENSIONS.union(IMAGE_EXTENSIONS, DVD_EXTENSIONS, AUDIO_EXTENSIONS)
 RECORD_EXTENSIONS = (".ts")
 
@@ -245,7 +244,10 @@ class MovieList(GUIComponent):
 		result = {}
 		for timer in NavigationInstance.instance.RecordTimer.timer_list:
 			if timer.isRunning() and not timer.justplay:
-				result[os.path.split(timer.Filename)[1]+'.ts'] = timer
+				try:
+					result[os.path.split(timer.Filename)[1]+'.ts'] = timer
+				except:
+					pass
 		if self.runningTimers == result:
 			return
 		self.runningTimers = result
@@ -267,6 +269,11 @@ class MovieList(GUIComponent):
 	def selectionChanged(self):
 		for x in self.onSelectionChanged:
 			x()
+
+	def setListType(self, type):
+		if type != self.list_type:
+			self.list_type = type
+			self.redrawList()
 
 	def setDescriptionState(self, val):
 		self.descr_state = val
@@ -682,7 +689,7 @@ class MovieList(GUIComponent):
 				# For auto tags, we are keeping a (tag, movies) dictionary.
 				#It will be used later to check if movies have a complete sentence in common.
 				for tag in this_tags:
-					if autotags.has_key(tag):
+					if tag in autotags:
 						autotags[tag].append(name)
 					else:
 						autotags[tag] = [name]

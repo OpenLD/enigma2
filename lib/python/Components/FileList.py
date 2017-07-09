@@ -8,60 +8,51 @@ from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, \
 from Tools.LoadPixmap import LoadPixmap
 
 EXTENSIONS = {
-		"m4a": "music",
 		"dts": "music",
-		"mp2": "music",
 		"mp3": "music",
 		"wav": "music",
 		"wave": "music",
 		"oga": "music",
 		"ogg": "music",
+		"flac": "music",
+		"m4a": "music",
+		"mp2": "music",
+		"m2a": "music",
 		"wma": "music",
 		"ac3": "music",
 		"mka": "music",
 		"aac": "music",
 		"ape": "music",
 		"alac": "music",
-		"flac": "music",
 		"jpg": "picture",
-		"jpeg": "picture",
 		"png": "picture",
 		"gif": "picture",
 		"bmp": "picture",
-		"ts": "movie",
+		"jpeg": "picture",
+		"mpg": "movie",
+		"vob": "movie",
+		"m4v": "movie",
+		"mkv": "movie",
 		"avi": "movie",
-		"avc": "movie",
-		"avchd": "movie",
-		"mts": "movie",
-		"dat": "movie",
 		"divx": "movie",
-		"h264": "movie",
-		"h265": "movie",
-		"vp8": "movie",
-		"qt": "movie",
-		"amv": "movie",
-		"swf": "movie",
-		"m2t": "movie",
-		"m2v": "movie",
-		"ogv": "movie",
+		"dat": "movie",
+		"flv": "movie",
+		"mp4": "movie",
+		"mov": "movie",
+		"wmv": "movie",
+		"asf": "movie",
+		"3gp": "movie",
+		"3g2": "movie",
+		"webm": "movie",
+		"mpeg": "movie",
+		"mpe": "movie",
 		"rm": "movie",
 		"rmvb": "movie",
 		"ogm": "movie",
-		"flv": "movie",
-		"vob": "movie",
-		"m4v": "movie",
-		"mpe": "movie",
-		"mpg": "movie",
-		"mpeg": "movie",
-		"mkv": "movie",
-		"mp4": "movie",
-		"mov": "movie",
+		"ogv": "movie",
 		"m2ts": "movie",
-		"3gp": "movie",
-		"3g2": "movie",
-		"asf": "movie",
-		"wmv": "movie",
-		"webm": "movie",
+		"mts": "movie",
+		"ts": "movie",
 	}
 
 def FileEntryComponent(name, absolute = None, isDir = False):
@@ -75,7 +66,7 @@ def FileEntryComponent(name, absolute = None, isDir = False):
 	else:
 		extension = name.split('.')
 		extension = extension[-1].lower()
-		if EXTENSIONS.has_key(extension):
+		if extension in EXTENSIONS:
 			png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "extensions/" + EXTENSIONS[extension] + ".png"))
 		else:
 			png = None
@@ -314,7 +305,7 @@ def MultiFileSelectEntryComponent(name, absolute = None, isDir = False, selected
 	else:
 		extension = name.split('.')
 		extension = extension[-1].lower()
-		if EXTENSIONS.has_key(extension):
+		if extension in EXTENSIONS:
 			png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "extensions/" + EXTENSIONS[extension] + ".png"))
 		else:
 			png = None
