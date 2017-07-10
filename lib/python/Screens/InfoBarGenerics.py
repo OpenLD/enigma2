@@ -2552,7 +2552,10 @@ class InfoBarSeek:
 
 	def pauseService(self):
 		if self.seekstate != self.SEEK_STATE_EOF:
-			self.lastseekstate = self.seekstate
+			try:
+				self.lastseekstate = self.seekstate
+			except:
+				pass
 		self.setSeekState(self.SEEK_STATE_PAUSE)
 
 	def unPauseService(self):
