@@ -195,10 +195,14 @@ def InitUsageConfig():
 	config.usage.autorecord_path.addNotifier(autorecordpathChanged, immediate_feedback = False)
 	config.usage.allowed_autorecord_paths = ConfigLocations(default = [resolveFilename(SCOPE_AUTORECORD)])
 
-
+	config.usage.trashsort_deltime = ConfigSelection(default = "no", choices = [
+		("no", _("no")),
+		("show record time", _("Yes, show record time")),
+		("show delete time", _("Yes, show delete time"))])
 	config.usage.movielist_trashcan = ConfigYesNo(default = True)
 	config.usage.movielist_trashcan_network_clean = ConfigYesNo(default = False)
-	config.usage.movielist_trashcan_days = ConfigSelectionNumber(min = 1, max = 31, stepwidth = 1, default = 8, wraparound = True)
+
+	config.usage.movielist_trashcan_days = ConfigSelectionNumber(min = 0, max = 31, stepwidth = 1, default = 8, wraparound = True)
 	config.usage.movielist_trashcan_reserve = ConfigNumber(default = 40)
 	config.usage.on_movie_start = ConfigSelection(default = "ask yes", choices = [
 		("ask yes", _("Ask user (with default as 'yes')")),
@@ -527,7 +531,7 @@ def InitUsageConfig():
 	choiceoptions = [("mode1", _("Mode 1")), ("mode2", _("Mode 2"))]
 	config.osd.threeDsetmode = ConfigSelection(default = 'mode1' , choices = choiceoptions )
 
-	hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/media/mmc', '/media/mmc'), ('/media/uSDextra/', '/media/uSDextra/'), ('/media/upnp/', '/media/upnp/'), ('/media/net/', '/media/net/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
+	hddchoises = [('/media/hdd/', '/media/hdd/'), ('/media/usb/', '/media/usb/'), ('/media/mmc1', '/media/mmc1'), ('/media/uSDextra/', '/media/uSDextra/'), ('/media/upnp/', '/media/upnp/'), ('/media/net/', '/media/net/'), ('/usr/share/enigma2/', '/usr/share/enigma2/'), ('/etc/enigma2/', '/etc/enigma2/')]
 	for p in harddiskmanager.getMountedPartitions():
 		if os.path.exists(p.mountpoint):
 			d = os.path.normpath(p.mountpoint)

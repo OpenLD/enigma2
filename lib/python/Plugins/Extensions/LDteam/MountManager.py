@@ -88,11 +88,14 @@ class HddMount(Screen):
 		if len(self.list) == 0:
 			return
 		self.sel = self['list'].getCurrent()
-		mountp = self.sel[3]
-		if mountp.find('/media/hdd') < 0:
-			self["key_red"].setText(_("Use as HDD"))
-		else:
-			self["key_red"].setText(" ")
+		try:
+			mountp = self.sel[3]
+			if mountp.find('/media/hdd') < 0:
+				self["key_red"].setText(_("Use as HDD"))
+			else:
+				self["key_red"].setText(" ")
+		except:
+			pass
 
 		if self.sel:
 			try:
@@ -614,6 +617,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		('/media/usb2', '/media/usb2'),
 		('/media/usb3', '/media/usb3'),
 		('/media/mmc', '/media/mmc'),
+		('/media/mmc1', '/media/mmc1'),
 		('/media/mmc2', '/media/mmc2'),
 		('/media/mmc3', '/media/mmc3'),
 		('/media/cf', '/media/cf'),

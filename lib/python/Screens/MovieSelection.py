@@ -59,7 +59,7 @@ config.movielist.videodirs = ConfigLocations(default=[resolveFilename(SCOPE_HDD)
 config.movielist.last_selected_tags = ConfigSet([], default=[])
 config.movielist.play_audio_internal = ConfigYesNo(default=True)
 config.movielist.settings_per_directory = ConfigYesNo(default=True)
-config.movielist.root = ConfigSelection(default="/media", choices=["/", "/media", "/media/hdd", "/media/hdd/movie", "/media/usb", "/media/usb/movie", "/media/mmc", "/media/mmc/movie", "/media/uSDextra", "/media/uSDextra/movie", "/media/upnp", "/media/upnp/movie", "/media/net", "/media/net/movie"])
+config.movielist.root = ConfigSelection(default="/media", choices=["/", "/media", "/media/hdd", "/media/hdd/movie", "/media/usb", "/media/usb/movie", "/media/mmc1", "/media/mmc1/movie", "/media/uSDextra", "/media/uSDextra/movie", "/media/upnp", "/media/upnp/movie", "/media/net", "/media/net/movie"])
 config.movielist.hide_extensions = ConfigYesNo(default=False)
 config.movielist.stop_service = ConfigYesNo(default=True)
 
@@ -83,6 +83,11 @@ l_moviesort = [
 	(str(MovieList.SORT_RECORDED_REVERSE), _("reverse by date"), '01/02/03'),
 	(str(MovieList.SORT_ALPHANUMERIC_REVERSE), _("alphabetic reverse"), 'Z-A'),
 	(str(MovieList.SORT_ALPHAREV_DATE_NEWEST_FIRST), _("alpharev then newest"), 'Z1 A2 A1')]
+
+# 4th item is the textual value set in UsageConfig.py
+l_trashsort = [
+	(str(MovieList.TRASHSORT_SHOWRECORD), _("delete time - show record time (Trash ONLY)"), '03/02/01', "show record time"),
+	(str(MovieList.TRASHSORT_SHOWDELETE), _("delete time - show delete time (Trash ONLY)"), '03/02/01', "show delete time")]
 
 def defaultMoviePath():
 	result = config.usage.default_path.value
@@ -247,7 +252,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 		cfg.moviesort = ConfigSelection(default=str(config.movielist.moviesort.value), choices = l_moviesort)
 		cfg.description = ConfigYesNo(default=(config.movielist.description.value != MovieList.HIDE_DESCRIPTION))
 		configList = [getConfigListEntry(_("Use trash can in movielist"), config.usage.movielist_trashcan, _("When enabled, deleted recordings are moved to the trash can, instead of being deleted immediately.")),
-					  getConfigListEntry(_("Remove items from trash can after (days)"), config.usage.movielist_trashcan_days, _("Configure the number of days after which items are automatically removed from the trash can.")),
+					  getConfigListEntry(_("Remove items from trash can after (days)"), config.usage.movielist_trashcan_days, _("Configure the number of days after which items are automatically removed from the trash can.\nA setting of 0 disables this.")),
 					  getConfigListEntry(_("Clean network trash cans"), config.usage.movielist_trashcan_network_clean, _("When enabled, network trash cans are probed for cleaning.")),
 					  getConfigListEntry(_("Disk space to reserve for recordings (in GB)"), config.usage.movielist_trashcan_reserve, _("Configure the minimum amount of disk space to be available for recordings. When the amount of space drops below this value, deleted items will be removed from the trash can.")),
 					  getConfigListEntry(_("Background delete option"), config.misc.erase_flags, _("Configure on which devices the background delete option should be used.")),
@@ -259,6 +264,7 @@ class MovieBrowserConfiguration(ConfigListScreen,Screen):
 					  getConfigListEntry(_("Use slim screen"), config.movielist.useslim, _("Use the alternative screen")),
 					  getConfigListEntry(_("Sort"), cfg.moviesort, _("Set the default sorting method.")),
 					  getConfigListEntry(_("Show extended description"), cfg.description, _("Show or hide the extended description, (skin dependent).")),
+					  getConfigListEntry(_("Sort Trash by deletion time"), config.usage.trashsort_deltime, _("Use the deletion time to sort Trash folders.\nMost recently deleted at the top.")),
 					  getConfigListEntry(_("Use individual settings for each directory"), config.movielist.settings_per_directory, _("When set each folder will show the previous state used, when off the default values will be shown.")),
 					  getConfigListEntry(_("Behavior when a movie reaches the end"), config.usage.on_movie_eof, _("On reaching the end of a file during playback, you can choose the box's behavior.")),
 					  getConfigListEntry(_("Stop service on return to movie list"), config.movielist.stop_service, _("Stop previous broadcasted service on return to movielist.")),
@@ -1465,10 +1471,19 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		return needUpdate
 
 	def sortBy(self, newType):
-		print '[MovieSelection] SORTYBY:',newType
-		self.settings["moviesort"] = newType
-		self.saveLocalSettings()
-		self.setSortType(newType)
+		print '[MovieSelection] SORTBY:',newType
+		if newType < MovieList.TRASHSORT_SHOWRECORD:
+			self.settings["moviesort"] = newType
+			self.saveLocalSettings()
+			self.setSortType(newType)
+# Unset specific trash-sorting if other sort chosen while in Trash
+			if MovieList.InTrashFolder:
+				config.usage.trashsort_deltime.value = "no"
+		else:
+			if newType == MovieList.TRASHSORT_SHOWRECORD:
+				config.usage.trashsort_deltime.value = "show record time"
+			elif newType == MovieList.TRASHSORT_SHOWDELETE:
+				config.usage.trashsort_deltime.value = "show delete time"
 		self.reloadList()
 
 	def showDescription(self, newType):
@@ -1534,6 +1549,12 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 				used = index
 			menu.append((_(x[1]), x[0], "%d" % index))
 			index += 1
+		if MovieList.InTrashFolder:
+			for x in l_trashsort:
+				if x[3] == config.usage.trashsort_deltime.value:
+					used = index
+				menu.append((_(x[1]), x[0], "%d" % index))
+				index += 1
 		self.session.openWithCallback(self.sortbyMenuCallback, ChoiceBox, title=_("Sort list:"), list=menu, selection = used, skin_name="SortbyChoiceBox")
 
 	def getPixmapSortIndex(self, which):
@@ -1542,6 +1563,8 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			index = MovieList.SORT_ALPHANUMERIC
 		elif index == MovieList.SORT_ALPHAREV_DATE_NEWEST_FIRST:
 			index = MovieList.SORT_ALPHANUMERIC_REVERSE
+		elif (index == MovieList.TRASHSORT_SHOWRECORD) or (index == MovieList.TRASHSORT_SHOWDELETE):
+			index = MovieList.SORT_RECORDED
 		return index - 1
 
 	def sortbyMenuCallback(self, choice):
