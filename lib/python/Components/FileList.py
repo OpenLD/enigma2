@@ -43,7 +43,6 @@ EXTENSIONS = {
 		"asf": "movie",
 		"3gp": "movie",
 		"3g2": "movie",
-		"webm": "movie",
 		"mpeg": "movie",
 		"mpe": "movie",
 		"rm": "movie",
@@ -53,6 +52,7 @@ EXTENSIONS = {
 		"m2ts": "movie",
 		"mts": "movie",
 		"ts": "movie",
+		"webm": "movie",
 	}
 
 def FileEntryComponent(name, absolute = None, isDir = False):

@@ -389,14 +389,14 @@ class MovieContextMenu(Screen):
 				"green": self.okbuttonClick,
 				"ok": self.okbuttonClick,
 				"cancel": self.cancelClick,
-				"green": self.do_showDeviceMounts,
-				"yellow": self.do_showNetworkMounts,
-				"menu": self.do_configure,
-				"2": self.do_rename,
-				"5": self.do_copy,
-				"6": self.do_move,
-				"7": self.do_createdir,
-				"8": self.do_delete
+				"green": boundFunction(self.close, csel.showDeviceMounts),
+				"yellow": boundFunction(self.close, csel.showNetworkMounts),
+				"menu": boundFunction(self.close, csel.configure),
+				"2": boundFunction(self.close, csel.do_rename),
+				"5": boundFunction(self.close, csel.do_copy),
+				"6": boundFunction(self.close, csel.do_move),
+				"7": boundFunction(self.close, csel.do_createdir),
+				"8": boundFunction(self.close, csel.do_delete),
 			})
 
 		self["key_red"] = StaticText(_("Cancel"))
@@ -454,30 +454,6 @@ class MovieContextMenu(Screen):
 
 	def okbuttonClick(self):
 		self.close(self["config"].getCurrent()[0][1])
-
-	def do_rename(self):
-		self.close(self.csel.do_rename())
-
-	def do_copy(self):
-		self.close(self.csel.do_copy())
-
-	def do_move(self):
-		self.close(self.csel.do_move())
-
-	def do_createdir(self):
-		self.close(self.csel.do_createdir())
-
-	def do_delete(self):
-		self.close(self.csel.do_delete())
-
-	def do_configure(self):
-		self.close(self.csel.configure())
-
-	def do_showDeviceMounts(self):
-		self.close(self.csel.showDeviceMounts())
-
-	def do_showNetworkMounts(self):
-		self.close(self.csel.showNetworkMounts())
 
 	def cancelClick(self):
 		self.close(None)
