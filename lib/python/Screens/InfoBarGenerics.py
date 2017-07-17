@@ -4243,7 +4243,7 @@ class InfoBarCueSheetSupport:
 			{
 				iPlayableService.evStart: self.__serviceStarted,
 				iPlayableService.evCuesheetChanged: self.downloadCuesheet,
-			iPlayableService.evStopped: self.__evStopped,
+				iPlayableService.evStopped: self.__evStopped,
 			})
 
 		self.__blockDownloadCuesheet = False
