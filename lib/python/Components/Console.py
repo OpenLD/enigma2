@@ -37,13 +37,12 @@ class ConsoleItem:
 			callback(data, retval, self.extra_args)
 
 class Console(object):
+	def __init__(self):
 		# Still called appContainers because Network.py accesses it to
 		# know if there's still stuff running
-	def __init__(self):
 		self.appContainers = {}
 
-	def ePopen(self, cmd, callback=None, extra_args=None):
-		if not extra_args: extra_args = []
+	def ePopen(self, cmd, callback=None, extra_args=[]):
 		print "[Console] command:", cmd
 		return ConsoleItem(self.appContainers, cmd, callback, extra_args)
 
