@@ -16273,11 +16273,41 @@ msgstr "Formatear USB"
 msgid "Swap File settings"
 msgstr "Memoria Swap"
 
-msgid "Model:\t%s %s\n"
-msgstr "Modelo:\t%s %s\n"
+msgid "Model:\t%s"
+msgstr "Modelo:\t%s"
+
+msgid "BOX\n"
+msgstr "RECEPTOR\n"
+
+msgid "\nMEMORY\n"
+msgstr "\nMEMORIA\n"
+
+msgid "Free:\t%s "
+msgstr "Libre:\t%s "
+
+msgid "Usage:\t%s"
+msgstr "Usada:\t%s"
+
+msgid "Shared:\t%s"
+msgstr "Compartida:\t%s"
+
+msgid "Stored:\t%s"
+msgstr "Almacenada:\t%s"
+
+msgid "Cached:\t%s"
+msgstr "Cacheada:\t%s"
+
+msgid "Swap free:\t%s"
+msgstr "Swap libre:\t%s"
+
+msgid "\nSTORAGE\n"
+msgstr "\nALMACENAMIENTO\n"
 
 msgid "Model:\t %s %s\n"
 msgstr "Modelo:\t %s %s\n"
+
+msgid "Model:\t%s %s\n"
+msgstr "Modelo:\t%s %s\n"
 
 msgid "Chipset:\t%s"
 msgstr "Chipset:\t%s"

@@ -274,6 +274,14 @@ def getCPUTempString():
 		pass
 	return ""
 
+def getUptimeString():
+	try:
+		import commands
+		output = commands.getoutput("uptime | grep up | awk '{print $3,$4}'")
+		return output.split(',')[0]
+	except:
+		return _("unknown")
+
 def getLoadCPUString():
 	try:
 		import commands

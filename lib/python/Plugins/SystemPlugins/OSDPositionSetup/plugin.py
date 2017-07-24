@@ -1,7 +1,8 @@
 from Screens.Screen import Screen
 from Components.ConfigList import ConfigListScreen
-from Components.config import config, ConfigSubsection, ConfigInteger, ConfigSlider, getConfigListEntry
-from boxbranding import getBrandOEM
+from Components.config import config, configfile, ConfigSubsection, ConfigInteger, ConfigSlider, getConfigListEntry
+from Tools.Directories import fileExists
+from boxbranding import getBoxType, getBrandOEM
 
 config.plugins.OSDPositionSetup = ConfigSubsection()
 config.plugins.OSDPositionSetup.dst_left = ConfigInteger(default = 0)
