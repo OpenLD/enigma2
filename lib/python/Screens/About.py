@@ -104,6 +104,7 @@ def getAboutText():
 	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
+	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
 	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
 	AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
 	AboutText += _("Python:\t %s") % str(about.getPythonVersionString()) + "\n\n"
@@ -377,7 +378,7 @@ class SystemMemoryInfo(Screen):
 				self.DynamicTimer.callback.append(self.updateInfo)
 				self.onShow.append(self.updateInfo)
 			except:
-				return
+				pass
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "DirectionActions"],
@@ -389,32 +390,14 @@ class SystemMemoryInfo(Screen):
 			})
 
 	def updateInfo(self):
-		self.DynamicTimer.start(6000)
+		self.DynamicTimer.start(6000, True)
 		self.AboutText = _("MEMORY") + '\n'
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
-		else:
-			self.AboutText += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Libre:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
-		else:
-			self.AboutText += "Free:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Usada:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
-		else:
-			self.AboutText += "Usage:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Compartida:\t%s" % str(about.getRAMSharingString()) + " MB" + "\n"
-		else:
-			self.AboutText += "Shared:\t%s" % str(about.getRAMSharingString()) + " MB" +  "\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Almacenada:\t%s" % str(about.getRAMStoredString()) + " MB" + "\n"
-		else:
-			self.AboutText += "Stored:\t%s" % str(about.getRAMStoredString()) + " MB" +  "\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Cacheada:\t%s" % str(about.getRAMCachedString()) + " MB" + "\n"
-		else:
-			self.AboutText += "Cached:\t%s" % str(about.getRAMCachedString()) + " MB" +  "\n"
+		self.AboutText += _("Total:\t%s") % str(about.getRAMTotalString()) + " MB\n"
+		self.AboutText += _("Free:\t%s ") % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
+		self.AboutText += _("Usage:\t%s") % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
+		self.AboutText += _("Shared:\t%s") % str(about.getRAMSharingString()) + " MB" +  "\n"
+		self.AboutText += _("Stored:\t%s") % str(about.getRAMStoredString()) + " MB" +  "\n"
+		self.AboutText += _("Cached:\t%s") % str(about.getRAMCachedString()) + " MB" +  "\n"
 		out_lines = file("/proc/meminfo").readlines()
 		for lidx in range(len(out_lines) - 1):
 			tstLine = out_lines[lidx].split()
@@ -424,14 +407,8 @@ class SystemMemoryInfo(Screen):
 			if "Cached:" in tstLine:
 				Cached = out_lines[lidx].split()
 				self.AboutText += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
-		else:
-			self.AboutText += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
-		if config.osd.language.value == 'es_ES':
-			self.AboutText += "Swap libre:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n\n"
-		else:
-			self.AboutText += "Swap free:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n\n"
+		self.AboutText += _("Swap total:\t%s") % str(about.getRAMSwapTotalString()) + " MB\n"
+		self.AboutText += _("Swap free:\t%s") % str(about.getRAMSwapFreeString()) + " MB\n\n"
 
 		self["actions"].setEnabled(False)
 		self.Console = Console()
@@ -439,8 +416,10 @@ class SystemMemoryInfo(Screen):
 
 	def end(self):
 		self.DynamicSwitch = True
+		if self.updateInfo in self.DynamicTimer.callback:
+			self.DynamicTimer.callback.remove(self.updateInfo)
 		self.DynamicTimer.stop()
-		del self.DynamicTimer
+		#del self.DynamicTimer
 		self.close()
 
 	def Stage1Complete(self, result, retval, extra_args=None):

@@ -124,7 +124,7 @@ class LdBitrate(Converter, object):
 		if self.initBitrateCalc in self.poll_timer.callback:
 			self.poll_timer.callback.remove(self.initBitrateCalc)
 		self.poll_timer.stop()
-		self.CleanMemo()
+		#self.CleanMemo()
 
 	def CleanMemo(self):
 		import sys, commands

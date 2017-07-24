@@ -1,5 +1,6 @@
 from Components.About import about
 from Components.Converter.Converter import Converter
+from enigma import eTimer
 from Components.config import config
 from Components.Element import cached
 from Poll import Poll

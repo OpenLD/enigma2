@@ -149,110 +149,106 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		global g_updateRunning
 		woeid = config.plugins.SimpleWeather.woeid.value
 		#print "[SimpleWeather] lookup for ID " + str(woeid)
-		url = "https://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
+		url = "http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
 		# where location in (select id from weather.search where query="oslo, norway")
 		try:
 			file = urllib2.urlopen(url, timeout=10)
 			data = file.read()
 			file.close()
+			config.plugins.SimpleWeather.lastUpdated.value = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
+
+			dom = parseString(data)
+			title = self.getText(dom.getElementsByTagName('title')[0].childNodes)
+			config.plugins.SimpleWeather.currentLocation.value = str(title).split(',')[0].replace("Conditions for ","")
+
+			currentWeather = dom.getElementsByTagName('yweather:condition')[0]
+			t=time()
+			lastday = strftime("%d %b %Y", localtime(t-3600*24)).strip("0")
+			currday = strftime("%d %b %Y", localtime(t)).strip("0")
+			currentWeatherDate = currentWeather.getAttributeNode('date').nodeValue
+			config.plugins.SimpleWeather.currentWeatherDataValid.value = True
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.currentWeatherCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('temp')
+			config.plugins.SimpleWeather.currentWeatherTemp.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.currentWeatherText.value = currentWeatherText.nodeValue
+
+			n = 0
+			currentWeather = dom.getElementsByTagName('yweather:forecast')[n]
+			if lastday in currentWeather.getAttributeNode('date').nodeValue and currday in currentWeatherDate:
+				n = 1
+				currentWeather = dom.getElementsByTagName('yweather:forecast')[n]
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.forecastTodayCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('high')
+			config.plugins.SimpleWeather.forecastTodayTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('low')
+			config.plugins.SimpleWeather.forecastTodayTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.forecastTodayText.value = currentWeatherText.nodeValue
+			currentWeatherDay = currentWeather.getAttributeNode('day')
+			config.plugins.SimpleWeather.forecastTodayDay.value = currentWeatherDay.nodeValue
+
+			currentWeather = dom.getElementsByTagName('yweather:forecast')[n + 1]
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.forecastTomorrowCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('high')
+			config.plugins.SimpleWeather.forecastTomorrowTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('low')
+			config.plugins.SimpleWeather.forecastTomorrowTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.forecastTomorrowText.value = currentWeatherText.nodeValue
+			currentWeatherDay = currentWeather.getAttributeNode('day')
+			config.plugins.SimpleWeather.forecastTomorrowDay.value = currentWeatherDay.nodeValue
+
+			currentWeather = dom.getElementsByTagName('yweather:forecast')[2]
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.forecast2daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('high')
+			config.plugins.SimpleWeather.forecast2daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('low')
+			config.plugins.SimpleWeather.forecast2daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.forecast2daysText.value = currentWeatherText.nodeValue
+			currentWeatherDay = currentWeather.getAttributeNode('day')
+			config.plugins.SimpleWeather.forecast2daysDay.value = currentWeatherDay.nodeValue
+
+			currentWeather = dom.getElementsByTagName('yweather:forecast')[3]
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.forecast3daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('high')
+			config.plugins.SimpleWeather.forecast3daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('low')
+			config.plugins.SimpleWeather.forecast3daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.forecast3daysText.value = currentWeatherText.nodeValue
+			currentWeatherDay = currentWeather.getAttributeNode('day')
+			config.plugins.SimpleWeather.forecast3daysDay.value = currentWeatherDay.nodeValue
+
+			currentWeather = dom.getElementsByTagName('yweather:forecast')[4]
+			currentWeatherCode = currentWeather.getAttributeNode('code')
+			config.plugins.SimpleWeather.forecast4daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('high')
+			config.plugins.SimpleWeather.forecast4daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherTemp = currentWeather.getAttributeNode('low')
+			config.plugins.SimpleWeather.forecast4daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
+			currentWeatherText = currentWeather.getAttributeNode('text')
+			config.plugins.SimpleWeather.forecast4daysText.value = currentWeatherText.nodeValue
+			currentWeatherDay = currentWeather.getAttributeNode('day')
+			config.plugins.SimpleWeather.forecast4daysDay.value = currentWeatherDay.nodeValue
+
+			self.save()
+
 		except Exception as error:
-			print "Cant get weather data: %r" % error
-			# cancel weather function
+			print "[SimpleWeather] Cant get weather data: %r" % error
+			# try to get weather data at next refresh interval to avoid spinner
 			config.plugins.SimpleWeather.lastUpdated.value = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
 			g_updateRunning = False
+			# cancel weather function
 			return
-
-		dom = parseString(data)
-		try:
-			title = self.getText(dom.getElementsByTagName('title')[0].childNodes)
-		except IndexError as error:
-			print "Cant get weather data: %r" % error
-			g_updateRunning = False
-
-		config.plugins.SimpleWeather.currentLocation.value = str(title).split(',')[0].replace("Conditions for ","")
-
-		currentWeather = dom.getElementsByTagName('yweather:condition')[0]
-		t=time()
-		lastday = strftime("%d %b %Y", localtime(t-3600*24)).strip("0")
-		currday = strftime("%d %b %Y", localtime(t)).strip("0")
-		currentWeatherDate = currentWeather.getAttributeNode('date').nodeValue
-		config.plugins.SimpleWeather.currentWeatherDataValid.value = True
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.currentWeatherCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('temp')
-		config.plugins.SimpleWeather.currentWeatherTemp.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.currentWeatherText.value = currentWeatherText.nodeValue
-
-		n = 0
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[n]
-		if lastday in currentWeather.getAttributeNode('date').nodeValue and currday in currentWeatherDate:
-			n = 1
-			currentWeather = dom.getElementsByTagName('yweather:forecast')[n]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecastTodayCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecastTodayTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecastTodayTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecastTodayText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecastTodayDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[n + 1]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecastTomorrowCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecastTomorrowTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecastTomorrowTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecastTomorrowText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecastTomorrowDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[2]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast2daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast2daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast2daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast2daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast2daysDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[3]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast3daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast3daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast3daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast3daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast3daysDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[4]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast4daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast4daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast4daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast4daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast4daysDay.value = currentWeatherDay.nodeValue
-
-		self.save()
-
-		g_updateRunning = False
-		#self.refreshcnt = 0
 
 	def save(self):
 		config.plugins.SimpleWeather.save()

@@ -73,7 +73,13 @@ class LdsysInfo(Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		self["lab1"] =  Label()
+		Screen.setTitle(self, _("Image Information"))
+		self.skinName = "LdsysInfo"
+		self["lab1"] =  ScrollLabel()
+		self["lab2"] = StaticText(_("Developer:\t Javier Sayago (Javilonas)"))
+		self["lab3"] = StaticText(_("Support:\t https://www.lonasdigital.com"))
+		self["lab4"] = StaticText(_("Git:\t https://github.com/OpenLD"))
+		self["lab5"] = StaticText(_("Web:\t http://www.odisealinux.com"))
 		self.DynamicTimer = eTimer()
 		self.DynamicTimer.callback.append(self.updateInfo)
 		self.onShow.append(self.updateInfo)
@@ -81,20 +87,16 @@ class LdsysInfo(Screen):
 		{
 			"ok": self.end,
 			"cancel": self.end,
+			"up": self["lab1"].pageUp,
+			"down": self["lab1"].pageDown
 		}, -1)
 
 	def updateInfo(self):
 		self.DynamicTimer.start(6000)
 		rc = system("df -h > /tmp/syinfo.tmp")
-		if config.osd.language.value == 'es_ES':
-			self.text = "RECEPTOR\n"
-		else:
-			self.text = "BOX\n"
+		self.text = _("BOX\n")
 		f = open("/proc/stb/info/model",'r')
-		if config.osd.language.value == 'es_ES':
-			self.text += "Modelo:\t" + about.getBoxType() + "\n"
-		else:
-			self.text += "Model:\t" + about.getBoxType() + "\n"
+		self.text += _("Model:\t%s") % str(getMachineBrand()) + " " + str(getMachineName()) + "\n"
 		f.close()
 		#f = open("/proc/stb/info/chipset",'r')
 		#self.text += "Chipset:\t" + about.getChipSetString() + "\n"
@@ -120,39 +122,18 @@ class LdsysInfo(Screen):
 		if res2:
 			bogoMIPS = "" + res2.replace("\n", "")
 		f = open('/proc/cpuinfo', 'r')
-		self.text += "CPU: \t" + str(about.getCPUString()) + cpuMHz + " " + str(about.getCpuCoresString2()) + " - " + str(about.getCPUArch()) + "\n"
+		self.text += "CPU: \t" + str(about.getCPUString()) + cpuMHz + "  " + str(about.getCpuCoresString2()) + " - " + str(about.getCPUArch()) + "\n"
 		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
-		self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
+		#self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 		self.text += "BogoMIPS \t" + bogoMIPS + "\n"
 		f.close()
-		if config.osd.language.value == 'es_ES':
-			self.text += "\nMEMORIA\n"
-		else:
-			self.text += "\nMEMORY\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
-		else:
-			self.text += "Total:\t%s" % str(about.getRAMTotalString()) + " MB\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Libre:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
-		else:
-			self.text += "Free:\t%s " % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Usada:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
-		else:
-			self.text += "Usage:\t%s" % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Compartida:\t%s" % str(about.getRAMSharingString()) + " MB" + "\n"
-		else:
-			self.text += "Shared:\t%s" % str(about.getRAMSharingString()) + " MB" +  "\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Almacenada:\t%s" % str(about.getRAMStoredString()) + " MB" + "\n"
-		else:
-			self.text += "Stored:\t%s" % str(about.getRAMStoredString()) + " MB" +  "\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Cacheada:\t%s" % str(about.getRAMCachedString()) + " MB" + "\n"
-		else:
-			self.text += "Cached:\t%s" % str(about.getRAMCachedString()) + " MB" +  "\n"
+		self.text += _("\nMEMORY\n")
+		self.text += _("Total:\t%s") % str(about.getRAMTotalString()) + " MB\n"
+		self.text += _("Free:\t%s ") % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
+		self.text += _("Usage:\t%s") % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
+		self.text += _("Shared:\t%s") % str(about.getRAMSharingString()) + " MB" +  "\n"
+		self.text += _("Stored:\t%s") % str(about.getRAMStoredString()) + " MB" +  "\n"
+		self.text += _("Cached:\t%s") % str(about.getRAMCachedString()) + " MB" +  "\n"
 		out_lines = file("/proc/meminfo").readlines()
 		for lidx in range(len(out_lines) - 1):
 			tstLine = out_lines[lidx].split()
@@ -162,18 +143,9 @@ class LdsysInfo(Screen):
 			if "Cached:" in tstLine:
 				Cached = out_lines[lidx].split()
 				self.text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
-		else:
-			self.text += "Swap total:\t%s" % str(about.getRAMSwapTotalString()) + " MB\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "Swap libre:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n"
-		else:
-			self.text += "Swap free:\t%s" % str(about.getRAMSwapFreeString()) + " MB\n"
-		if config.osd.language.value == 'es_ES':
-			self.text += "\nALMACENAMIENTO\n"
-		else:
-			self.text += "\nSTORAGE\n"
+		self.text += _("Swap total:\t%s") % str(about.getRAMSwapTotalString()) + " MB\n"
+		self.text += _("Swap free:\t%s") % str(about.getRAMSwapFreeString()) + " MB\n"
+		self.text += _("\nSTORAGE\n")
 		if os.path.exists('/tmp/syinfo.tmp'):
 			try:
 				f = open("/tmp/syinfo.tmp",'r')
@@ -196,7 +168,7 @@ class LdsysInfo(Screen):
 
 		self.text += "\nSOFTWARE\n"
 		openLD = "OpenLD "
-		self.text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + " (" + str(getImageCodeName()) + ")\n"
+		self.text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + "  (" + str(getImageCodeName()) + ")\n"
 		self.text += "Kernel: \t " + about.getKernelVersionString() + "\n"
 		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
@@ -207,6 +179,8 @@ class LdsysInfo(Screen):
 		self["lab1"].setText(self.text)
 
 	def end(self):
+		if self.updateInfo in self.DynamicTimer.callback:
+			self.DynamicTimer.callback.remove(self.updateInfo)
 		self.DynamicTimer.stop()
-		del self.DynamicTimer
+		#del self.DynamicTimer
 		self.close()

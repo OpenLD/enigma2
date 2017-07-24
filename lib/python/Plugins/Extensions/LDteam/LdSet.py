@@ -372,6 +372,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		self.session = session
 		Screen.__init__(self, session)
 		self.list = []
+		ConfigListScreen.__init__(self, self.list)
 		self.iConsole = iConsole()
 		self['key_red'] = StaticText(_('Close'))
 		self['key_green'] = StaticText(_('Save'))
@@ -379,13 +380,15 @@ class LDmemoria(ConfigListScreen, Screen):
 		self['memTotal'] = StaticText()
 		self['bufCache'] = StaticText()
 		self['MemoryLabel'] = StaticText(_('Memory:'))
-		self['setupActions'] = ActionMap(['SetupActions', 'OkCancelActions', 'ColorActions', 'DirectionActions'], {'red': self.cancel,
-		 'cancel': self.cancel,
-		 'green': self.save_values,
-		 'yellow': self.ClearNow,
-		 'ok': self.save_values}, -2)
+		self['setupActions'] = ActionMap(['SetupActions', 'OkCancelActions', 'ColorActions', 'DirectionActions'],
+		{
+			'red': self.cancel,
+			'cancel': self.cancel,
+			'green': self.save_values,
+			'yellow': self.ClearNow,
+			'ok': self.save_values
+		}, -2)
 		self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.ldteam.dropmode))
-		ConfigListScreen.__init__(self, self.list)
 		self.onShow.append(self.Title)
 
 	def Title(self):
@@ -422,7 +425,7 @@ class LDmemoria(ConfigListScreen, Screen):
 		self.mbox = self.session.open(MessageBox, _('configuration is saved'), MessageBox.TYPE_INFO, timeout=4)
 
 	def ClearNow(self):
-		self.iConsole.ePopen('sync ; echo %s > /proc/sys/vm/drop_caches' % config.plugins.ldteam.dropmode.value, self.Finish)
+		self.iConsole.ePopen('echo %s > /proc/sys/vm/drop_caches' % config.plugins.ldteam.dropmode.value, self.Finish)
 
 	def Finish(self, result, retval, extra_args):
 		if retval is 0:
