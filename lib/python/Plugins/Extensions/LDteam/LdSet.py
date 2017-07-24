@@ -388,7 +388,11 @@ class LDmemoria(ConfigListScreen, Screen):
 			'yellow': self.ClearNow,
 			'ok': self.save_values
 		}, -2)
-		self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.ldteam.dropmode))
+		if config.plugins.ldteam.dropmode:
+			try:
+				self.list.append(getConfigListEntry(_('Select free memory mode'), config.plugins.ldteam.dropmode))
+			except:
+				pass
 		self.onShow.append(self.Title)
 
 	def Title(self):
