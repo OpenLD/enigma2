@@ -232,78 +232,36 @@ class LDepgScreen(Screen, ConfigListScreen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if config.osd.language.value == 'es_ES':
-			self.setTitle(_('Opciones EPG'))
-		else:
-			self.setTitle(_('EPG Options'))
+		self.setTitle(_('EPG Options'))
 		self.list = []
 		ConfigListScreen.__init__(self, self.list)
-		if config.osd.language.value == 'es_ES':
-			self['key_blue'] = StaticText(_('Ver log'))
-		else:
-			self['key_blue'] = StaticText(_('Show log'))
-		if config.osd.language.value == 'es_ES':
-			self['key_red'] = StaticText(_('Cerrar'))
-		else:
-			self['key_red'] = StaticText(_('Close'))
-		if config.osd.language.value == 'es_ES':
-			self['key_green'] = StaticText(_('Guardar'))
-		else:
-			self['key_green'] = StaticText(_('Save'))
-		if config.osd.language.value == 'es_ES':
-			self['key_yellow'] = StaticText(_('Actualizar'))
-		else:
-			self['key_yellow'] = StaticText(_('Update'))
-		self['setupActions'] = ActionMap(['SetupActions',
-		 'WizardActions',
-		 'TimerEditActions',
-		 'ColorActions'], {
-		 'blue': self.mhw,
-		 'red': self.cancel,
-		 'cancel': self.cancel,
-		 'yellow': self.downepg,
-		 'green': self.save,
-		 'ok': self.save}, -2)
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Ruta donde almacenar el epg.dat'), config.misc.epgcachepath))
-		else:
-			self.list.append(getConfigListEntry(_('The path where stored epg.dat'), config.misc.epgcachepath))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar EIT EPG'), config.epg.eit))
-		else:
-			self.list.append(getConfigListEntry(_('Enable EIT EPG'), config.epg.eit))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar MHW EPG'), config.epg.mhw))
-		else:
-			self.list.append(getConfigListEntry(_('Enable MHW EPG'), config.epg.mhw))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar Freesat EPG'), config.epg.freesat))
-		else:
-			self.list.append(getConfigListEntry(_('Enable freesat EPG'), config.epg.freesat))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar ViaSat EPG'), config.epg.viasat))
-		else:
-			self.list.append(getConfigListEntry(_('Enable ViaSat EPG'), config.epg.viasat))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar Netmed EPG'), config.epg.netmed))
-		else:
-			self.list.append(getConfigListEntry(_('Enable Netmed EPG'), config.epg.netmed))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Habilitar Virgin EPG'), config.epg.virgin))
-		else:
-			self.list.append(getConfigListEntry(_('Enable Virgin EPG'), config.epg.virgin))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Numero Maximo de dias en EPG'), config.epg.maxdays))
-		else:
-			self.list.append(getConfigListEntry(_('Maximum number of days in EPG'), config.epg.maxdays))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Conservar los datos antiguos del EPG'), config.epg.histminutes))
-		else:
-			self.list.append(getConfigListEntry(_('Maintain old EPG data for'), config.epg.histminutes))
-		if config.osd.language.value == 'es_ES':
-			self.list.append(getConfigListEntry(_('Tiempo Duracion en Portada'), config.plugins.ldteam.epgmhw2wait))
-		else:
-			self.list.append(getConfigListEntry(_('Time at title page'), config.plugins.ldteam.epgmhw2wait))
+		self['key_blue'] = StaticText(_('Show log'))
+		self['key_red'] = StaticText(_('Close'))
+		self['key_green'] = StaticText(_('Save'))
+		self['key_yellow'] = StaticText(_('Update'))
+		self['setupActions'] = ActionMap(['SetupActions', 'WizardActions', 'TimerEditActions',  'ColorActions'],
+		{
+			'blue': self.mhw,
+			'red': self.cancel,
+			'cancel': self.cancel,
+			'yellow': self.downepg,
+			'green': self.save,
+			'ok': self.save
+		}, -2)
+		self.list.append(getConfigListEntry(_('The path where stored epg.dat'), config.misc.epgcachepath))
+		self.list.append(getConfigListEntry(_('Enable EIT EPG'), config.epg.eit))
+		self.list.append(getConfigListEntry(_('Enable MHW EPG'), config.epg.mhw))
+		self.list.append(getConfigListEntry(_('Enable freesat EPG'), config.epg.freesat))
+		self.list.append(getConfigListEntry(_('Enable ViaSat EPG'), config.epg.viasat))
+		self.list.append(getConfigListEntry(_('Enable Netmed EPG'), config.epg.netmed))
+		self.list.append(getConfigListEntry(_('Enable Virgin EPG'), config.epg.virgin))
+		self.list.append(getConfigListEntry(_('Maximum number of days in EPG'), config.epg.maxdays))
+		self.list.append(getConfigListEntry(_('Maintain old EPG data for'), config.epg.histminutes))
+		if config.plugins.ldteam.epgmhw2wait:
+			try:
+				self.list.append(getConfigListEntry(_('Time at title page'), config.plugins.ldteam.epgmhw2wait))
+			except:
+				pass
 		self['config'].list = self.list
 		self['config'].l.setList(self.list)
 
