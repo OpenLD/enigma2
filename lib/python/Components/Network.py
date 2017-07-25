@@ -62,7 +62,7 @@ class Network:
 		return [ int(n) for n in ip.split('.') ]
 
 	def getAddrInet(self, iface, callback):
-		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
+		cmd = "busybox ip -o addr show dev " + iface + " | grep -v inet6"
 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
 
 	def IPaddrFinished(self, result, retval, extra_args):
