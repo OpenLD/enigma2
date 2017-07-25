@@ -2647,6 +2647,102 @@ msgstr "Espacio en disco reservado para grabaciones (en GB)"
 msgid "Configure the aspect ratio of the screen."
 msgstr "Configurar aspect ratio de la pantalla."
 
+#: VideoMode.py
+msgid "Lowest Mode"
+msgstr "Modo más bajo"
+
+#: VideoMode.py
+msgid "Refresh rate for 'Lowest Mode'"
+msgstr "Tasa de refresco para 'Modo más bajo'"
+
+#: VideoMode.py
+msgid "Show 24p up to 720p / higher than 720p as"
+msgstr "Mostrar 24p hasta 720p / superior a 720p como"
+
+#: VideoMode.py
+msgid "Show 25p up to 720p / higher than 720p as"
+msgstr "Mostrar 25p hasta 720p / superior a 720p como"
+
+#: VideoMode.py
+msgid "Show 30p up to 720p / higher than 720p as"
+msgstr "Mostrar 30p hasta 720p / superior a 720p como"
+
+#: VideoMode.py
+msgid "Show 24p up to resolution 720p or higher than 720p as a different Framerate."
+msgstr "Mostrar 24p hasta la resolución de 720p o superior a 720p como un Framerate diferente."
+
+#: VideoMode.py
+msgid "Show 25p up to resolution 720p or higher than 720p as a different Framerate."
+msgstr "Mostrar 25p hasta la resolución 720p o superior a 720p como un Framerate diferente."
+
+#: VideoMode.py
+msgid "Show 30p up to resolution 720p or higher than 720p as a different Framerate."
+msgstr "Mostrar 30p hasta la resolución 720p o superior a 720p como un Framerate diferente."
+
+#: VideoMode.py
+msgid "Show unknown video format as"
+msgstr "Mostrar formato de vídeo desconocido como"
+
+#: VideoMode.py
+msgid "Show unknown Videoresolution as next higher or as highest screen resolution."
+msgstr "Mostrar Videoresolución desconocida como inmediatamente superior o más alta que la resolución de pantalla."
+
+#: VideoMode.py
+msgid "Enable preview"
+msgstr "Activar previsualizar"
+
+#: VideoMode.py
+msgid "Show preview of current mode (*)."
+msgstr "Mostar vista previa del modo actual(*)."
+
+#: VideoMode.py
+msgid "%sMode for SD (up to 576p)"
+msgstr "%sModo para SD (hasta 576p)"
+
+#: VideoMode.py
+msgid "%sRefresh rate for SD"
+msgstr "%sVelocidad de refresco para SD"
+
+#: VideoMode.py
+msgid "%sMode for HD (up to 720p)"
+msgstr "%sModo para HD (hasta 720p)"
+
+#: VideoMode.py
+msgid "%sRefresh rate for HD"
+msgstr "%sVelocidad de refresco para HD"
+
+#: VideoMode.py
+msgid "%sMode for FHD (up to 1080p)"
+msgstr "%sModo para FHD (hasta 1080p)"
+
+#: VideoMode.py
+msgid "%sRefresh rate for FHD"
+msgstr "%sVelocidad de refresco para FHD"
+
+#: VideoMode.py
+msgid "%sMode for UHD (up to 2160p)"
+msgstr "%sModo para UHD (hasta 2160p)"
+
+#: VideoMode.py
+msgid "%sRefresh rate for UHD"
+msgstr "%sVelocidad de refresco para FHD"
+
+#: VideoMode.py
+msgid "%sShow 1080i as 1080p"
+msgstr "%sMostrar 1080i como 1080p"
+
+#: VideoMode.py
+msgid "Use Deinterlacing for 1080i Videosignal?"
+msgstr "¿Usar entrelazado para señal de vídeo 1080i?"
+
+#: AVSwitch.py
+msgid "next higher Resolution"
+msgstr "Siguiente resolución superior"
+
+#: AVSwitch.py
+msgid "highest Resolution"
+msgstr "Mayor Resolución"
+
 #
 msgid "Display 16:9 content as"
 msgstr "Visualizar los contenidos 16:9 como"
@@ -13741,12 +13837,12 @@ msgid "Long << / >>"
 msgstr "Largo << / >>"
 
 #: Einstellunen HDMI CEC
-msgid "Put your %s %s in standby"
-msgstr "Poner %s %s en modo de espera"
+msgid "Put your AV Receiver in standby"
+msgstr "Poner receptor AV en modo de espera"
 
 #: Einstellunen HDMI CEC
-msgid "Wakeup your %s %s from standby"
-msgstr "Reactivar tu %s %s de modo de espera"
+msgid "Wakeup your AV Receiver from standby"
+msgstr "Reactivar tu receptor AV desde modo de espera"
 
 #: Einstellunen Netzwerk Menue
 msgid "Mounts Setup"

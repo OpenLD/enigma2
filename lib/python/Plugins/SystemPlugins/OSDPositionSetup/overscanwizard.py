@@ -18,7 +18,7 @@ class OverscanWizard(Screen, ConfigListScreen):
 				<widget name="config" position="383,635" size="1234,226" font="Regular;30" itemHeight="40" zPosition="4"/>
 			</screen>"""
 		else:
-			self.skin = """<screen position="fill"  flags="wfNoBorder">
+			self.skin = """<screen position="fill" flags="wfNoBorder">
 				<ePixmap pixmap="skin_default/overscan1280x720.png" position="0,0" size="1280,720" zPosition="3" alphatest="on"/>
 				<eLabel position="223,120" size="810,475" zPosition="3"/>
 				<widget name="title" position="228,125" size="800,40" font="Regular;30" foregroundColor="blue" zPosition="4"/>
@@ -129,7 +129,7 @@ class OverscanWizard(Screen, ConfigListScreen):
 			self.yes_no.value = True
 			self.list.append(getConfigListEntry(_("Do you want to quit the overscan wizard?"), self.yes_no))
 		elif self.step == 6:
-			config.skin.primary_skin.value = "MetrixHD/skin.xml"
+			config.skin.primary_skin.value == "SimpleLD/skin.xml" or config.skin.primary_skin.value == "MetrixHD/skin.xml"
 			config.save()
 			self["introduction"].setText(_("The user interface of the receiver will now restart to select the selected skin"))
 			quitMainloop(3)
