@@ -53,7 +53,7 @@ class InfoBar(InfoBarBase, InfoBarShowHide, InfoBarNumberZap, InfoBarChannelSele
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		if config.usage.show_infobar_lite.value and (config.skin.primary_skin.value == "DMConcinnity-HD/skin.xml" or config.skin.primary_skin.value.startswith('MetrixHD/')):
+		if config.usage.show_infobar_lite.value and (config.skin.primary_skin.value == "SimpleLD/skin.xml" or config.skin.primary_skin.value == "DMConcinnity-HD/skin.xml" or config.skin.primary_skin.value.startswith('MetrixHD/')):
 			self.skinName = "InfoBarLite"
 
 		self["actions"] = HelpableActionMap(self, "InfobarActions",

@@ -251,7 +251,15 @@ class AVSwitch:
 		lst = []
 
 		config.av.videomode = ConfigSubDict()
+		config.av.autores_mode_sd = ConfigSubDict()
+		config.av.autores_mode_hd = ConfigSubDict()
+		config.av.autores_mode_fhd = ConfigSubDict()
+		config.av.autores_mode_uhd = ConfigSubDict()
 		config.av.videorate = ConfigSubDict()
+		config.av.autores_rate_sd = ConfigSubDict()
+		config.av.autores_rate_hd = ConfigSubDict()
+		config.av.autores_rate_fhd = ConfigSubDict()
+		config.av.autores_rate_uhd = ConfigSubDict()
 
 		# create list of output ports
 		portlist = self.getPortList()
@@ -265,8 +273,16 @@ class AVSwitch:
 			modes = self.getModeList(port)
 			if len(modes):
 				config.av.videomode[port] = ConfigSelection(choices = [mode for (mode, rates) in modes])
+				config.av.autores_mode_sd[port] = ConfigSelection(choices = [mode for (mode, rates) in modes])
+				config.av.autores_mode_hd[port] = ConfigSelection(choices = [mode for (mode, rates) in modes])
+				config.av.autores_mode_fhd[port] = ConfigSelection(choices = [mode for (mode, rates) in modes])
+				config.av.autores_mode_uhd[port] = ConfigSelection(choices = [mode for (mode, rates) in modes])
 			for (mode, rates) in modes:
 				config.av.videorate[mode] = ConfigSelection(choices = rates)
+				config.av.autores_rate_sd[mode] = ConfigSelection(choices = rates)
+				config.av.autores_rate_hd[mode] = ConfigSelection(choices = rates)
+				config.av.autores_rate_fhd[mode] = ConfigSelection(choices = rates)
+				config.av.autores_rate_uhd[mode] = ConfigSelection(choices = rates)
 		config.av.videoport = ConfigSelection(choices = lst)
 
 	def setInput(self, input):
@@ -407,12 +423,45 @@ def InitAVSwitch():
 	if config.av.yuvenabled.value:
 		colorformat_choices["yuv"] = _("YPbPr")
 
-	config.av.autores = ConfigSelection(choices={"disabled": _("Disabled"), "all": _("All resolutions"), "hd": _("only HD")}, default="disabled")
+	config.av.autores = ConfigSelection(choices={"disabled": _("Disabled"), "simple": _("Simple"), "native": _("Native"), "all": _("All resolutions"), "hd": _("only HD")}, default="disabled")
+	config.av.autores_preview = NoSave(ConfigYesNo(default=False))
+	config.av.autores_1080i_deinterlace = ConfigYesNo(default=False)
+	choicelist = {
+			"24,24": _("24p/24p"),
+			"24,25": _("24p/25p"),
+			"24,30": _("24p/30p"),
+			"24,50": _("24p/50p"),
+			"24,60": _("24p/60p"),
+			"25,24": _("25p/24p"),
+			"30,24": _("30p/24p"),
+			"50,24": _("50p/24p"),
+			"60,24": _("60p/24p"),
+			"25,25": _("25p/25p"),
+			"25,30": _("25p/30p"),
+			"25,50": _("25p/50p"),
+			"25,60": _("25p/60p"),
+			"30,25": _("30p/25p"),
+			"50,25": _("50p/25p"),
+			"60,25": _("60p/25p"),
+			"30,30": _("30p/30p"),
+			"30,50": _("30p/50p"),
+			"30,60": _("30p/60p"),
+			"50,30": _("50p/30p"),
+			"60,30": _("60p/30p"),
+			"50,50": _("50p/50p"),
+			"50,60": _("50p/60p"),
+			"60,50": _("60p/50p"),
+			"60,60": _("60p/60p")
+				}  # first value <=720p , second value > 720p
+	config.av.autores_24p =  ConfigSelection(choices=choicelist, default="50,24")
+	config.av.autores_25p =  ConfigSelection(choices=choicelist, default="50,25")
+	config.av.autores_30p =  ConfigSelection(choices=choicelist, default="60,30")
+	config.av.autores_unknownres =  ConfigSelection(choices={"next": _("next higher Resolution"), "highest": _("highest Resolution")}, default="next")
 	choicelist = []
 	for i in range(5, 16):
 		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
 	config.av.autores_label_timeout = ConfigSelection(default = "5", choices = [("0", _("Not Shown"))] + choicelist)
-	config.av.autores_delay = ConfigSelectionNumber(min = 50, max = 3000, stepwidth = 50, default = 400, wraparound = True)
+	config.av.autores_delay = ConfigSelectionNumber(min = 0, max = 3000, stepwidth = 50, default = 400, wraparound = True)
 	config.av.autores_deinterlace = ConfigYesNo(default=False)
 	config.av.autores_sd = ConfigSelection(choices={"720p50": _("720p50"), "720p": _("720p"), "1080i50": _("1080i50"), "1080i": _("1080i")}, default="720p50")
 	config.av.autores_480p24 = ConfigSelection(choices={"480p24": _("480p 24Hz"), "720p24": _("720p 24Hz"), "1080p24": _("1080p 24Hz")}, default="1080p24")
