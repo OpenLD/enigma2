@@ -644,8 +644,10 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 		m_sourceinfo.is_video = TRUE;
 	}
 	if ( strstr(filename, "://") )
+	{
 		m_sourceinfo.is_streaming = TRUE;
-
+		m_sourceinfo.protocol = m_ref.path.substr(0, m_ref.path.find("://"));
+	}
 	gchar *uri;
 	gchar *suburi = NULL;
 
@@ -1282,8 +1284,6 @@ seek_unpause:
 		eDebug(", doing seeking unpause\n");
 	}
 
-	m_currentTrickRatio = ratio;
-
 	bool validposition = false;
 	gint64 pos = 0;
 #if GST_VERSION_MAJOR >= 1
@@ -1322,7 +1322,28 @@ seek_unpause:
 
 	if (validposition)
 	{
-		if (ratio >= 0.0)
+		if (m_currentTrickRatio == 1.0 && ratio == 1.0)
+		{
+#if GST_VERSION_MAJOR >= 1
+			if ( !m_sourceinfo.is_streaming || (strcasecmp(m_sourceinfo.protocol.c_str(), "http") && strcasecmp(m_sourceinfo.protocol.c_str(), "https") ) == 0)
+#else
+			if ( !m_sourceinfo.is_streaming )
+#endif
+			{
+					eDebug("eServiceMP3::trickSeek - standard unpause");
+					if ( !(gst_element_get_state(m_gst_playbin, NULL, NULL, 100LL * GST_MSECOND) == GST_STATE_CHANGE_SUCCESS) )
+					{
+						eDebug("eServiceMP3:trickSeek - standard unpause was not successfull, doing seeking unpause");
+						gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT), GST_SEEK_TYPE_SET, pos, GST_SEEK_TYPE_SET, -1);
+					}
+			}
+			else
+			{
+				eDebug("eServiceMP3::trickSeek - seeking unpause");
+				gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT), GST_SEEK_TYPE_SET, pos, GST_SEEK_TYPE_SET, -1);
+			}
+		}
+		else if (ratio >= 0.0)
 		{
 #if GST_VERSION_MAJOR >= 1
 			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME,
@@ -1345,6 +1366,7 @@ seek_unpause:
 		}
 	}
 
+	m_currentTrickRatio = ratio;
 	m_prev_decoder_time = -1;
 	m_decoder_time_valid_state = 0;
 	return 0;
