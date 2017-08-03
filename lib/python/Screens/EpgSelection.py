@@ -1174,8 +1174,11 @@ class EPGSelection(Screen, HelpableScreen):
 	def closeChoiceBoxDialog(self):
 		self["dialogactions"].setEnabled(False)
 		if self.ChoiceBoxDialog:
-			self.ChoiceBoxDialog['actions'].execEnd()
-			self.session.deleteDialog(self.ChoiceBoxDialog)
+			try:
+				self.ChoiceBoxDialog['actions'].execEnd()
+				self.session.deleteDialog(self.ChoiceBoxDialog)
+			except:
+				pass
 		self['okactions'].setEnabled(True)
 		if self.has_key('epgcursoractions'):
 			self['epgcursoractions'].setEnabled(True)
