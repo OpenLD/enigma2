@@ -154,7 +154,7 @@ class MovieList(GUIComponent):
 	HIDE_DESCRIPTION = 1
 	SHOW_DESCRIPTION = 2
 
-# So MovieSelection.selectSortby() can find out whether we are 
+# So MovieSelection.selectSortby() can find out whether we are
 # in a Trash folder and, if so, what the last sort was
 # The numbering starts after SORT_* values above.
 # in MovieSelection.py (that has no SORT_GROUPWISE)
