@@ -521,7 +521,7 @@ class RecordTimerEntry(timer.TimerEntry, object):
 				if not self.justplay:
 					open(self.Filename + self.record_service.getFilenameExtension(), "w").close()
 					# give the Trashcan a chance to clean up
-					# Need try/except as Trashcan.instance may not exist 
+					# Need try/except as Trashcan.instance may not exist
 					# for a missed recording started at boot-time.
 					try:
 						Trashcan.instance.cleanIfIdle()

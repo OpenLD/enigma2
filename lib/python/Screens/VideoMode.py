@@ -390,7 +390,7 @@ class VideoSetup(Screen, ConfigListScreen):
 			cur = cur and len(cur) > 3 and cur[3]
 			if cur in ('check', 'check_sd', 'check_hd', 'check_fhd', 'check_uhd'):
 				if self.current_mode == None: self.current_mode = self.getCurrent_mode()
-				if cur in ('check', 'check_sd'): 
+				if cur in ('check', 'check_sd'):
 					self.getVerify_videomode(config.av.autores_mode_sd, config.av.autores_rate_sd)
 				if cur in ('check', 'check_hd'):
 					self.getVerify_videomode(config.av.autores_mode_hd, config.av.autores_rate_hd)
