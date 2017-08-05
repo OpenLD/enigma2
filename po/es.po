@@ -112,7 +112,7 @@ msgid ""
 "Restore your %s %s settings."
 msgstr ""
 "\n"
-"Restaurar copia de seguridad de la configuración de tu %s %s."
+"Restaurar copia de la configuración de tu %s %s."
 
 #
 msgid ""
@@ -1764,6 +1764,18 @@ msgstr "Ajustes de restauración"
 #
 msgid "Select Backup files"
 msgstr "Archivos de copia de seguridad"
+
+#
+msgid "Show default backup files"
+msgstr "Archivos a copiar por defecto"
+
+#
+msgid "Select additional backup files"
+msgstr "Archivos de copia adicionales"
+
+#
+msgid "Select excluded backup files"
+msgstr "Archivos de copia excluidos"
 
 #
 msgid "Select backup location"
@@ -6710,7 +6722,7 @@ msgstr "Restauración en curso"
 
 #
 msgid "Restore system settings"
-msgstr "Restaurar copia de seguridad de la configuración"
+msgstr "Restaurar copia de la configuración"
 
 #
 msgid "Resume from last position"
