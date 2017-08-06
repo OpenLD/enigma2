@@ -134,9 +134,11 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		dom = parseString(data)
 		try:
 			title = self.getText(dom.getElementsByTagName('title')[0].childNodes)
-		except IndexError as error:
-			print "Cant get weather data: %r" % error
+		except:
+			pass
+			print "Warning: Cant get weather data failed"
 			g_updateRunning = False
+			return
 
 		config.plugins.SimpleWeather.currentLocation.value = str(title).split(',')[0].replace("Conditions for ","")
 
