@@ -116,14 +116,15 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		global g_updateRunning
 		woeid = config.plugins.SimpleWeather.woeid.value
 		#print "[SimpleWeather] lookup for ID " + str(woeid)
-		url = "https://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
+		url = "http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
 		# where location in (select id from weather.search where query="oslo, norway")
 		try:
-			file = urllib2.urlopen(url, timeout=10)
+			file = urllib2.urlopen(url, timeout=30)
 			data = file.read()
 			file.close()
-		except Exception as error:
-			print "Cant get weather data: %r" % error
+		except:
+			pass
+			print "Warning: Cant get weather data failed"
 			# cancel weather function
 			config.plugins.SimpleWeather.lastUpdated.value = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
