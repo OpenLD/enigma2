@@ -288,6 +288,7 @@ void eListboxPythonStringContent::setItemHeight(int height)
 	m_itemheight = height;
 	if (m_listbox)
 		m_listbox->setItemHeight(height);
+}
 
 PyObject *eListboxPythonStringContent::getCurrentSelection()
 {
