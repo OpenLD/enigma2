@@ -41,14 +41,15 @@ from Screens.Setup import Setup
 from Screens.NetworkSetup import *
 from random import random
 import os, sys, gettext, commands, gettext, subprocess, threading, traceback, time, datetime
+from Screens.Textexit import Textexit
 
 
 class LDUtiles(Screen):
 	skin = """
 <screen name="LDUtiles" position="70,35" size="1150,650">
-<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
-<widget source="list" render="Listbox" position="15,10" size="660,650" scrollbarMode="showOnDemand">
-<convert type="TemplatedMultiContent">
+	<ePixmap position="700,10" zPosition="1" size="450,700" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/menu/fondo.png" alphatest="blend" transparent="1" />
+	<widget source="list" render="Listbox" position="15,10" size="660,650" scrollbarMode="showOnDemand">
+		<convert type="TemplatedMultiContent">
 {"template": [
 MultiContentEntryText(pos = (60, 1), size = (300, 40), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
@@ -56,24 +57,22 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 "fonts": [gFont("Regular", 24)],
 "itemHeight": 40
 }
-	</convert>
+		</convert>
 	</widget>
 </screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-
+		self.session = session
 		self.list = []
 		self["list"] = List(self.list)
 		self.updateList()
 
-
 		self["actions"] = ActionMap(["WizardActions", "ColorActions"],
 		{
 			"ok": self.KeyOk,
-			"back": self.close
-
-		})
+			"back": self.close,
+		}, -1)
 
 	def KeyOk(self):
 		self.sel = self["list"].getCurrent()
@@ -109,6 +108,10 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 			traceroute = f.readline()
 			f.close()
 			self.mbox = self.session.open(MessageBox,_("Traceroute:\n %s") % (traceroute), MessageBox.TYPE_INFO)
+		elif self.sel == 6:
+			self.session.open(Textexit, _("Netstat"), ["netstat | grep tcp && netstat | grep unix"])
+		elif self.sel == 7:
+			self.session.open(Textexit, _("Performance Internet"), ["ping -c 1 www.odisealinux.com && ping -c 1 www.google.com"])
 		else:
 			self.noYet()
 
@@ -162,5 +165,20 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		idx = 5
 		res = (name, png, idx)
 		self.list.append(res)
+
+		mypixmap = mypath + "Network.png"
+		png = LoadPixmap(mypixmap)
+		name = _("Netstat")
+		idx = 6
+		res = (name, png, idx)
+		self.list.append(res)
+
+		mypixmap = mypath + "Network.png"
+		png = LoadPixmap(mypixmap)
+		name = _("Ping")
+		idx = 7
+		res = (name, png, idx)
+		self.list.append(res)
+
 
 		self["list"].list = self.list
