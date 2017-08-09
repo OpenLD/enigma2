@@ -40,7 +40,7 @@ class LdAboutTeam(Screen):
 				<eLabel text="Donations:" position="10,200" size="100,20" font="Regular; 18" halign="left" />
 				<eLabel text="Paypal: https://www.paypal.me/Javilonas" position="86,229" size="383,24" font="Regular;20" halign="left" />
 				<eLabel text="Support:" position="10,286" size="87,20" font="Regular; 18" halign="left" />
-				<eLabel text="https://www.lonasdigital.com" position="85,313" size="228,24" font="Regular;20" halign="left" />
+				<eLabel text="https://www.lonasdigital.com" position="85,313" size="342,24" font="Regular;20" halign="left" />
 				<eLabel text="Thank you for trust in OpenLD ;)" position="24,375" size="554,42" font="Regular; 17" halign="center" zPosition="1" transparent="1" />
 			</screen>"""
 
