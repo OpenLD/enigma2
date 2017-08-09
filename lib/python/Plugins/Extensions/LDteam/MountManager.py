@@ -391,7 +391,7 @@ class HddMount(Screen):
 			file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
 			rename('/etc/fstab.tmp','/etc/fstab')
 			out = open('/etc/fstab', 'a')
-			line = self.device_uuid + '    /media/hdd    auto    rw,relatime,barrier=1,data=ordered    0  0\n'
+			line = self.device_uuid + '    /media/hdd    auto    defaults,rw,relatime,noatime,nodiratime,barrier=1,data=ordered    0  0\n'
 			out.write(line)
 			out.close()
 			self.Console.ePopen('mount /media/hdd', self.updateList)
@@ -712,7 +712,7 @@ class DevicePanelConf(Screen, ConfigListScreen):
 		file('/etc/fstab.tmp', 'w').writelines([l for l in file('/etc/fstab').readlines() if self.device_uuid not in l])
 		rename('/etc/fstab.tmp','/etc/fstab')
 		out = open('/etc/fstab', 'a')
-		line = self.device_uuid + '    ' + self.mountp + '    ' + self.device_type + '    rw,relatime,barrier=1,data=ordered    0  0\n'
+		line = self.device_uuid + '    ' + self.mountp + '    ' + self.device_type + '    defaults,rw,relatime,noatime,nodiratime,barrier=1,data=ordered    0  0\n'
 		out.write(line)
 		out.close()
 
