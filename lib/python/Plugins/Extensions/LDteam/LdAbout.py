@@ -134,7 +134,7 @@ class LdsysInfo(Screen):
 		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
 		self.text += _("Architecture:\t %s") % str(about.getCPUArch()) + "\n"
 		#self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
-		self.text += "BogoMIPS \t" + bogoMIPS + "\n"
+		self.text += "BogoMIPS: \t" + bogoMIPS + "\n"
 		f.close()
 		#self.text += _("\nMEMORY\n")
 		#self.text += _("Total:\t%s") % str(about.getRAMTotalString()) + " MB\n"
