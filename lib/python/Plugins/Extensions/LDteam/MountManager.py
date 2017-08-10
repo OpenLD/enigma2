@@ -138,7 +138,7 @@ class HddMount(Screen):
 			device = parts[3]
 			if not search('sd[a-z][1-9]',device) and not search('mmcblk[0-9]p[1-9]',device):
 				continue
-			if getBoxType() in ('vusolo4k') and search('mmcblk0p[1-9]',device):
+			if getMachineBuild() in ('et13000','et1x000','vuuno4k', 'vuultimo4k', 'vusolo4k', 'hd51', 'hd52', 'dm820', 'dm7080', 'sf4008', 'dm900', 'gb7252', 'dags7252', 'vs1500','h7','8100s') and search('mmcblk0p[1-9]',device):
 				continue
 			if device in list2:
 				continue
@@ -450,7 +450,9 @@ class DevicePanelConf(Screen, ConfigListScreen):
 			device = parts[3]
 			if not search('sd[a-z][1-9]',device) and not search('mmcblk[0-9]p[1-9]',device):
 				continue
-			if getBoxType() in ('vusolo4k') and search('mmcblk0p[1-9]',device):
+			if getMachineBuild() in ('et13000','et1x000','vuuno4k', 'vuultimo4k', 'vusolo4k', 'hd51', 'hd52', 'dm820', 'dm7080', 'sf4008', 'dm900', 'gb7252', 'dags7252', 'vs1500','h7','8100s') and search('mmcblk0p[1-9]',device):
+				continue
+			if getMachineBuild() in ('xc7439') and search('mmcblk1p[1-9]',device):
 				continue
 			if device in list2:
 				continue
@@ -677,6 +679,9 @@ class DevicePanelConf(Screen, ConfigListScreen):
 			self.device_uuid = self.device_uuid.replace('\n',"")
 		elif self.device_tmp[3].startswith('UUID='):
 			self.device_uuid = self.device_tmp[3].replace('"',"")
+			self.device_uuid = self.device_uuid.replace('\n',"")
+		elif self.device_tmp[4].startswith('UUID='):
+			self.device_uuid = self.device_tmp[4].replace('"',"")
 			self.device_uuid = self.device_uuid.replace('\n',"")
 		try:
 			if self.device_tmp[0].startswith('TYPE='):
