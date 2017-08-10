@@ -8,7 +8,7 @@ from Tools.CList import CList
 from Tools.HardwareInfo import HardwareInfo
 from SystemInfo import SystemInfo
 from Components.Console import Console
-from boxbranding import getBoxType
+from boxbranding import getMachineBrand, getMachineName, getBoxType, getMachineBuild
 import Task
 
 def readFile(filename):
