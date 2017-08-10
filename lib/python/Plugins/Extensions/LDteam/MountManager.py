@@ -21,7 +21,7 @@
 ##########################################################################
 from Screens.Screen import Screen
 from enigma import eTimer
-from boxbranding import getMachineBrand, getMachineName, getBoxType
+from boxbranding import getMachineBrand, getMachineName, getBoxType, getMachineBuild
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from Components.ActionMap import ActionMap
