@@ -184,7 +184,7 @@ class LCD:
 		eDBoxLCD.getInstance().setFlipped(value)
 
 	def setScreenShot(self, value):
- 		eDBoxLCD.getInstance().setDump(value)
+		eDBoxLCD.getInstance().setDump(value)
 
 	def isOled(self):
 		return eDBoxLCD.getInstance().isOled()
@@ -245,10 +245,11 @@ class LCD:
 			f.close()
 
 	def setfblcddisplay(self, value):
-		print 'setfblcddisplay',value
-		f = open("/proc/stb/fb/sd_detach", "w")
-		f.write(value)
-		f.close()
+		if fileExists("/proc/stb/fb/sd_detach"):
+			print 'setfblcddisplay',value
+			f = open("/proc/stb/fb/sd_detach", "w")
+			f.write(value)
+			f.close()
 
 	def setRepeat(self, value):
 		if fileExists("/proc/stb/lcd/scroll_repeats"):
@@ -274,19 +275,21 @@ class LCD:
 		eDBoxLCD.getInstance().setLED(value, 2)
 
 	def setLCDMiniTVMode(self, value):
-		print 'setLCDMiniTVMode',value
-		f = open('/proc/stb/lcd/mode', "w")
-		f.write(value)
-		f.close()
+		if fileExists("/proc/stb/lcd/mode"):
+			print 'setLCDMiniTVMode',value
+			f = open('/proc/stb/lcd/mode', "w")
+			f.write(value)
+			f.close()
 
 	def setLCDMiniTVPIPMode(self, value):
 		print 'setLCDMiniTVPIPMode',value
 
 	def setLCDMiniTVFPS(self, value):
-		print 'setLCDMiniTVFPS',value
-		f = open('/proc/stb/lcd/fps', "w")
-		f.write("%d \n" % value)
-		f.close()
+		if fileExists("/proc/stb/lcd/fps"):
+			print 'setLCDMiniTVFPS',value
+			f = open('/proc/stb/lcd/fps', "w")
+			f.write("%d \n" % value)
+			f.close()
 
 def leaveStandby():
 	config.lcd.bright.apply()
@@ -335,20 +338,20 @@ def InitLcd():
 			def setLCDModePiP(configElement):
 				pass
 			def setLCDScreenshot(configElement):
- 				ilcd.setScreenShot(configElement.value);
+				ilcd.setScreenShot(configElement.value);
 
 			config.lcd.modepip = ConfigSelection(choices={
 					"0": _("off"),
 					"5": _("PIP"),
 					"7": _("PIP with OSD")},
 					default = "0")
-			if config.misc.boxtype.value in ( 'gbquad', 'gbquadplus', 'gbquad4k'):
+			if config.misc.boxtype.value in ('gbquad', 'gbquadplus', 'gbquad4k', 'gbue4k'):
 				config.lcd.modepip.addNotifier(setLCDModePiP)
 			else:
 				config.lcd.modepip = ConfigNothing()
 
 			config.lcd.screenshot = ConfigYesNo(default=False)
- 			config.lcd.screenshot.addNotifier(setLCDScreenshot)
+			config.lcd.screenshot.addNotifier(setLCDScreenshot)
 
 			config.lcd.modeminitv = ConfigSelection(choices={
 					"0": _("normal"),
