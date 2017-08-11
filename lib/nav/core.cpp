@@ -217,7 +217,7 @@ void eNavigation::getRecordingsSlotIDsOnly(std::vector<int> &slotids, pNavigatio
 
 std::map<ePtr<iRecordableService>, eServiceReference, std::less<iRecordableService*> > eNavigation::getRecordingsServices(pNavigation::RecordType type)
 {
-    std::map<ePtr<iRecordableService>, eServiceReference, std::less<iRecordableService*> > m_recordings_services_filtered;
+	std::map<ePtr<iRecordableService>, eServiceReference, std::less<iRecordableService*> > m_recordings_services_filtered;
 
 	for (std::map<ePtr<iRecordableService>, eServiceReference >::iterator it(m_recordings_services.begin()); it != m_recordings_services.end(); ++it)
 	{
@@ -229,7 +229,7 @@ std::map<ePtr<iRecordableService>, eServiceReference, std::less<iRecordableServi
 		//else
 		//	eDebug("[core.cpp] getRecordingsServices: not returning type %d (asked for type %d)", m_recordings_types[it->first], type);
 	}
-    return m_recordings_services_filtered;
+	return m_recordings_services_filtered;
 }
 
 RESULT eNavigation::pause(int dop)

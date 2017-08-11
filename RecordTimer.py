@@ -1,15 +1,17 @@
 from boxbranding import getMachineBrand, getMachineName
+import xml.etree.cElementTree
+from datetime import datetime
+from time import localtime, strftime, ctime, time
+from bisect import insort
+from sys import maxint
 import os
-
-from enigma import eEPGCache, getBestPlayableServiceReference, eStreamServer, \
-	eServiceReference, iRecordableService, quitMainloop, eActionMap, setPreferredTuner, eServiceCenter, pNavigation
+from enigma import eEPGCache, getBestPlayableServiceReference, eStreamServer, eServiceReference, iRecordableService, quitMainloop, eActionMap, setPreferredTuner, eServiceCenter
 
 from Components.config import config
 from Components import Harddisk
 from Components.UsageConfig import defaultMoviePath
 from Components.SystemInfo import SystemInfo
 from Components.TimerSanityCheck import TimerSanityCheck
-
 import Components.RecordingConfig
 Components.RecordingConfig.InitRecordingConfig()
 from Screens.MessageBox import MessageBox
@@ -17,16 +19,11 @@ import Screens.Standby
 import Screens.InfoBar
 from Tools import Directories, Notifications, ASCIItranslit, Trashcan
 from Tools.XMLTools import stringToXML
-
 import timer
-import xml.etree.cElementTree
 import NavigationInstance
 from ServiceReference import ServiceReference
+from enigma import pNavigation, eDVBFrontend
 
-from datetime import datetime
-from time import localtime, strftime, ctime, time
-from bisect import insort
-from sys import maxint
 
 # ok, for descriptions etc we have:
 # service reference	 (to get the service name)
