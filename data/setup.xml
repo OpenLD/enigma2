@@ -278,6 +278,7 @@
 		<item level="1" requires="LCDMiniTV" text="Set Framerate for MiniTV" description="Lower Framerate save CPU Time">config.lcd.fpsminitv</item>
 		<item level="1" requires="LCDMiniTV" text="Show blinking rec symbol on Display during recording" description="Enable blinking rec symbol on the LCD Display">config.usage.blinking_rec_symbol_during_recording</item>
 		<item level="2" requires="LCDMiniTV" text="Screenshot of LCD in /tmp" description="Enable screenshot of LCD in /tmp">config.lcd.screenshot</item>
+		<item level="1" requires="XcoreVFD" text="switch 12 to 8 character display mode" description="12, show latin-1 characters except for greek and cyrillic, switch to 8 if needed.">config.usage.vfd_xcorevfd</item>
 		<item level="1" requires="OledDisplay" text="Show blinking rec symbol on Display during recording" description="Enable blinking rec symbol on the LCD Display">config.usage.blinking_rec_symbol_during_recording</item>
 		<item level="1" requires="OledDisplay" text="Show blinking Clock on Display during recording" description="Enable blinking Clock on the LCD Display">config.usage.blinking_display_clock_during_recording</item>
 		<item level="1" text="Show Display Icons" description="Allows you to enable/disable displaying icons on the frontpanel.">config.lcd.mode</item>
@@ -291,6 +292,7 @@
 		<item level="0" text="Show on Display" description="Disable all VFD Symbols">config.vfd.show</item>
 		<item level="1" text="Scrolling speed (software renderer)" description="Set the scrolling speed of text on the front display, this is used by software renderer in some skins.">config.lcd.scroll_speed</item>
 		<item level="1" text="Scrolling delay (software renderer)" description="Set the delay time between repeated loops, this is used by software renderer in some skins.">config.lcd.scroll_delay</item>
+		<item level="2" text="Show symbols on display" description="This option allows you show all symbols on display." requires="LCDshow_symbols">config.usage.lcd_show_symbols</item>
 	</setup>
 	<setup key="satconfig" title="Satellite dish setup">
 		<item text="Tuner slot" description="Choose which tuner to configure.">config.sat.tunerslot</item>
