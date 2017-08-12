@@ -159,7 +159,11 @@ class Standby2(Screen):
 		global inStandby
 		inStandby = None
 		self.standbyStopServiceTimer.stop()
-		self.timeHandler and self.timeHandler.m_timeUpdated.get().remove(self.stopService)
+		if self.timeHandler:
+			try:
+				self.timeHandler and self.timeHandler.m_timeUpdated.get().remove(self.stopService)
+			except:
+				pass
 		if self.paused_service:
 			self.paused_service.unPauseService()
 		elif self.prev_running_service:

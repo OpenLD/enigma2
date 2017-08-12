@@ -473,8 +473,8 @@ class ImageBackup(Screen):
 			cmdlist.append('echo " "')
 			cmdlist.append('echo "\nPlease wait...almost ready! "')
 			cmdlist.append('echo " "')
-			cmdlist.append('echo "To restore the image:"')
-			cmdlist.append('echo "Use OnlineFlash in SoftwareManager"')
+			cmdlist.append('echo " "')
+			cmdlist.append('echo " "')
 		elif file_found:
 			cmdlist.append('echo "_________________________________________________\n"')
 			cmdlist.append('echo "USB Image created on:" %s' %self.MAINDEST)
