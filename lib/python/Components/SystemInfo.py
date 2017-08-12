@@ -90,5 +90,4 @@ SystemInfo["DefaultDisplayBrightness"] = getBoxType() == 'dm900' and 8 or 5
 SystemInfo["RecoveryMode"] = fileCheck("/proc/stb/fp/boot_mode")
 SystemInfo["HasMMC"] = HardwareInfo().get_device_model() in ('vusolo4k', 'hd51', 'hd52')
 SystemInfo["HDMIin"] = getMachineBuild() in ('inihdp', 'hd2400', 'et10000', 'dm7080', 'dm820', 'dm900', 'gb7252', 'vuultimo4k')
-SystemInfo["CanDoTranscodeAndPIP"] = getBoxType() in ('vusolo4k')
 SystemInfo["XcoreVFD"] = getMachineBuild() in ('xc7346')
