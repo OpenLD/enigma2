@@ -68,7 +68,6 @@ def Load_defaults():
 	config.plugins.softwaremanager = ConfigSubsection()
 	config.plugins.softwaremanager.overwriteSettingsFiles = ConfigYesNo(default=False)
 	config.plugins.softwaremanager.overwriteDriversFiles = ConfigYesNo(default=True)
-	config.plugins.softwaremanager.overwriteEmusFiles = ConfigYesNo(default=True)
 	config.plugins.softwaremanager.overwritePiconsFiles = ConfigYesNo(default=True)
 	config.plugins.softwaremanager.overwriteBootlogoFiles = ConfigYesNo(default=True)
 	config.plugins.softwaremanager.overwriteSpinnerFiles = ConfigYesNo(default=True)
@@ -117,17 +116,6 @@ def load_cache(cache_file):
 	cache_data = load(fd)
 	fd.close()
 	return cache_data
-
-def Check_Softcam():
-	found = False
-	if fileExists("/etc/enigma2/noemu"):
-		found = False
-	else:
-		for x in os.listdir('/etc'):
-			if x.find('.emu') > -1:
-				found = True
-				break;
-	return found
 
 class UpdatePluginMenu(Screen):
 	skin = """
@@ -419,7 +407,6 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 		self.overwriteConfigfilesEntry = None
 		self.overwriteSettingsfilesEntry = None
 		self.overwriteDriversfilesEntry = None
-		self.overwriteEmusfilesEntry = None
 		self.overwritePiconsfilesEntry = None
 		self.overwriteBootlogofilesEntry = None
 		self.overwriteSpinnerfilesEntry = None
@@ -453,7 +440,6 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 		self.overwriteConfigfilesEntry = getConfigListEntry(_("Overwrite configuration files?"), config.plugins.softwaremanager.overwriteConfigFiles)
 		self.overwriteSettingsfilesEntry = getConfigListEntry(_("Overwrite Setting Files ?"), config.plugins.softwaremanager.overwriteSettingsFiles)
 		self.overwriteDriversfilesEntry = getConfigListEntry(_("Overwrite Driver Files ?"), config.plugins.softwaremanager.overwriteDriversFiles)
-		self.overwriteEmusfilesEntry = getConfigListEntry(_("Overwrite Emu Files ?"), config.plugins.softwaremanager.overwriteEmusFiles)
 		self.overwritePiconsfilesEntry = getConfigListEntry(_("Overwrite Picon Files ?"), config.plugins.softwaremanager.overwritePiconsFiles)
 		self.overwriteBootlogofilesEntry = getConfigListEntry(_("Overwrite Bootlogo Files ?"), config.plugins.softwaremanager.overwriteBootlogoFiles)
 		self.overwriteSpinnerfilesEntry = getConfigListEntry(_("Overwrite Spinner Files ?"), config.plugins.softwaremanager.overwriteSpinnerFiles)
@@ -463,8 +449,6 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 		self.list.append(self.overwriteConfigfilesEntry)
 		self.list.append(self.overwriteSettingsfilesEntry)
 		self.list.append(self.overwriteDriversfilesEntry)
-		if Check_Softcam():
-			self.list.append(self.overwriteEmusfilesEntry)
 		self.list.append(self.overwritePiconsfilesEntry)
 		self.list.append(self.overwriteBootlogofilesEntry)
 		self.list.append(self.overwriteSpinnerfilesEntry)
@@ -482,8 +466,6 @@ class SoftwareManagerSetup(Screen, ConfigListScreen):
 			self["introduction"].setText(_("Overwrite setting files (channellist) during software upgrade?"))
 		elif self["config"].getCurrent() == self.overwriteDriversfilesEntry:
 			self["introduction"].setText(_("Overwrite driver files during software upgrade?"))
-		elif self["config"].getCurrent() == self.overwriteEmusfilesEntry:
-			self["introduction"].setText(_("Overwrite softcam files during software upgrade?"))
 		elif self["config"].getCurrent() == self.overwritePiconsfilesEntry:
 			self["introduction"].setText(_("Overwrite picon files during software upgrade?"))
 		elif self["config"].getCurrent() == self.overwriteBootlogofilesEntry:
@@ -1492,7 +1474,7 @@ class PluginDetails(Screen, PackageInfoHandler):
 		print "[PluginDetails] fetch failed " + string.getErrorMessage()
 
 
-class UpdatePlugin(Screen):
+class Not_UpdatePlugin(Screen):
 	skin = """
 		<screen name="UpdatePlugin" position="center,center" size="550,300" >
 			<widget name="activityslider" position="0,0" size="550,5"  />
@@ -1589,11 +1571,11 @@ class UpdatePlugin(Screen):
 			urlopenLD = "http://www.odisealinux.com/status/"
 			d = urlopen(urlopenLD)
 			tmpStatus = d.read()
-			if (os.path.exists("/etc/.beta") and 'rot.png' in tmpStatus) or 'gelb.png' in tmpStatus:
+			if (os.path.exists("/etc/.beta") and 'red.png' in tmpStatus) or 'orange.png' in tmpStatus:
 				message = _("Caution update not yet tested !!") + "\n" + _("Update at your own risk") + "\n\n" + _("For more information see http://www.openld.es") + "\n\n"# + _("Last Status Date") + ": "  + statusDate + "\n\n"
 				picon = MessageBox.TYPE_ERROR
 				default = False
-			elif 'rot.png' in tmpStatus:
+			elif 'red.png' in tmpStatus:
 				message = _("Update is reported as faulty !!") + "\n" + _("Aborting updateprogress") + "\n\n" + _("For more information see http://www.openld.es")# + "\n\n" + _("Last Status Date") + ": " + statusDate
 				picon = MessageBox.TYPE_ERROR
 				default = False
