@@ -6460,8 +6460,11 @@ msgstr "Grabando"
 msgid "Recording settings"
 msgstr "Configurar grabaciones"
 
+msgid "NEXT / LATER"
+msgstr "SIGUIENTE / DESPUÉS"
+
 msgid "Recording Settings"
-msgstr "Configurar grabaciones"
+msgstr "Configurar Grabaciones"
 
 msgid "Recording data sync size"
 msgstr "Tamaño de los datos de la grabación a sincronizar"
@@ -17405,3 +17408,15 @@ msgstr "Unidades"
 
 msgid "Speed:"
 msgstr "Velocidad:"
+
+msgid "8 character"
+msgstr "8 caracteres"
+
+msgid "12 character"
+msgstr "12 caracteres"
+
+msgid "switch 12 to 8 character display mode"
+msgstr "Cambiar el modo de visualización de 12 a 8 caracteres"
+
+msgid "12, show latin-1 characters except for greek and cyrillic, switch to 8 if needed."
+msgstr "12, mostrar caracteres latin-1 a excepción del griego y cirílico, cambiar a 8 si es necesario."
