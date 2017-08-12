@@ -22,7 +22,7 @@ from Tools.XMLTools import stringToXML
 import timer
 import NavigationInstance
 from ServiceReference import ServiceReference
-from enigma import pNavigation, eDVBFrontend
+from enigma import pNavigation
 
 
 # ok, for descriptions etc we have:
