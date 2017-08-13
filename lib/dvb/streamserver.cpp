@@ -7,6 +7,7 @@
 #include <crypt.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 
 #include <lib/base/eerror.h>
 #include <lib/base/init.h>
@@ -46,6 +47,12 @@ void eStreamClient::start()
 	rsn = eSocketNotifier::create(eApp, streamFd, eSocketNotifier::Read);
 	CONNECT(rsn->activated, eStreamClient::notifier);
 	CONNECT(m_timeout->timeout, eStreamClient::stopStream);
+}
+
+void eStreamClient::set_socket_option(int fd, int optid, int option)
+{
+	if(::setsockopt(fd, SOL_SOCKET, optid, &option, sizeof(option)))
+		eDebug("Failed to set socket option: %m");
 }
 
 void eStreamClient::set_tcp_buffer_size(int fd, int optname, int buf_size)
@@ -143,6 +150,15 @@ void eStreamClient::notifier(int what)
 				set_tcp_buffer_size(streamFd, SO_RCVBUF, 1 * 1024);
 				 /* We like 188k packets, so set the TCP window size to that */
 				set_tcp_buffer_size(streamFd, SO_SNDBUF, 188 * 1024);
+				/* activate keepalive */
+				set_socket_option(streamFd, SO_KEEPALIVE, 1);
+				/* configure keepalive */
+				set_tcp_option(streamFd, TCP_KEEPINTVL, 10); // every 10 seconds
+				set_tcp_option(streamFd, TCP_KEEPIDLE, 1);	// after 1 second of idle
+				set_tcp_option(streamFd, TCP_KEEPCNT, 2);	// drop connection after second miss
+				/* also set 10 seconds data push timeout */
+				set_tcp_option(streamFd, TCP_USER_TIMEOUT, 10 * 1000);
+
 				if (serviceref.substr(0, 10) == "file?file=") /* convert openwebif stream reqeust back to serviceref */
 					serviceref = "1:0:1:0:0:0:0:0:0:0:" + serviceref.substr(10);
 				/* Strip session ID from URL if it exists, PLi streaming can not handle it */
