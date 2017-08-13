@@ -5,6 +5,8 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <crypt.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include <lib/base/eerror.h>
 #include <lib/base/init.h>
@@ -46,7 +48,7 @@ void eStreamClient::start()
 	CONNECT(m_timeout->timeout, eStreamClient::stopStream);
 }
 
-static void set_tcp_buffer_size(int fd, int optname, int buf_size)
+void eStreamClient::set_tcp_buffer_size(int fd, int optname, int buf_size)
 {
 	if (::setsockopt(fd, SOL_SOCKET, optname, &buf_size, sizeof(buf_size)))
 		eDebug("Failed to set TCP SNDBUF or RCVBUF size: %m");
