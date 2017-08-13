@@ -12,7 +12,7 @@ class eStreamClient: public eDVBServiceStream
 {
 	private:
 	static void set_socket_option(int fd, int optid, int option);
-	static void set_tcp_buffer_size(int fd, int optname, int buf_size);
+	static void set_tcp_option(int fd, int optid, int option);
 
 protected:
 	eStreamServer *parent;

@@ -55,10 +55,10 @@ void eStreamClient::set_socket_option(int fd, int optid, int option)
 		eDebug("Failed to set socket option: %m");
 }
 
-void eStreamClient::set_tcp_buffer_size(int fd, int optname, int buf_size)
+void eStreamClient::set_tcp_option(int fd, int optid, int option)
 {
-	if (::setsockopt(fd, SOL_SOCKET, optname, &buf_size, sizeof(buf_size)))
-		eDebug("Failed to set TCP SNDBUF or RCVBUF size: %m");
+	if(::setsockopt(fd, SOL_TCP, optid, &option, sizeof(option)))
+		eDebug("Failed to set TCP parameter: %m");
 }
 
 void eStreamClient::notifier(int what)
@@ -147,9 +147,9 @@ void eStreamClient::notifier(int what)
 				const char *reply = "HTTP/1.0 200 OK\r\nConnection: Close\r\nContent-Type: video/mpeg\r\nServer: streamserver\r\n\r\n";
 				writeAll(streamFd, reply, strlen(reply));
 				/* We don't expect any incoming data, so set a tiny buffer */
-				set_tcp_buffer_size(streamFd, SO_RCVBUF, 1 * 1024);
+				set_socket_option(streamFd, SO_RCVBUF, 1 * 1024);
 				 /* We like 188k packets, so set the TCP window size to that */
-				set_tcp_buffer_size(streamFd, SO_SNDBUF, 188 * 1024);
+				set_socket_option(streamFd, SO_SNDBUF, 188 * 1024);
 				/* activate keepalive */
 				set_socket_option(streamFd, SO_KEEPALIVE, 1);
 				/* configure keepalive */
