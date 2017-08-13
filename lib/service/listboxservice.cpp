@@ -784,7 +784,7 @@ void eListboxServiceContent::paint(gPainter &painter, eWindowStyle &style, const
 					snprintf(buffer, sizeof(buffer), "%d", m_cursor->getChannelNum() );
 					text = buffer;
 					flags|=gPainter::RT_HALIGN_RIGHT;
-					if (!(m_record_indicator_mode == 3 && isRecorded && isStreamed && isPseudoRecorded) && isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
+					if (!(m_record_indicator_mode == 3 && isRecorded) && isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
 						painter.setForegroundColor(m_color[serviceSelectedFallback]);
 					break;
 				}
@@ -800,7 +800,7 @@ void eListboxServiceContent::paint(gPainter &painter, eWindowStyle &style, const
 						if (m_element_position[celServiceNumber].width() && m_element_position[celServiceEventProgressbar].left() == m_element_position[celServiceNumber].width() +  m_nonplayable_margins)
 							area.setLeft(m_element_position[celServiceNumber].width() +  m_nonplayable_margins);
 					}
-					if (!(m_record_indicator_mode == 3 && isRecorded && isStreamed && isPseudoRecorded) && isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
+					if (!(m_record_indicator_mode == 3 && isRecorded) && isPlayable && serviceFallback && selected && m_color_set[serviceSelectedFallback])
 						painter.setForegroundColor(m_color[serviceSelectedFallback]);
 					break;
 				}
