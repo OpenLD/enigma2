@@ -10,7 +10,7 @@ class eStreamServer;
 
 class eStreamClient: public eDVBServiceStream
 {
-	private:
+private:
 	static void set_socket_option(int fd, int optid, int option);
 	static void set_tcp_option(int fd, int optid, int option);
 
