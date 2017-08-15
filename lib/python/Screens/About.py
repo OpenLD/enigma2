@@ -101,7 +101,7 @@ def getAboutText():
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
 	#AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
-	AboutText += _("DVB drivers:\t %s") % str(getDriverInstalledDate()) + "\n"
+	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
