@@ -185,7 +185,11 @@ class LdsysInfo(Screen):
 		self.text += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 		self.text += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
 		self.text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-		self.text += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
+		if path.exists('/usr/bin/ffmpeg'):
+			try:
+				self.text += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
+			except:
+				pass
 		self.text += _("Python:\t %s") % about.getPythonVersionString() + "\n\n"
 
 		self["lab1"].setText(self.text)

@@ -106,7 +106,11 @@ def getAboutText():
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
 	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
-	AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
+	if path.exists('/usr/bin/ffmpeg'):
+		try:
+			AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
+		except:
+			pass
 	AboutText += _("Python:\t %s") % str(about.getPythonVersionString()) + "\n\n"
 	#AboutText += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 
