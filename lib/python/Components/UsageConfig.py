@@ -49,9 +49,9 @@ def InitUsageConfig():
 
 	# just merge note, config.usage.servicelist_column was allready there
 	choicelist = [("-1", _("Disable")), ("0", _("Eventname only"))]
-	for i in range(100,1300,100):
-		choicelist.append((str(i), ngettext("%d pixel wide", "%d pixels wide", i) % i))
-	config.usage.servicelist_column = ConfigSelection(default="0", choices=choicelist)
+	for i in range(100,1325,125):
+		choicelist.append(("%d" % i, ngettext("%d pixel wide", "%d pixels wide", i) % i))
+	config.usage.servicelist_column = ConfigSelection(default="-1", choices=choicelist)
 	config.usage.servicelist_column.addNotifier(refreshServiceList)
 
 	config.usage.service_icon_enable = ConfigYesNo(default = True)
@@ -62,7 +62,6 @@ def InitUsageConfig():
 		("keep", _("Keep service")),
 		("reverseB", _("Reverse bouquet buttons")),
 		("keep reverseB", _("Keep service") + " + " + _("Reverse bouquet buttons"))])
-
 	config.usage.multiepg_ask_bouquet = ConfigYesNo(default = False)
 	config.usage.showpicon = ConfigYesNo(default = True)
 
@@ -76,7 +75,7 @@ def InitUsageConfig():
 
 	choicelist = []
 	for i in range(1, 21):
-		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
 	config.usage.infobar_timeout = ConfigSelection(default = "8", choices = [("0", _("No timeout"))] + choicelist)
 	config.usage.show_infobar_on_zap = ConfigYesNo(default = True)
 	config.usage.show_infobar_on_skip = ConfigYesNo(default = True)
@@ -109,13 +108,13 @@ def InitUsageConfig():
 
 	choicelist = []
 	for i in (10, 30):
-		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
 	for i in (60, 120, 300, 600, 1200, 1800):
 		m = i / 60
-		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
 	for i in (3600, 7200, 14400):
 		h = i / 3600
-		choicelist.append((str(i), ngettext("%d hour", "%d hours", h) % h))
+		choicelist.append(("%d" % i, ngettext("%d hour", "%d hours", h) % h))
 	config.usage.hdd_standby = ConfigSelection(default = "0", choices = [("0", _("No standby"))] + choicelist)
 	config.usage.hdd_standby_in_standby = ConfigSelection(default = "0", choices = [("-1", _("Same as in active")), ("0", _("No standby"))] + choicelist)
 	config.usage.hdd_timer = ConfigYesNo(default = False)
@@ -130,7 +129,7 @@ def InitUsageConfig():
 	choicelist = [("-1", _("Disabled")), ("0", _("No timeout"))]
 	for i in [60, 300, 600, 900, 1800, 2700, 3600]:
 		m = i/60
-		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
 	config.usage.pip_last_service_timeout = ConfigSelection(default = "-1", choices = choicelist)
 	if not os.path.exists(resolveFilename(SCOPE_HDD)):
 		try:
@@ -201,7 +200,6 @@ def InitUsageConfig():
 		("show delete time", _("Yes, show delete time"))])
 	config.usage.movielist_trashcan = ConfigYesNo(default = True)
 	config.usage.movielist_trashcan_network_clean = ConfigYesNo(default = False)
-
 	config.usage.movielist_trashcan_days = ConfigSelectionNumber(min = 0, max = 31, stepwidth = 1, default = 8, wraparound = True)
 	config.usage.movielist_trashcan_reserve = ConfigNumber(default = 40)
 	config.usage.on_movie_start = ConfigSelection(default = "ask yes", choices = [
@@ -251,10 +249,15 @@ def InitUsageConfig():
 		(str(KEYIDS["KEY_SUBTITLE"]), _("Subtitle")),
 		(str(KEYIDS["KEY_FAVORITES"]), _("Favorites")) ])
 
-	choicelist = [("0", "Disabled")]
-	for m in (1, 5, 10, 15, 30, 60):
-		choicelist.append((str(m * 60), ngettext("%d minute", "%d minutes", m) % m))
-	config.usage.screen_saver = ConfigSelection(default = "300", choices = choicelist)
+	choicelist = [("0", _("Disabled"))]
+	for i in (5, 30, 60, 300, 600, 900, 1200, 1800, 2700, 3600):
+		if i < 60:
+			m = ngettext("%d second", "%d seconds", i) % i
+		else:
+			m = abs(i / 60)
+			m = ngettext("%d minute", "%d minutes", m) % m
+		choicelist.append(("%d" % i, m))
+	config.usage.screen_saver = ConfigSelection(default = "0", choices = choicelist)
 
 	config.usage.check_timeshift = ConfigYesNo(default = True)
 
@@ -377,7 +380,7 @@ def InitUsageConfig():
 						("RecBlink", _("Blinking REC Symbol")),
 						("Channel", _("Channelname"))])
 	else:
-		config.usage.blinking_rec_symbol_during_recording = ConfigYesNo(default = False)
+		config.usage.blinking_rec_symbol_during_recording = ConfigYesNo(default = True)
 
 	config.usage.show_message_when_recording_starts = ConfigYesNo(default = True)
 
@@ -602,10 +605,10 @@ def InitUsageConfig():
 	config.timeshift = ConfigSubsection()
 	choicelist = [("0", "Disabled")]
 	for i in (2, 3, 4, 5, 10, 20, 30):
-		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
+		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
 	for i in (60, 120, 300):
 		m = i / 60
-		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
+		choicelist.append(("%d" % i, ngettext("%d minute", "%d minutes", m) % m))
 	config.timeshift.startdelay = ConfigSelection(default = "0", choices = choicelist)
 	config.timeshift.showinfobar = ConfigYesNo(default = True)
 	config.timeshift.stopwhilerecording = ConfigYesNo(default = False)
@@ -714,26 +717,12 @@ def InitUsageConfig():
 	config.misc.erase_flags.addNotifier(updateEraseFlags, immediate_feedback = False)
 
 	if SystemInfo["ZapMode"]:
-		try:
-			if os.path.exists("/proc/stb/video/zapping_mode"):
-				zapoptions = [("mute", _("Black screen")), ("hold", _("Hold screen"))]
-				zapfile = "/proc/stb/video/zapping_mode"
-			else:
-				zapoptions = [("mute", _("Black screen")), ("hold", _("Hold screen")), ("mutetilllock", _("Black screen till locked")), ("holdtilllock", _("Hold till locked"))]
-				zapfile = "/proc/stb/video/zapmode"
-		except:
-			zapoptions = [("mute", _("Black screen")), ("hold", _("Hold screen")), ("mutetilllock", _("Black screen till locked")), ("holdtilllock", _("Hold till locked"))]
-			zapfile = "/proc/stb/video/zapmode"
-
 		def setZapmode(el):
-			try:
-				file = open(zapfile, "w")
-				file.write(el.value)
-				file.close()
-			except:
-				pass
-		config.misc.zapmode = ConfigSelection(default = "mute", choices = zapoptions )
+			open(SystemInfo["ZapMode"], "w").write(el.value)
+		config.misc.zapmode = ConfigSelection(default = "mute", choices = [
+			("mute", _("Black screen")), ("hold", _("Hold screen")), ("mutetilllock", _("Black screen till locked")), ("holdtilllock", _("Hold till locked"))])
 		config.misc.zapmode.addNotifier(setZapmode, immediate_feedback = False)
+
 	config.usage.historymode = ConfigSelection(default = "1", choices = [("0", _("Just zap")), ("1", _("Show menu"))])
 
 	if SystemInfo["HasForceLNBOn"]:
@@ -767,7 +756,7 @@ def InitUsageConfig():
 		if i == 0:
 			subtitle_delay_choicelist.append(("0", _("No delay")))
 		else:
-			subtitle_delay_choicelist.append((str(i), "%2.1f sec" % (i / 90000.)))
+			subtitle_delay_choicelist.append(("%d" % i, _("%2.1f sec") % (i / 90000.)))
 	config.subtitles.subtitle_noPTSrecordingdelay = ConfigSelection(default = "315000", choices = subtitle_delay_choicelist)
 
 	config.subtitles.dvb_subtitles_yellow = ConfigYesNo(default = False)
@@ -998,7 +987,7 @@ def InitUsageConfig():
 	config.epgselection.graph_servicewidth = ConfigSelectionNumber(default = 250, stepwidth = 1, min = 70, max = 500, wraparound = True)
 	config.epgselection.graph_piconwidth = ConfigSelectionNumber(default = 100, stepwidth = 1, min = 50, max = 500, wraparound = True)
 	config.epgselection.graph_infowidth = ConfigSelectionNumber(default = 25, stepwidth = 25, min = 0, max = 150, wraparound = True)
-	config.epgselection.graph_rec_icon_height = ConfigSelection(choices = [("bottom",_("bottom")),("top", _("top")), ("middle", _("middle")),  ("hide", _("hide"))], default = "bottom")
+	config.epgselection.graph_rec_icon_height = ConfigSelection(choices = [("bottom",_("bottom")),("top", _("top")), ("middle", _("middle")), ("hide", _("hide"))], default = "bottom")
 
 	epg_colorkeys = [('autotimer', _('Auto Timer')),
 					('timer', _('Add/Remove Timer')),
