@@ -119,6 +119,10 @@ def ConvertToHumanReadable(tp, tunertype = None):
 				eDVBFrontendParametersSatellite.PLS_Gold : _("Gold"),
 				eDVBFrontendParametersSatellite.PLS_Combo : _("Combo"),
 				eDVBFrontendParametersSatellite.PLS_Unknown : _("Unknown")}.get(tp.get("pls_mode"))
+		else:
+			ret["pls_mode"] = None
+			ret["is_id"] = None
+			ret["pls_code"] = None
 		ret["frequency"] = (tp.get("frequency") and str(tp.get("frequency")/1000) + ' MHz') or '0 MHz'
 		ret["symbol_rate"] = (tp.get("symbol_rate") and tp.get("symbol_rate")/1000) or 0
 	elif tunertype == "DVB-C":
