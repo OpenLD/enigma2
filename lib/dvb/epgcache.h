@@ -391,10 +391,6 @@ public:
 #endif
 
 #endif
-
-	// New information in the cache
-	PSignal0<void> cacheUpdated;
-
 	// must be called once!
 	void setCacheFile(const char *filename);
 
