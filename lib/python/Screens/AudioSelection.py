@@ -93,6 +93,10 @@ class AudioSelection(Screen, ConfigListScreen):
 		self["key_yellow"].setBoolean(False)
 		self["key_blue"].setBoolean(False)
 
+		service = self.session.nav.getCurrentService()
+		self.audioTracks = audio = service and service.audioTracks()
+		n = audio and audio.getNumberOfTracks() or 0
+
 		subtitlelist = self.getSubtitleList()
 
 		if self.settings.menupage.value == PAGE_AUDIO:
@@ -100,10 +104,16 @@ class AudioSelection(Screen, ConfigListScreen):
 			service = self.session.nav.getCurrentService()
 			self.audioTracks = audio = service and service.audioTracks()
 			n = audio and audio.getNumberOfTracks() or 0
+
 			if SystemInfo["CanDownmixAC3"]:
 				self.settings.downmix_ac3 = ConfigOnOff(default=config.av.downmix_ac3.value)
 				self.settings.downmix_ac3.addNotifier(self.changeAC3Downmix, initial_call = False)
 				conflist.append(getConfigListEntry(_("Digital downmix"), self.settings.downmix_ac3, None))
+
+			if SystemInfo["CanDownmixDTS"]:
+				self.settings.downmix_dts = ConfigOnOff(default=config.av.downmix_dts.value)
+				self.settings.downmix_dts.addNotifier(self.changeDTSDownmix, initial_call = False)
+				conflist.append(getConfigListEntry(_("DTS downmix"), self.settings.downmix_dts, None))
 
 			if SystemInfo["CanDownmixAAC"]:
 				self.settings.downmix_aac = ConfigOnOff(default=config.av.downmix_aac.value)
@@ -332,6 +342,13 @@ class AudioSelection(Screen, ConfigListScreen):
 	def setAC3plusTranscode(self, transcode):
 		config.av.transcodeac3plus.setValue(transcode)
 		config.av.transcodeac3plus.save()
+
+	def changeDTSDownmix(self, downmix):
+		if downmix.value:
+			config.av.downmix_dts.setValue(True)
+		else:
+			config.av.downmix_dts.setValue(False)
+		config.av.downmix_dts.save()
 
 	def setAACTranscode(self, transcode):
 		config.av.transcodeaac.setValue(transcode)
