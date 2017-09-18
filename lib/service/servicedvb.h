@@ -202,7 +202,7 @@ protected:
 	friend class eServiceFactoryDVB;
 	eServiceReference m_reference;
 
-	connection m_epgupdate_conn;
+	ePtr<eConnection> m_epgupdate_conn;
 
 	ePtr<eDVBService> m_dvb_service;
 
