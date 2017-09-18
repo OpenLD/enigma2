@@ -1819,6 +1819,9 @@ msgstr "Seleccionar fuente de actualización"
 msgid "Choose what you want the button '0' to do when PIP is active."
 msgstr "Elige qué quieres que haga la tecla '0' cuando PIP esté activo."
 
+msgid "Choose whether multi channel sound tracks should be output as PCM."
+msgstr "Elige si las pistas de audio multicanal deben ser emitidas como PCM."
+
 msgid "Choose whether multi channel sound tracks should be downmixed to stereo."
 msgstr "Elige si las pistas de audio multicanal deben mezclarse a estéreo."
 
@@ -1827,6 +1830,15 @@ msgstr "Elige si las pistas de audio AAC deben transcodificarse."
 
 msgid "Choose whether AC3 Plus sound tracks should be transcoded to AC3."
 msgstr "Elige si las pistas de audio AC3 Plus deben ser transcodificadas a AC3."
+
+msgid "Choose whether DTS channel sound tracks should be downmixed to stereo."
+msgstr "Elige si las pistas de audio DTS deben mezclarse a estéreo."
+
+msgid "Choose whether DTS channel sound tracks should be downmixed or transcoded."
+msgstr "Elige si las pistas de audio DTS deben mezclarse o transcodificarse."
+
+msgid "Choose whether WMA Pro channel sound tracks should be downmixed or transcoded."
+msgstr "Elige si las pistas de audio WMA Pro deben mezclarse o transcodificarse."
 
 msgid "Choose whether or not to show an icon when a motorized dish is moving."
 msgstr "Elige si se muestra o no un icono cuando se mueve una antena motorizada."
@@ -17387,6 +17399,24 @@ msgstr "Esta opción le permite configurar la profundidad de color (Colordepth) 
 
 msgid "controlled by HDMI"
 msgstr "Controlado por HDMI"
+
+msgid "use best / controlled by HDMI"
+msgstr "utilizar mejor / controlado por HDMI"
+
+msgid "convert to AC3"
+msgstr "convertir a AC3"
+
+msgid "force AC3plus"
+msgstr "Forzar AC3 Plus"
+
+msgid "convert to DTS"
+msgstr "convertir a DTS"
+
+msgid "force_dts"
+msgstr "Forzar DTS"
+
+msgid "convert to multi-channel PCM"
+msgstr "convertir a PCM multicanal"
 
 msgid "always"
 msgstr "siempre"
