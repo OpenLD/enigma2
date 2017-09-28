@@ -596,7 +596,6 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			{
 			"red": (self.keyCancel, _("exit network adapter configuration")),
 			"green": (self.keySave, _("activate network adapter configuration")),
-			"blue": (self.KeyBlue, _("open nameserver configuration")),
 			})
 
 		self["actions"] = NumberActionMap(["SetupActions"],
@@ -629,7 +628,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self["introduction2"] = StaticText(_("Press OK to activate the settings."))
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("Save"))
-		self["key_blue"] = StaticText(_("Edit DNS"))
+		self["key_blue"] = StaticText()
 
 		self["VKeyIcon"] = Boolean(False)
 		self["HelpWindow"] = Pixmap()
@@ -695,6 +694,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self.InterfaceEntry = None
 		self.dhcpEntry = None
 		self.gatewayEntry = None
+		self.DNSConfigEntry = None
 		self.hiddenSSID = None
 		self.wlanSSID = None
 		self.encryption = None
@@ -704,15 +704,25 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self.weplist = None
 		self.wsconfig = None
 		self.default = None
+		self.primaryDNSEntry = None
+		self.secondaryDNSEntry = None
+		self.onlyWakeOnWiFi = False
+		self.WakeOnWiFiEntry = False
 
 		if iNetwork.isWirelessInterface(self.iface):
-			from Plugins.SystemPlugins.WirelessLan.Wlan import wpaSupplicant
-			self.ws = wpaSupplicant()
+			driver = iNetwork.detectWlanModule(self.iface)
+			if driver in ('brcm-wl', ):
+				from Plugins.SystemPlugins.WirelessLan.Wlan import brcmWLConfig
+				self.ws = brcmWLConfig()
+			else:
+				from Plugins.SystemPlugins.WirelessLan.Wlan import wpaSupplicant
+				self.ws = wpaSupplicant()
 			self.encryptionlist = []
 			self.encryptionlist.append(("Unencrypted", _("Unencrypted")))
 			self.encryptionlist.append(("WEP", _("WEP")))
 			self.encryptionlist.append(("WPA", _("WPA")))
-			self.encryptionlist.append(("WPA/WPA2", _("WPA or WPA2")))
+			if not os_path.exists("/tmp/bcm/" + self.iface):
+				self.encryptionlist.append(("WPA/WPA2", _("WPA or WPA2")))
 			self.encryptionlist.append(("WPA2", _("WPA2")))
 			self.weplist = []
 			self.weplist.append("ASCII")
@@ -722,6 +732,16 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			if self.essid is None:
 				self.essid = self.wsconfig['ssid']
 
+			if iNetwork.canWakeOnWiFi(self.iface):
+				iface_file = "/etc/network/interfaces"
+				default_v = False
+				if os_path.exists(iface_file):
+					with open(iface_file,'r') as f:
+						output = f.read()
+					search_str = "#only WakeOnWiFi " + self.iface
+					if output.find(search_str) >= 0:
+						default_v = True
+				self.onlyWakeOnWiFi = NoSave(ConfigYesNo(default = default_v))
 			config.plugins.wlan.hiddenessid = NoSave(ConfigYesNo(default = self.wsconfig['hiddenessid']))
 			config.plugins.wlan.essid = NoSave(ConfigText(default = self.essid, visible_width = 50, fixed_size = False))
 			config.plugins.wlan.encryption = NoSave(ConfigSelection(self.encryptionlist, default = self.wsconfig['encryption'] ))
@@ -738,6 +758,14 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			self.dhcpdefault = False
 		self.hasGatewayConfigEntry = NoSave(ConfigYesNo(default=self.dhcpdefault or False))
 		self.gatewayConfigEntry = NoSave(ConfigIP(default=iNetwork.getAdapterAttribute(self.iface, "gateway") or [0,0,0,0]))
+		if iNetwork.getAdapterAttribute(self.iface, "dns-nameservers"):
+			self.dnsconfigdefault=True
+		else:
+			self.dnsconfigdefault=False
+		self.hasDNSConfigEntry = NoSave(ConfigYesNo(default=self.dnsconfigdefault or False))
+		manualNameservers = (iNetwork.getInterfacesNameserverList(self.iface) + [[0,0,0,0]] * 2)[0:2]
+		self.manualPrimaryDNS = NoSave(ConfigIP(default=manualNameservers[0]))
+		self.manualSecondaryDNS = NoSave(ConfigIP(default=manualNameservers[1]))
 		nameserver = (iNetwork.getNameserverList() + [[0,0,0,0]] * 2)[0:2]
 		self.primaryDNS = NoSave(ConfigIP(default=nameserver[0]))
 		self.secondaryDNS = NoSave(ConfigIP(default=nameserver[1]))
@@ -749,7 +777,10 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		self.InterfaceEntry = getConfigListEntry(_("Use interface"), self.activateInterfaceEntry)
 
 		self.list.append(self.InterfaceEntry)
-		if self.activateInterfaceEntry.value:
+		if self.onlyWakeOnWiFi:
+			self.WakeOnWiFiEntry = getConfigListEntry(_('Use only for Wake on WLan (WoW)'), self.onlyWakeOnWiFi)
+			self.list.append(self.WakeOnWiFiEntry)
+		if self.activateInterfaceEntry.value or (self.onlyWakeOnWiFi and self.onlyWakeOnWiFi.value):
 			self.dhcpEntry = getConfigListEntry(_("Use DHCP"), self.dhcpConfigEntry)
 			self.list.append(self.dhcpEntry)
 			if not self.dhcpConfigEntry.value:
@@ -759,12 +790,22 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 				self.list.append(self.gatewayEntry)
 				if self.hasGatewayConfigEntry.value:
 					self.list.append(getConfigListEntry(_('Gateway'), self.gatewayConfigEntry))
+
+			self.DNSConfigEntry =  getConfigListEntry(_("Use Manual dns-nameserver"), self.hasDNSConfigEntry)
+			if self.dhcpConfigEntry.value:
+				self.list.append(self.DNSConfigEntry)
+			if self.hasDNSConfigEntry.value or not self.dhcpConfigEntry.value:
+				self.primaryDNSEntry = getConfigListEntry(_('Primary DNS') + " (" + _("Nameserver %d") % 1 + ")", self.manualPrimaryDNS)
+				self.secondaryDNSEntry = getConfigListEntry(_('Secondary DNS') + " (" + _("Nameserver %d") % 2 + ")", self.manualSecondaryDNS)
+				self.list.append(self.primaryDNSEntry)
+				self.list.append(self.secondaryDNSEntry)
+
 			havewol = False
-			if SystemInfo["WakeOnLAN"] and not getBoxType() in ('et10000', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue', 'gbipbox', 'gbquad', 'gbquadplus', 'gbx1', 'gbx3'):
+			if SystemInfo["WakeOnLAN"] and not getBoxType() in ('et10000', 'gb800seplus', 'gb800ueplus', 'gbultrase', 'gbultraue', 'gbultraueh', 'gbipbox', 'gbquad', 'gbquadplus', 'gbx1', 'gbx2', 'gbx3', 'gbx3h'):
 				havewol = True
-			if getBoxType() == 'et10000' and self.iface == 'eth0':
+			if getBoxType() in ('et10000' , 'vuultimo4k') and self.iface == 'eth0':
 				havewol = False
-			if havewol:
+			if havewol and self.onlyWakeOnWiFi != True:
 				self.list.append(getConfigListEntry(_('Enable Wake On LAN'), config.network.wol))
 
 			self.extended = None
@@ -777,19 +818,23 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 						if p.__call__.has_key("configStrings"):
 							self.configStrings = p.__call__["configStrings"]
 
-						self.hiddenSSID = getConfigListEntry(_("Hidden network"), config.plugins.wlan.hiddenessid)
-						self.list.append(self.hiddenSSID)
+						isExistBcmWifi = os_path.exists("/tmp/bcm/" + self.iface)
+						if not isExistBcmWifi:
+							self.hiddenSSID = getConfigListEntry(_("Hidden network"), config.plugins.wlan.hiddenessid)
+							self.list.append(self.hiddenSSID)
 						self.wlanSSID = getConfigListEntry(_("Network name (SSID)"), config.plugins.wlan.essid)
 						self.list.append(self.wlanSSID)
 						self.encryption = getConfigListEntry(_("Encryption"), config.plugins.wlan.encryption)
 						self.list.append(self.encryption)
 
-						self.encryptionType = getConfigListEntry(_("Encryption key type"), config.plugins.wlan.wepkeytype)
+						if not isExistBcmWifi:
+							self.encryptionType = getConfigListEntry(_("Encryption key type"), config.plugins.wlan.wepkeytype)
 						self.encryptionKey = getConfigListEntry(_("Encryption key"), config.plugins.wlan.psk)
 
 						if config.plugins.wlan.encryption.value != "Unencrypted":
 							if config.plugins.wlan.encryption.value == 'WEP':
-								self.list.append(self.encryptionType)
+								if not isExistBcmWifi:
+									self.list.append(self.encryptionType)
 							self.list.append(self.encryptionKey)
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
@@ -797,15 +842,22 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			self.first = False
 			self.timer.start(500, True)
 
-	def KeyBlue(self):
-		self.session.openWithCallback(self.NameserverSetupClosed, NameserverSetup)
-
 	def newConfig(self):
 		if self["config"].getCurrent() == self.InterfaceEntry:
 			self.createSetup()
 		if self["config"].getCurrent() == self.dhcpEntry:
 			self.createSetup()
 		if self["config"].getCurrent() == self.gatewayEntry:
+			self.createSetup()
+		if self["config"].getCurrent() == self.DNSConfigEntry:
+			self.createSetup()
+		if self["config"].getCurrent() == self.primaryDNSEntry:
+			self.createSetup()
+		if self["config"].getCurrent() == self.secondaryDNSEntry:
+			self.createSetup()
+		if self["config"].getCurrent() == self.WakeOnWiFiEntry:
+			iNetwork.onlyWoWifaces[self.iface] = self.onlyWakeOnWiFi.value
+			open(SystemInfo["WakeOnLAN"], "w").write(self.onlyWakeOnWiFi.value and "enable" or "disable")
 			self.createSetup()
 		if iNetwork.isWirelessInterface(self.iface):
 			if self["config"].getCurrent() == self.encryption:
@@ -834,7 +886,7 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 		if ret:
 			num_configured_if = len(iNetwork.getConfiguredAdapters())
 			if num_configured_if >= 1:
-				if self.iface in iNetwork.getConfiguredAdapters():
+				if self.iface in iNetwork.getConfiguredAdapters() or (iNetwork.onlyWoWifaces.has_key(self.iface) and iNetwork.onlyWoWifaces[self.iface] is True):
 					self.applyConfig(True)
 				else:
 					self.session.openWithCallback(self.secondIfaceFoundCB, MessageBox, _("A second configured interface has been found.\n\nDo you want to disable the second network interface?"), default = True)
@@ -870,11 +922,19 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			else:
 				iNetwork.removeAdapterAttribute(self.iface, "gateway")
 
+			if self.hasDNSConfigEntry.value or not self.dhcpConfigEntry.value:
+				interfacesDnsLines = self.makeLineDnsNameservers([self.manualPrimaryDNS.value, self.manualSecondaryDNS.value])
+				if interfacesDnsLines == "" :
+					interfacesDnsLines = False
+				iNetwork.setAdapterAttribute(self.iface, "dns-nameservers", interfacesDnsLines)
+			else:
+				iNetwork.setAdapterAttribute(self.iface, "dns-nameservers", False)
+
 			if self.extended is not None and self.configStrings is not None:
 				iNetwork.setAdapterAttribute(self.iface, "configStrings", self.configStrings(self.iface))
 				self.ws.writeConfig(self.iface)
 
-			if self.activateInterfaceEntry.value is False:
+			if self.activateInterfaceEntry.value is False and not (self.onlyWakeOnWiFi and self.onlyWakeOnWiFi.value is True):
 				iNetwork.deactivateInterface(self.iface,self.deactivateInterfaceCB)
 				iNetwork.writeNetworkConfig()
 				self.applyConfigRef = self.session.openWithCallback(self.applyConfigfinishedCB, MessageBox, _("Please wait for activation of your network configuration..."), type = MessageBox.TYPE_INFO, enable_input = False)
@@ -980,6 +1040,12 @@ class AdapterSetup(Screen, ConfigListScreen, HelpableScreen):
 			if current[1].help_window.instance is not None:
 				current[1].help_window.instance.hide()
 
+	def makeLineDnsNameservers(self, nameservers = []):
+		line = ""
+		entry = ' '.join([("%d.%d.%d.%d" % tuple(x)) for x in nameservers if x != [0, 0, 0, 0] ])
+		if len(entry):
+			line+="\tdns-nameservers %s\n" % entry
+		return line
 
 class AdapterSetupConfiguration(Screen, HelpableScreen):
 	def __init__(self, session,iface):
@@ -1239,6 +1305,11 @@ class AdapterSetupConfiguration(Screen, HelpableScreen):
 			from Plugins.SystemPlugins.WirelessLan.Wlan import iStatus
 			iStatus.stopWlanConsole()
 			self.updateStatusbar()
+			if iNetwork.getAdapterAttribute(self.iface, "up") is True and iNetwork.onlyWoWifaces.has_key(self.iface) and iNetwork.onlyWoWifaces[self.iface] is True:
+				iNetwork.deactivateInterface(self.iface, self.deactivateInterfaceCB)
+
+	def deactivateInterfaceCB(self, data):
+		iNetwork.getInterfaces()
 
 	def WlanScanClosed(self,*ret):
 		if ret[0] is not None:
