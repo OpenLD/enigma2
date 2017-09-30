@@ -1,11 +1,12 @@
 from boxbranding import getBoxType, getMachineBrand, getMachineName
-from os import path as os_path, remove, unlink, rename, chmod, access, X_OK
+from os import path as os_path, remove, unlink, rename, chmod, access, X_OK, system, listdir, symlink, mkdir
+from time import sleep
 from shutil import move
 import time
 import os
 
 from enigma import eTimer
-
+from enigma import *
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
@@ -21,7 +22,9 @@ from Components.Label import Label, MultiColorLabel
 from Components.ScrollLabel import ScrollLabel
 from Components.Pixmap import Pixmap, MultiPixmap
 from Components.MenuList import MenuList
-from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigIP, ConfigText, ConfigPassword, ConfigSelection, getConfigListEntry, ConfigNumber, ConfigLocations, NoSave, ConfigMacText
+from Components.Button import Button
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigIP, NoSave, ConfigText, ConfigPassword, ConfigSelection, getConfigListEntry, ConfigNumber, ConfigLocations, ConfigInteger, ConfigClock, configfile, ConfigMacText
+from Plugins.Extensions.LDteam.ExtraActionBox import ExtraActionBox
 from Components.ConfigList import ConfigListScreen
 from Components.PluginComponent import plugins
 from Components.FileList import MultiFileSelectList
@@ -29,6 +32,9 @@ from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN
 from Tools.LoadPixmap import LoadPixmap
 from Plugins.Plugin import PluginDescriptor
+from subprocess import call
+import commands
+
 
 def getSSID(ssid_value):
 	file = '/etc/wifis/'+ssid_value+'.wifi'
@@ -44,7 +50,6 @@ def getSSID(ssid_value):
 		hiddenessid = encryption = wepkeytype = psk = None
 
 	return hiddenessid,encryption,wepkeytype,psk
-
 
 class NetworkAdapterSelection(Screen,HelpableScreen):
 	def __init__(self, session):
@@ -2242,10 +2247,10 @@ class NetworkFtp(Screen):
 
 	def activateFtp(self):
 		commands = []
-		if fileExists('/etc/rc2.d/S20vsftpd'):
+		if fileExists('/etc/rc2.d/S20vsftpd' or fileExists('/etc/rc2.d/S80vsftpd'):
 			commands.append('update-rc.d -f vsftpd remove')
 		else:
-			commands.append('update-rc.d -f vsftpd defaults')
+			commands.append('update-rc.d -f vsftpd defaults 20')
 		self.Console.eBatch(commands, self.StartStopCallback, debug=True)
 
 	def updateService(self):
@@ -2256,7 +2261,7 @@ class NetworkFtp(Screen):
 		self['labstop'].hide()
 		self['labactive'].setText(_("Disabled"))
 		self.my_ftp_active = False
-		if fileExists('/etc/rc2.d/S20vsftpd'):
+		if fileExists('/etc/rc2.d/S20vsftpd' or fileExists('/etc/rc2.d/S80vsftpd'):
 			self['labactive'].setText(_("Enabled"))
 			self['labactive'].show()
 			self.my_ftp_active = True
@@ -2325,7 +2330,7 @@ class NetworkNfs(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2461,7 +2466,7 @@ class RemoteTunerServer(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -2757,7 +2762,7 @@ class NetworkSamba(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.QuestionCallback, MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.QuestionCallback, MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install "%s" ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def QuestionCallback(self, val):
 		if val:
@@ -3116,7 +3121,6 @@ class NetworkInadyn(Screen):
 			self['key_green'].setText(_("Start"))
 			status_summary = self['status'].text + ' ' + self['labstop'].text
 
-		#self.my_nabina_state = False
 		if fileExists('/etc/inadyn.conf'):
 			f = open('/etc/inadyn.conf', 'r')
 			for line in f.readlines():
@@ -4308,7 +4312,7 @@ class NetworkUdpxy(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -4456,7 +4460,7 @@ class NetworkXupnpd(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -4604,7 +4608,7 @@ class NetworkDjmount(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
@@ -4752,7 +4756,7 @@ class NetworkMediatomb(Screen):
 		elif ('wget returned 1' or 'wget returned 255' or '404 Not Found') in result:
 			self.session.openWithCallback(self.InstallPackageFailed, MessageBox, _("Sorry feeds are down for maintenance, please try again later."), type=MessageBox.TYPE_INFO, timeout=10, close_on_any_key=True)
 		else:
-			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?')  % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.InstallPackage,MessageBox,_('Your %s %s will be restarted after the installation of service\nReady to install %s ?') % (getMachineBrand(), getMachineName(), self.service_name), MessageBox.TYPE_YESNO)
 
 	def InstallPackage(self, val):
 		if val:
