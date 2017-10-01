@@ -13,6 +13,12 @@ msgstr ""
 "X-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "  Menu key : Select quad channel"
+msgstr ""
+
+msgid "  Red key : Show/Hide channel name"
+msgstr ""
+
 msgid "  REC  "
 msgstr ""
 
@@ -1150,6 +1156,9 @@ msgstr ""
 msgid "add marker"
 msgstr ""
 
+msgid "Add New Quad Channel Entry"
+msgstr ""
+
 msgid "Add provider"
 msgstr ""
 
@@ -2088,6 +2097,9 @@ msgid "BouquetList"
 msgstr ""
 
 msgid "bouquetname"
+msgstr ""
+
+msgid "Box or driver is not support Quad PiP."
 msgstr ""
 
 msgid "Box Portal"
@@ -4423,6 +4435,9 @@ msgstr ""
 msgid "Edit new entry"
 msgstr ""
 
+msgid "Edit Quad Channel Entry"
+msgstr ""
+
 msgid "Edit settings"
 msgstr ""
 
@@ -4556,6 +4571,9 @@ msgid "Enable panic button"
 msgstr ""
 
 msgid "enable PIP no HDR"
+msgstr ""
+
+msgid "Enable Quad PIP"
 msgstr ""
 
 msgid "Enable preview"
@@ -4706,6 +4724,12 @@ msgid "EPG Cache Check"
 msgstr ""
 
 msgid "EPG filename"
+msgstr ""
+
+msgid "EPG key : Switch to channel list\nOk key : Remove selected channel\nPVR key : Input channel name\nExit key : Finish channel edit"
+msgstr ""
+
+msgid "EPG key : Switch to quad PiP entry\nOk key : Add to new entry\nPVR key : Input channel name\nExit key : Finish channel edit"
 msgstr ""
 
 msgid "EPG language selection 1"
@@ -4940,6 +4964,12 @@ msgid "Exit network wizard"
 msgstr ""
 
 msgid "exit networkadapter setup menu"
+msgstr ""
+
+msgid "Exit Quad Channel Selection"
+msgstr ""
+
+msgid "Exit quad PiP"
 msgstr ""
 
 msgid "Exit the wizard"
@@ -6207,6 +6237,9 @@ msgid "Inotify Monitoring"
 msgstr ""
 
 msgid "Input"
+msgstr ""
+
+msgid "Input channel name."
 msgstr ""
 
 msgid "Input devices"
@@ -7498,6 +7531,9 @@ msgid "Next boot will start from Image 1."
 msgstr ""
 
 msgid "next higher Resolution"
+msgstr ""
+
+msgid "Next quad PiP channel"
 msgstr ""
 
 msgid "nfi"
@@ -9103,6 +9139,9 @@ msgstr ""
 msgid "Pressing the panic button will zap you to this channelnumber in your first bouquet."
 msgstr ""
 
+msgid "Prev quad PiP channel"
+msgstr ""
+
 msgid "Preview"
 msgstr ""
 
@@ -9290,6 +9329,15 @@ msgid "Python frontend for /tmp/mmi.socket"
 msgstr ""
 
 msgid "Python:\t%s"
+msgstr ""
+
+msgid "Quad PiP Channel Selection"
+msgstr ""
+
+msgid "Quad PiP is not available."
+msgstr ""
+
+msgid "Quad PiP Screen"
 msgstr ""
 
 msgid "Question"
@@ -9706,6 +9754,9 @@ msgid "Remove plugins"
 msgstr ""
 
 msgid "Remove Plugins"
+msgstr ""
+
+msgid "Remove Quad Channel Entry"
 msgstr ""
 
 msgid "remove selected satellite"
@@ -10397,6 +10448,9 @@ msgstr ""
 msgid "Select Cam 2"
 msgstr ""
 
+msgid "Select channel audio"
+msgstr ""
+
 msgid "Select channel to record from"
 msgstr ""
 
@@ -10482,6 +10536,9 @@ msgid "Select of the number"
 msgstr ""
 
 msgid "Select provider to add..."
+msgstr ""
+
+msgid "Select Quad Channels"
 msgstr ""
 
 msgid "Select Red-key action"
@@ -11138,6 +11195,9 @@ msgstr ""
 msgid "show"
 msgstr ""
 
+msgid "Show/Hide focus bar"
+msgstr ""
+
 msgid "Show /tmp/ecm.info"
 msgstr ""
 
@@ -11259,6 +11319,9 @@ msgid "Show channel number in infobar"
 msgstr ""
 
 msgid "Show channel numbers in channel selection"
+msgstr ""
+
+msgid "Show channel selection"
 msgstr ""
 
 msgid "Show CI messages"
@@ -15452,6 +15515,9 @@ msgid "Zap focus to main screen"
 msgstr ""
 
 msgid "Zap focus to Picture in Picture"
+msgstr ""
+
+msgid "Zap focused channel on full screen"
 msgstr ""
 
 msgid "Zap mode"

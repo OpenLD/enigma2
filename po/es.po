@@ -17450,3 +17450,21 @@ msgstr "Cambiar el modo de visualización de 12 a 8 caracteres"
 
 msgid "12, show latin-1 characters except for greek and cyrillic, switch to 8 if needed."
 msgstr "12, mostrar caracteres latin-1 a excepción del griego y cirílico, cambiar a 8 si es necesario."
+
+msgid "Do not center DVB subs on this service"
+msgstr "No centrar los DVB subs en este servicio"
+
+msgid "Do center DVB subs on this service"
+msgstr "Centrar los DVB subs en este servicio"
+
+msgid "Audio volume step size"
+msgstr "Tamaño del step de volumen"
+
+msgid "Configure the general audio volume step size (limit 1-10)."
+msgstr "Configure el tamaño general del step de volumen (límite 1-10)."
+
+msgid "Delivery system workaround"
+msgstr "Función especial del sistema sintonizador"
+
+msgid "Workaround for old tuner driver"
+msgstr "Activar sólo si hay problemas con Multituner"

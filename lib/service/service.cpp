@@ -128,7 +128,7 @@ eServiceCenter::eServiceCenter()
 {
 	if (!instance)
 	{
-		eDebug("settings instance.");
+		eDebug("[eServiceCenter] settings instance.");
 		instance = this;
 	}
 }
@@ -137,7 +137,7 @@ eServiceCenter::~eServiceCenter()
 {
 	if (instance == this)
 	{
-		eDebug("clear instance");
+		eDebug("[eServiceCenter] clear instance");
 		instance = 0;
 	}
 }

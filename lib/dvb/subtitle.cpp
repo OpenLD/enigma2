@@ -55,28 +55,13 @@ void eDVBSubtitleParser::subtitle_process_line(subtitle_region *region, subtitle
 	int x = subcentered ? (region->width - len) /2 : object->object_horizontal_position;
 	int y = object->object_vertical_position + line;
 	if (x + len > region->width)
-	{
-//		eDebug("[SUB] !!!! XCLIP %d + %d > %d", x, len, region->width);
 		len = region->width - x;
-	}
-	if (len < 0)
+	if (len < 0 || y >= region->height)
 		return;
-	if (y >= region->height)
-	{
-//		eDebug("[SUB] !!!! YCLIP %d >= %d", y, region->height);
-		return;
-	}
-	if( subcentered && region->region_id && line < 3 )
-	{
+	if(subcentered && region->region_id && line < 3)
 		for (int i = 0; i < len; i++ )
 			if( data[i] <= 8)
-			{
-//				eDebug("[SUB] !!!! Clearing rest of last region");
 				data[i] = 0;
-			}
-	}
-//	eDebug("inserting %d bytes (into region %d)", len, region->region_id);
-//	eDebug("put data to buffer %p", &(*region->buffer));
 	memcpy((uint8_t*)region->buffer->surface->data + region->buffer->surface->stride * y + x, data, len);
 }
 
