@@ -97,9 +97,9 @@ fbClass::fbClass(const char *fb)
 		struct ion_handle_data free_data;
 		struct ion_phys_data phys_data;
 		int ret;
-		unsigned char *lfb;
+//		unsigned char *lfb;
 
-		eDebug("Using ION allocator");
+		eDebug("[fb] Using ION allocator");
 
 		memset(&alloc_data, 0, sizeof(alloc_data));
 		alloc_data.len = ACCEL_MEM_SIZE;
@@ -108,8 +108,8 @@ fbClass::fbClass(const char *fb)
 		ret = ioctl(ion, ION_IOC_ALLOC, &alloc_data);
 		if (ret < 0)
 		{
-			perror("ION_IOC_ALLOC failed");
-			eFatal("failed to allocate accel memory!!!");
+			eDebug("[fb] ION_IOC_ALLOC failed");
+			eFatal("[fb] failed to allocate accel memory!!!");
 			return;
 		}
 
@@ -118,7 +118,7 @@ fbClass::fbClass(const char *fb)
 		ret = ioctl(ion, ION_IOC_PHYS, &phys_data);
 		if (ret < 0)
 		{
-			perror("ION_IOC_PHYS failed");
+			eDebug("[fb] ION_IOC_PHYS failed");
 			goto err_ioc_free;
 		}
 
@@ -127,53 +127,53 @@ fbClass::fbClass(const char *fb)
 		ret = ioctl(ion, ION_IOC_SHARE, &share_data);
 		if (ret < 0)
 		{
-			perror("ION_IOC_SHARE failed");
+			eDebug("[fb] ION_IOC_SHARE failed");
 			goto err_ioc_free;
 		}
 
 		memset(&free_data, 0, sizeof(free_data));
 		free_data.handle = alloc_data.handle;
 		if (ioctl(ion, ION_IOC_FREE, &free_data) < 0)
-			perror("ION_IOC_FREE failed");
+			eDebug("[fb] ION_IOC_FREE failed");
 
 		m_accel_fd = share_data.fd;
 		lfb=(unsigned char*)mmap(0, ACCEL_MEM_SIZE, PROT_WRITE|PROT_READ, MAP_SHARED, share_data.fd, 0);
 
 		if (lfb)
 		{
-			eDebug("%dkB available for acceleration surfaces (via ION).", ACCEL_MEM_SIZE);
+			eDebug("[fb] %dkB available for acceleration surfaces (via ION).", ACCEL_MEM_SIZE / 1024);
 			gAccel::getInstance()->setAccelMemorySpace(lfb, phys_data.addr, ACCEL_MEM_SIZE);
 		}
 		else
 		{
 			close(m_accel_fd);
-			eDebug("mmap lfb failed");
+			eDebug("[fb] mmap lfb failed");
 err_ioc_free:
 			eFatal("failed to allocate accel memory via ION!!!");
 			m_accel_fd = -1;
 			memset(&free_data, 0, sizeof(free_data));
 			free_data.handle = alloc_data.handle;
 			if (ioctl(ion, ION_IOC_FREE, &free_data) < 0)
-				perror("ION_IOC_FREE");
+				eDebug("[fb] ION_IOC_FREE %m");
 		}
 		close(ion);
 	}
 	else
 	{
-		eFatal("failed to open ION device node! no allocate accel memory available !!");
+		Fatal("[fb] failed to open ION device node! no allocate accel memory available !!");
 		m_accel_fd = -1;
 	}
 #else
-	eDebug("[fb] %s: %dk video mem", fb, available/1024);
+	eDebug("[fb] %dk video mem", available/1024);
 	lfb=(unsigned char*)mmap(0, available, PROT_WRITE|PROT_READ, MAP_SHARED, fbFd, 0);
 #endif
-#ifndef CONFIG_ION
+//#ifndef CONFIG_ION
 	if (!lfb)
 	{
-		perror("mmap");
+		eDebug("[fb] mmap %m");
 		goto nolfb;
 	}
-#endif
+//#endif
 
 #if not defined(__sh__)
 	showConsole(0);
@@ -187,7 +187,7 @@ nolfb:
 		::close(fbFd);
 		fbFd = -1;
 	}
-	eDebug("[fb] framebuffer %s not available", fb);
+	eDebug("[fb] framebuffer not available");
 	return;
 }
 
@@ -199,7 +199,7 @@ int fbClass::showConsole(int state)
 	{
 		if(ioctl(fd, KDSETMODE, state?KD_TEXT:KD_GRAPHICS)<0)
 		{
-			eDebug("setting /dev/tty0 status failed.");
+			eDebug("[fb] setting /dev/tty0 status failed.");
 		}
 		close(fd);
 	}
@@ -261,15 +261,15 @@ int fbClass::SetMode(int nxRes, int nyRes, int nbpp)
 
 		if (ioctl(fbFd, FBIOPUT_VSCREENINFO, &screeninfo)<0)
 		{
-			perror("FBIOPUT_VSCREENINFO");
-			printf("fb failed\n");
+			eDebug("[fb] FBIOPUT_VSCREENINFO %m");
 			return -1;
 		}
-		eDebug(" - double buffering not available.");
+		eDebug("[fb] double buffering not available.");
 	} else
-		eDebug(" - double buffering available!");
+		eDebug("[fb] double buffering available!");
 
 	m_number_of_pages = screeninfo.yres_virtual / nyRes;
+	eDebug("[fb] %d page(s) available!", m_number_of_pages);
 
 #endif
 	ioctl(fbFd, FBIOGET_VSCREENINFO, &screeninfo);
