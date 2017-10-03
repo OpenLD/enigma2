@@ -58,7 +58,7 @@ public:
 };
 
 class eServiceDVD: public iPlayableService, public iPauseableService, public iSeekableService, public iAudioTrackSelection,
-	public iServiceInformation, public iSubtitleOutput, public iServiceKeys, public iCueSheet, public eThread, public Object
+	public iServiceInformation, public iSubtitleOutput, public iServiceKeys, public iCueSheet, public eThread, public sigc::trackable
 {
 	friend class eServiceFactoryDVD;
 	DECLARE_REF(eServiceDVD);
@@ -79,7 +79,7 @@ public:
 	void setQpipMode(bool value, bool audio) { }
 
 		// iPlayableService
-	RESULT connectEvent(const Slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection);
+	RESULT connectEvent(const sigc::slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection);
 	RESULT start();
 	RESULT stop();
 	RESULT info(ePtr<iServiceInformation> &ptr);
@@ -142,7 +142,7 @@ private:
 
 	eServiceReference m_ref;
 
-	Signal2<void,iPlayableService*,int> m_event;
+	sigc::signal2<void,iPlayableService*,int> m_event;
 
 	struct ddvd *m_ddvdconfig;
 	ePtr<gPixmap> m_pixmap;

@@ -23,13 +23,13 @@ class eDVBChannel;
 	   (and how to deallocate it). */
 class iDVBAdapter;
 
-class eDVBRegisteredFrontend: public iObject, public Object
+class eDVBRegisteredFrontend: public iObject, public sigc::trackable
 {
 	DECLARE_REF(eDVBRegisteredFrontend);
 	ePtr<eTimer> disable;
 	void closeFrontend();
 public:
-	Signal0<void> stateChanged;
+	sigc::signal0<void> stateChanged;
 	eDVBRegisteredFrontend(eDVBFrontend *fe, iDVBAdapter *adap)
 		:disable(eTimer::create(eApp)), m_adapter(adap), m_frontend(fe), m_inuse(0)
 	{
@@ -154,7 +154,7 @@ public:
 #endif // SWIG
 
 SWIG_IGNORE(eDVBResourceManager);
-class eDVBResourceManager: public iObject, public Object
+class eDVBResourceManager: public iObject, public sigc::trackable
 {
 	DECLARE_REF(eDVBResourceManager);
 	int avail, busy;
@@ -187,10 +187,10 @@ private:
 	RESULT addChannel(const eDVBChannelID &chid, eDVBChannel *ch);
 	RESULT removeChannel(eDVBChannel *ch);
 
-	Signal1<void,eDVBChannel*> m_channelAdded;
+	sigc::signal1<void,eDVBChannel*> m_channelAdded;
 
 	eUsePtr<iDVBChannel> m_cached_channel;
-	Connection m_cached_channel_state_changed_conn;
+	sigc::connection m_cached_channel_state_changed_conn;
 	ePtr<eTimer> m_releaseCachedChannelTimer;
 	void DVBChannelStateChanged(iDVBChannel*);
 	void feStateChanged();
@@ -215,7 +215,7 @@ public:
 		errNoSourceFound = -7,
 	};
 
-	RESULT connectChannelAdded(const Slot1<void,eDVBChannel*> &channelAdded, ePtr<eConnection> &connection);
+	RESULT connectChannelAdded(const sigc::slot1<void,eDVBChannel*> &channelAdded, ePtr<eConnection> &connection);
 	int canAllocateChannel(const eDVBChannelID &channelid, const eDVBChannelID &ignore, int &system, bool simulate=false);
 
 		/* allocate channel... */
@@ -263,7 +263,7 @@ SWIG_EXTEND(ePtr<eDVBResourceManager>,
 class eDVBChannelFilePush;
 
 	/* iDVBPVRChannel includes iDVBChannel. don't panic. */
-class eDVBChannel: public iDVBPVRChannel, public iFilePushScatterGather, public Object
+class eDVBChannel: public iDVBPVRChannel, public iFilePushScatterGather, public sigc::trackable
 {
 	DECLARE_REF(eDVBChannel);
 	friend class eDVBResourceManager;
@@ -279,8 +279,8 @@ public:
 	int getSkipMode() { return m_skipmode_m; }
 #endif
 
-	RESULT connectStateChange(const Slot1<void,iDVBChannel*> &stateChange, ePtr<eConnection> &connection);
-	RESULT connectEvent(const Slot2<void,iDVBChannel*,int> &eventChange, ePtr<eConnection> &connection);
+	RESULT connectStateChange(const sigc::slot1<void,iDVBChannel*> &stateChange, ePtr<eConnection> &connection);
+	RESULT connectEvent(const sigc::slot2<void,iDVBChannel*,int> &eventChange, ePtr<eConnection> &connection);
 
 	RESULT getState(int &state);
 
@@ -311,8 +311,8 @@ private:
 
 	ePtr<iDVBFrontendParameters> m_current_frontend_parameters;
 	eDVBChannelID m_channel_id;
-	Signal1<void,iDVBChannel*> m_stateChanged;
-	Signal2<void,iDVBChannel*,int> m_event;
+	sigc::signal1<void,iDVBChannel*> m_stateChanged;
+	sigc::signal2<void,iDVBChannel*,int> m_event;
 	int m_state;
 	ePtr<iTsSource> m_source;
 	std::string m_streaminfo_file;

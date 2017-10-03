@@ -197,7 +197,7 @@ public:
 		tableProgress(seen.size(), max);
 		return eTable<Section>::createTable(nr, data, max);
 	}
-	Signal2<void, int, int> tableProgress;
+	sigc::signal2<void, int, int> tableProgress;
 };
 
 template <class Section>
@@ -220,7 +220,7 @@ public:
 
 #endif /* no SWIG */
 
-class eFastScan: public Object, public iObject
+class eFastScan: public sigc::trackable, public iObject
 {
 	DECLARE_REF(eFastScan);
 
