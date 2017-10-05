@@ -2422,7 +2422,7 @@ class NetworkNfs(Screen):
 		self['labactive'].setText(_("Disabled"))
 		self.my_nfs_active = False
 		self.my_nfs_run = False
-		if fileExists('/etc/rc2.d/S13nfsserver'):
+		if fileExists('/etc/rc2.d/S11nfsserver') or fileExists('/etc/rc2.d/S13nfsserver') or fileExists('/etc/rc2.d/S20nfsserver'):
 			self['labactive'].setText(_("Enabled"))
 			self['labactive'].show()
 			self.my_nfs_active = True
