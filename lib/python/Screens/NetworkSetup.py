@@ -2390,7 +2390,7 @@ class NetworkNfs(Screen):
 		if fileExists('/etc/rc2.d/S11nfsserver') or fileExists('/etc/rc2.d/S13nfsserver') or fileExists('/etc/rc2.d/S20nfsserver'):
 			self.Console.ePopen('update-rc.d -f nfsserver remove', self.StartStopCallback)
 		else:
-			self.Console.ePopen('update-rc.d -f nfsserver defaults 13', self.StartStopCallback)
+			self.Console.ePopen('update-rc.d -f nfsserver defaults 11', self.StartStopCallback)
 
 	def updateService(self):
 		import process
