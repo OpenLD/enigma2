@@ -17468,3 +17468,9 @@ msgstr "Función especial del sistema sintonizador"
 
 msgid "Workaround for old tuner driver"
 msgstr "Activar sólo si hay problemas con Multituner"
+
+msgid "Ignore DVB namespace sub network"
+msgstr "Ignorar sub-red de espacio de nombres DVB"
+
+msgid "On valid ONIDs, ignore frequency sub network part"
+msgstr "En los ONID válidos, ignorar la frecuencia de la parte de red secundaria"
