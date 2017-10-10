@@ -12,8 +12,27 @@ from SystemInfo import SystemInfo
 from Tools.HardwareInfo import HardwareInfo
 from boxbranding import getBoxType
 from keyids import KEYIDS
+import glob
+import os
+from Components.RcModel import rc_model
 
 def InitUsageConfig():
+	AvailRemotes=glob.glob('/usr/share/enigma2/rc_models/*')
+	RemoteChoices=[]
+	DefaultRemote=rc_model.getRcFolder(GetDefault=True)
+
+	remoteSelectable=False
+	if AvailRemotes is not None:
+		for remote in AvailRemotes:
+			if os.path.isfile(remote+'/rc.png') and os.path.isfile(remote+'/rcpositions.xml') and os.path.isfile(remote+'/remote.html'):
+				pass
+			else:
+				AvailRemotes.remove(remote)
+		if len(AvailRemotes)>1:
+			remoteSelectable=True
+			for remote in AvailRemotes:
+				toadd = (remote.split('/')[-1], remote.split('/')[-1])
+				RemoteChoices.append(toadd)
 	config.misc.useNTPminutes = ConfigSelection(default = "30", choices = [("30", "30" + " " +_("minutes")), ("60", _("Hour")), ("1440", _("Once per day"))])
 	config.misc.remotecontrol_text_support = ConfigYesNo(default = True)
 
@@ -375,7 +394,7 @@ def InitUsageConfig():
 
 	config.usage.blinking_display_clock_during_recording = ConfigYesNo(default = False)
 
-	if getBoxType() in ('formuler1tc','zgemmah7','vimastec1000', 'vimastec1500','et7000', 'et7500', 'et8000', 'triplex', 'formuler1', 'mutant1200', 'solo2', 'mutant1265', 'mutant1100', 'mutant500c', 'mutant530c', 'mutant1500', 'osminiplus', 'ax51', 'mutant51', '9910lx', '9911lx'):
+	if getBoxType() in ('tiviaraplus','formuler1tc','zgemmah7','vimastec1000', 'vimastec1500','et7000', 'et7500', 'et8000', 'triplex', 'formuler1', 'mutant1200', 'solo2', 'mutant1265', 'mutant1100', 'mutant500c', 'mutant530c', 'mutant1500', 'osminiplus', 'ax51', 'mutant51', '9910lx', '9911lx'):
 		config.usage.blinking_rec_symbol_during_recording = ConfigSelection(default = "Channel", choices = [
 						("Rec", _("REC Symbol")),
 						("RecBlink", _("Blinking REC Symbol")),
