@@ -104,6 +104,8 @@ def ConvertToHumanReadable(tp, tunertype = None):
 		ret["system"] = {
 			eDVBFrontendParametersSatellite.System_DVB_S : "DVB-S",
 			eDVBFrontendParametersSatellite.System_DVB_S2 : "DVB-S2"}.get(tp.get("system"))
+		ret["frequency"] = (tp.get("frequency") and str(tp.get("frequency")/1000) + ' MHz') or '0 MHz'
+		ret["symbol_rate"] = (tp.get("symbol_rate") and tp.get("symbol_rate")/1000) or 0
 		if ret["system"] == "DVB-S2":
 			ret["rolloff"] = {
 				eDVBFrontendParametersSatellite.RollOff_alpha_0_35 : "0.35",
@@ -123,8 +125,6 @@ def ConvertToHumanReadable(tp, tunertype = None):
 			ret["pls_mode"] = None
 			ret["is_id"] = None
 			ret["pls_code"] = None
-		ret["frequency"] = (tp.get("frequency") and str(tp.get("frequency")/1000) + ' MHz') or '0 MHz'
-		ret["symbol_rate"] = (tp.get("symbol_rate") and tp.get("symbol_rate")/1000) or 0
 	elif tunertype == "DVB-C":
 		ret["tuner_type"] = _("Cable")
 		ret["modulation"] = {

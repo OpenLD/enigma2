@@ -57,6 +57,7 @@ public:
 	{
 		return ptr;
 	}
+
 #ifndef SWIG
 	T* grabRef() { if (!ptr) return 0; ptr->AddRef(); return ptr; }
 	T* &ptrref() { return ptr; }
