@@ -988,6 +988,43 @@ static inline uint32_t fe_udiv(uint32_t a, uint32_t b)
 	return (a + b / 2) / b;
 }
 
+int eDVBFrontend::calculateSignalPercentage(int signalqualitydb)
+{
+	int maxdb; // assume 100% as 2/3 of maximum dB
+	int type = -1;
+	oparm.getSystem(type);
+	switch (type)
+	{
+		case feSatellite:
+			maxdb = 1500;
+			break;
+		case feCable:
+			maxdb = 2800;
+			break;
+		case feTerrestrial:
+			maxdb = 1900;
+			break;
+		case feATSC:
+		{
+			eDVBFrontendParametersATSC parm = {0};
+			oparm.getATSC(parm);
+			switch (parm.modulation)
+			{
+				case eDVBFrontendParametersATSC::Modulation_VSB_8:
+					maxdb = 1900;
+					break;
+				default:
+					maxdb = 2800;
+					break;
+			}
+			break;
+		}
+		default:
+			return 0;
+	}
+	return signalqualitydb >= maxdb ? 65535 : (signalqualitydb * 65535 / maxdb);
+}
+
 void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &signalqualitydb)
 {
 	int ret = 0x12345678;
@@ -1295,7 +1332,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		ret = (int)(snr / 40.5);
 		sat_max = 1900;
 	}
-	else if(!strcmp(m_description, "TBS-5925") || !strcmp(m_description, "DVBS2BOX"))
+	else if(!strcmp(m_description, "TBS-5925") || !strcmp(m_description, "DVBS2BOX") || !strcmp(m_description, "TechniSat USB device"))
 	{
 		ret = (snr * 2000) / 0xFFFF;
 		sat_max = 2000;
@@ -1434,18 +1471,27 @@ int eDVBFrontend::readFrontendData(int type)
 						ioctlMeasureEval("FE_GET_PROPERTY(DTV_STAT_CNR)");
 						for(unsigned int i=0; i<prop[0].u.st.len; i++)
 						{
-							if (prop[0].u.st.stat[i].scale == FE_SCALE_DECIBEL &&
-								type == iFrontendInformation_ENUMS::signalQualitydB)
+							if (prop[0].u.st.stat[i].scale == FE_SCALE_DECIBEL)
 							{
 								signalqualitydb = prop[0].u.st.stat[i].svalue / 10;
-								return signalqualitydb;
 							}
-							else if (prop[0].u.st.stat[i].scale == FE_SCALE_RELATIVE &&
-								type == iFrontendInformation_ENUMS::signalQuality)
+							else if (prop[0].u.st.stat[i].scale == FE_SCALE_RELATIVE)
 							{
 								signalquality = prop[0].u.st.stat[i].svalue;
-								return signalquality;
 							}
+						}
+						if (signalqualitydb)
+						{
+							if(type == iFrontendInformation_ENUMS::signalQualitydB)
+							{
+								return signalqualitydb;
+							}
+							if(!signalquality)
+							{
+								/* provide an estimated percentage when drivers lack this info */
+								signalquality = calculateSignalPercentage(signalqualitydb);
+							}
+							return signalquality;
 						}
 					}
 				}
@@ -1957,7 +2003,7 @@ int eDVBFrontend::tuneLoopInt()  // called by m_tuneTimer
 			{
 				if (!m_simulate)
 				{
-					if (readFrontendData(iFrontendInformation_ENUMS::lockState))
+					if (readFrontendData(iFrontendInformation_ENUMS::lockState) && readFrontendData(iFrontendInformation_ENUMS::signalQuality))
 					{
 						eDebugNoSimulate("tuner locked .. wait");
 						if (m_timeoutCount)
@@ -2202,6 +2248,10 @@ int eDVBFrontend::tuneLoopInt()  // called by m_tuneTimer
 							{
 								eDebugNoSimulate("[SEC-Master] tuner %d timeout wait takeover frontend", m_dvbid);
 								m_break_waitteakover = 1;
+								m_sec_sequence.clear();		// delete all subsequent commands
+								m_sec_sequence.push_back(eSecCommand(eSecCommand::NONE));
+								m_sec_sequence.push_back(eSecCommand(eSecCommand::START_TUNE_TIMEOUT, 1000));
+								m_sec_sequence.current() = m_sec_sequence.begin();
 							}
 						}
 						if(m_break_waitteakover)
