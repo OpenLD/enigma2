@@ -1,4 +1,4 @@
-import os
+import os, glob
 from time import time
 from enigma import eDVBDB, eEPGCache, setTunerTypePriorityOrder, setPreferredTuner, setSpinnerOnOff, setEnableTtCachingOnOff, eEnv, Misc_Options, eBackgroundFileEraser, eServiceEvent, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_HALIGN_CENTER, RT_VALIGN_CENTER, RT_WRAP
 
@@ -8,13 +8,12 @@ from config import ConfigSubsection, ConfigYesNo, config, ConfigSelection, Confi
 from Tools.Directories import resolveFilename, SCOPE_HDD, SCOPE_TIMESHIFT, SCOPE_AUTORECORD, SCOPE_SYSETC, defaultRecordingLocation, fileExists
 from Components.NimManager import nimmanager
 from Components.ServiceList import refreshServiceList
+from Components.RcModel import rc_model
 from SystemInfo import SystemInfo
 from Tools.HardwareInfo import HardwareInfo
 from boxbranding import getBoxType
 from keyids import KEYIDS
-import glob
-import os
-from Components.RcModel import rc_model
+from os import path as os_path
 
 def InitUsageConfig():
 	AvailRemotes=glob.glob('/usr/share/enigma2/rc_models/*')
@@ -125,6 +124,7 @@ def InitUsageConfig():
 	config.usage.sort_extensionslist = ConfigYesNo(default = False)
 	config.usage.show_restart_network_extensionslist = ConfigYesNo(default = True)
 	config.usage.movieplayer_pvrstate = ConfigYesNo(default = False)
+	config.usage.rc_model = ConfigSelection(default = DefaultRemote, choices = RemoteChoices)
 
 	choicelist = []
 	for i in (10, 30):

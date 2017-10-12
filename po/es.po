@@ -6554,6 +6554,12 @@ msgstr "Recordar ajustes individuales para cada directorio."
 msgid "Remote Control Code"
 msgstr "Código de mando"
 
+msgid "Remote control model shown"
+msgstr "Modelo del Mando mostrado"
+
+msgid "Which remote control gets shown. Only influences graphical representation."
+msgstr "Qué modelo de mando se muestra. Sólo influye en la representación gráfica."
+
 msgid "Remote control type"
 msgstr "Tipo de mando"
 
