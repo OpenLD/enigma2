@@ -1,4 +1,4 @@
-from enigma import eDVBDB, eDVBResourceManager
+from enigma import eDVBDB, eDVBResourceManager, getLinkedSlotID
 from Screens.Screen import Screen
 from Components.SystemInfo import SystemInfo
 from Components.ActionMap import ActionMap
@@ -6,10 +6,12 @@ from Components.ConfigList import ConfigListScreen
 from Components.NimManager import nimmanager
 from Components.Button import Button
 from Components.Label import Label
+from Components.Pixmap import Pixmap
 from Components.SelectionList import SelectionList, SelectionEntryComponent
-from Components.config import getConfigListEntry, config, configfile, ConfigNothing, ConfigSatlist, ConfigYesNo, NoSave
+from Components.config import getConfigListEntry, config, configfile, ConfigNothing, ConfigSatlist, ConfigYesNo, ConfigSubsection, ConfigSelection, NoSave
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
+from Components.Sources.Boolean import Boolean
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.ServiceStopScreen import ServiceStopScreen
@@ -20,6 +22,8 @@ from boxbranding import getBoxType
 from time import mktime, localtime, time
 from datetime import datetime
 from os import path
+
+from Tools.BugHunting import printCallSequence
 
 def isFBCTuner(nim):
 	if nim.description.find("FBC") == -1:
@@ -286,7 +290,6 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 			self.list.append(self.configMode)
 			self.have_advanced = False
 			if self.nimConfig.configMode.value == "enabled":
-				self.list.append(getConfigListEntry(_("Terrestrial provider"), self.nimConfig.terrestrial))
 				# country/region tier one
 				if self.terrestrialCountriesEntry is None:
 					terrestrialcountrycodelist = nimmanager.getTerrestrialsCountrycodeList()
@@ -295,23 +298,22 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 					choices = [("all", _("All"))]+sorted([(x, self.countrycodeToCountry(x)) for x in terrestrialcountrycodelist], key=lambda listItem: listItem[1])
 					self.terrestrialCountries = ConfigSelection(default = default, choices = choices)
 					self.terrestrialCountriesEntry = getConfigListEntry(_("Country"), self.terrestrialCountries)
-					self.originalTerrestrialRegion = self.nimConfig.terrestrial.configMode.value
+					self.originalTerrestrialRegion = self.nimConfig.terrestrial.value
 				# country/region tier two
 				if self.terrestrialCountries.value == "all":
 					terrstrialNames = [x[0] for x in sorted(sorted(nimmanager.getTerrestrialsList(), key=lambda listItem: listItem[0]), key=lambda listItem: self.countrycodeToCountry(listItem[2]))]
 				else:
 					terrstrialNames = sorted([x[0] for x in nimmanager.getTerrestrialsByCountrycode(self.terrestrialCountries.value)])
-				default = self.nimConfig.terrestrial.configMode.value in terrstrialNames and self.nimConfig.terrestrial.configMode.value or None
+				default = self.nimConfig.terrestrial.value in terrstrialNames and self.nimConfig.terrestrial.value or None
 				self.terrestrialRegions = ConfigSelection(default = default, choices = terrstrialNames)
 				def updateTerrestrialProvider(configEntry):
-					self.nimConfig.terrestrial.configMode.value = configEntry.value
-					self.nimConfig.terrestrial.configMode.save()
+					self.nimConfig.terrestrial.value = configEntry.value
+					self.nimConfig.terrestrial.save()
 				self.terrestrialRegions.addNotifier(updateTerrestrialProvider)
 				self.terrestrialRegionsEntry = getConfigListEntry(_("Region"), self.terrestrialRegions)
 				self.list.append(self.terrestrialCountriesEntry)
 				self.list.append(self.terrestrialRegionsEntry)
-				if not getBoxType() in ('spycat'):
-					self.list.append(getConfigListEntry(_("Enable 5V for active antenna"), self.nimConfig.terrestrial_5V))
+				self.list.append(getConfigListEntry(_("Enable 5V for active antenna"), self.nimConfig.terrestrial_5V))
 		elif self.nim.isCompatible("ATSC"):
 			self.configMode = getConfigListEntry(_("Configuration mode"), self.nimConfig.configMode)
 			self.list.append(self.configMode)
