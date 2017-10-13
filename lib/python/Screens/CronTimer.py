@@ -43,7 +43,7 @@ class CronTimers(Screen):
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions', "MenuActions"], {'ok': self.info, 'back': self.UninstallCheck, 'red': self.delcron, 'green': self.addtocron, 'yellow': self.CrondStart, 'blue': self.autostart, "menu": self.closeRecursive})
 		if not self.selectionChanged in self["list"].onSelectionChanged:
 			self["list"].onSelectionChanged.append(self.selectionChanged)
-		self.service_name = 'virtual/cron'
+		self.service_name = 'busybox-cron'
 		self.InstallCheck()
 
 	def InstallCheck(self):
