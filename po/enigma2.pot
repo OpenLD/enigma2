@@ -10391,6 +10391,9 @@ msgstr ""
 msgid "Seek forward (enter time)"
 msgstr ""
 
+msgid "Seekbar"
+msgstr ""
+
 msgid "Seekbar activation"
 msgstr ""
 
@@ -14492,6 +14495,9 @@ msgid "Videoformat"
 msgstr ""
 
 msgid "Videomode"
+msgstr ""
+
+msgid "Videosetup"
 msgstr ""
 
 msgid "Videosize"
