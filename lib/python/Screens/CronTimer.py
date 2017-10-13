@@ -162,7 +162,7 @@ class CronTimers(Screen):
 		self['labdisabled'].hide()
 		self.my_crond_active = False
 		self.my_crond_run = False
-		if path.exists('/etc/rc3.d/S20busybox-cron') or fileExists('/etc/rc2.d/S20crond.busybox'):
+		if path.exists('/etc/rc3.d/S20busybox-cron') or fileExists('/etc/rc3.d/S20crond.busybox'):
 			self['labdisabled'].hide()
 			self['labactive'].show()
 			self.my_crond_active = True
