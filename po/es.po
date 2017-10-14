@@ -13144,6 +13144,9 @@ msgstr "Temporizadores de alimentación"
 msgid "Power Timers"
 msgstr "Programar alimentación"
 
+msgid "Power Timer"
+msgstr "Temporizador de alimentación"
+
 msgid "Recording type"
 msgstr "Tipo de grabación"
 
