@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-05 14:38+0000\n"
-"PO-Revision-Date: 2017-07-27 17:02+0100\n"
+"PO-Revision-Date: 2017-10-14 02:26+0100\n"
 "Last-Translator: Javier Sayago <admin@lonasdigital.com>\n"
 "Language-Team: Team OpenLD <www.lonasdigital.com>\n"
 "Language: es\n"
@@ -16693,6 +16693,9 @@ msgstr "Particiones"
 msgid "Top"
 msgstr "Top"
 
+msgid "Country"
+msgstr "País"
+
 # InfoPanel
 msgid "Cpu"
 msgstr "Cpu"
@@ -17480,3 +17483,84 @@ msgstr "Ignorar sub-red de espacio de nombres DVB"
 
 msgid "On valid ONIDs, ignore frequency sub network part"
 msgstr "En los ONID válidos, ignorar la frecuencia de la parte de red secundaria"
+
+msgid "Belgium"
+msgstr "Bélgica"
+
+msgid "Bosnia and Herzegovina"
+msgstr "Bosnia y Herzegovina"
+
+msgid "Brazil"
+msgstr "Brasil"
+
+msgid "Cameroon"
+msgstr "Camerún"
+
+msgid "Canada"
+msgstr "Canadá"
+
+msgid "Cayman Islands"
+msgstr "Islas Caimán"
+
+msgid "Central African Republic"
+msgstr "República Centro Africana"
+
+msgid "Cocos (Keeling) Islands"
+msgstr "Islas Cocos (Keeling)"
+
+msgid "Congo (Democratic Republic of the)"
+msgstr "Congo (República Democrática del)"
+
+msgid "Croatia"
+msgstr "Croacia"
+
+msgid "Denmark"
+msgstr "Dinamarca"
+
+msgid "Dominican Republic"
+msgstr "República Dominicana"
+
+msgid "Finland"
+msgstr "Finlandia"
+
+msgid "France"
+msgstr "Francia"
+
+msgid "Germany"
+msgstr "Alemania"
+
+msgid "Greece"
+msgstr "Grecia"
+
+msgid "Italy"
+msgstr "Italia"
+
+msgid "Monaco"
+msgstr "Mónaco"
+
+msgid "Peru"
+msgstr "Perú"
+
+msgid "Romania"
+msgstr "Rumania"
+
+msgid "Spain"
+msgstr "España"
+
+msgid "Sweden"
+msgstr "Suecia"
+
+msgid "Thailand"
+msgstr "Tailandia"
+
+msgid "Turkey"
+msgstr "Turquía"
+
+msgid "Ukraine"
+msgstr "Ucrania"
+
+msgid "United Kingdom"
+msgstr "Reino Unido"
+
+msgid "United States of America"
+msgstr "Estados Unidos de America"
