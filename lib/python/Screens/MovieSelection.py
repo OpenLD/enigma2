@@ -64,7 +64,7 @@ config.movielist.hide_extensions = ConfigYesNo(default=False)
 config.movielist.stop_service = ConfigYesNo(default=True)
 
 config.movielist.useAlternateUserAgent = NoSave(ConfigYesNo(default = False))
-config.movielist.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;)"))
+config.movielist.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;;;)"))
 
 userDefinedButtons = None
 last_selected_dest = []

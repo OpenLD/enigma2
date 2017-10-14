@@ -17,7 +17,7 @@ config.mediaplayer.alwaysHideInfoBar = ConfigYesNo(default=True)
 config.mediaplayer.onMainMenu = ConfigYesNo(default=False)
 
 config.mediaplayer.useAlternateUserAgent = NoSave(ConfigYesNo(default = False))
-config.mediaplayer.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;)"))
+config.mediaplayer.alternateUserAgent = NoSave(ConfigText(default = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;;;)"))
 
 class DirectoryBrowser(Screen, HelpableScreen):
 
