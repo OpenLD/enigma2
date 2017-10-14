@@ -22,7 +22,7 @@ eServiceMP3Record::eServiceMP3Record(const eServiceReference &ref):
 	m_error = 0;
 	m_simulate = false;
 	m_recording_pipeline = 0;
-	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;;;)";
+	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTP+RTSP+RTMP+DL;OpenLD;;;)";
 	m_extra_headers = "";
 
 	CONNECT(m_pump.recv_msg, eServiceMP3Record::gstPoll);
