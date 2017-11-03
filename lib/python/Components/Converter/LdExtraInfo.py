@@ -100,7 +100,7 @@ class LdExtraInfo(Poll, Converter, object):
 		Poll.__init__(self)
 		self.DynamicSwitch = False
 		self.type = type
-		self.poll_interval = 1000
+		self.poll_interval = 3500
 		self.poll_enabled = True
 		self.caid_data = {
 			( "0x100",  "0x1ff", "Seca",     "S" ),
@@ -848,7 +848,7 @@ class LdExtraInfo(Poll, Converter, object):
 
 	@cached
 	def getText(self):
-		self.DynamicTimer.start(200)
+		self.DynamicTimer.start(500)
 		service = self.source.service
 
 		if service is None:

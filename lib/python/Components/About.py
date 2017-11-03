@@ -256,8 +256,8 @@ def getPythonVersionString():
 
 def getFFmpegVersionString():
 	try:
-		import commands
-		ffmpegV = commands.getoutput("ffmpeg -version | awk 'NR==1{print $3}'")
+		import subprocess
+		ffmpegV = subprocess.getoutput("ffmpeg -version | awk 'NR==1{print $3}'")
 		if ffmpegV:
 			try:
 				output = ffmpegV
@@ -280,139 +280,140 @@ def getCPUTempString():
 
 def getUptimeString():
 	try:
-		import commands
-		output = commands.getoutput("uptime | grep up | awk '{print $3,$4}'")
+		import subprocess
+		output = subprocess.getoutput("uptime | grep up | awk '{print $3,$4}'")
 		return output.split(',')[0]
 	except:
 		return _("unknown")
 
 def getLoadCPUString():
 	try:
-		import commands
-		output = commands.getoutput("top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'")
+		import subprocess
+		output = subprocess.getoutput("top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMusageString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'")
 		return output.split(' ')[1]
 	except:
 		return _("unknown")
 
 def getRAMFreePorcString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $4,$2,$4*100/$2 }'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{printf \"%s/%sMB %.2f%%\", $4,$2,$4*100/$2 }'")
 		return output.split(' ')[1]
 	except:
 		return _("unknown")
 
 def getRAMTotalString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $2}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $3}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedKBString():
 	try:
-		import commands
-		output = commands.getoutput("free | grep Mem: | awk '{print $3}'")
+		import subprocess
+		output = subprocess.getoutput("free | grep Mem: | awk '{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMFreeString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $4}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSharingString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $5}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $5}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMStoredString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $6}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $6}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMCachedString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==2{print $7}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==2{print $7}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapTotalString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==3{print $2}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==3{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapUsedString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==3{print $3}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==3{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMSwapFreeString():
 	try:
-		import commands
-		output = commands.getoutput("free -m | awk 'NR==3{print $4}'")
+		import subprocess
+		output = subprocess.getoutput("free -m | awk 'NR==3{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMTotalGlobalString():
 	try:
-		import commands
-		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $2}'")
+		import subprocess
+		output = subprocess.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $2}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMUsedGlobalString():
 	try:
-		import commands
-		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $3}'")
+		import subprocess
+		output = subprocess.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $3}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 def getRAMFreeGlobalString():
 	try:
-		import commands
-		output = commands.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $4}'")
+		import subprocess
+		output = subprocess.getoutput("free -h -t | sed '1 d' | grep Total: | awk '{print $4}'")
 		return output.split(' ')[0]
 	except:
 		return _("unknown")
 
 # For modules that do "from About import about"
 about = modules[__name__]
+
