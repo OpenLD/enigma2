@@ -45,14 +45,7 @@ if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
 fi
 
 if [ -x @bindir@/showiframe ]; then
-	if [ -e /proc/stb/info/boxtype ]; then
-		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
-		if [ ! $stbcheck == "u5" ]; then
-			killall -9 showiframe; sleep 1
-		fi
-	else
-		killall -9 showiframe; sleep 1
-	fi
+	killall -9 showiframe; sleep 1
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
@@ -112,13 +105,6 @@ stbcheck=00
 if [ -e /proc/stb/info/subtype ]; then
 	stbcheck=`cat /proc/stb/info/subtype`
 fi
-if [ -e /proc/stb/info/boxtype ] && [ -e /proc/stb/info/chipset ]; then
-   boxtype=`cat /proc/stb/info/boxtype`
-   chipset=`cat /proc/stb/info/chipset`
-   if  [ $boxtype == "et7000" ] && [ $chipset == "bcm73625" ]; then
-       stbcheck=01
-   fi
-fi
 if [ -e /etc/defaultsat.tar.gz ] && [ ! -e /etc/enigma2/lamedb ] && [ ! $stbcheck == "01" ] && [ ! $stbcheck == "1" ]; then
 	tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2
 fi
@@ -140,12 +126,11 @@ if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.e
 	if [ "$time" = 1970 ]; then
 		RANDOMIZE1970="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 5 | tr -d '\n')"
 	fi
-	LOGFOLDER="/home/root/logs/"
-	if [ ! -d $LOGFOLDER ] ; then mkdir -p $LOGFOLDER; fi
 	if [ "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" != "" -a -d "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" ]; then
-		LOGFOLDER=$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g'))$RANDOMIZE1970.log
+		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
+	else
+		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> /home/root/logs/Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
 	fi
-	LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> ${LOGFOLDER}Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)${RANDOMIZE1970}.log
 else
 	# in case $TERM is "linux" the serial output is activated - discard debug output
 	if [ "$TERM" = linux ]; then
@@ -164,28 +149,9 @@ fi
 # >128 signal
 
 ret=$?
-
-if [ "$ret" -ne "1" ]; then
-	if [ -e /proc/stb/info/boxtype ]; then
-		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
-		if [ $stbcheck == "u5" ]; then
-			killall -9 showiframe; sleep 5
-		fi
-	fi
-fi
-
 case $ret in
 	1)
-		if [ -e /proc/stb/info/boxtype ]; then
-			stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
-			if [ $stbcheck == "u5" ]; then
-				/usr/bin/hihalt
-			else
-				/sbin/halt
-			fi
-		else
-			/sbin/halt
-		fi
+		/sbin/halt
 		;;
 	2)
 		if [ -f /proc/stb/fp/force_restart ]; then
@@ -194,7 +160,6 @@ case $ret in
 		/sbin/reboot
 		;;
 	3)
-		rm -fR /home/root/.gstreamer-0.10
 		rm -f /tmp/.listen.camd.socket.ignore
 		;;
 	4)
