@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: UTF-8 -*-
 
 from Screens.Screen import Screen
 from Components.Renderer import SimpleWeatherWidget
@@ -9,7 +9,7 @@ from Components.ConfigList import ConfigListScreen
 from Components.ActionMap import ActionMap
 from Components.Sources.StaticText import StaticText
 
-class SimpleWeatherSetup(Screen,ConfigListScreen):
+class SimpleWeatherSetup(Screen, ConfigListScreen):
 	skin = """
 		<screen name="SimpleWeatherSetup" position="160,150" size="450,200" title="Weather Setup">
 			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
@@ -33,7 +33,6 @@ class SimpleWeatherSetup(Screen,ConfigListScreen):
 			"cancel": self.close},-1)
 
 	def save(self):
-		config.plugins.SimpleWeather.lastUpdated.value = "2000-01-01 01:01:01"
 		config.plugins.SimpleWeather.save()
 		configfile.save()
 		self.close()
@@ -42,6 +41,7 @@ class SimpleWeatherSetup(Screen,ConfigListScreen):
 		self.list = []
 		self.list.append(getConfigListEntry(_("Show Weather Widget"), config.plugins.SimpleWeather.enabled))
 		self.list.append(getConfigListEntry(_(" ")))
+		self.list.append(getConfigListEntry(_("Refresh Interval (min)"), config.plugins.SimpleWeather.refreshInterval))
 		self.list.append(getConfigListEntry(_("Weather ID"), config.plugins.SimpleWeather.woeid))
 		self.list.append(getConfigListEntry(_("Get your local Weather ID on weather.open-store.net")))
 		self.list.append(getConfigListEntry(_(" ")))

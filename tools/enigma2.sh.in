@@ -135,11 +135,12 @@ if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.e
 	if [ "$time" = 1970 ]; then
 		RANDOMIZE1970="$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 5 | tr -d '\n')"
 	fi
+	LOGFOLDER="/home/root/logs/"
+	if [ ! -d $LOGFOLDER ] ; then mkdir -p $LOGFOLDER; fi
 	if [ "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" != "" -a -d "$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')" ]; then
-		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> $(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g')Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
-	else
-		LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> /home/root/logs/Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)$RANDOMIZE1970.log
+		LOGFOLDER=$(grep config.crash.debug_path= /etc/enigma2/settings | sed 's/config.crash.debug_path=//g'))$RANDOMIZE1970.log
 	fi
+	LD_PRELOAD=$LIBS @bindir@/enigma2 --debug-no-color &> ${LOGFOLDER}Enigma2-debug-$(date +%Y%m%d_%H-%M-%S)${RANDOMIZE1970}.log
 else
 	# in case $TERM is "linux" the serial output is activated - discard debug output
 	if [ "$TERM" = linux ]; then
@@ -160,7 +161,16 @@ fi
 ret=$?
 case $ret in
 	1)
-		/sbin/halt
+		if [ -e /proc/stb/info/boxtype ]; then
+			stbcheck=`cat /proc/stb/info/boxtype`
+			if [ $stbcheck == "u5" ]; then
+				/usr/bin/hihalt
+			else
+				/sbin/halt
+			fi
+		else
+			/sbin/halt
+		fi
 		;;
 	2)
 		if [ -f /proc/stb/fp/force_restart ]; then
@@ -169,7 +179,14 @@ case $ret in
 		/sbin/reboot
 		;;
 	3)
+		rm -fR /home/root/.gstreamer-0.10
 		rm -f /tmp/.listen.camd.socket.ignore
+		if [ -e /proc/stb/info/boxtype ]; then
+			stbcheck=`cat /proc/stb/info/boxtype`
+			if [ $stbcheck == "u5" ]; then
+				killall -9 showiframe; sleep 5
+			fi
+		fi
 		;;
 	4)
 		/sbin/rmmod lcd

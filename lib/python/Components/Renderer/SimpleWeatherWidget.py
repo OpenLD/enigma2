@@ -1,16 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: UTF-8 -*-
 
 from Renderer import Renderer
 from Components.VariableText import VariableText
+#import library to do http requests:
 import urllib2
-from enigma import eLabel, ePixmap, eTimer, eListboxPythonMultiContent, gFont, eEnv, getDesktop, pNavigation
-from datetime import datetime
-from Components.Element import cached
+from enigma import eLabel, ePixmap
+#import easy to use xml parser called minidom:
 from xml.dom.minidom import parseString
-from Components.config import config, configfile, ConfigSubsection, ConfigSelection, ConfigNumber, ConfigSelectionNumber, ConfigYesNo, ConfigText, ConfigInteger
+from Components.config import config, configfile, ConfigSubsection, ConfigSelection, ConfigNumber, ConfigSelectionNumber, ConfigYesNo, ConfigText, ConfigDateTime, ConfigInteger
 from threading import Timer, Thread
-from types import *
 from time import time, strftime, localtime
 
 g_updateRunning = False
@@ -20,13 +19,12 @@ def initWeatherConfig():
 
 	#SimpleWeather
 	config.plugins.SimpleWeather.enabled = ConfigYesNo(default=False)
-	config.plugins.SimpleWeather.refreshInterval = ConfigNumber(default=60)
-	config.plugins.SimpleWeather.lastUpdated = ConfigText(default="2001-01-01 01:01:01")
-	config.plugins.SimpleWeather.woeid = ConfigNumber(default=758816) #Location (visit http://weather.open-store.net/)
+	config.plugins.SimpleWeather.woeid = ConfigNumber(default=779304) #Location (visit http://weather.open-store.net/)
 	config.plugins.SimpleWeather.tempUnit = ConfigSelection(default="Celsius", choices = [
 		("Celsius", _("Celsius")),
 		("Fahrenheit", _("Fahrenheit"))
 	])
+	config.plugins.SimpleWeather.refreshInterval = ConfigSelectionNumber(default = 90, stepwidth = 1, min = 0, max = 1440, wraparound = True)
 
 	## RENDERER CONFIG:
 	config.plugins.SimpleWeather.currentWeatherDataValid = ConfigYesNo(default=False)
@@ -47,51 +45,50 @@ def initWeatherConfig():
 	config.plugins.SimpleWeather.forecastTomorrowTempMin = ConfigText(default="0")
 	config.plugins.SimpleWeather.forecastTomorrowTempMax = ConfigText(default="0")
 
-	config.plugins.SimpleWeather.forecast2daysCode = ConfigText(default="(")
-	config.plugins.SimpleWeather.forecast2daysDay = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast2daysText = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast2daysTempMin = ConfigText(default="0")
-	config.plugins.SimpleWeather.forecast2daysTempMax = ConfigText(default="0")
-
-	config.plugins.SimpleWeather.forecast3daysCode = ConfigText(default="(")
-	config.plugins.SimpleWeather.forecast3daysDay = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast3daysText = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast3daysTempMin = ConfigText(default="0")
-	config.plugins.SimpleWeather.forecast3daysTempMax = ConfigText(default="0")
-
-	config.plugins.SimpleWeather.forecast4daysCode = ConfigText(default="(")
-	config.plugins.SimpleWeather.forecast4daysDay = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast4daysText = ConfigText(default="N/A")
-	config.plugins.SimpleWeather.forecast4daysTempMin = ConfigText(default="0")
-	config.plugins.SimpleWeather.forecast4daysTempMax = ConfigText(default="0")
-
 	config.plugins.SimpleWeather.save()
 	configfile.save()
 
 initWeatherConfig()
 
-class SimpleWeatherWidget(Renderer, VariableText):
+class SimpleWeatherWidget(Renderer, VariableText, Thread):
 
 	def __init__(self):
 		Renderer.__init__(self)
 		VariableText.__init__(self)
+		Thread.__init__(self)
+		self.woeid = config.plugins.SimpleWeather.woeid.value
+		self.Timer = None
+		self.refreshcnt = 0
 		self.getWeather()
 
-	def changed(self, what):
-		if self.instance:
-			if what[0] != self.CHANGED_CLEAR:
-				if config.plugins.SimpleWeather.enabled.value:
-					self.instance.show()
-					self.getWeather()
-				else:
-					self.instance.hide()
 	GUI_WIDGET = eLabel
 
+	def __del__(self):
+		try:
+			if self.Timer is not None:
+				self.Timer.cancel()
+		except AttributeError:
+			pass
+
 	def startTimer(self, refresh=False):
-		# skip if weather-widget is already up to date
-		tdelta = datetime.now() - datetime.strptime(config.plugins.SimpleWeather.lastUpdated.value,"%Y-%m-%d %H:%M:%S")
-		if int(tdelta.seconds) < (config.plugins.SimpleWeather.refreshInterval.value * 60):   ##### 1=60 for testing purpose #####
-			return
+		seconds = int(config.plugins.SimpleWeather.refreshInterval.value) * 60
+
+		if seconds < 60:
+			seconds = 300
+
+		if refresh:
+			if self.refreshcnt >= 6:
+				self.refreshcnt = 0
+				seconds=300
+			else:
+				seconds=10
+
+		if self.Timer:
+			self.Timer.cancel()
+			self.Timer = None
+
+		self.Timer = Timer(seconds, self.getWeather)
+		self.Timer.start()
 
 	def onShow(self):
 		self.text = config.plugins.SimpleWeather.currentWeatherCode.value
@@ -100,44 +97,47 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		self.startTimer()
 
 		# skip if weather-widget is disabled
-		if config.plugins.SimpleWeather.enabled.getValue() is False:
+		if config.plugins.SimpleWeather.enabled.value == "False":
 			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
 			return
 
 		global g_updateRunning
 		if g_updateRunning:
-			woeid = config.plugins.SimpleWeather.woeid.value
-			#print "[SimpleWeather] lookup for ID " + str(woeid) + " skipped, allready running..."
+			print "[SimpleWeather] lookup for ID " + str(self.woeid) + " skipped, allready running..."
 			return
 		g_updateRunning = True
 		Thread(target = self.getWeatherThread).start()
 
 	def getWeatherThread(self):
 		global g_updateRunning
-		woeid = config.plugins.SimpleWeather.woeid.value
-		#print "[SimpleWeather] lookup for ID " + str(woeid)
-		url = "http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(woeid)+"%22&format=xml"
+		print "[SimpleWeather] lookup for ID " + str(self.woeid)
+		url = "http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%3D%22"+str(self.woeid)+"%22&format=xml"
+
 		# where location in (select id from weather.search where query="oslo, norway")
 		try:
-			file = urllib2.urlopen(url, timeout=30)
+			file = urllib2.urlopen(url, timeout=2)
 			data = file.read()
 			file.close()
-		except:
-			pass
-			print "Warning: Cant get weather data failed"
+		except Exception as error:
+			print "Cant get weather data: %r" % error
+
 			# cancel weather function
-			config.plugins.SimpleWeather.lastUpdated.value = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 			config.plugins.SimpleWeather.currentWeatherDataValid.value = False
 			g_updateRunning = False
 			return
 
+
 		dom = parseString(data)
 		try:
 			title = self.getText(dom.getElementsByTagName('title')[0].childNodes)
-		except:
-			pass
-			print "Warning: Cant get weather data failed"
+		except IndexError as error:
+			print "Cant get weather data: %r" % error
 			g_updateRunning = False
+			self.startTimer(True,30)
+			if self.check:
+				#text = "%s\n%s|" % (str(error),data)
+				text = "%s|" % str(error)
+				self.writeCheckFile(text)
 			return
 
 		config.plugins.SimpleWeather.currentLocation.value = str(title).split(',')[0].replace("Conditions for ","")
@@ -183,45 +183,9 @@ class SimpleWeatherWidget(Renderer, VariableText):
 		currentWeatherDay = currentWeather.getAttributeNode('day')
 		config.plugins.SimpleWeather.forecastTomorrowDay.value = currentWeatherDay.nodeValue
 
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[2]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast2daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast2daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast2daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast2daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast2daysDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[3]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast3daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast3daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast3daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast3daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast3daysDay.value = currentWeatherDay.nodeValue
-
-		currentWeather = dom.getElementsByTagName('yweather:forecast')[4]
-		currentWeatherCode = currentWeather.getAttributeNode('code')
-		config.plugins.SimpleWeather.forecast4daysCode.value = self.ConvertCondition(currentWeatherCode.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('high')
-		config.plugins.SimpleWeather.forecast4daysTempMax.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherTemp = currentWeather.getAttributeNode('low')
-		config.plugins.SimpleWeather.forecast4daysTempMin.value = self.getTemp(currentWeatherTemp.nodeValue)
-		currentWeatherText = currentWeather.getAttributeNode('text')
-		config.plugins.SimpleWeather.forecast4daysText.value = currentWeatherText.nodeValue
-		currentWeatherDay = currentWeather.getAttributeNode('day')
-		config.plugins.SimpleWeather.forecast4daysDay.value = currentWeatherDay.nodeValue
-
 		self.save()
-
 		g_updateRunning = False
+		self.refreshcnt = 0
 
 	def save(self):
 		config.plugins.SimpleWeather.save()

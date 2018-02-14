@@ -16,7 +16,7 @@ class AudioInfo(Poll, Converter, object):
 		Converter.__init__(self, type)
 		Poll.__init__(self)
 		self.type = type
-		self.poll_interval = 1000
+		self.poll_interval = 3500
 		self.poll_enabled = True
 		self.codecs = {
 				   "01_dolbydigitalplus": ("digital+", "digitalplus", "ac3+", "e-ac-3"),

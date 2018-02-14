@@ -47,8 +47,19 @@ class STBinfo(Converter, object):
 
 	def getRAMfree(self):
 		info = ""
-		info = str(about.getRAMFreeString())
-		info = _("RAM-Free: %s MB") % info
+		if path.exists('/proc/meminfo'):
+			f = open('/proc/meminfo', 'r')
+			temp = f.readlines()
+			f.close()
+			try:
+				for lines in temp:
+					lisp = lines.split()
+					if lisp[0] == "MemFree:":
+						info = str(int(lisp[1]) / 1024)
+						info = _("RAM-Free: %s MB") % info
+						break
+			except:
+				pass
 		return info
 
 	def getCPUtemp(self):
@@ -58,6 +69,14 @@ class STBinfo(Converter, object):
 			f = open('/proc/stb/fp/temp_sensor_avs', 'r')
 			temp = f.readline()
 			f.close()
+		elif path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
+			try:
+				f = open('/sys/devices/virtual/thermal/thermal_zone0/temp', 'r')
+				temp = f.read()
+				temp = temp[:-4]
+				f.close()
+			except:
+				temp = ""
 		if temp and int(temp.replace('\n', '')) > 0:
 			info = temp.replace('\n', '').replace(' ','') + str('\xc2\xb0') + "C"
 			info = _("CPU-Temp: %s") % info
