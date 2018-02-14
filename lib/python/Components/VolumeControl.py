@@ -75,10 +75,10 @@ class VolumeControl:
 
 	def stepVolume(self):
 		if self.stepVolTimer.isActive():
-			step = config.av.volume_stepsize_fastmode.value
+			step = config.usage.volume_step_fast.value
 		else:
 			self.getInputConfig()
-			step = config.av.volume_stepsize.value
+			step = config.usage.volume_step_slow.value
 		self.stepVolTimer.start(self.repeat,True)
 		return step
 
