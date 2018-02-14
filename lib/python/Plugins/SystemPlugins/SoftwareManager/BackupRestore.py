@@ -177,14 +177,17 @@ class BackupScreen(Screen, ConfigListScreen):
 				self.backupdirs += " tmp/groups.txt"
 
 			ShellCompatibleFunctions.backupUserDB()
-			cmd1 = "opkg list-installed | egrep -v '^ ' | awk '{print $1 }' | egrep 'enigma2-plugin-|task-base|packagegroup-base|^ca-certificates$|^davfs2$|^joe$|^mc$|^mergerfs$|^nano$|^oe-openld-branding-remote|^openvpn|^easy-rsa$|^simple-rsa$|^p7|^perl|^rclone$|^streamproxy$|^wget$' > /tmp/installed-list.txt"
+			pkgs=ShellCompatibleFunctions.listpkg(type="user")
+			installed = open("/tmp/installed-list.txt", "w")
+			installed.write('\n'.join(pkgs))
+			installed.close()
 			cmd2 = "opkg list-changed-conffiles > /tmp/changed-configfiles.txt"
 			cmd3 = "tar -C / -czvf " + self.fullbackupfilename + " " + self.backupdirs
 			for f in config.plugins.configurationbackup.backupdirs_exclude.value:
 				cmd3 = cmd3 + " --exclude " + f.strip("/")
 			for f in BLACKLISTED:
 				cmd3 = cmd3 + " --exclude " + f.strip("/")
-			cmd = [cmd1, cmd2, cmd3]
+			cmd = [cmd2, cmd3]
 			if path.exists(self.fullbackupfilename):
 				dt = str(date.fromtimestamp(stat(self.fullbackupfilename).st_ctime))
 				self.newfilename = self.backuppath + "/" + dt + '-' + self.backupfile
@@ -694,10 +697,9 @@ class installedPlugins(Screen):
 
 	def readPluginList(self):
 		self.PluginList = []
-		f = open("/tmp/installed-list.txt", "r")
-		lines = f.readlines()
-		for x in lines:
-			self.PluginList.append(x[:x.find(' - ')])
+		with open('/tmp/installed-list.txt') as f:
+			for line in f:
+				self.PluginList.append(line.strip())
 		f.close()
 		self.createMenuList()
 

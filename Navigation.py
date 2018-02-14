@@ -18,7 +18,7 @@ import NavigationInstance
 import ServiceReference
 from Screens.InfoBar import InfoBar, MoviePlayer
 from Components.Sources.StreamService import StreamServiceList
-from boxbranding import getBoxType, getBrandOEM
+from boxbranding import getBoxType, getBrandOEM, getMachineBuild
 
 # TODO: remove pNavgation, eNavigation and rewrite this stuff in python.
 class Navigation:
@@ -79,7 +79,7 @@ class Navigation:
 			print "[NAVIGATION] timer wakeup detection window: %s - %s" %(ctime(self.wakeupwindow_minus),ctime(self.wakeupwindow_plus))
 			print "-"*100
 		thisBox = getBoxType()
-		if not config.workaround.deeprecord.value and (wasTimerWakeup_failure or thisBox in ('ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'beyonwizt3', 'et8000') or getBrandOEM() in ('ebox', 'azbox', 'xp', 'ini', 'dags', 'fulan', 'entwopia')):
+		if not config.workaround.deeprecord.value and (wasTimerWakeup_failure or thisBox in ('ixussone', 'uniboxhd1', 'uniboxhd2', 'uniboxhd3', 'sezam5000hd', 'mbtwin', 'beyonwizt3', 'et8000') or getBrandOEM() in ('ebox', 'azbox', 'xp', 'ini', 'fulan', 'entwopia') or getMachineBuild() in ('dags7335' , 'dags7356', 'dags7362')):
 			print"[NAVIGATION] FORCED DEEPSTANDBY-WORKAROUND FOR THIS BOXTYPE (%s)" %thisBox
 			config.workaround.deeprecord.setValue(True)
 			config.workaround.deeprecord.save()

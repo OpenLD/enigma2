@@ -502,11 +502,11 @@ def InitAVSwitch():
 	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "scale")
 	policy_choices = {
 	# TRANSLATORS: (aspect ratio policy: black bars on left/right) in doubt, keep english term.
-	"panscan": _("Pillarbox"),
+	"pillarbox": _("Pillarbox"),
 	# TRANSLATORS: (aspect ratio policy: cropped content on left/right) in doubt, keep english term
-	"letterbox": _("Pan&scan"),
+	"panscan": _("Pan&scan"),
 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, with stretching the left/right)
-	# "nonlinear": _("Nonlinear"),
+	"nonlinear": _("Nonlinear"),
 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if this breaks the aspect)
 	"bestfit": _("Just scale")}
 	try:
