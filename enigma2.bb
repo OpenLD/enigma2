@@ -21,6 +21,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit autotools-brokensep pkgconfig pythonnative
 
 do_unpack[noexec] = "1"
+do_patch[no_exec] = "1"
 do_populate_sysroot[noexec] = "1"
 do_populate_lic[noexec] = "1"
 do_packagedata[noexec] = "1"

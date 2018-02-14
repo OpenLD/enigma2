@@ -34,15 +34,6 @@ if [ ! "$(grep config.misc.firstrun /etc/enigma2/settings)" == "config.misc.firs
 	rm -rf /etc/enigma2/key.pem &
 fi
 
-# update NTP time if NTP Time Enabled.
-if [ "$(grep config.misc.SyncTimeUsing /etc/enigma2/settings)" == "config.misc.SyncTimeUsing=1" ]; then
-	if [ -x /usr/sbin/ntpdate ]; then
-		/usr/sbin/ntpdate -s -u pool.ntp.org && sleep 2 2>/dev/null
-	elif [ -x /usr/sbin/ntpd ]; then
-		/usr/sbin/ntpd -dnqp pool.ntp.org && sleep 2 2>/dev/null
-	fi
-fi
-
 # hook to execute user startup script before enigma2 start
 if [ -x /etc/enigma2/startup.sh ]; then
 	sh /etc/enigma2/startup.sh 2>/dev/null
@@ -54,7 +45,14 @@ if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
 fi
 
 if [ -x @bindir@/showiframe ]; then
-	killall -9 showiframe; sleep 1
+	if [ -e /proc/stb/info/boxtype ]; then
+		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
+		if [ ! $stbcheck == "u5" ]; then
+			killall -9 showiframe; sleep 1
+		fi
+	else
+		killall -9 showiframe; sleep 1
+	fi
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
@@ -114,6 +112,13 @@ stbcheck=00
 if [ -e /proc/stb/info/subtype ]; then
 	stbcheck=`cat /proc/stb/info/subtype`
 fi
+if [ -e /proc/stb/info/boxtype ] && [ -e /proc/stb/info/chipset ]; then
+   boxtype=`cat /proc/stb/info/boxtype`
+   chipset=`cat /proc/stb/info/chipset`
+   if  [ $boxtype == "et7000" ] && [ $chipset == "bcm73625" ]; then
+       stbcheck=01
+   fi
+fi
 if [ -e /etc/defaultsat.tar.gz ] && [ ! -e /etc/enigma2/lamedb ] && [ ! $stbcheck == "01" ] && [ ! $stbcheck == "1" ]; then
 	tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2
 fi
@@ -159,10 +164,20 @@ fi
 # >128 signal
 
 ret=$?
+
+if [ "$ret" -ne "1" ]; then
+	if [ -e /proc/stb/info/boxtype ]; then
+		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
+		if [ $stbcheck == "u5" ]; then
+			killall -9 showiframe; sleep 5
+		fi
+	fi
+fi
+
 case $ret in
 	1)
 		if [ -e /proc/stb/info/boxtype ]; then
-			stbcheck=`cat /proc/stb/info/boxtype`
+			stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
 			if [ $stbcheck == "u5" ]; then
 				/usr/bin/hihalt
 			else
@@ -181,12 +196,6 @@ case $ret in
 	3)
 		rm -fR /home/root/.gstreamer-0.10
 		rm -f /tmp/.listen.camd.socket.ignore
-		if [ -e /proc/stb/info/boxtype ]; then
-			stbcheck=`cat /proc/stb/info/boxtype`
-			if [ $stbcheck == "u5" ]; then
-				killall -9 showiframe; sleep 5
-			fi
-		fi
 		;;
 	4)
 		/sbin/rmmod lcd
