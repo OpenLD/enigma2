@@ -18,7 +18,7 @@
 # Please Respect credits
 #
 # Adapted by Javilonas for OpenLD (Blue Panel)
-# Last Updated: 17/04/2016
+# Last Updated: 16/02/2018
 ##############################################################################
 
 from Screens.Screen import Screen
@@ -73,11 +73,15 @@ NOTA: El servidor se construye, sobre la base de su IP interna actual y la lista
 			self['key_yellow'] = Label(_('Close'))
 			self.my_serv_active = False
 			self.ip = '0.0.0.0'
-			self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close,
-			 'back': self.close,
-			 'red': self.ServStart,
-			 'green': self.ServStop,
-			 'yellow': self.close})
+
+			self['actions'] = ActionMap(['WizardActions', 'ColorActions'],
+			{
+				 'ok': self.close,
+				 'back': self.close,
+				 'red': self.ServStart,
+				 'green': self.ServStop,
+				 'yellow': self.close
+			})
 			self.activityTimer = eTimer()
 			self.activityTimer.timeout.get().append(self.doServStart)
 			self.onClose.append(self.delTimer)
@@ -118,11 +122,15 @@ NOTE: The server is built, based on your current ip and the current channel list
 			self['key_yellow'] = Label(_('Close'))
 			self.my_serv_active = False
 			self.ip = '0.0.0.0'
-			self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close,
-			 'back': self.close,
-			 'red': self.ServStart,
-			 'green': self.ServStop,
-			 'yellow': self.close})
+
+			self['actions'] = ActionMap(['WizardActions', 'ColorActions'],
+			{
+				 'ok': self.close,
+				 'back': self.close,
+				 'red': self.ServStart,
+				 'green': self.ServStop,
+				 'yellow': self.close
+			})
 			self.activityTimer = eTimer()
 			self.activityTimer.timeout.get().append(self.doServStart)
 			self.onClose.append(self.delTimer)
@@ -146,10 +154,7 @@ NOTE: The server is built, based on your current ip and the current channel list
 		ifaces = iNetwork.getConfiguredAdapters()
 		for iface in ifaces:
 			ip = iNetwork.getAdapterAttribute(iface, 'ip')
-			ipm = '%d.%d.%d.%d' % (ip[0],
-			 ip[1],
-			 ip[2],
-			 ip[3])
+			ipm = "%d.%d.%d.%d" % (ip[0], ip[1], ip[2], ip[3])
 			if ipm != '0.0.0.0':
 				self.ip = ipm
 
@@ -172,11 +177,11 @@ NOTE: The server is built, based on your current ip and the current channel list
 		self.session.open(MessageBox, _('Build Complete!'), MessageBox.TYPE_INFO, timeout=5)
 		self.updateServ()
 
+
 	def poPulate(self, bouquet, count):
 		n = '%03d_' % count
 		name = n + self.cleanName(bouquet[1])
-		path = '/media/hdd/tuner/' + name
-		os.mkdir(path, 0755)
+		path = '/media/hdd/tuner/'
 		serviceHandler = eServiceCenter.getInstance()
 		services = serviceHandler.list(eServiceReference(bouquet[0]))
 		channels = services and services.getContent('SN', True)
@@ -184,12 +189,11 @@ NOTE: The server is built, based on your current ip and the current channel list
 		for channel in channels:
 			if not int(channel[0].split(':')[1]) & 64:
 				n2 = '%03d_' % count2
-				filename = path + '/' + n2 + self.cleanName(channel[1]) + '.m3u'
+				filename = path + "/" + name + ".m3u"
 				try:
-					out = open(filename, 'w')
+					out = open(filename, 'a')
 				except:
 					continue
-
 				out.write('#EXTM3U\n')
 				out.write('#EXTINF:-1,' + channel[1] + '\n')
 				out.write('http://' + self.ip + ':8001/' + channel[0] + '\n\n')
@@ -211,17 +215,18 @@ NOTE: The server is built, based on your current ip and the current channel list
 				self['lab1'].setText(_('El servidor ha sido eliminado\nPor favor pulse exit para salir.'))
 			else:
 				self['lab1'].setText(_('The server has been removed\nPlease press exit button to close.'))
-		if os.path.exists('/media/hdd/tuner'):
-			rmtree('/media/hdd/tuner')
-		mybox = self.session.open(MessageBox, _('Tuner Server Disabled.'), MessageBox.TYPE_INFO, timeout=5)
-		mybox.setTitle(_('Info'))
-		self.updateServ()
+			if os.path.exists('/media/hdd/tuner'):
+				rmtree('/media/hdd/tuner')
+			mybox = self.session.open(MessageBox, _('Tuner Server Disabled.'), MessageBox.TYPE_INFO, timeout=5)
+			mybox.setTitle(_('Info'))
+			self.updateServ()
 		self.session.open(MessageBox, _('Server now disabled!'), MessageBox.TYPE_INFO, timeout=5)
 
 	def updateServ(self):
 		self['labrun'].hide()
 		self['labstop'].hide()
 		self.my_serv_active = False
+
 		if os.path.isdir('/media/hdd/tuner'):
 			self.my_serv_active = True
 			self['labstop'].hide()

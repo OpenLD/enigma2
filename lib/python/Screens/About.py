@@ -229,11 +229,14 @@ class Devices(Screen):
 			self["Tuner" + str(count)] = StaticText("")
 		self["hdd"] = StaticText()
 		self["mounts"] = StaticText()
+		self["allinonedevices"] = ScrollLabel()
 		self.list = []
 		self.activityTimer = eTimer()
 		self.activityTimer.timeout.get().append(self.populate2)
 		self["actions"] = ActionMap(["SetupActions", "ColorActions", "TimerEditActions"],
 			{
+				"up": self["allinonedevices"].pageUp,
+				"down": self["allinonedevices"].pageDown,
 				"cancel": self.close,
 				"ok": self.close
 			})
@@ -248,6 +251,7 @@ class Devices(Screen):
 			self["Tuner" + str(count)].setText(scanning)
 		self["hdd"].setText(scanning)
 		self['mounts'].setText(scanning)
+		self['allinonedevices'].setText(scanning)
 		self.activityTimer.start(1)
 
 	def populate2(self):
@@ -345,6 +349,12 @@ class Devices(Screen):
 			list2.append(device)
 		self.list = '\n'.join(self.list)
 		self["hdd"].setText(self.list)
+		self["allinonedevices"].setText(
+			self["TunerHeader"].getText() + "\n\n" +
+			self["nims"].getText() + "\n\n" +
+			self["HDDHeader"].getText() + "\n\n" +
+			self["hdd"].getText() + "\n\n"
+			)
 
 		self.Console.ePopen("df -mh | grep -v '^Filesystem'", self.Stage1Complete)
 
@@ -375,6 +385,12 @@ class Devices(Screen):
 			self["mounts"].setText(self.mountinfo)
 		else:
 			self["mounts"].setText(_('none'))
+
+		self["allinonedevices"].setText(
+			self["allinonedevices"].getText() +
+			self["MountsHeader"].getText() + "\n\n" +
+			self["mounts"].getText()
+			)
 		self["actions"].setEnabled(True)
 
 	def createSummary(self):

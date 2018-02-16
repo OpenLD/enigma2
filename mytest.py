@@ -187,9 +187,6 @@ def useSyncUsingChanged(configElement):
 config.misc.SyncTimeUsing.addNotifier(useSyncUsingChanged)
 
 def NTPserverChanged(configElement):
-	if config.misc.NTPserver.value == "pool.ntp.org":
-		return
-	print "[NTPDATE] save /etc/default/ntpdate"
 	f = open("/etc/default/ntpdate", "w")
 	f.write('NTPSERVERS="' + config.misc.NTPserver.value + '"')
 	f.close()
@@ -197,7 +194,8 @@ def NTPserverChanged(configElement):
 	from Components.Console import Console
 	Console = Console()
 	Console.ePopen('/usr/bin/ntpdate-sync')
-config.misc.NTPserver.addNotifier(NTPserverChanged, immediate_feedback = True)
+config.misc.NTPserver.addNotifier(NTPserverChanged, immediate_feedback = False)
+config.misc.NTPserver.callNotifiersOnSaveAndCancel = True
 
 profile("Twisted")
 try:
@@ -757,7 +755,8 @@ def runScreenTest():
 		configfile.save()
 
 	# kill showiframe if it is running (sh4 hack...)
-	os.system("killall -9 showiframe")
+	if getMachineBuild() in ('spark' , 'spark7162'):
+		os.system("killall -9 showiframe")
 
 	runReactor()
 

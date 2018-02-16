@@ -729,7 +729,8 @@ bool eEPGCache::FixOverlapping(EventCacheItem &servicemap, time_t TM, int durati
 {
 	bool ret = false;
 	timeMap::iterator tmp = tm_it;
-	while ((tmp->first + tmp->second->getDuration() - 360) > TM)
+
+	while ((tmp-> first + tmp-> second- > getDuration () - 60 )> TM)
 	{
 		if(tmp->first != TM
 #ifdef ENABLE_PRIVATE_EPG
@@ -771,7 +772,7 @@ bool eEPGCache::FixOverlapping(EventCacheItem &servicemap, time_t TM, int durati
 	}
 
 	tmp = tm_it;
-	while(tmp->first < (TM+duration-360))
+	while (tmp-> first <(TM + duración - 60 ))
 	{
 		if (tmp->first != TM && tmp->second->type != PRIVATE)
 		{

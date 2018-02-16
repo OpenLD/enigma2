@@ -99,7 +99,7 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 
 	def createConfigMode(self):
 		if self.nim.isCompatible("DVB-S"):
-			choices = {"nothing": _("not configured"),
+			choices = {"nothing": _("Disabled"),
 						"simple": _("Simple"),
 						"advanced": _("Advanced")}
 			if len(nimmanager.canEqualTo(self.slotid)) > 0:
@@ -322,6 +322,10 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 			self.have_advanced = False
 		else:
 			self.have_advanced = False
+
+		if self.nimConfig.configMode.value != "nothing" and config.usage.setup_level.index > 1:
+			self.list.append(getConfigListEntry(_("Force legacy signal stats"), self.nimConfig.force_legacy_signal_stats))
+
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 		self.setTextKeyYellow()
