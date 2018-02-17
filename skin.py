@@ -448,6 +448,10 @@ class AttributeParser:
 				print "[Skin] Error:", attrib
 	def conditional(self, value):
 		pass
+	def objectTypes(self, value):
+		pass
+	def objectTypesDepends(self, value):
+		pass
 	def position(self, value):
 		if isinstance(value, tuple):
 			self.guiObject.move(ePoint(*value))
@@ -843,7 +847,10 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 					if fileExists(resolveFilename(SCOPE_SKIN_IMAGE, filename, path_prefix=path_prefix)):
 						pngfile = resolveFilename(SCOPE_SKIN_IMAGE, filename, path_prefix=path_prefix)
 					png = loadPixmap(pngfile, desktop)
-					style.setPixmap(eWindowStyleSkinned.__dict__[bsName], eWindowStyleSkinned.__dict__[bpName], png)
+					try:
+						style.setPixmap(eWindowStyleSkinned.__dict__[bsName], eWindowStyleSkinned.__dict__[bpName], png)
+					except:
+						pass
 				#print "  borderset:", bpName, filename
 
 		for color in windowstyle.findall("color"):
@@ -1342,6 +1349,11 @@ def readSkin(screen, skin, names, desktop):
 			conditional = w.attrib.get('conditional')
 			if conditional and not [i for i in conditional.split(",") if i in screen.keys()]:
 				continue
+			objecttypes = w.attrib.get('objectTypes')
+			if objecttypes:
+				key = w.attrib.get('objectTypesDepends') or w.attrib.get('name') or w.attrib.get('source')
+				if key and key in screen and not [i for i in objecttypes.split(",") if i == screen[key].__class__.__name__]:
+					continue
 			p = processors.get(w.tag, process_none)
 			try:
 				p(w, context)

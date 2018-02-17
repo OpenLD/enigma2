@@ -667,8 +667,11 @@ class ConfigSequence(ConfigElement):
 		return str(v)
 
 	def fromstring(self, value):
-		ret = [int(x) for x in value.split(self.seperator)]
-		return ret + [int(x[0]) for x in self.limits[len(ret):]]
+		try:
+			ret = [int(x) for x in value.split(self.seperator)]
+			return ret + [int(x[0]) for x in self.limits[len(ret):]]
+		except:
+			return self.default
 
 	def onDeselect(self, session):
 		if self.last_value != self._value:

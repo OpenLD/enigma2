@@ -435,7 +435,6 @@ def InitUsageConfig():
 		("300", _("normal")),
 		("100", _("fast"))])
 
-
 	def SpinnerOnOffChanged(configElement):
 		setSpinnerOnOff(int(configElement.value))
 	config.usage.show_spinner.addNotifier(SpinnerOnOffChanged)
