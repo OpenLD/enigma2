@@ -4436,7 +4436,7 @@ class NetworkXupnpd(Screen):
 		self.my_xupnpd_active = False
 		self.my_xupnpd_run = False
 		self['actions'] = ActionMap(['WizardActions', 'ColorActions'], {'ok': self.close, 'back': self.close, 'red': self.UninstallCheck, 'green': self.XupnpdStartStop, 'yellow': self.activateXupnpd})
-		self.service_name = 'enigma2-plugin-xupnpd'
+		self.service_name = 'xupnpd'
 		self.onLayoutFinish.append(self.InstallCheck)
 
 	def InstallCheck(self):
