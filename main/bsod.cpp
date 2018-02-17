@@ -164,8 +164,6 @@ void bsodFatal(const char *component)
 		struct tm tm;
 		char tm_str[32];
 
-		bool detailedCrash = getConfigBool("config.crash.details", true);
-
 		localtime_r(&t, &tm);
 		strftime(tm_str, sizeof(tm_str), "%a %b %_d %T %Y", &tm);
 
