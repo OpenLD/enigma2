@@ -2413,8 +2413,17 @@ class MovieSelectionFileManagerList(Screen):
 		from Tools.Directories import SCOPE_CURRENT_SKIN
 		from Tools.LoadPixmap import LoadPixmap
 		if os.path.exists(resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/icons/mark_select.png")):
-			self.original_selectionpng = Components.SelectionList.selectionpng
-			Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/icons/mark_select.png"))
+			try:
+				self.original_selectionpng = Components.SelectionList.selectionpng
+				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/icons/mark_select.png"))
+			except:
+				pass
+		elif os.path.exists(resolveFilename(SCOPE_CURRENT_SKIN, "SimpleLD/skin_default/icons/mark_select.png")):
+			try:
+				self.original_selectionpng = Components.SelectionList.selectionpng
+				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "SimpleLD/skin_default/icons/mark_select.png"))
+			except:
+				pass
 
 	def sortList(self):
 		if self.sort == 0:	# reversed
