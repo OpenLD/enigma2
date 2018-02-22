@@ -66,7 +66,7 @@ class SimpleSingleEpgList(Renderer, VariableText):
 							text = text + "n/a\n"
 
 					maxx += 1
-					if maxx > 8:
+					if maxx > 6:
 						break
 
 			self.text = '\n' + ENext + text
