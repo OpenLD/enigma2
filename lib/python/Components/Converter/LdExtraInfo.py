@@ -248,8 +248,12 @@ class LdExtraInfo(Poll, Converter, object):
 				if len(line) > 3:
 					ecmtext = ecmtext + line + '\n'
 			f.close()
-		if len(ecmtext) < 5:
-			ecmtext = '\n\n    ' + _('Ecm info not available.')
+		else:
+			try:
+				if len(ecmtext) < 5:
+					ecmtext = '\n\n    ' + _('Ecm info not available.')
+			except:
+				return
 		return str(ecmtext)
 
 	def get_PIDtext(self):
@@ -262,8 +266,12 @@ class LdExtraInfo(Poll, Converter, object):
 				if len(line) > 3:
 					pidtext = pidtext + line + '\n'
 			f.close()
-		if len(pidtext) < 5:
-			pidtext = '\n\n    ' + _('Pid info not available.')
+		else:
+			try:
+				if len(pidtext) < 5:
+					pidtext = '\n\n    ' + _('Pid info not available.')
+			except:
+				return
 		return str(pidtext)
 
 	def provfile(self, caid, prov):
