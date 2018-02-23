@@ -247,7 +247,7 @@ def InitUsageConfig():
 	choicelist = [("standby", _("Standby")),("deepstandby", _("Deep Standby"))]
 	config.usage.sleep_timer_action = ConfigSelection(default = "deepstandby", choices = choicelist)
 	choicelist = [("0", _("Disabled")),("event_standby", _("Execute after current event"))]
-	for i in range(900, 7201, 900):
+	for i in range(900, 14401, 900):
 		m = abs(i / 60)
 		m = ngettext("%d minute", "%d minutes", m) % m
 		choicelist.append((str(i), _("Execute in ") + m))
@@ -476,18 +476,6 @@ def InitUsageConfig():
 			open(SystemInfo["FanPWM"], "w").write(hex(configElement.value)[2:])
 		config.usage.fanspeed = ConfigSlider(default=127, increment=8, limits=(0, 255))
 		config.usage.fanspeed.addNotifier(fanSpeedChanged)
-
-	if SystemInfo["StandbyPowerLed"]:
-		def standbyLEDChanged(configElement):
-			open(SystemInfo["StandbyPowerLed"], "w").write(configElement.value and "on" or "off")
-		config.usage.lcd_standbypowerled = ConfigYesNo(default = True)
-		config.usage.lcd_standbypowerled.addNotifier(standbyLEDChanged)
-
-	if SystemInfo["LCDshow_symbols"]:
-		def lcdShowSymbols(configElement):
-			open(SystemInfo["LCDshow_symbols"], "w").write(configElement.value and "1" or "0")
-		config.usage.lcd_show_symbols = ConfigYesNo(default = True)
-		config.usage.lcd_show_symbols.addNotifier(lcdShowSymbols)
 
 	config.epg = ConfigSubsection()
 	config.epg.eit = ConfigYesNo(default = True)
