@@ -25,7 +25,7 @@ from Components.ActionMap import ActionMap
 from Components.MenuList import MenuList
 from Components.GUIComponent import GUIComponent
 from Components.HTMLComponent import HTMLComponent
-from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename
+from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_ACTIVE_SKIN, resolveFilename
 from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
 from Components.Pixmap import Pixmap
@@ -51,7 +51,7 @@ class ExtraActionBox(Screen):
 
 	def __setTitle(self):
 		if self["logo"].instance is not None:
-			self["logo"].instance.setPixmapFromFile(resolveFilename(SCOPE_CURRENT_SKIN, '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/run.png'))
+			self["logo"].instance.setPixmapFromFile(resolveFilename(SCOPE_ACTIVE_SKIN, '/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/run.png'))
 		self.setTitle(self.ctitle)
 		self.timer = eTimer()
 		self.timer.callback.append(self.__start)
