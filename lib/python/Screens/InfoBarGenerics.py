@@ -43,7 +43,7 @@ from RecordTimer import RecordTimer, RecordTimerEntry, parseEvent, AFTEREVENT, f
 from Screens.TimerEntry import TimerEntry as TimerEntry
 
 from Tools import Directories, Notifications, ASCIItranslit
-from Tools.Directories import pathExists, fileExists, getRecordingFilename, copyfile, moveFiles, resolveFilename, SCOPE_TIMESHIFT, SCOPE_CURRENT_SKIN
+from Tools.Directories import pathExists, fileExists, getRecordingFilename, copyfile, moveFiles, resolveFilename, SCOPE_TIMESHIFT, SCOPE_ACTIVE_SKIN, SCOPE_CURRENT_SKIN
 from Tools.KeyBindings import getKeyDescription
 
 import NavigationInstance

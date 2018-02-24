@@ -2409,19 +2409,28 @@ class MovieSelectionFileManagerList(Screen):
 		self.sort = 0
 		self["description"].setText(_("Select files with 'OK' and then use 'Menu' or 'Green' for select operation"))
 
+		self["Service"] = ServiceEvent()
+		self["config"].onSelectionChanged.append(self.setService)
+		self.onShown.append(self.setService)
+
+	def setService(self):
+		item = self["config"].getCurrent()
+		if item:
+			self["Service"].newService(item[0][1])
+
 	def changePng(self):
-		from Tools.Directories import SCOPE_CURRENT_SKIN
+		from Tools.Directories import SCOPE_ACTIVE_SKIN
 		from Tools.LoadPixmap import LoadPixmap
-		if os.path.exists(resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/icons/mark_select.png")):
+		if os.path.exists(resolveFilename(SCOPE_ACTIVE_SKIN, "skin_default/icons/mark_select.png")):
 			try:
 				self.original_selectionpng = Components.SelectionList.selectionpng
-				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "skin_default/icons/mark_select.png"))
+				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "skin_default/icons/mark_select.png"))
 			except:
 				pass
-		elif os.path.exists(resolveFilename(SCOPE_CURRENT_SKIN, "SimpleLD/skin_default/icons/mark_select.png")):
+		elif os.path.exists(resolveFilename(SCOPE_ACTIVE_SKIN, "SimpleLD/skin_default/icons/mark_select.png")):
 			try:
 				self.original_selectionpng = Components.SelectionList.selectionpng
-				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "SimpleLD/skin_default/icons/mark_select.png"))
+				Components.SelectionList.selectionpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "SimpleLD/skin_default/icons/mark_select.png"))
 			except:
 				pass
 
@@ -2461,7 +2470,8 @@ class MovieSelectionFileManagerList(Screen):
 			return
 
 	def copySelected(self):
-		self.selectMovieLocation(title=_("Select destination for copy selected files..."), callback=self.gotCopyMovieDest)
+		if self["config"].getCurrent():
+			self.selectMovieLocation(title=_("Select destination for copy selected files..."), callback=self.gotCopyMovieDest)
 
 	def gotCopyMovieDest(self, choice):
 		if not choice:
@@ -2484,7 +2494,8 @@ class MovieSelectionFileManagerList(Screen):
 				self.session.open(MessageBox, str(e), MessageBox.TYPE_ERROR)
 
 	def moveSelected(self):
-		self.selectMovieLocation(title=_("Select destination for move selected files..."), callback=self.gotMoveMovieDest)
+		if self["config"].getCurrent():
+			self.selectMovieLocation(title=_("Select destination for move selected files..."), callback=self.gotMoveMovieDest)
 
 	def gotMoveMovieDest(self, choice):
 		if not choice:
