@@ -35,6 +35,8 @@ from Components.Language import language
 from Tools.Directories import fileExists, resolveFilename
 from enigma import eServiceCenter, eServiceReference, eTimer
 from shutil import rmtree, move, copy
+from os import system, rename as os_rename, remove as os_remove, chdir
+from os.path import isdir
 import os
 
 class TunerServer(Screen):
@@ -150,24 +152,26 @@ NOTE: The server is built, based on your current ip and the current channel list
 	def doServStart(self):
 		self.activityTimer.stop()
 		if os.path.exists('/media/hdd/tuner'):
-			rmtree('/media/hdd/tuner')
+			ret = system("rm -rf /media/hdd/tuner")
 		ifaces = iNetwork.getConfiguredAdapters()
 		for iface in ifaces:
-			ip = iNetwork.getAdapterAttribute(iface, 'ip')
+			ip = iNetwork.getAdapterAttribute(iface, "ip")
 			ipm = "%d.%d.%d.%d" % (ip[0], ip[1], ip[2], ip[3])
-			if ipm != '0.0.0.0':
+			if ipm != "0.0.0.0":
 				self.ip = ipm
 
-		os.mkdir('/media/hdd/tuner', 0755)
+		ret = system("mkdir /media/hdd/tuner")
+		chdir("/media/hdd/tuner")
 		s_type = '1:7:1:0:0:0:0:0:0:0:(type == 1) || (type == 17) || (type == 22) || (type == 25) || (type == 134) || (type == 195)'
 		serviceHandler = eServiceCenter.getInstance()
-		services = serviceHandler.list(eServiceReference('%s FROM BOUQUET "bouquets.tv" ORDER BY bouquet' % s_type))
-		bouquets = services and services.getContent('SN', True)
+		services = serviceHandler.list(eServiceReference('%s FROM BOUQUET "bouquets.tv" ORDER BY bouquet'%(s_type)))
+		bouquets = services and services.getContent("SN", True)
 		count = 1
 		for bouquet in bouquets:
 			self.poPulate(bouquet, count)
 			count += 1
 
+		chdir("/home/root")
 		if config.osd.language.value == 'es_ES':
 			mytext = "Servidor disponible en IP %s\nPara acceder a los sintonizadores de este receptor puedes conectarte desde la LAN o UPnP.\n\n1) Para conectar desde la LAN tienes que montar el directorio /media/hdd de este receptor en el directorio del receptor cliente /media/hdd. Una vez realizado todo esto, ya puedes acceder a la lista de canales del servidor desde el receptor cliente en Media player -> Disco duro -> tuner.\n\n2) Para conectar via UPnP necesitas un servidor UPnP que pueda gestionar archivos .m3u como MediaTomb." % (self.ip)
 			self['lab1'].setText(_(mytext))
@@ -179,19 +183,21 @@ NOTE: The server is built, based on your current ip and the current channel list
 
 
 	def poPulate(self, bouquet, count):
-		n = '%03d_' % count
+		n = "%03d_" % (count)
 		name = n + self.cleanName(bouquet[1])
-		path = '/media/hdd/tuner/'
+		path = "/media/hdd/tuner/" + name
+		cmd = "mkdir \'" + path + "\'"
+		system(cmd)
 		serviceHandler = eServiceCenter.getInstance()
 		services = serviceHandler.list(eServiceReference(bouquet[0]))
-		channels = services and services.getContent('SN', True)
+		channels = services and services.getContent("SN", True)
 		count2 = 1
 		for channel in channels:
 			if not int(channel[0].split(':')[1]) & 64:
-				n2 = '%03d_' % count2
-				filename = path + "/" + name + ".m3u"
+				n2 = "%03d_" % (count2)
+				filename = path + "/" + n2 + self.cleanName(channel[1]) + ".m3u"
 				try:
-					out = open(filename, 'a')
+					out = open(filename, "w")
 				except:
 					continue
 				out.write('#EXTM3U\n')
@@ -216,9 +222,10 @@ NOTE: The server is built, based on your current ip and the current channel list
 			else:
 				self['lab1'].setText(_('The server has been removed\nPlease press exit button to close.'))
 			if os.path.exists('/media/hdd/tuner'):
-				rmtree('/media/hdd/tuner')
+				ret = system("rm -rf /media/hdd/tuner")
 			mybox = self.session.open(MessageBox, _('Tuner Server Disabled.'), MessageBox.TYPE_INFO, timeout=5)
 			mybox.setTitle(_('Info'))
+			rc = system("sleep 1")
 			self.updateServ()
 		self.session.open(MessageBox, _('Server now disabled!'), MessageBox.TYPE_INFO, timeout=5)
 
