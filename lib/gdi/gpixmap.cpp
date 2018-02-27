@@ -382,7 +382,6 @@ void gPixmap::blit(const gPixmap &src, const eRect &_pos, const gRegion &clip, i
 				pos = eRect(ePoint(pos.x() + (scale_x - scale_y) * pos.width() / (2 * FIX), pos.y()),
 					eSize(src.size().width() * pos.height() / src.size().height(), pos.height()));
 				scale_x = scale_y;
-
 			}
 			else
 			{
