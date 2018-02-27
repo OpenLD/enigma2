@@ -100,11 +100,11 @@ void gAccel::dumpDebug()
 {
 	eDebug("[gAccel] info --");
 	for (MemoryBlockList::const_iterator it = m_accel_allocation.begin();
-		 it != m_accel_allocation.end();
-		 ++it)
-	 {
-		 gUnmanagedSurface *surface = it->surface;
-		 if (surface)
+		it != m_accel_allocation.end();
+		++it)
+	{
+		gUnmanagedSurface *surface = it->surface;
+		if (surface)
 			eDebug("[gAccel] surface: (%d (%dk), %d (%dk)) %p %dx%d:%d",
 					it->index, it->index >> (10 - ACCEL_ALIGNMENT_SHIFT),
 					it->size, it->size >> (10 - ACCEL_ALIGNMENT_SHIFT),
@@ -113,7 +113,7 @@ void gAccel::dumpDebug()
 			eDebug("[gAccel]    free: (%d (%dk), %d (%dk))",
 					it->index, it->index >> (10 - ACCEL_ALIGNMENT_SHIFT),
 					it->size, it->size >> (10 - ACCEL_ALIGNMENT_SHIFT));
-	 }
+	}
 	eDebug("--");
 }
 #else
@@ -125,8 +125,8 @@ void gAccel::releaseAccelMemorySpace()
 	eSingleLocker lock(m_allocation_lock);
 	dumpDebug();
 	for (MemoryBlockList::const_iterator it = m_accel_allocation.begin();
-		 it != m_accel_allocation.end();
-		 ++it)
+		it != m_accel_allocation.end();
+		++it)
 	{
 		gUnmanagedSurface *surface = it->surface;
 		if (surface != NULL)
@@ -331,8 +331,8 @@ int gAccel::accelAlloc(gUnmanagedSurface* surface)
 	eSingleLocker lock(m_allocation_lock);
 
 	for (MemoryBlockList::iterator it = m_accel_allocation.begin();
-		 it != m_accel_allocation.end();
-		 ++it)
+		it != m_accel_allocation.end();
+		++it)
 	{
 		if ((it->surface == NULL) && (it->size >= size))
 		{

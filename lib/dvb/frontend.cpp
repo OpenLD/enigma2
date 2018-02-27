@@ -848,7 +848,8 @@ int eDVBFrontend::closeFrontend(bool force, bool no_delayed)
 		{
 			eDebugNoSimulate("dont close frontend %d until the linked frontend %d in slot %d is still in use",
 				m_dvbid, linked_fe->m_frontend->getDVBID(), linked_fe->m_frontend->getSlotID());
-			m_sn->stop();
+			if (!m_simulate)
+				m_sn->stop();
 			m_state = stateIdle;
 			return -1;
 		}
