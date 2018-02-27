@@ -962,8 +962,8 @@ int ePicLoad::getData(ePtr<gPixmap> &result)
 		return 0;
 	}
 
-	result = new gPixmap(m_filepara->max_x, m_filepara->max_y, m_filepara->bits == 8 ? 8 : 32,
-				NULL, m_filepara->bits == 8 ? gPixmap::accelAlways : gPixmap::accelAuto);
+	result = new gPixmap(eSize(m_filepara->max_x, m_filepara->max_y), m_filepara->bits == 8 ? 8 : 32,
+				m_filepara->bits == 8 ? gPixmap::accelAlways : gPixmap::accelAuto);
 	gUnmanagedSurface *surface = result->surface;
 
 	// original image    : ox, oy
