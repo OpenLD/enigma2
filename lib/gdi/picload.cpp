@@ -216,7 +216,7 @@ static unsigned char *bmp_load(const char *file,  int *x, int *y)
 
 //---------------------------------------------------------------------
 
-static void png_load(Cfilepara* filepara, int background, bool forceRGB=false)
+static void png_load(Cfilepara* filepara, unsigned int background, bool forceRGB=false)
 {
 	png_uint_32 width, height;
 	unsigned int i;
@@ -1274,7 +1274,7 @@ int ePicLoad::getFileType(const char * file)
 //------------------------------------------------------------------------------------
 
 //for old plugins
-SWIG_VOID(int) loadPic(ePtr<gPixmap> &result, std::string filename, int x, int y, int aspect, int resize_mode, int rotate, int background, std::string cachefile)
+SWIG_VOID(int) loadPic(ePtr<gPixmap> &result, std::string filename, int x, int y, int aspect, int resize_mode, int rotate, unsigned int background, std::string cachefile)
 {
 	long asp1, asp2;
 	result = 0;
