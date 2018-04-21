@@ -672,8 +672,11 @@ class NimSetup(Screen, ConfigListScreen, ServiceStopScreen):
 		if confirmed[1] == "yes" or confirmed[1] == "yestoall":
 			eDVBDB.getInstance().removeServices(-1, -1, -1, self.satpos_to_remove)
 
-		if self.satpos_to_remove is not None:
-			self.unconfed_sats.remove(self.satpos_to_remove)
+		try:
+			if self.satpos_to_remove is not None:
+				self.unconfed_sats.remove(self.satpos_to_remove)
+		except:
+			self.unconfed_sats = None
 
 		self.satpos_to_remove = None
 		for orbpos in self.unconfed_sats:

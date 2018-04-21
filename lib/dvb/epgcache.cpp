@@ -3445,7 +3445,7 @@ void eEPGCache::importEvents(ePyObject serviceReferences, ePyObject list)
 //     1 = search events with exactly title name (EXACT_TITLE_SEARCH)
 //     2 = search events with text in title name (PARTIAL_TITLE_SEARCH)
 //     3 = search events starting with title name (START_TITLE_SEARCH)
-//     4 = search events ending with title name (END_TITLE_SEARCH)
+//     4 = search events ending with title name (END_TITLE_SEARCH))
 //     5 = search events with text in description (PARTIAL_DESCRIPTION_SEARCH)
 //  when type is 0 (SIMILAR_BROADCASTINGS_SEARCH)
 //   the fourth is the servicereference string

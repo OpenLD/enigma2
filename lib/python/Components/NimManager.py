@@ -1,6 +1,6 @@
 import os
 
-from boxbranding import getBoxType
+from boxbranding import getBoxType, getBrandOEM
 from Tools.HardwareInfo import HardwareInfo
 from Tools.BoundFunction import boundFunction
 from Components.About import about
@@ -77,7 +77,7 @@ class SecConfigure:
 		sec.setLNBIncreasedVoltage(False)
 		sec.setRepeats(0)
 		sec.setFastDiSEqC(fastDiSEqC)
-		sec.setSeqRepeat(False)
+		sec.setSeqRepeat(True)
 		sec.setCommandOrder(0)
 
 		#user values
@@ -178,8 +178,8 @@ class SecConfigure:
 		for slot in nim_slots:
 			if slot.type is not None:
 				used_nim_slots.append((slot.slot, slot.description, slot.config.configMode.value != "nothing" and True or False, slot.isCompatible("DVB-S2"), slot.frontend_id is None and -1 or slot.frontend_id))
-		eDVBResourceManager.getInstance().setFrontendSlotInformations(used_nim_slots)
 
+			eDVBResourceManager.getInstance().setFrontendSlotInformations(used_nim_slots)
 		for slot in nim_slots:
 			x = slot.slot
 			nim = slot.config
@@ -671,7 +671,7 @@ class SecConfigure:
 		self.update()
 
 class NIM(object):
-	def __init__(self, slot, type, description, has_outputs=True, internally_connectable=None, multi_type=None, frontend_id=None, i2c=None, is_empty=False, input_name = None):
+	def __init__(self, slot, type, description, has_outputs=True, internally_connectable=None, multi_type=None, frontend_id=None, i2c=None, is_empty=False, input_name = None, supports_blind_scan = False):
 		if not multi_type: multi_type = {}
 		nim_types = ["DVB-S", "DVB-S2", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"]
 
@@ -693,6 +693,7 @@ class NIM(object):
 		self.has_outputs = has_outputs
 		self.internally_connectable = internally_connectable
 		self.multi_type = multi_type
+		self.supports_blind_scan = supports_blind_scan
 		self.i2c = i2c
 		self.frontend_id = frontend_id
 		self.__is_empty = is_empty
@@ -824,6 +825,9 @@ class NIM(object):
 			multistream = True
 		return multistream
 
+	def supportsBlindScan(self):
+		return self.supports_blind_scan
+
 	# returns dict {<slotid>: <type>}
 	def getMultiTypeList(self):
 		return self.multi_type
@@ -870,7 +874,10 @@ class NimManager:
 			if feid is None or self.nim_slots[feid].isMultistream():
 				return self.transponders[pos]
 			else: # remove multistream transponders
-				return [tp for tp in self.transponders[pos] if not (tp[5] == eDVBFrontendParametersSatellite.System_DVB_S2 and (tp[10] > -1 or tp[11] > 0 or tp[12] > 1))]
+				def isMultistreamTP(tp):
+					# since we are using Gold sequences there is no need to check the PLS Mode
+					return tp[5] == eDVBFrontendParametersSatellite.System_DVB_S2 and (tp[10] > -1 or tp[12] > 0)
+				return [tp for tp in self.transponders[pos] if not isMultistreamTP(tp)]
 		else:
 			return []
 
@@ -1172,6 +1179,9 @@ class NimManager:
 			elif line.startswith("Internally_Connectable:"):
 				input = int(line[len("Internally_Connectable:") + 1:])
 				entries[current_slot]["internally_connectable"] = input
+			elif line.startswith("Supports_Blind_Scan:"):
+				input = str(line[len("Supports_Blind_Scan:") + 1:])
+				entries[current_slot]["supports_blind_scan"] = (input == "yes")
 			elif line.startswith("Frontend_Device:"):
 				input = int(line[len("Frontend_Device:") + 1:])
 				entries[current_slot]["frontend_device"] = input
@@ -1217,7 +1227,9 @@ class NimManager:
 					entry["multi_type"] = {}
 			if not (entry.has_key("input_name")):
 				entry["input_name"] = chr(ord('A') + id)
-			self.nim_slots.append(NIM(slot = id, description = entry["name"], type = entry["type"], has_outputs = entry["has_outputs"], internally_connectable = entry["internally_connectable"], multi_type = entry["multi_type"], frontend_id = entry["frontend_device"], i2c = entry["i2c"], is_empty = entry["isempty"], input_name = entry.get("input_name", None)))
+			if "supports_blind_scan" not in entry:
+				entry["supports_blind_scan"] = False
+			self.nim_slots.append(NIM(slot = id, description = entry["name"], type = entry["type"], has_outputs = entry["has_outputs"], internally_connectable = entry["internally_connectable"], multi_type = entry["multi_type"], frontend_id = entry["frontend_device"], i2c = entry["i2c"], is_empty = entry["isempty"], input_name = entry.get("input_name", None), supports_blind_scan = entry["supports_blind_scan"]))
 
 	def hasNimType(self, chktype):
 		return any(slot.canBeCompatible(chktype) for slot in self.nim_slots)
@@ -1353,11 +1365,10 @@ class NimManager:
 	# if slotid == -1, returns if something is connected to ANY nim
 	def somethingConnected(self, slotid = -1):
 		if slotid == -1:
-			connected = False
 			for id in range(self.getSlotCount()):
-				if self.somethingConnected(id):
-					connected = True
-			return connected
+				if self.somethingConnected(id) and self.nim_slots[id].internally_connectable != id - 1:
+					return True
+			return False
 		else:
 			nim = config.Nims[slotid]
 			configMode = nim.configMode.value
@@ -1479,7 +1490,7 @@ def InitSecParams():
 	x.addNotifier(lambda configElement: secClass.setParam(secClass.DELAY_AFTER_FINAL_VOLTAGE_CHANGE, configElement.value))
 	config.sec.delay_after_final_voltage_change = x
 
-	x = ConfigInteger(default=120, limits = (0, 9999))
+	x = ConfigInteger(default=60, limits = (0, 9999))
 	x.addNotifier(lambda configElement: secClass.setParam(secClass.DELAY_BETWEEN_DISEQC_REPEATS, configElement.value))
 	config.sec.delay_between_diseqc_repeats = x
 
@@ -2099,80 +2110,86 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.atsc = ConfigSelection(choices = list)
 
 	def tunerTypeChanged(nimmgr, configElement, initial=False):
-		print "[InitNimManager] dvb_api_version ",iDVBFrontend.dvb_api_version
-		configElement.save()
-		feid = configElement.feid
-		eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[feid].frontend_id, nimmgr.nim_slots[feid].getType())
-		raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
-		if raw_channel is None:
-			print "[ERROR] no raw channel, type change failed"
-			return False
-		frontend = raw_channel.getFrontend()
-		if frontend is None:
-			print "[ERROR] no frontend, type change failed"
-			return False
-		if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and iDVBFrontend.dvb_api_version >= 5:
-			print "[InitNimManager] api >=5 and new style tuner driver"
-			if frontend:
-				system = configElement.getText()
-				if system in ('DVB-C','DVB-C2'):
-					ret = frontend.changeType(iDVBFrontend.feCable)
-				elif system in ('DVB-T','DVB-T2'):
-					ret = frontend.changeType(iDVBFrontend.feTerrestrial)
-				elif system in ('DVB-S','DVB-S2', 'DVB-S2X'):
-					ret = frontend.changeType(iDVBFrontend.feSatellite)
-				elif system == 'ATSC':
-					ret = frontend.changeType(iDVBFrontend.feATSC)
+		if int(iDVBFrontend.dvb_api_version) < 5 or getBrandOEM() in ('vuplus'):
+			print "[InitNimManager] dvb_api_version ",iDVBFrontend.dvb_api_version
+			configElement.save()
+			feid = configElement.feid
+			eDVBResourceManager.getInstance().setFrontendType(nimmgr.nim_slots[feid].frontend_id, nimmgr.nim_slots[feid].getType())
+			try:
+				raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
+				if raw_channel is None:
+					print "[ERROR] no raw channel, type change failed"
+					return False
+				frontend = raw_channel.getFrontend()
+				if frontend is None:
+					print "[ERROR] no frontend, type change failed"
+					return False
+				if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and iDVBFrontend.dvb_api_version >= 5:
+					print "[InitNimManager] api >=5 and new style tuner driver"
+					if frontend:
+						system = configElement.getText()
+						if system in ('DVB-C','DVB-C2'):
+							ret = frontend.changeType(iDVBFrontend.feCable)
+						elif system in ('DVB-T','DVB-T2'):
+							ret = frontend.changeType(iDVBFrontend.feTerrestrial)
+						elif system in ('DVB-S','DVB-S2', 'DVB-S2X'):
+							ret = frontend.changeType(iDVBFrontend.feSatellite)
+						elif system == 'ATSC':
+							ret = frontend.changeType(iDVBFrontend.feATSC)
+						else:
+							ret = False
+						if not ret:
+							print "[InitNimManager] %d: tunerTypeChange to '%s' failed" %(feid, system)
+					else:
+						print "[InitNimManager] %d: tunerTypeChange to '%s' failed (BUSY)" %(feid, configElement.getText())
 				else:
-					ret = False
-				if not ret:
-					print "[InitNimManager] %d: tunerTypeChange to '%s' failed" %(feid, system)
-			else:
-				print "[InitNimManager] %d: tunerTypeChange to '%s' failed (BUSY)" %(feid, configElement.getText())
-		else:
-			print "[InitNimManager] api <5 or old style tuner driver"
-			raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
-			if raw_channel is None:
-				print "[ERROR] no raw channel, type change failed"
-				return False
-			frontend = raw_channel.getFrontend()
-			if frontend is None:
-				print "[ERROR] no frontend, type change failed"
-				return False
-			if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
-				print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
-				InitNimManager(nimmgr)
-				return
-			if os.path.exists("/proc/stb/frontend/%d/mode" % feid):
-				cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
-				if cur_type != int(configElement.value):
-					print "[InitNimManager] tunerTypeChanged feid %d from %d to mode %d" % (feid, cur_type, int(configElement.value))
-
-					try:
-						oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
-						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-						f.write("0")
-						f.close()
-					except:
-						print "[InitNimManager] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-					frontend.closeFrontend()
-					f = open("/proc/stb/frontend/%d/mode" % feid, "w")
-					f.write(configElement.value)
-					f.close()
-					frontend.reopenFrontend()
-					try:
-						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-						f.write(oldvalue)
-						f.close()
-					except:
-						print "[InitNimManager] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-					nimmgr.enumerateNIMs()
-					if initial:
-						print "tunerTypeChanged force update setting"
-						nimmgr.sec.update()
-					configElement.save()
-				else:
-					print "[InitNimManager] tuner type is already already %d" %cur_type
+					print "[InitNimManager] api <5 or old style tuner driver"
+					raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
+					if raw_channel is None:
+						print "[ERROR] no raw channel, type change failed"
+						return False
+					frontend = raw_channel.getFrontend()
+					if frontend is None:
+						print "[ERROR] no frontend, type change failed"
+						return False
+					if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
+						print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
+						InitNimManager(nimmgr)
+						return
+					if os.path.exists("/proc/stb/frontend/%d/mode" % feid):
+						cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
+						if cur_type != int(configElement.value):
+							print "[InitNimManager] tunerTypeChanged feid %d from %d to mode %d" % (feid, cur_type, int(configElement.value))
+							is_dvb_shutdown_timeout = os.path.exists("/sys/module/dvb_core/parameters/dvb_shutdown_timeout")
+							if is_dvb_shutdown_timeout:
+								try:
+									oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
+									f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+									f.write("0")
+									f.close()
+								except:
+									print "[InitNimManager] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+							frontend.closeFrontend()
+							f = open("/proc/stb/frontend/%d/mode" % feid, "w")
+							f.write(configElement.value)
+							f.close()
+							frontend.reopenFrontend()
+							if is_dvb_shutdown_timeout:
+								try:
+									f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+									f.write(oldvalue)
+									f.close()
+								except:
+									print "[InitNimManager] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+							nimmgr.enumerateNIMs()
+							if initial:
+								print "tunerTypeChanged force update setting"
+								nimmgr.sec.update()
+							configElement.save()
+						else:
+							print "[InitNimManager] tuner type is already already %d" %cur_type
+			except Exception as e:
+				print "[InitNimManager] tunerTypeChanged error: ", e
 
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
@@ -2273,5 +2290,8 @@ def InitNimManager(nimmgr, update_slots = []):
 			empty = False
 		if empty:
 			empty_slots += 1
+
+	return
+
 
 nimmanager = NimManager()

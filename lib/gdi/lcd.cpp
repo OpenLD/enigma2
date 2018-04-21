@@ -13,6 +13,8 @@
 #endif
 #include <lib/gdi/glcddc.h>
 
+#define DM900_LCD_Y_OFFSET 4
+
 eLCD *eLCD::instance;
 
 eLCD::eLCD()
@@ -29,11 +31,13 @@ eLCD *eLCD::getInstance()
 
 void eLCD::setSize(int xres, int yres, int bpp)
 {
-	res = eSize(xres, yres);
+	_stride = xres * bpp / 8;
 	_buffer=new unsigned char[xres * yres * bpp/8];
-	memset(_buffer, 0, res.height()*res.width()*bpp/8);
-	_stride=res.width()*bpp/8;
-	eDebug("lcd buffer %p %d bytes, stride %d", _buffer, xres*yres*bpp/8, _stride);
+	if ((strcmp(boxtype_name, "dm900\n") == 0) || (strcmp(boxtype_name, "dm920\n") == 0))
+		xres -= DM900_LCD_Y_OFFSET;
+	res = eSize(xres, yres);
+	memset(_buffer, 0, xres * yres * bpp / 8);
+	eDebug("[eLCD] (%dx%dx%d) buffer %p %d bytes, stride %d, boxtype: %s", xres, yres, bpp, _buffer, xres * yres * bpp / 8, _stride, boxtype_name);
 }
 
 eLCD::~eLCD()
@@ -76,15 +80,22 @@ eDBoxLCD::eDBoxLCD()
 	inverted = 0;
 	lcd_type = 0;
 	FILE *boxtype_file;
-	char boxtype_name[20];
 	FILE *fp_file;
 	char fp_version[20];
 #ifndef NO_LCD
+	snprintf(boxtype_name, sizeof(boxtype_name), "unknown");
 	if((boxtype_file = fopen("/proc/stb/info/boxtype", "r")) != NULL)
 	{
 		fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
 		fclose(boxtype_file);
-
+	}
+	else if((boxtype_file = fopen("/proc/stb/info/model", "r")) != NULL)
+	{
+		fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
+		fclose(boxtype_file);
+	}
+	if((strcmp(boxtype_name, "unknown") != 0))
+	{
 		if((strcmp(boxtype_name, "spark\n") == 0))
 		{
 				if((fp_file = fopen("/proc/stb/fp/version", "r")) != NULL)
@@ -396,6 +407,7 @@ void eDBoxLCD::update()
 			else
 			{
 				FILE *file;
+/*
 				FILE *boxtype_file;
 				char boxtype_name[20];
 				if((boxtype_file = fopen("/proc/stb/info/boxtype", "r")) != NULL)
@@ -408,7 +420,31 @@ void eDBoxLCD::update()
 					fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
 					fclose(boxtype_file);
 				}
-				if (((file = fopen("/proc/stb/info/gbmodel", "r")) != NULL ) || (strcmp(boxtype_name, "7100S\n") == 0) || (strcmp(boxtype_name, "7200S\n") == 0) || (strcmp(boxtype_name, "7210S\n") == 0) || (strcmp(boxtype_name, "7215S\n") == 0) || (strcmp(boxtype_name, "7205S\n") == 0))
+				else if((boxtype_file = fopen("/proc/stb/info/model", "r")) != NULL)
+				{
+					fgets(boxtype_name, sizeof(boxtype_name), boxtype_file);
+					fclose(boxtype_file);
+				}
+*/
+				if ((strcmp(boxtype_name, "dm900\n") == 0) || (strcmp(boxtype_name, "dm920\n") == 0))
+				{
+					unsigned char gb_buffer[_stride * res.height()];
+					for (int offset = 0; offset < ((_stride * res.height())>>2); offset ++)
+					{
+						unsigned int src = 0;
+						if (offset%(_stride>>2) >= DM900_LCD_Y_OFFSET)
+							src = ((unsigned int*)_buffer)[offset - DM900_LCD_Y_OFFSET];
+						//                                             blue                         red                  green low                     green high
+						((unsigned int*)gb_buffer)[offset] = ((src >> 3) & 0x001F001F) | ((src << 3) & 0xF800F800) | ((src >> 8) & 0x00E000E0) | ((src << 8) & 0x07000700);
+					}
+					write(lcdfd, gb_buffer, _stride * res.height());
+					if (file != NULL)
+					{
+						fclose(file);
+					}
+				}
+#ifdef LCD_COLOR_BITORDER_RGB565
+				else if (((file = fopen("/proc/stb/info/gbmodel", "r")) != NULL ) || (strcmp(boxtype_name, "7100S\n") == 0) || (strcmp(boxtype_name, "7200S\n") == 0) || (strcmp(boxtype_name, "7210S\n") == 0) || (strcmp(boxtype_name, "7215S\n") == 0) || (strcmp(boxtype_name, "7205S\n") == 0) || (strcmp(boxtype_name, "8100S\n") == 0))
 				{
 					//gggrrrrrbbbbbggg bit order from memory
 					//gggbbbbbrrrrrggg bit order to LCD
@@ -435,6 +471,7 @@ void eDBoxLCD::update()
 						fclose(file);
 					}
 				}
+#endif
 				else
 				{
 					write(lcdfd, _buffer, _stride * res.height());
