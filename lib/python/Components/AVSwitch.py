@@ -43,11 +43,11 @@ class AVSwitch:
 							"60Hz":		{ 60: "1080p" },
 							"multi":	{ 50: "1080p50", 60: "1080p" } }
 
-	rates["2160p"] =	{ 	"50Hz":		{ 50: "2160p50" },
+	rates["2160p"] =	{	"50Hz":		{ 50: "2160p50" },
 							"60Hz":		{ 60: "2160p" },
 							"multi":	{ 50: "2160p50", 60: "2160p" } }
 
-	rates["2160p30"] =	{ 	"25Hz":		{ 50: "2160p25" },
+	rates["2160p30"] =	{	"25Hz":		{ 50: "2160p25" },
 							"30Hz":		{ 60: "2160p30"} ,
 							"multi":	{ 50: "2160p25", 60: "2160p30" } }
 
@@ -75,10 +75,10 @@ class AVSwitch:
 	if (about.getChipSetString() in ('5272s', '7366', '7376', '7444', '7445', '7445s')):
 		modes["HDMI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080p", "1080i", "2160p"}
-	elif (about.getChipSetString() in ('7252', '7251', '7251S', '7252S', '7251s', '7252s', '7444s')):
+	elif (about.getChipSetString() in ('7252', '7251', '7251S', '7252S', '7251s', '7252s', '7444s', '3798mv200', '3798cv200', 'hi3798mv200', 'hi3798cv200')):
 		modes["HDMI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080p", "1080i", "2160p", "2160p30"}
-	elif (about.getChipSetString() in ('7111', '7162', '7241', '7346', '7356', '7358', '7362', '73565', '73625', '7424', '7425', '7435', '7552', 'pnx8493')) or (hw_type in ('elite', 'premium', 'premium+', 'ultra', "me", "minime")):
+	elif (about.getChipSetString() in ('7111', '7162', '7241', '7346', '7356', '7358', '7362', '73565', '73625', '7424', '7425', '7435', '7552', '7581', '7584', '75845', '7585', 'pnx8493')) or (hw_type in ('elite', 'premium', 'premium+', 'ultra', "me", "minime")):
 		modes["HDMI"] = ["720p", "1080p", "1080i", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080p", "1080i"}
 	elif about.getChipSetString() in ('meson-6'):

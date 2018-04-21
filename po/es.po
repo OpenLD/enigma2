@@ -12921,6 +12921,14 @@ msgstr "Número máximo de días:"
 msgid "Maximum space used (MB):"
 msgstr "Espacio máximo utilizado (MB):"
 
+# data/setup.xml
+msgid "Log python stack trace on spinner (may have side effects) ?"
+msgstr "Bei Spinner Python Stack Trace loggen (kann Nebeneffekte haben) ?"
+
+# data/setup.xml
+msgid "Set to yes ONLY TEMPORARILY for debugging the root cause of a spinner."
+msgstr "Nur ZEITWEISE auf 'ja' setzen, um die Ursache eines Spinners zu debuggen."
+
 msgid "Space used:"
 msgstr "Espacio utilizado:"
 
