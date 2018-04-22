@@ -50,6 +50,7 @@ enigma2_LDADD = \
 	@DVBCSA_LIBS@ \
 	@AVAHI_LIBS@ \
 	@LIBDL_LIBS@ \
+	@LIBHIACCEL_LIBS@ \
 	-ltuxtxt32bpp
 
 enigma2_LDFLAGS = -Wl,--export-dynamic

@@ -838,6 +838,9 @@ msgstr ""
 msgid "< Default with Picon >"
 msgstr ""
 
+msgid "< User Skin >"
+msgstr ""
+
 msgid "<Current movielist location>"
 msgstr ""
 
@@ -1342,6 +1345,12 @@ msgstr ""
 msgid "Allocate unused memory index"
 msgstr ""
 
+msgid "Allow 10bit"
+msgstr ""
+
+msgid "Allow 12bit"
+msgstr ""
+
 msgid "Allow quit movieplayer with exit"
 msgstr ""
 
@@ -1352,6 +1361,9 @@ msgid "Allow subtitles for hearing impaired"
 msgstr ""
 
 msgid "Allow unstable (untested) updates"
+msgstr ""
+
+msgid "Allow unsupported modes"
 msgstr ""
 
 msgid "Allows the %s %s to read the stored EPG data regularly."
@@ -1731,6 +1743,9 @@ msgstr ""
 msgid "Auto Language Selection"
 msgstr ""
 
+msgid "Auto Modes Selected."
+msgstr ""
+
 msgid "Auto scart switching"
 msgstr ""
 
@@ -2022,6 +2037,9 @@ msgid "better"
 msgstr ""
 
 msgid "Big PiP"
+msgstr ""
+
+msgid "Bitrate"
 msgstr ""
 
 msgid "Bitrate:"
@@ -3475,6 +3493,9 @@ msgstr ""
 msgid "CronManager"
 msgstr ""
 
+msgid "CronTimer"
+msgstr ""
+
 msgid "CronTimers"
 msgstr ""
 
@@ -3623,6 +3644,9 @@ msgid "Default 'Timer type' *"
 msgstr ""
 
 msgid "Default files/folders to backup"
+msgstr ""
+
+msgid "Default Modes Selected."
 msgstr ""
 
 msgid "Default movie location"
@@ -5346,7 +5370,13 @@ msgstr ""
 msgid "force AC3plus"
 msgstr ""
 
+msgid "force enabled"
+msgstr ""
+
 msgid "Force de-interlace"
+msgstr ""
+
+msgid "force disabled"
 msgstr ""
 
 msgid "Force LNB Power"
@@ -5383,6 +5413,9 @@ msgid "FP Upgrade"
 msgstr ""
 
 msgid "FP upgrade required"
+msgstr ""
+
+msgid "Frame rate"
 msgstr ""
 
 msgid "Frame size in full view"
@@ -5774,6 +5807,15 @@ msgstr ""
 msgid "HDMIin"
 msgstr ""
 
+msgid "HDMI Recording"
+msgstr ""
+
+msgid "HDMI-IN Recording settings"
+msgstr ""
+
+msgid "HDR10 Support"
+msgstr ""
+
 msgid "Hebrew"
 msgstr ""
 
@@ -5865,6 +5907,9 @@ msgid "History next"
 msgstr ""
 
 msgid "History zap..."
+msgstr ""
+
+msgid "HLG Support"
 msgstr ""
 
 msgid "Hold screen"
@@ -6083,13 +6128,16 @@ msgstr ""
 msgid "In expert mode, configure which tuners will be preferred for recordings, when more than one tuner is available."
 msgstr ""
 
-msgid "In the Standby blinking Clock on the LCD Display"
+msgid "In most cases this should be set to No. Only enable if you have a very specific need."
 msgstr ""
 
 msgid "In order to record a timer, a tuner was freed successfully:\n\n"
 msgstr ""
 
 msgid "In progress"
+msgstr ""
+
+msgid "In the Standby blinking Clock on the LCD Display"
 msgstr ""
 
 msgid "Inactive"
@@ -6135,6 +6183,9 @@ msgid "Index"
 msgstr ""
 
 msgid "Index allocated:"
+msgstr ""
+
+msgid "Indonesian"
 msgstr ""
 
 msgid "Info"
@@ -6345,6 +6396,9 @@ msgid "Interface"
 msgstr ""
 
 msgid "Interface: "
+msgstr ""
+
+msgid "Interlaced"
 msgstr ""
 
 msgid "Intermediate"
@@ -6814,6 +6868,9 @@ msgstr ""
 msgid "Logs settings"
 msgstr ""
 
+msgid "Log python stack trace on spinner (may have side effects) ?"
+msgstr ""
+
 msgid "long"
 msgstr ""
 
@@ -6971,6 +7028,9 @@ msgid "Maxdown: "
 msgstr ""
 
 msgid "Maximum no of days:"
+msgstr ""
+
+msgid "Maximum minutes to jump %d !"
 msgstr ""
 
 msgid "Maximum number of days in EPG"
@@ -8175,6 +8235,12 @@ msgstr ""
 msgid "OpenVpn Setup"
 msgstr ""
 
+msgid "Option"
+msgstr ""
+
+msgid "Option long"
+msgstr ""
+
 msgid "Option to disable picons on the Infobar"
 msgstr ""
 
@@ -8659,7 +8725,7 @@ msgstr ""
 msgid "Please enter the old PIN code"
 msgstr ""
 
-msgid "Please enter the your personal feed URL"
+msgid "Please enter your personal feed URL"
 msgstr ""
 
 msgid "Please follow the instructions on the TV"
@@ -9652,6 +9718,9 @@ msgid "Release Notes"
 msgstr ""
 
 msgid "reliable"
+msgstr ""
+
+msgid "reliable, retune"
 msgstr ""
 
 msgid "religion"
@@ -10988,6 +11057,9 @@ msgstr ""
 msgid "Sets the root folder of movie list, to remove the '..' from benign shown in that folder."
 msgstr ""
 
+msgid "Set to yes ONLY TEMPORARILY for debugging the root cause of a spinner."
+msgstr ""
+
 msgid "Setting Restored "
 msgstr ""
 
@@ -11456,6 +11528,9 @@ msgstr ""
 msgid "Show HDMI-Output Res"
 msgstr ""
 
+msgid "Show HDMIRecord setup..."
+msgstr ""
+
 msgid "Show help"
 msgstr ""
 
@@ -11891,7 +11966,7 @@ msgstr ""
 msgid "Skins"
 msgstr ""
 
-msgid "skins"
+msgid "skin"
 msgstr ""
 
 msgid "Skinselector"
@@ -12463,6 +12538,15 @@ msgstr ""
 msgid "StreamingClientsInfo"
 msgstr ""
 
+msgid "Stretch full"
+msgstr ""
+
+msgid "Stretch linear"
+msgstr ""
+
+msgid "Stretch nonlinear"
+msgstr ""
+
 msgid "Strict DLNA"
 msgstr ""
 
@@ -12851,6 +12935,9 @@ msgstr ""
 msgid "The %s %s stores the EPG data every (hours)."
 msgstr ""
 
+msgid "The aspect ratio of the recording."
+msgstr ""
+
 msgid ""
 "The AutoTimer plugin is not installed!\n"
 "Please install it."
@@ -12862,6 +12949,9 @@ msgid ""
 msgstr ""
 
 msgid "The backup failed. Please choose a different backup location."
+msgstr ""
+
+msgid "The bitrate of the video encoder. Larger value improves quality and increases file size."
 msgstr ""
 
 msgid ""
@@ -12925,6 +13015,12 @@ msgid ""
 msgstr ""
 
 msgid "The following files were found..."
+msgstr ""
+
+msgid "The frame rate of the recording. Ideally, this will match the frame rate of the source or be an integer multiple. If in doubt, set to 60, which should work with most sources."
+msgstr ""
+
+msgid "The height of the picture. The input will be scaled to match this value."
 msgstr ""
 
 msgid "The image or kernel will be flashing and auto booted in few minutes.\n"
@@ -13042,6 +13138,9 @@ msgid ""
 "Please install it."
 msgstr ""
 
+msgid "The width of the picture. The input will be scaled to match this value."
+msgstr ""
+
 msgid ""
 "The wireless LAN plugin is not installed!\n"
 "Please install it and choose what you want to do next."
@@ -13119,6 +13218,9 @@ msgstr ""
 msgid "This allows you to show kernel modules in downloads"
 msgstr ""
 
+msgid "This allows you to show languages in downloads"
+msgstr ""
+
 msgid "This allows you to show lcd skins in downloads"
 msgstr ""
 
@@ -13137,7 +13239,7 @@ msgstr ""
 msgid "This allows you to show settings modules in downloads"
 msgstr ""
 
-msgid "This allows you to show skins modules in downloads"
+msgid "This allows you to show skin modules in downloads"
 msgstr ""
 
 msgid "This allows you to show softcams modules in downloads"
@@ -13177,6 +13279,18 @@ msgid "This option allows you can config the Colorimetry for HDR"
 msgstr ""
 
 msgid "This option allows you can config the Colorspace from Auto to RGB"
+msgstr ""
+
+msgid "This option allows you can enable or disable the 10 Bit Color Mode"
+msgstr ""
+
+msgid "This option allows you can enable or disable the 12 Bit Color Mode"
+msgstr ""
+
+msgid "This option allows you can force the HDR10 Modes for UHD"
+msgstr ""
+
+msgid "This option allows you can force the HLG Modes for UHD"
 msgstr ""
 
 msgid "This option allows you choose how to display elapsed time  as + or -"
@@ -13276,6 +13390,9 @@ msgid "This option allows you to show menu number quick links."
 msgstr ""
 
 msgid "This option allows you to the SNR as a percentage (not all receivers support this)."
+msgstr ""
+
+msgid "This option allows you to use all HDMI Modes"
 msgstr ""
 
 msgid "This option allows you to view the old and new settings side by side."
@@ -13714,6 +13831,12 @@ msgstr ""
 msgid "traditional (fast)"
 msgstr ""
 
+msgid "traditional (fast), retune"
+msgstr ""
+
+msgid "Traditional Chinese"
+msgstr ""
+
 msgid "Transcode"
 msgstr ""
 
@@ -14139,6 +14262,9 @@ msgid "Use a gateway"
 msgstr ""
 
 msgid "Use as HDD"
+msgstr ""
+
+msgid "Use automatic mode detection.\n This option reads all supported modes from your TV.\n Please disable it only if you want to customize the preferred configuration."
 msgstr ""
 
 msgid "use best / controlled by HDMI"
