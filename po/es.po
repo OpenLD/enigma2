@@ -17600,6 +17600,15 @@ msgstr "Esta opción le permite habilitar o deshabilitar el modo de color de 12 
 msgid "This option allows you can enable or disable the 10 Bit Color Mode"
 msgstr "Esta opción le permite habilitar o deshabilitar el modo de color de 10 bits"
 
+msgid "Use automatic mode detection.\n This option reads all supported modes from your TV.\n Please disable it only if you want to customize the preferred configuration."
+msgstr "Use la detección automática de modo.\n Esta opción lee todos los modos compatibles desde su TV.\n Deshabilítelo solo si desea personalizar la configuración preferida."
+
+msgid "Default Modes Selected."
+msgstr "Modos predeterminados seleccionados."
+
+msgid "Auto Modes Selected."
+msgstr "Modos automáticos seleccionados."
+
 msgid "HLG Support"
 msgstr "Soporte HLG"
 
@@ -17617,3 +17626,30 @@ msgstr "fuerza habilitada"
 
 msgid "force disabled"
 msgstr "fuerza deshabilitada"
+
+msgid "HDMI-IN Recording settings"
+msgstr "HDMI-IN Aufnahmen"
+
+msgid "Frame rate"
+msgstr "Fotogramas por segundo"
+
+msgid "Interlaced"
+msgstr "Entrelazado"
+
+msgid "The bitrate of the video encoder. Larger value improves quality and increases file size."
+msgstr "La tasa de bits del codificador de video. El valor más grande mejora la calidad y aumenta el tamaño del archivo."
+
+msgid "The width of the picture. The input will be scaled to match this value."
+msgstr "El ancho de la imagen. La entrada se escalará para que coincida con este valor."
+
+msgid "The height of the picture. The input will be scaled to match this value."
+msgstr "La altura de la imagen. La entrada se escalará para que coincida con este valor."
+
+msgid "The frame rate of the recording. Ideally, this will match the frame rate of the source or be an integer multiple. If in doubt, set to 60, which should work with most sources."
+msgstr "La velocidad de cuadros de la grabación. Idealmente, esto coincidirá con la velocidad de cuadro de la fuente o será un número entero múltiple. En caso de duda, configure 60, que debería funcionar con la mayoría de las fuentes."
+
+msgid "In most cases this should be set to No. Only enable if you have a very specific need."
+msgstr "En la mayoría de los casos, esto debe establecerse en No. Solo active si tiene una necesidad muy específica."
+
+msgid "The aspect ratio of the recording."
+msgstr "La relación de aspecto de la grabación."

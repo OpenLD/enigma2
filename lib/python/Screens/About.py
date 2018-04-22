@@ -53,7 +53,7 @@ def getAboutText():
 		f = open('/sys/firmware/devicetree/base/bolt/tag', 'r')
 		bootloader = f.readline().replace('\x00', '').replace('\n', '')
 		f.close()
-		AboutText += _("Bootloader:\t\t\t%s\n") % (bootloader)
+		AboutText += _("Bootloader:\t\t%s\n") % (bootloader)
 
 	if about.getChipSetString() != _("unavailable"):
 		if about.getIsBroadcom():
@@ -127,14 +127,14 @@ def getAboutText():
 		image = f.read(1) 
 		f.close()
 		if bootname: bootname = "   (%s)" %bootname 
-		AboutText += _("Selected Image:\t\t%s") % "STARTUP_" + image + bootname + "\n"
+		AboutText += _("Selected Image:\t%s") % "STARTUP_" + image + bootname + "\n"
 	elif path.exists('/boot/cmdline.txt'):
 		f = open('/boot/cmdline.txt', 'r')
 		f.seek(38)
 		image = f.read(1) 
 		f.close()
 		if bootname: bootname = "   (%s)" %bootname 
-		AboutText += _("Selected Image:\t\t%s") % "STARTUP_" + image + bootname + "\n"
+		AboutText += _("Selected Image:\t%s") % "STARTUP_" + image + bootname + "\n"
 
 	AboutText += _("Architecture:\t %s") % str(about.getCPUArch()) + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
@@ -183,11 +183,15 @@ def getAboutText():
 		f.close()
 	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 		mark = str('\xc2\xb0')
-		AboutText += _("System temperature:\t\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+		AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
 
 	tempinfo = ""
 	if path.exists('/proc/stb/fp/temp_sensor_avs'):
 		f = open('/proc/stb/fp/temp_sensor_avs', 'r')
+		tempinfo = f.read()
+		f.close()
+	elif path.exists('/proc/stb/power/avs'):
+		f = open('/proc/stb/power/avs', 'r')
 		tempinfo = f.read()
 		f.close()
 	elif path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
@@ -200,7 +204,7 @@ def getAboutText():
 			tempinfo = ""
 	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 		mark = str('\xc2\xb0')
-		AboutText += _("Processor temperature:\t\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+		AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
 	AboutLcdText = AboutText.replace('\t', ' ')
 
 	return AboutText, AboutLcdText
