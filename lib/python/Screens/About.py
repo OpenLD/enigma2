@@ -13,6 +13,7 @@ from Components.About import about, getVersionString, getChipSetString, getKerne
     getRAMSwapTotalString, getRAMSwapFreeString
 from Components.ScrollLabel import ScrollLabel
 from Components.Console import Console
+from Components.SystemInfo import SystemInfo
 from Components.Converter.Poll import Poll
 
 from ServiceReference import ServiceReference
@@ -47,6 +48,13 @@ def getAboutText():
 
 	AboutText += _("Model:\t %s %s\n") % (getMachineBrand(), getMachineName())
 
+	bootloader = ""
+	if path.exists('/sys/firmware/devicetree/base/bolt/tag'):
+		f = open('/sys/firmware/devicetree/base/bolt/tag', 'r')
+		bootloader = f.readline().replace('\x00', '').replace('\n', '')
+		f.close()
+		AboutText += _("Bootloader:\t\t\t%s\n") % (bootloader)
+
 	if about.getChipSetString() != _("unavailable"):
 		if about.getIsBroadcom():
 			AboutText += _("Chipset:\t BCM%s\n") % str(about.getChipSetString().upper())
@@ -69,11 +77,13 @@ def getAboutText():
 			pass
 
 	cpuMHz = ""
-	if getMachineBuild() in ('vusolo4k','vuultimo4k'):
+	if getMachineBuild() in ('vusolo4k','vuultimo4k','vuzero4k'):
 		cpuMHz = "   (1,5 GHz)"
 	elif getMachineBuild() in ('formuler1tc','formuler1', 'triplex', 'tiviaraplus'):
 		cpuMHz = "   (1,3 GHz)"
-	elif getMachineBuild() in ('vuuno4k','dm900','dm920', 'gb7252', 'dags7252','xc7439','8100s'):
+	elif getMachineBuild() in ('u51','u5','u53','u52','u5pvr','h9'):
+		cpuMHz = "   (1,6 GHz)"
+	elif getMachineBuild() in ('vuuno4kse','vuuno4k','dm900','dm920', 'gb7252', 'dags7252','xc7439','8100s'):
 		cpuMHz = "   (1,7 GHz)"
 	elif getMachineBuild() in ('sf5008','et13000','et1x000','hd52','hd51','sf4008','vs1500','h7'):
 		try:
@@ -103,12 +113,35 @@ def getAboutText():
 
 	AboutText += _("CPU:\t %s") % str(about.getCPUString()) + cpuMHz + " " + str(about.getCpuCoresString2()) + "\n"
 	AboutText += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
+
+	imagestarted = ""
+	bootname = ''
+	if path.exists('/boot/bootname'):
+		f = open('/boot/bootname', 'r')
+		bootname = f.readline().split('=')[1]
+		f.close()
+
+	if path.exists('/boot/STARTUP'):
+		f = open('/boot/STARTUP', 'r')
+		f.seek(22)
+		image = f.read(1) 
+		f.close()
+		if bootname: bootname = "   (%s)" %bootname 
+		AboutText += _("Selected Image:\t\t%s") % "STARTUP_" + image + bootname + "\n"
+	elif path.exists('/boot/cmdline.txt'):
+		f = open('/boot/cmdline.txt', 'r')
+		f.seek(38)
+		image = f.read(1) 
+		f.close()
+		if bootname: bootname = "   (%s)" %bootname 
+		AboutText += _("Selected Image:\t\t%s") % "STARTUP_" + image + bootname + "\n"
+
 	AboutText += _("Architecture:\t %s") % str(about.getCPUArch()) + "\n"
 	AboutText += _("BogoMIPS:\t %s") % bogoMIPS + "\n"
 	AboutText += _("Firmware:\t %s") % openLD + str(getImageVersion()) + "\n"
 	#AboutText += _("Build:\t %s") % getImageBuild() + "\n"
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
-	#AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
+	AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
 	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
@@ -148,31 +181,27 @@ def getAboutText():
 		f = open('/proc/stb/sensors/temp/value', 'r')
 		tempinfo = f.read()
 		f.close()
-	elif path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
-		f = open('/sys/devices/virtual/thermal/thermal_zone0/temp', 'r')
-		tempinfo = f.read()
-		tempinfo = tempinfo[:-4]
-		f.close()
 	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 		mark = str('\xc2\xb0')
-		AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+		AboutText += _("System temperature:\t\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
 
 	tempinfo = ""
 	if path.exists('/proc/stb/fp/temp_sensor_avs'):
 		f = open('/proc/stb/fp/temp_sensor_avs', 'r')
 		tempinfo = f.read()
 		f.close()
+	elif path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
+		try:
+			f = open('/sys/devices/virtual/thermal/thermal_zone0/temp', 'r')
+			tempinfo = f.read()
+			tempinfo = tempinfo[:-4]
+			f.close()
+		except:
+			tempinfo = ""
 	if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 		mark = str('\xc2\xb0')
-		AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
+		AboutText += _("Processor temperature:\t\t%s") % tempinfo.replace('\n', '').replace(' ','') + mark + "C\n"
 	AboutLcdText = AboutText.replace('\t', ' ')
-
-	bootloader = ""
-	if path.exists('/sys/firmware/devicetree/base/bolt/tag'):
-		f = open('/sys/firmware/devicetree/base/bolt/tag', 'r')
-		bootloader = f.readline().replace('\x00', '').replace('\n', '')
-		f.close()
-		AboutText += _("Bootloader:\t\t%s\n") % (bootloader)
 
 	return AboutText, AboutLcdText
 
@@ -180,7 +209,7 @@ class About(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Image Information"))
-		self.skinName = "AboutOE"
+		self.skinName = ["AboutOE","About"]
 		self.populate()
 
 		self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions", "TimerEditActions"],
@@ -189,15 +218,12 @@ class About(Screen):
 				"ok": self.close,
 				"log": self.showCommits,
 				"up": self["AboutScrollLabel"].pageUp,
-				"down": self["AboutScrollLabel"].pageDown
+				"down": self["AboutScrollLabel"].pageDown,
+				"0": self.showID,
 			})
 
 	def populate(self):
-		self["lab1"] = StaticText(_("Developer:\t Javier Sayago (Javilonas)"))
-		self["lab2"] = StaticText(_("Support:\t https://www.lonasdigital.com"))
-		self["lab3"] = StaticText(_("CodeName:\t %s") % str(getImageCodeName()))
-		self["lab4"] = StaticText(_("Git:\t https://github.com/OpenLD"))
-		self["lab5"] = StaticText(_("Web:\t http://www.odisealinux.com"))
+		self["lab1"] = StaticText(_("Support:\t https://www.lonasdigital.com"))
 		model = None
 
 		if getAboutText:
@@ -210,6 +236,17 @@ class About(Screen):
 		#AboutText = getAboutText()[0]
 
 		self["AboutScrollLabel"] = ScrollLabel(AboutText)
+
+	def showID(self):
+		if SystemInfo["HaveID"]:
+			try:
+				f = open("/etc/.id")
+				id = f.read()[:-1].split('=')
+				f.close()
+				from Screens.MessageBox import MessageBox
+				self.session.open(MessageBox,id[1], type = MessageBox.TYPE_INFO)
+			except:
+				pass
 
 	def showCommits(self):
 		self.session.open(CommitInfo)
@@ -225,7 +262,7 @@ class Devices(Screen):
 		self["HDDHeader"] = StaticText(_("Detected Devices:"))
 		self["MountsHeader"] = StaticText(_("Network Servers:"))
 		self["nims"] = StaticText()
-		for count in (0, 1, 2, 3):
+		for count in (0, 1, 2, 3, 4, 5, 6, 7):
 			self["Tuner" + str(count)] = StaticText("")
 		self["hdd"] = StaticText()
 		self["mounts"] = StaticText()
@@ -247,7 +284,7 @@ class Devices(Screen):
 		self["actions"].setEnabled(False)
 		scanning = _("Wait please while scanning for devices...")
 		self["nims"].setText(scanning)
-		for count in (0, 1, 2, 3):
+		for count in (0, 1, 2, 3, 4, 5, 6, 7):
 			self["Tuner" + str(count)].setText(scanning)
 		self["hdd"].setText(scanning)
 		self['mounts'].setText(scanning)
@@ -267,7 +304,7 @@ class Devices(Screen):
 
 		nims = nimmanager.nimList()
 		if len(nims) <= 4 :
-			for count in (0, 1, 2, 3):
+			for count in (0, 1, 2, 3, 4, 5, 6, 7):
 				if count < len(nims):
 					self["Tuner" + str(count)].setText(nims[count])
 				else:
@@ -287,7 +324,7 @@ class Devices(Screen):
 					cur_idx += 1
 				count += 1
 
-			for count in (0, 1, 2, 3):
+			for count in (0, 1, 2, 3, 4, 5, 6, 7):
 				if count < len(desc_list):
 					if desc_list[count]['start'] == desc_list[count]['end']:
 						text = "Tuner %s: %s" % (desc_list[count]['start'], desc_list[count]['desc'])
@@ -400,7 +437,6 @@ class SystemMemoryInfo(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Memory Information"))
-		self.DynamicSwitch = False
 		self.skinName = ["SystemMemoryInfo", "About"]
 		self["lab1"] = StaticText(_("INFO RAM / FLASH"))
 		self.DynamicTimer = eTimer()
@@ -421,7 +457,7 @@ class SystemMemoryInfo(Screen):
 			})
 
 	def updateInfo(self):
-		self.DynamicTimer.start(6000, True)
+		self.DynamicTimer.start(12600, True)
 		self.AboutText = _("MEMORY") + '\n'
 		self.AboutText += _("Total:\t%s") % str(about.getRAMTotalString()) + " MB\n"
 		self.AboutText += _("Free:\t%s ") % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
@@ -445,14 +481,6 @@ class SystemMemoryInfo(Screen):
 		self.Console = Console()
 		self.Console.ePopen("df -mh / | grep -v '^Filesystem'", self.Stage1Complete)
 
-	def end(self):
-		self.DynamicSwitch = True
-		if self.updateInfo in self.DynamicTimer.callback:
-			self.DynamicTimer.callback.remove(self.updateInfo)
-		self.DynamicTimer.stop()
-		#del self.DynamicTimer
-		self.close()
-
 	def Stage1Complete(self, result, retval, extra_args=None):
 		flash = str(result).replace('\n', '')
 		flash = flash.split()
@@ -471,6 +499,14 @@ class SystemMemoryInfo(Screen):
 
 	def createSummary(self):
 		return AboutSummary
+
+	def end(self):
+		self.DynamicSwitch = True
+		if self.updateInfo in self.DynamicTimer.callback:
+			self.DynamicTimer.callback.remove(self.updateInfo)
+		self.DynamicTimer.stop()
+		#del self.DynamicTimer
+		self.close()
 
 class SystemNetworkInfo(Screen):
 	def __init__(self, session):
@@ -553,6 +589,32 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _("MAC:") + "\t" + eth1['hwaddr'] + "\n"
 			self.iface = 'eth1'
 
+		eth2 = about.getIfConfig('eth2')
+		if eth2.has_key('addr'):
+			if eth2.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + eth2['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + eth2['addr'] + "\n"
+			if eth2.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + eth2['netmask'] + "\n"
+			if eth2.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + eth2['brdaddr'] + "\n")
+			if eth2.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + eth2['hwaddr'] + "\n"
+			self.iface = 'eth2'
+
+		eth3 = about.getIfConfig('eth3')
+		if eth3.has_key('addr'):
+			if eth3.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + eth3['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + eth3['addr'] + "\n"
+			if eth3.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + eth3['netmask'] + "\n"
+			if eth3.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + eth3['brdaddr'] + "\n")
+			if eth3.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + eth3['hwaddr'] + "\n"
+			self.iface = 'eth3'
+
 		ra0 = about.getIfConfig('ra0')
 		if ra0.has_key('addr'):
 			if ra0.has_key('ifname'):
@@ -566,6 +628,45 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _("MAC:") + "\t" + ra0['hwaddr'] + "\n"
 			self.iface = 'ra0'
 
+		ra1 = about.getIfConfig('ra1')
+		if ra1.has_key('addr'):
+			if ra1.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + ra1['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + ra1['addr'] + "\n"
+			if ra1.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + ra1['netmask'] + "\n"
+			if ra1.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + ra1['brdaddr'] + "\n")
+			if ra1.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + ra1['hwaddr'] + "\n"
+			self.iface = 'ra1'
+
+		ra2 = about.getIfConfig('ra2')
+		if ra2.has_key('addr'):
+			if ra2.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + ra2['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + ra2['addr'] + "\n"
+			if ra2.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + ra2['netmask'] + "\n"
+			if ra2.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + ra2['brdaddr'] + "\n")
+			if ra2.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + ra2['hwaddr'] + "\n"
+			self.iface = 'ra2'
+
+		ra3 = about.getIfConfig('ra3')
+		if ra3.has_key('addr'):
+			if ra3.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + ra3['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + ra3['addr'] + "\n"
+			if ra3.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + ra3['netmask'] + "\n"
+			if ra3.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + ra3['brdaddr'] + "\n")
+			if ra3.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + ra3['hwaddr'] + "\n"
+			self.iface = 'ra3'
+
 		wlan0 = about.getIfConfig('wlan0')
 		if wlan0.has_key('addr'):
 			if wlan0.has_key('ifname'):
@@ -578,6 +679,32 @@ class SystemNetworkInfo(Screen):
 			if wlan0.has_key('hwaddr'):
 				self.AboutText += _("MAC:") + "\t" + wlan0['hwaddr'] + "\n"
 			self.iface = 'wlan0'
+
+		wlan1 = about.getIfConfig('wlan1')
+		if wlan1.has_key('addr'):
+			if wlan1.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + wlan1['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + wlan1['addr'] + "\n"
+			if wlan1.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + wlan1['netmask'] + "\n"
+			if wlan1.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + wlan1['brdaddr'] + "\n")
+			if wlan1.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + wlan1['hwaddr'] + "\n"
+			self.iface = 'wlan1'
+
+		wlan2 = about.getIfConfig('wlan2')
+		if wlan2.has_key('addr'):
+			if wlan2.has_key('ifname'):
+				self.AboutText += _('Interface:\t/dev/' + wlan2['ifname'] + "\n")
+			self.AboutText += _("IP:") + "\t" + wlan2['addr'] + "\n"
+			if wlan2.has_key('netmask'):
+				self.AboutText += _("Netmask:") + "\t" + wlan2['netmask'] + "\n"
+			if wlan2.has_key('brdaddr'):
+				self.AboutText += _('Broadcast:\t' + wlan2['brdaddr'] + "\n")
+			if wlan2.has_key('hwaddr'):
+				self.AboutText += _("MAC:") + "\t" + wlan2['hwaddr'] + "\n"
+			self.iface = 'wlan2'
 
 		wlan3 = about.getIfConfig('wlan3')
 		if wlan3.has_key('addr'):
@@ -623,7 +750,7 @@ class SystemNetworkInfo(Screen):
 		if data is not None:
 			if data is True:
 				if status is not None:
-					if self.iface == 'wlan0' or self.iface == 'wlan3' or self.iface == 'ra0':
+					if self.iface == 'eth1' or self.iface == 'eth2' or self.iface == 'eth3' or self.iface == 'wlan0' or self.iface == 'wlan1' or self.iface == 'wlan2' or self.iface == 'wlan3' or self.iface == 'ra0' or self.iface == 'ra1' or self.iface == 'ra2' or self.iface == 'ra3':
 						if status[self.iface]["essid"] == "off":
 							essid = _("No Connection")
 						else:
@@ -799,10 +926,6 @@ class CommitInfo(Screen):
 			("branding-module", "Branding Module"),
 			("3rdparty-plugins", "3rdparty Plugins"),
 			("e2openplugin-OpenWebif", "OpenWebif"),
-			("enigma2-plugin-skins-simpleld", "Skin SimpleLD"),
-			("enigma2-plugin-skins-metrixhd", "Skin MetrixHD OpenLD"),
-			("enigma2-plugin-picons-openld-19edark_on_white", "Picons (TSCNEO) Dark_on_white"),
-			("enigma2-plugin-picons-openld-19elight_on_transparent", "Picons (TSCNEO) Elight_on_transparent"),
 			("enigma2-plugin-settings-defaultsatld", "Channel Settings for default."),
 			("openld-settings", "Settings OpenLD (Collection channel settings)."),
 			("openld-plugins", "OpenLD Plugins"),
@@ -831,7 +954,7 @@ class CommitInfo(Screen):
 			commitlog += url.split('/')[-2] + '\n'
 			commitlog += 80 * '-' + '\n'
 			try:
-				# OpenLD 3.0 uses python 2.7.12 and here we need to bypass the certificate check
+				# OpenLD 3.0 uses python 2.7.13 and here we need to bypass the certificate check
 				from ssl import _create_unverified_context
 				log = loads(urlopen(url, timeout=5, context=_create_unverified_context()).read())
 			except:

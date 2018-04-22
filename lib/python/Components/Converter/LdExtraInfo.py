@@ -27,7 +27,7 @@ from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, S
 from Tools.Transponder import ConvertToHumanReadable, getChannelNumber
 from Tools.GetEcmInfo import GetEcmInfo
 from Components.Converter.ChannelNumbers import channelnumbers
-from Components.Converter.Poll import Poll
+#from Components.Converter.Poll import Poll
 from Poll import Poll
 import NavigationInstance
 import os
@@ -100,7 +100,7 @@ class LdExtraInfo(Poll, Converter, object):
 		Poll.__init__(self)
 		self.DynamicSwitch = False
 		self.type = type
-		self.poll_interval = 3500
+		self.poll_interval = 9500
 		self.poll_enabled = True
 		self.caid_data = {
 			( "0x100",  "0x1ff", "Seca",     "S" ),
@@ -856,7 +856,7 @@ class LdExtraInfo(Poll, Converter, object):
 
 	@cached
 	def getText(self):
-		self.DynamicTimer.start(500)
+		self.DynamicTimer.start(6000)
 		service = self.source.service
 
 		if service is None:
@@ -1426,7 +1426,7 @@ class LdExtraInfo(Poll, Converter, object):
 			self.updateFEdata = False
 			if what[1] == iPlayableService.evNewProgramInfo:
 				self.updateFEdata = True
-			if what[1] == iPlayableService.evEnd:
+			elif what[1] == iPlayableService.evEnd:
 				self.feraw = self.fedata = None
 			Converter.changed(self, what)
 		elif what[0] == self.CHANGED_POLL and self.updateFEdata is not None:
