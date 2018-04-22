@@ -12923,11 +12923,11 @@ msgstr "Espacio máximo utilizado (MB):"
 
 # data/setup.xml
 msgid "Log python stack trace on spinner (may have side effects) ?"
-msgstr "Bei Spinner Python Stack Trace loggen (kann Nebeneffekte haben) ?"
+msgstr "Log python stack trace en spinner? (puede tener efectos secundarios)"
 
 # data/setup.xml
 msgid "Set to yes ONLY TEMPORARILY for debugging the root cause of a spinner."
-msgstr "Nur ZEITWEISE auf 'ja' setzen, um die Ursache eines Spinners zu debuggen."
+msgstr "Seleccione si SOLO TEMPORALMENTE para depurar la causa del spinner activo."
 
 msgid "Space used:"
 msgstr "Espacio utilizado:"
@@ -17417,6 +17417,12 @@ msgstr "Profundidad de color HDMI"
 msgid "This option allows you can config the Colordepth for UHD"
 msgstr "Esta opción le permite configurar la profundidad de color (Colordepth) para UHD"
 
+msgid "HDMI HDR Type"
+msgstr "Modo HDMI HDR"
+
+msgid "This option allows you can force the HDR Modes for UHD"
+msgstr "Esta opción te permite forzar los modos HDR para UHD"
+
 msgid "controlled by HDMI"
 msgstr "Controlado por HDMI"
 
@@ -17575,3 +17581,39 @@ msgstr "Reino Unido"
 
 msgid "United States of America"
 msgstr "Estados Unidos de America"
+
+msgid "Allow unsupported modes"
+msgstr "Permitir modos no compatibles"
+
+msgid "This option allows you to use all HDMI Modes"
+msgstr "Esta opción te permite usar todos los modos HDMI"
+
+msgid "This option allows you can force the HLG Modes for UHD"
+msgstr "Esta opción le permite forzar los modos HLG para UHD"
+
+msgid "This option allows you can force the HDR10 Modes for UHD"
+msgstr "Esta opción le permite forzar los modos HDR10 para UHD"
+
+msgid "This option allows you can enable or disable the 12 Bit Color Mode"
+msgstr "Esta opción le permite habilitar o deshabilitar el modo de color de 12 bits"
+
+msgid "This option allows you can enable or disable the 10 Bit Color Mode"
+msgstr "Esta opción le permite habilitar o deshabilitar el modo de color de 10 bits"
+
+msgid "HLG Support"
+msgstr "Soporte HLG"
+
+msgid "HDR10 Support"
+msgstr "Soporte HDR10"
+
+msgid "Allow 12bit"
+msgstr "Permitir 12bit"
+
+msgid "Allow 10bit"
+msgstr "Permitir 10bit"
+
+msgid "force enabled"
+msgstr "fuerza habilitada"
+
+msgid "force disabled"
+msgstr "fuerza deshabilitada"

@@ -17696,6 +17696,12 @@ msgstr "HDMI Farbtiefe"
 msgid "This option allows you can config the Colordepth for UHD"
 msgstr "Diese Option erlaubt die Umstellung der Farbtiefe im UHD Modus"
 
+msgid "HDMI HDR Type"
+msgstr "HDMI HDR Mode"
+
+msgid "This option allows you can force the HDR Modes for UHD"
+msgstr "Mit dieser Option können Sie die HDR-Modi für UHD erzwingen"
+
 msgid "controlled by HDMI"
 msgstr "Steuerung über HDMI"
 
@@ -17767,3 +17773,39 @@ msgstr "Tuner System Spezial Funktion"
 
 msgid "Workaround for old tuner driver"
 msgstr "Nur Aktivieren wenn es Probleme gibt mit Multituner"
+
+msgid "Allow unsupported modes"
+msgstr "Erlaube nicht unterstützte Modi"
+
+msgid "This option allows you to use all HDMI Modes"
+msgstr "Mit dieser Option können Sie alle HDMI-Modi verwenden"
+
+msgid "This option allows you can force the HLG Modes for UHD"
+msgstr "Mit dieser Option können Sie die HLG-Modi für UHD erzwingen"
+
+msgid "This option allows you can force the HDR10 Modes for UHD"
+msgstr "Mit dieser Option können Sie die HDR10-Modi für UHD erzwingen"
+
+msgid "This option allows you can enable or disable the 12 Bit Color Mode"
+msgstr "Mit dieser Option können Sie den 12-Bit-Farbmodus aktivieren oder deaktivieren"
+
+msgid "This option allows you can enable or disable the 10 Bit Color Mode"
+msgstr "Mit dieser Option können Sie den 10-Bit-Farbmodus aktivieren oder deaktivieren"
+
+msgid "HLG Support"
+msgstr "HLG-Unterstützung"
+
+msgid "HDR10 Support"
+msgstr "HDR10 Unterstützung"
+
+msgid "Allow 12bit"
+msgstr "Erlaube 12bit"
+
+msgid "Allow 10bit"
+msgstr "Erlaube 10bit"
+
+msgid "force enabled"
+msgstr "erzwinge aktiviert"
+
+msgid "force disabled"
+msgstr "erzwinge deaktiviert"
