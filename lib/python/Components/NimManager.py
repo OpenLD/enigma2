@@ -2154,7 +2154,7 @@ def InitNimManager(nimmgr, update_slots = []):
 						return False
 					if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
 						print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
-						InitNimManager(nimmgr)
+						InitNimManager(nimmgr, [feid])
 						return
 					if os.path.exists("/proc/stb/frontend/%d/mode" % feid):
 						cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
@@ -2194,6 +2194,10 @@ def InitNimManager(nimmgr, update_slots = []):
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
+
+		if update_slots and (x not in update_slots):
+			continue
+
 		nim = config.Nims[x]
 		addMultiType = False
 		try:
@@ -2216,6 +2220,10 @@ def InitNimManager(nimmgr, update_slots = []):
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
+
+		if update_slots and (x not in update_slots):
+			continue
+
 		nim = config.Nims[x]
 		nim.force_legacy_signal_stats = ConfigYesNo(default = False)
 
@@ -2270,11 +2278,12 @@ def InitNimManager(nimmgr, update_slots = []):
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
-		nim = config.Nims[x]
-		empty = True
 
 		if update_slots and (x not in update_slots):
 			continue
+
+		nim = config.Nims[x]
+		empty = True
 
 		if slot.canBeCompatible("DVB-S"):
 			createSatConfig(nim, x, empty_slots)
