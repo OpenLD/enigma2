@@ -587,7 +587,7 @@ def InitAVSwitch():
 		# TRANSLATORS: (aspect ratio policy: display as fullscreen, with stretching all parts of the picture with the same factor (All parts lose aspect))
 		policy2_choices.update({"bestfit": _("Stretch linear")})
 
-	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "scale")
+	config.av.policy_169 = ConfigSelection(choices=policy2_choices, default = "auto")
 
 	policy_choices_proc="/proc/stb/video/policy_choices"
 	try:
