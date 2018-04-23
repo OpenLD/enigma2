@@ -23,17 +23,17 @@ class ValueToPixmap(Converter, object):
 			val = self.source.text
 			if val in (None, ""):
 				return None
-		if self.type == self.PATH:
-			return LoadPixmap(val)
-		if self.type == self.LANGUAGE_CODE:
-			png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + val[3:].lower() + ".png"))
-			if png is None:
-				png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + val + ".png"))
+			if self.type == self.PATH:
+				return LoadPixmap(val)
+			if self.type == self.LANGUAGE_CODE:
+				png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + val[3:].lower() + ".png"))
 				if png is None:
-					png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/missing.png"))
+					png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/" + val + ".png"))
 					if png is None:
-						png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_SKIN_IMAGE, "countries/missing.png"))
-			return png
+						png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_ACTIVE_SKIN, "countries/missing.png"))
+						if png is None:
+							png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_SKIN_IMAGE, "countries/missing.png"))
+				return png
 		return None
 
 	pixmap = property(getPixmap)

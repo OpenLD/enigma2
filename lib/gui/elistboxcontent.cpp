@@ -53,7 +53,7 @@ int iListboxContent::currentCursorSelectable()
 DEFINE_REF(eListboxPythonStringContent);
 
 eListboxPythonStringContent::eListboxPythonStringContent()
-	:m_cursor(0), m_itemheight(25)
+	:m_cursor(0), m_saved_cursor(0), m_itemheight(25)
 {
 }
 
@@ -448,7 +448,7 @@ void eListboxPythonConfigContent::paint(gPainter &painter, eWindowStyle &style, 
 						ePyObject pvalue = PyTuple_GET_ITEM(value, 1);
 						const char *value = (pvalue && PyString_Check(pvalue)) ? PyString_AsString(pvalue) : "<not-a-string>";
 						eRect tmp = eRect(textoffset, itemsize);
-						eTextPara *para = new eTextPara(tmp);
+						ePtr<eTextPara> para = new eTextPara(tmp);
 						para->setFont(fnt2);
 						para->renderString(value);
 						valueWidth = para->getBoundBox().width();
@@ -605,7 +605,7 @@ static void clearRegionHelper(gPainter &painter, eListboxStyle *local_style, con
 	}
 	else if (local_style)
 	{
-		if (local_style && local_style->m_background_color_set)
+		if (local_style->m_background_color_set)
 			painter.setBackgroundColor(local_style->m_background_color);
 		if (local_style->m_background && cursorValid)
 		{
@@ -631,7 +631,7 @@ static void clearRegionSelectedHelper(gPainter &painter, eListboxStyle *local_st
 	}
 	else if (local_style)
 	{
-		if (local_style && local_style->m_background_color_selected_set)
+		if (local_style->m_background_color_selected_set)
 			painter.setBackgroundColor(local_style->m_background_color_selected);
 		if (local_style->m_background && cursorValid)
 		{
@@ -814,8 +814,8 @@ void eListboxPythonMultiContent::paint(gPainter &painter, eWindowStyle &style, c
 			start = 0;
 		}
 
-		int size = PyList_Size(items);
-		for (int i = start; i < size; ++i)
+		int items_size = PyList_Size(items);
+		for (int i = start; i < items_size; ++i)
 		{
 			ePyObject item = PyList_GET_ITEM(items, i); // borrowed reference!
 

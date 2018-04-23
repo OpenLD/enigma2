@@ -2154,7 +2154,7 @@ def InitNimManager(nimmgr, update_slots = []):
 						return False
 					if not os.path.exists("/proc/stb/frontend/%d/mode" % feid) and frontend.setDeliverySystem(nimmgr.nim_slots[feid].getType()):
 						print "[InitNimManager] tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
-						InitNimManager(nimmgr)
+						InitNimManager(nimmgr, [feid])
 						return
 					if os.path.exists("/proc/stb/frontend/%d/mode" % feid):
 						cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
@@ -2194,28 +2194,10 @@ def InitNimManager(nimmgr, update_slots = []):
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
-		nim = config.Nims[x]
-		addMultiType = False
-		try:
-			nim.multiType
-		except:
-			addMultiType = True
-		if slot.isMultiType() and addMultiType:
-			typeList = []
-			for id in slot.getMultiTypeList().keys():
-				type = slot.getMultiTypeList()[id]
-				typeList.append((id, type))
-			nim.multiType = ConfigSelection(typeList, "0")
 
-			nim.multiType.feid = x - empty_slots
-			nim.multiType.addNotifier(boundFunction(tunerTypeChanged, nimmgr), initial_call=False)
-			tunerTypeChanged(nimmgr, nim.multiType, initial=True)
+		if update_slots and (x not in update_slots):
+			continue
 
-		print "[InitNimManager] slotname = %s, slotdescription = %s, multitype = %s, current type = %s" % (slot.input_name, slot.description, (slot.isMultiType() and addMultiType), slot.getType())
-
-	empty_slots = 0
-	for slot in nimmgr.nim_slots:
-		x = slot.slot
 		nim = config.Nims[x]
 		nim.force_legacy_signal_stats = ConfigYesNo(default = False)
 
@@ -2266,15 +2248,15 @@ def InitNimManager(nimmgr, update_slots = []):
 				print "pls add support for this frontend type!", slot.type
 
 	nimmgr.sec = SecConfigure(nimmgr)
-
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
-		nim = config.Nims[x]
-		empty = True
 
 		if update_slots and (x not in update_slots):
 			continue
+
+		nim = config.Nims[x]
+		empty = True
 
 		if slot.canBeCompatible("DVB-S"):
 			createSatConfig(nim, x, empty_slots)
@@ -2291,7 +2273,20 @@ def InitNimManager(nimmgr, update_slots = []):
 		if empty:
 			empty_slots += 1
 
-	return
+		# check for multitype tuners
+		addMultiType = False
+		try:
+			nim.multiType
+		except:
+			addMultiType = True
 
+		if slot.isMultiType() and addMultiType:
+			typeList = []
+			for id in slot.getMultiTypeList().keys():
+				type = slot.getMultiTypeList()[id]
+				typeList.append((id, type))
+			nim.multiType = ConfigSelection(typeList, "0")
+			nim.multiType.feid = x - empty_slots
+			nim.multiType.addNotifier(boundFunction(tunerTypeChanged, nimmgr), initial_call=True)
 
 nimmanager = NimManager()

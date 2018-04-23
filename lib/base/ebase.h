@@ -193,7 +193,11 @@ class eMainloop
 	ePtrList<eTimer> m_timer_list;
 	bool app_quit_now;
 	int loop_level;
-	int processOneEvent(unsigned int user_timeout, PyObject **res=0, ePyObject additional=ePyObject());
+	/* user_timeout < 0 - forever
+	 * user_timeout = 0 - immediately
+	 * user_timeout > 0 - wait
+	 */
+	int processOneEvent(long user_timeout, PyObject **res=0, ePyObject additional=ePyObject());
 	int retval;
 	int m_is_idle;
 	int m_idle_count;

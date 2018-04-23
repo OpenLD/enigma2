@@ -489,7 +489,7 @@ class ChannelContextMenu(Screen):
 		self.close()
 
 	def showBouquetInputBox(self):
-		self.session.openWithCallback(self.bouquetInputCallback, VirtualKeyBoard, title=_("Please enter a name for the new bouquet"), text="bouquetname", maxSize=False, visible_width=56, type=Input.TEXT)
+		self.session.openWithCallback(self.bouquetInputCallback, VirtualKeyBoard, title=_("Please enter a name for the new bouquet"), text="", maxSize=False, visible_width=56, type=Input.TEXT)
 
 	def bouquetInputCallback(self, bouquet):
 		if bouquet is not None:
@@ -1019,13 +1019,6 @@ class ChannelSelectionEdit:
 			return list.startEdit()
 		return None
 
-	def buildBouquetID(self, name):
-		name = unicodedata.normalize('NFKD', unicode(name, 'utf_8', errors='ignore')).encode('ASCII', 'ignore').translate(None, '<>:"/\|?*() ')
-		while os.path.isfile((self.mode == MODE_TV and "/etc/enigma2/userbouquet.%s.tv" or "/etc/enigma2/userbouquet.%s.radio") % name):
-			name = name.rsplit("_", 1)
-			name = "_".join((name[0], len(name) == 2 and name[1].isdigit() and str(int(name[1]) + 1) or "1"))
-		return name
-
 	def renameEntry(self):
 		self.editMode = True
 		cur = self.getCurrentSelection()
@@ -1078,20 +1071,19 @@ class ChannelSelectionEdit:
 		cur_root = root and ServiceReference(root)
 		mutableBouquet = cur_root.list().startEdit()
 		if mutableBouquet:
-			name = cur_service.getServiceName()
-			refstr = '_'.join(cur_service.ref.toString().split(':'))
-			if self.mode == MODE_TV:
-				str = '1:134:1:0:0:0:0:0:0:0:FROM BOUQUET \"alternatives.%s.tv\" ORDER BY bouquet'%(refstr)
-			else:
-				str = '1:134:2:0:0:0:0:0:0:0:FROM BOUQUET \"alternatives.%s.radio\" ORDER BY bouquet'%(refstr)
-			new_ref = ServiceReference(str)
+			servicename = cur_service.getServiceName()
+			name = unicodedata.normalize('NFKD', unicode(servicename, 'utf_8', errors='ignore')).encode('ASCII', 'ignore').translate(None, '<>:"/\\|?*() ')
+			while os.path.isfile((self.mode == MODE_TV and '/etc/enigma2/alternatives.%s.tv' or '/etc/enigma2/alternatives.%s.radio') % name):
+				name = name.rsplit('_', 1)
+				name = ('_').join((name[0], len(name) == 2 and name[1].isdigit() and str(int(name[1]) + 1) or '1'))
+			new_ref = ServiceReference((self.mode == MODE_TV and '1:134:1:0:0:0:0:0:0:0:FROM BOUQUET "alternatives.%s.tv" ORDER BY bouquet' or '1:134:1:0:0:0:0:0:0:0:FROM BOUQUET "alternatives.%s.radio" ORDER BY bouquet') % name)
 			if not mutableBouquet.addService(new_ref.ref, cur_service.ref):
 				mutableBouquet.removeService(cur_service.ref)
 				mutableBouquet.flushChanges()
 				eDVBDB.getInstance().reloadBouquets()
 				mutableAlternatives = new_ref.list().startEdit()
 				if mutableAlternatives:
-					mutableAlternatives.setListName(name)
+					mutableAlternatives.setListName(servicename)
 					if mutableAlternatives.addService(cur_service.ref):
 						print "[ChannelSelection] add", cur_service.ref.toString(), "to new alternatives failed"
 					mutableAlternatives.flushChanges()
@@ -1114,8 +1106,15 @@ class ChannelSelectionEdit:
 		serviceHandler = eServiceCenter.getInstance()
 		mutableBouquetList = serviceHandler.list(self.bouquet_root).startEdit()
 		if mutableBouquetList:
-			bName = self.buildBouquetID(bName)
-			new_bouquet_ref = eServiceReference((self.mode == MODE_TV and '1:7:1:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.tv" ORDER BY bouquet' or '1:7:2:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.radio" ORDER BY bouquet') % bName)
+			if self.mode == MODE_TV:
+				bName += _(" (TV)")
+			else:
+				bName += _(" (Radio)")
+			name = unicodedata.normalize('NFKD', unicode(bName, 'utf_8', errors='ignore')).encode('ASCII', 'ignore').translate(None, '<>:"/\\|?*() ')
+			while os.path.isfile((self.mode == MODE_TV and '/etc/enigma2/userbouquet.%s.tv' or '/etc/enigma2/userbouquet.%s.radio') % name):
+				name = name.rsplit('_', 1)
+				name = ('_').join((name[0], len(name) == 2 and name[1].isdigit() and str(int(name[1]) + 1) or '1'))
+			new_bouquet_ref = eServiceReference((self.mode == MODE_TV and '1:7:1:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.tv" ORDER BY bouquet' or '1:7:2:0:0:0:0:0:0:0:FROM BOUQUET "userbouquet.%s.radio" ORDER BY bouquet') % name)
 			if not mutableBouquetList.addService(new_bouquet_ref):
 				mutableBouquetList.flushChanges()
 				eDVBDB.getInstance().reloadBouquets()
