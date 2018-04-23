@@ -2191,6 +2191,8 @@ def InitNimManager(nimmgr, update_slots = []):
 			except Exception as e:
 				print "[InitNimManager] tunerTypeChanged error: ", e
 
+	tunersRequireTypeChange = []
+
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
@@ -2213,7 +2215,7 @@ def InitNimManager(nimmgr, update_slots = []):
 
 			nim.multiType.feid = x - empty_slots
 			nim.multiType.addNotifier(boundFunction(tunerTypeChanged, nimmgr), initial_call=False)
-			tunerTypeChanged(nimmgr, nim.multiType, initial=True)
+			tunersRequireTypeChange.append(x)
 
 		print "[InitNimManager] slotname = %s, slotdescription = %s, multitype = %s, current type = %s" % (slot.input_name, slot.description, (slot.isMultiType() and addMultiType), slot.getType())
 
@@ -2274,7 +2276,6 @@ def InitNimManager(nimmgr, update_slots = []):
 				print "pls add support for this frontend type!", slot.type
 
 	nimmgr.sec = SecConfigure(nimmgr)
-
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
@@ -2300,7 +2301,8 @@ def InitNimManager(nimmgr, update_slots = []):
 		if empty:
 			empty_slots += 1
 
-	return
-
+	for x in tunersRequireTypeChange:
+		nim = config.Nims[x]
+		tunerTypeChanged(nimmgr, nim.multiType, initial=True)
 
 nimmanager = NimManager()
