@@ -139,13 +139,14 @@ primary_skin_path = getSkinPath()
 
 profile("LoadSkin")
 try:
+	res = None
 	name = skin_user_skinname()
-	if name is not None:
-		addSkin(name, SCOPE_CONFIG)
-	else:
+	if name:
+		res = addSkin(name, SCOPE_CONFIG)
+	if not name or not res:
 		addSkin('skin_user.xml', SCOPE_CONFIG)
-except (SkinError, IOError, AssertionError), err:
-	print "not loading user skin: ", err
+except:
+	pass
 
 # some boxes lie about their dimensions
 addSkin('skin_box.xml')
@@ -394,10 +395,9 @@ def loadPixmap(path, desktop):
 		path = path[:option]
 		cached = "cached" in options
 	ptr = LoadPixmap(morphRcImagePath(path), desktop, cached)
-	if ptr is not None:
-		return ptr
-	print("pixmap file %s not found!" % path)
-
+	if ptr is None:
+		raise SkinError("pixmap file %s not found!" % path)
+	return ptr
 
 pngcache = []
 def cachemenu():
@@ -433,19 +433,25 @@ class AttributeParser:
 		try:
 			getattr(self, attrib)(value)
 		except AttributeError:
-			print "[Skin] Attribute not implemented:", attrib, "value:", value
+			print "[SKIN] Attribute \"%s\" with value \"%s\" in object of type \"%s\" is not implemented" % (attrib, value, self.guiObject.__class__.__name__)
 		except SkinError, ex:
-			print "[Skin] Error:", ex
+			print "\033[91m[SKIN] Error:", ex,
+			print "\033[0m"
+		except:
+			print "[Skin] attribute \"%s\" with wrong (or unknown) value \"%s\" in object of type \"%s\"" % (attrib, value, self.guiObject.__class__.__name__)
+
 	def applyAll(self, attrs):
 		for attrib, value in attrs:
 			try:
 				getattr(self, attrib)(value)
 			except AttributeError:
-				print "[Skin] Attribute not implemented:", attrib, "value:", value
+				print "[SKIN] Attribute \"%s\" with value \"%s\" in object of type \"%s\" is not implemented" % (attrib, value, self.guiObject.__class__.__name__)
 			except SkinError, ex:
-				print "[Skin] Error:", ex
+				print "\033[91m[Skin] Error:", ex,
+				print "\033[0m"
 			except:
-				print "[Skin] Error:", attrib
+				print "[Skin] attribute \"%s\" with wrong (or unknown) value \"%s\" in object of type \"%s\"" % (attrib, value, self.guiObject.__class__.__name__)
+
 	def conditional(self, value):
 		pass
 	def objectTypes(self, value):
@@ -466,6 +472,17 @@ class AttributeParser:
 		pass
 	def NoAnimationAfter(self, value):
 		pass
+	def Animation(self, value):
+		self.guiObject.setAnimationMode(
+			{ "disable": 0x00,
+				"off": 0x00,
+				"offshow": 0x10,
+				"offhide": 0x01,
+				"onshow": 0x01,
+				"onhide": 0x10,
+				"disable_onshow": 0x10,
+				"disable_onhide": 0x01,
+			}[value])
 	def animationMode(self, value):
 		self.guiObject.setAnimationMode(
 			{ "disable": 0x00,
@@ -490,43 +507,88 @@ class AttributeParser:
 	def itemHeight(self, value):
 		self.guiObject.setItemHeight(int(value))
 	def pixmap(self, value):
-		ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setPixmap(ptr)
 	def backgroundPixmap(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setBackgroundPicture(ptr)
 	def selectionPixmap(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setSelectionPicture(ptr)
 	def sliderPixmap(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setSliderPicture(ptr)
 	def scrollbarbackgroundPixmap(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setScrollbarBackgroundPicture(ptr)
 	def scrollbarSliderPicture(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setScrollbarSliderPicture(ptr)
 	def scrollbarBackgroundPicture(self, value):
-		if not fileExists(value):
-			ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
-		else:
-			ptr = loadPixmap(value, self.desktop)
+		global pngcache
+		ptr = None
+		for cvalue, cptr in pngcache:
+			if cvalue== value:
+				ptr=cptr
+		if ptr is None:
+			if not fileExists(value):
+				ptr = loadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, value), self.desktop)
+			else:
+				ptr = loadPixmap(value, self.desktop)
 		self.guiObject.setScrollbarBackgroundPicture(ptr)
 	def alphatest(self, value):
 		self.guiObject.setAlphatest(
@@ -1196,8 +1258,7 @@ def readSkin(screen, skin, names, desktop):
 			screen.parsedSkin = myscreen
 	if myscreen is None:
 		print "[SKIN] No skin to read..."
-		emptySkin = "<screen></screen>"
-		myscreen = screen.parsedSkin = xml.etree.cElementTree.fromstring(emptySkin)
+		myscreen = screen.parsedSkin = xml.etree.cElementTree.fromstring("<screen></screen>")
 
 	screen.skinAttributes = [ ]
 	skin_path_prefix = getattr(screen, "skin_path", path)
