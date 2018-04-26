@@ -501,7 +501,7 @@ int eDVBTerrestrialTransponderData::getInversion() const
 	}
 }
 
-unsigned int eDVBTerrestrialTransponderData::getFrequency() const
+int eDVBTerrestrialTransponderData::getFrequency() const
 {
 	if (originalValues)
 	{
