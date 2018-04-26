@@ -23,7 +23,7 @@ from time import mktime, localtime
 from datetime import datetime
 from os import path
 
-from  Tools.BugHunting import printCallSequence
+from Tools.BugHunting import printCallSequence
 
 def setForceLNBPowerChanged(configElement):
 	f = open("/proc/stb/frontend/fbc/force_lnbon", "w")

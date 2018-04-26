@@ -77,7 +77,7 @@ self.session.open(HdmiCECSetupScreen)
 				<menu level="0" text="LED Display Panel" entryID="leddisplay_selection" requires="DisplayLED">
 					<id val="leddisplay"/>
 				</menu>
-				<item level="0" text="Weather SimpleLD" entryID="simpleweather_setup" requires="SimpleWeatherSetup"><screen module="SimpleWeatherSetup" /></item>
+				<item level="0" text="Weather SimpleLD" entryID="simpleweather_setup"><screen module="SimpleWeatherSetup" screen="SimpleWeatherSetup" /></item>
 				<item level="0" entryID="remote_setup"><setup id="remotesetup" /></item>
 				<item level="1" text="Input devices" entryID="input_device_setup"><screen module="InputDeviceSetup" screen="InputDeviceSelection" /></item>
 				<item text="Keyboard" entryID="keyboard"><setup id="keyboard" /></item>
