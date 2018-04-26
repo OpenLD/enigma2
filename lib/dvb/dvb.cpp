@@ -1015,7 +1015,7 @@ void eDVBResourceManager::setFrontendType(int index, const char *type, bool appe
 	}
 }
 
-RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, ePtr<iDVBFrontendParameters> &feparm, bool simulate, bool returnScoreOnly)
+RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, ePtr<iDVBFrontendParameters> &feparm, bool simulate)
 {
 	eSmartPtrList<eDVBRegisteredFrontend> &frontends = simulate ? m_simulate_frontend : m_frontend;
 //	ePtr<eDVBRegisteredFrontend> best;
@@ -1065,11 +1065,6 @@ RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, eP
 		}
 
 		eDVBRegisteredFrontend *tmp = *i;
-	}
-
-	if (returnScoreOnly)
-	{
-		return bestval;
 	}
 
 	if (best)
@@ -1369,67 +1364,6 @@ RESULT eDVBResourceManager::getActiveChannels(std::list<active_channel> &list)
 			eDebug(x); \
 	} while(0)
 
-bool eDVBResourceManager::frontendPreferenceAllowsChannelUse(const eDVBChannelID &channelid, eUsePtr<iDVBChannel> channel, bool simulate)
-{
-	ePtr<iDVBFrontend> fe;
-	channel->getFrontend(fe);
-	int slotid = fe->readFrontendData(iFrontendInformation_ENUMS::frontendNumber);
-
-	int preferredFrontend = eDVBFrontend::getPreferredFrontend();
-	if (preferredFrontend < 0)
-	{
-		//eDebug("frontend %d allowed, no frontend preference", slotid);
-		return true; /* no frontend preference */
-	}
-
-	if (!((preferredFrontend >= 0) && (preferredFrontend & eDVBFrontend::preferredFrontendPrioForced)) && !((preferredFrontend >= 0) && (preferredFrontend & eDVBFrontend::preferredFrontendPrioHigh)))
-	{
-		//eDebug("frontend %d allowed, sharing/caching channels is allowed for any frontend", slotid);
-		return true; /* sharing/caching channels is allowed for any frontend */
-	}
-
-	ePtr<eDVBFrontend> dummy_fe1;
-	if (dummy_fe1->isPreferred(preferredFrontend,slotid))
-	{
-		//eDebug("frontend %d allowed, preferred frontend", slotid);
-		return true; /* preferred frontend */
-	}
-
-	if (!m_list)
-	{
-		//eDebug("frontend %d allowed, no channel list set", slotid);
-		return true; /* no channel list set */
-	}
-
-	ePtr<iDVBFrontendParameters> feparm;
-	if (m_list->getChannelFrontendData(channelid, feparm))
-	{
-		//eDebug("frontend %d allowed, channel not found", slotid);
-		return true; /* channel not found */
-	}
-
-	ePtr<eDVBAllocatedFrontend> dummy_fe;
-	int score = allocateFrontend(dummy_fe, feparm, simulate, /*returnScoreOnly=*/true);
-	//eDebug("frontend %d score %d", slotid, score);      
-	if (score < eDVBFrontend::preferredFrontendScore)
-	{
-		if ((preferredFrontend >= 0) && (preferredFrontend & eDVBFrontend::preferredFrontendPrioForced))
-		{
-			//eDebug("frontend %d forbidden, no preferred frontend available, no sharing allowed", slotid);
-			return false; /* no preferred frontend available, no sharing allowed */
-		}
-		else
-		{
-			//eDebug("frontend %d allowed, no new preferred frontend available, use shared or cached channel", slotid);
-			return true; /* no new preferred frontend available, use shared or cached channel */
-		}
-	}
-	else
-	{
-		//eDebug("frontend %d forbidden, a new preferred frontend is available, dont use shared or cached channel", slotid);
-		return false;
-	}
-}
 
 RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUsePtr<iDVBChannel> &channel, bool simulate)
 {
@@ -1441,19 +1375,9 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 		eDVBChannel *cache_chan = (eDVBChannel*)&(*m_cached_channel);
 		if((m_boxtype != WETEKPLAY && m_boxtype != WETEKPLAY2 && m_boxtype != WETEKHUB) && (channelid==cache_chan->getChannelID()))
 		{
-			ePtr<iDVBFrontend> fe;
-			m_cached_channel->getFrontend(fe);
-			int slotid = fe->readFrontendData(iFrontendInformation_ENUMS::frontendNumber);
-			if (frontendPreferenceAllowsChannelUse(channelid,m_cached_channel,simulate))
-			{
-				eDebug("[eDVBResourceManager] use cached_channel, frontend=%d",slotid);
-				channel = m_cached_channel;
-				return 0;
-			}
-			else
-			{
-				eDebug("[eDVBResourceManager] strict frontend preference policy, don't use cached_channel, frontend=%d",slotid);
-			}
+			eDebug("use cached_channel");
+			channel = m_cached_channel;
+			return 0;
 		}
 		m_cached_channel_state_changed_conn.disconnect();
 		m_cached_channel=0;
@@ -1466,19 +1390,9 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 		eDebugNoSimulate("[eDVBResourceManager] available channel.. %04x:%04x", i->m_channel_id.transport_stream_id.get(), i->m_channel_id.original_network_id.get());
 		if (i->m_channel_id == channelid)
 		{
-			ePtr<iDVBFrontend> fe;
-			i->m_channel->getFrontend(fe);
-			int slotid = fe->readFrontendData(iFrontendInformation_ENUMS::frontendNumber);
-			if (frontendPreferenceAllowsChannelUse(channelid,i->m_channel,simulate))
-			{
-				eDebugNoSimulate("[eDVBResourceManager] found shared channel.. i=%d, frontend=%d (preferred=%d)",std::distance(active_channels.begin(), i),slotid,eDVBFrontend::getPreferredFrontend());
-				channel = i->m_channel;
-				return 0;
-			}
-			else
-			{
-				eDebugNoSimulate("[eDVBResourceManager] strict frontend preference policy, don't use shared channel.. i=%d, frontend=%d (preferred=%d)",std::distance(active_channels.begin(), i),slotid,eDVBFrontend::getPreferredFrontend());
-			}
+			eDebugNoSimulate("found shared channel..");
+			channel = i->m_channel;
+			return 0;
 		}
 	}
 
@@ -2602,6 +2516,7 @@ RESULT eDVBChannel::playSource(ePtr<iTsSource> &source, const char *streaminfo_f
 			eDebug("[eDVBChannel] no demux allocated yet.. so its not possible to open the dvr device!!");
 			return -ENODEV;
 		}
+#endif
 #endif
 	}
 
