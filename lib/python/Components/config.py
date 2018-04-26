@@ -54,15 +54,21 @@ class ConfigElement(object):
 
 	notifiers_final = property(getNotifiersFinal, setNotifiersFinal)
 
-	# you need to override this to do input validation
-	def setValue(self, value):
-		self._value = value
-		self.changed()
-
 	def getValue(self):
-		return self._value
+		try:
+			return int(self.text)
+		except ValueError:
+			if self.text == "true":
+				self.text = "1"
+			else:
+				self.text = str(default)
+			return int(self.text)
+
+	def setValue(self, val):
+		self.text = str(val)
 
 	value = property(getValue, setValue)
+	_value = property(getValue, setValue)
 
 	# you need to override this if self.value is not a string
 	def fromstring(self, value):
@@ -1936,7 +1942,24 @@ class Config(ConfigSubsection):
 			(name, val) = result
 			val = val.strip()
 
+			#convert old settings
+			if l.startswith("config.Nims."):
+				tmp = name.split('.')
+				if tmp[3] == "cable":
+					tmp[3] = "dvbc"
+				elif tmp[3].startswith ("cable"):
+					tmp[3] = "dvbc." + tmp[3]
+				elif tmp[3] == "terrestrial":
+					tmp[3] = "dvbt"
+				elif tmp[3].startswith("terrestrial"):
+					tmp[3] = "dvbt." + tmp[3]
+				else:
+					if tmp[3] not in ('dvbs', 'dvbc', 'dvbt', 'multiType'):
+						tmp[3] = "dvbs." + tmp[3]
+				name =".".join(tmp)
+
 			names = name.split('.')
+
 			base = configbase
 
 			for n in names[1:-1]:
@@ -1973,6 +1996,7 @@ class Config(ConfigSubsection):
 
 	def loadFromFile(self, filename, base_file=True):
 		self.unpickle(open(filename, "r"), base_file)
+		print"loadFromFile",filename
 
 config = Config()
 config.misc = ConfigSubsection()

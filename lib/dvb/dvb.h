@@ -142,7 +142,7 @@ private:
 	std::string virtualFrontendName;
 	bool running;
 	unsigned short int pidList[30];
-	unsigned char buffer[(188 / 4) * 4096];
+	unsigned char buffer[4 * 1024 * 188];
 	pthread_t pumpThread;
 	static void *threadproc(void *arg);
 	void *vtunerPump();
@@ -247,7 +247,8 @@ public:
 	bool frontendIsMultistream(int index);
 	std::string getFrontendCapabilities(int index);
 	std::string getFrontendDeliverySystem(int index);
-	void setFrontendType(int index, const char *type);
+	void setFrontendType(int index, const char *type, bool append=false);
+	int getFrontendType(int index);
 };
 SWIG_TEMPLATE_TYPEDEF(ePtr<eDVBResourceManager>, eDVBResourceManager);
 SWIG_EXTEND(ePtr<eDVBResourceManager>,

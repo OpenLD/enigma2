@@ -212,6 +212,7 @@ public:
 	int getRolloff() const;
 	int getPilot() const;
 	int getSystem() const;
+	int getSystems() const;
 	int getIsId() const;
 	int getPLSMode() const;
 	int getPLSCode() const;
@@ -247,6 +248,7 @@ public:
 	int getRolloff() const;
 	int getPilot() const;
 	int getSystem() const;
+	int getSystems() const;
 	int getIsId() const;
 	int getPLSMode() const;
 	int getPLSCode() const;
@@ -268,6 +270,7 @@ public:
 	int getFecInner() const;
 	int getModulation() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBTerrestrialTransponderData : public eDVBTransponderData
@@ -291,6 +294,7 @@ public:
 	int getHierarchyInformation() const;
 	int getPlpId() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBATSCTransponderData : public eDVBTransponderData
@@ -307,6 +311,7 @@ public:
 	int getFrequency() const;
 	int getModulation() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBFrontendData : public iDVBFrontendData

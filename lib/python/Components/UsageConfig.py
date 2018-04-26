@@ -32,6 +32,10 @@ def InitUsageConfig():
 			for remote in AvailRemotes:
 				toadd = (remote.split('/')[-1], remote.split('/')[-1])
 				RemoteChoices.append(toadd)
+	config.misc.SettingsVersion = ConfigFloat(default = [1,1], limits = [(1,10),(0,99)])
+	config.misc.SettingsVersion.value = [1,1]
+	config.misc.SettingsVersion.save_forced = True
+	config.misc.SettingsVersion.save()
 	config.misc.useNTPminutes = ConfigSelection(default = "30", choices = [("30", "30" + " " +_("minutes")), ("60", _("Hour")), ("1440", _("Once per day"))])
 	config.misc.remotecontrol_text_support = ConfigYesNo(default = True)
 
@@ -461,6 +465,7 @@ def InitUsageConfig():
 	config.usage.show_vcr_scart = ConfigYesNo(default = False)
 	config.usage.show_update_disclaimer = ConfigYesNo(default = True)
 	config.usage.pic_resolution = ConfigSelection(default = None, choices = [(None, _("Same resolution as skin")), ("(720, 576)","720x576"), ("(1280, 720)", "1280x720"), ("(1920, 1080)", "1920x1080")])
+	config.usage.enable_delivery_system_workaround = ConfigYesNo(default = False)
 
 	if SystemInfo["Fan"]:
 		choicelist = [('off', _("Off")), ('on', _("On")), ('auto', _("Auto"))]

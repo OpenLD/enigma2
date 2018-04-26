@@ -535,7 +535,7 @@ void *eDVBUsbAdapter::vtunerPump()
 		unsigned char pad[64]; /* nobody knows the much data the driver will try to copy into our struct, add some padding to be sure */
 	};
 
-#define DEMUX_BUFFER_SIZE (16 * ((188 / 4) * 4096)) /* 3 MB */
+#define DEMUX_BUFFER_SIZE (16 * 1024 * 188 ) /* 3 MB */
 	ioctl(demuxFd, DMX_SET_BUFFER_SIZE, DEMUX_BUFFER_SIZE);
 
 	while (running)
@@ -570,6 +570,7 @@ void *eDVBUsbAdapter::vtunerPump()
 
 						if (pidcount > 1)
 						{
+							eDebug("Remove PID %d(0x%04x)", pidList[i], pidList[i]);
 							::ioctl(demuxFd, DMX_REMOVE_PID, &pidList[i]);
 							pidcount--;
 						}
@@ -590,6 +591,7 @@ void *eDVBUsbAdapter::vtunerPump()
 
 						if (pidcount)
 						{
+							eDebug("Add PID %d(0x%04x)", message.pidlist[i], message.pidlist[i]);
 							::ioctl(demuxFd, DMX_ADD_PID, &message.pidlist[i]);
 							pidcount++;
 						}
@@ -804,6 +806,16 @@ bool eDVBResourceManager::frontendIsCompatible(int index, const char *type)
 	return false;
 }
 
+int eDVBResourceManager::getFrontendType(int index)
+{
+	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator i(m_frontend.begin()); i != m_frontend.end(); ++i)
+	{
+		if (i->m_frontend->getSlotID() == index)
+			return i->m_frontend->getCurrentType();
+	}
+	return -1;
+}
+
 bool eDVBResourceManager::frontendIsMultistream(int index)
 {
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator i(m_frontend.begin()); i != m_frontend.end(); ++i)
@@ -818,11 +830,30 @@ bool eDVBResourceManager::frontendIsMultistream(int index)
 
 std::string eDVBResourceManager::getFrontendCapabilities(int index)
 {
+	fe_delivery_system_t delsys;
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator i(m_frontend.begin()); i != m_frontend.end(); ++i)
 	{
 		if (i->m_frontend->getSlotID() == index)
 		{
-			return i->m_frontend->getCapabilities();
+			switch (i->m_frontend->getCurrentType())
+			{
+				case iDVBFrontend::feSatellite:
+					delsys = SYS_DVBS;
+					break;
+				case iDVBFrontend::feCable:
+#if defined SYS_DVBC_ANNEX_A
+					delsys = SYS_DVBC_ANNEX_A;
+#else
+					delsys = SYS_DVBC_ANNEX_AC;
+#endif
+					break;
+				case iDVBFrontend::feTerrestrial:
+					delsys = SYS_DVBT;
+					break;
+				default:
+					return i->m_frontend->getCapabilities();
+			}
+			return i->m_frontend->getCapabilities(delsys);
 		}
 	}
 	return "";
@@ -830,17 +861,36 @@ std::string eDVBResourceManager::getFrontendCapabilities(int index)
 
 std::string eDVBResourceManager::getFrontendDeliverySystem(int index)
 {
+	fe_delivery_system_t delsys;
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator i(m_frontend.begin()); i != m_frontend.end(); ++i)
 	{
 		if (i->m_frontend->getSlotID() == index)
 			{
-				return i->m_frontend->getDeliverySystem();
+			switch (i->m_frontend->getCurrentType())
+			{
+				case iDVBFrontend::feSatellite:
+					delsys = SYS_DVBS;
+					break;
+				case iDVBFrontend::feCable:
+#if defined SYS_DVBC_ANNEX_A
+					delsys = SYS_DVBC_ANNEX_A;
+#else
+					delsys = SYS_DVBC_ANNEX_AC;
+#endif
+					break;
+				case iDVBFrontend::feTerrestrial:
+					delsys = SYS_DVBT;
+					break;
+				default:
+					return i->m_frontend->getCapabilities();
+			}
+			return i->m_frontend->getCapabilities(delsys);
 			}
 	}
 	return "";
 }
 
-void eDVBResourceManager::setFrontendType(int index, const char *type)
+void eDVBResourceManager::setFrontendType(int index, const char *type, bool append)
 {
 	for (eSmartPtrList<eDVBRegisteredFrontend>::iterator i(m_frontend.begin()); i != m_frontend.end(); ++i)
 	{
@@ -871,7 +921,7 @@ void eDVBResourceManager::setFrontendType(int index, const char *type)
 				whitelist.push_back(SYS_ATSC);
 				whitelist.push_back(SYS_DVBC_ANNEX_B);
 			}
-			i->m_frontend->setDeliverySystemWhitelist(whitelist);
+			i->m_frontend->setDeliverySystemWhitelist(whitelist, append);
 			break;
 		}
 	}
@@ -1228,7 +1278,10 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 
 	int err = allocateFrontend(fe, feparm, simulate);
 	if (err)
+	{
+		eDebugNoSimulate("can't allocate frontend!");
 		return err;
+	}
 
 	RESULT res;
 	ePtr<eDVBChannel> ch = new eDVBChannel(this, fe);
@@ -1237,6 +1290,7 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 	if (res)
 	{
 		channel = 0;
+		eDebugNoSimulate("channel id not found!");
 		return errChidNotFound;
 	}
 
