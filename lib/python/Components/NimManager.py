@@ -2222,79 +2222,75 @@ def InitNimManager(nimmgr, update_slots = []):
 
 	def tunerTypeChanged(nimmgr, configElement):
 		if int(iDVBFrontend.dvb_api_version) < 5 or getBrandOEM() in ('vuplus'):
-			print "[InitNimManager] dvb_api_version ",iDVBFrontend.dvb_api_version
+			print "dvb_api_version ",iDVBFrontend.dvb_api_version
+			print "api <5 or old style tuner driver"
 			configElement.save()
 			feid = configElement.feid
 			slot = nimmgr.nim_slots[feid]
-			try:
-				raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
-				if raw_channel is None:
-					print "[ERROR] no raw channel, type change failed"
-					return False
-				frontend = raw_channel.getFrontend()
-				if frontend is None:
-					print "[ERROR] no frontend, type change failed"
-					return False
-				if slot.isMultiType():
-					eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, "dummy", False) #to force a clear of m_delsys_whitelist
-					types = slot.getMultiTypeList()
-					#print"[adenin]",types
-					for FeType in types.itervalues():
-						if FeType in ("DVB-S", "DVB-S2", "DVB-S2X") and config.Nims[slot.slot].dvbs.configMode.value == "nothing":
-							continue
-						elif FeType in ("DVB-T", "DVB-T2") and config.Nims[slot.slot].dvbt.configMode.value == "nothing":
-							continue
-						elif FeType in ("DVB-C", "DVB-C2") and config.Nims[slot.slot].dvbc.configMode.value == "nothing":
-							continue
-						elif FeType in ("ATSC") and config.Nims[slot.slot].atsc.configMode.value == "nothing":
-							continue
-						eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, FeType, True)
-				else:
-					eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, slot.getType())
-				system = configElement.getText()
-				if path.exists("/proc/stb/frontend/%d/mode" % feid):
-					cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
-					if cur_type != int(configElement.value):
-						print "tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
+			raw_channel = eDVBResourceManager.getInstance().allocateRawChannel(feid)
+			if raw_channel is None:
+				print "[ERROR] no raw channel, type change failed"
+				return False
+			frontend = raw_channel.getFrontend()
+			if frontend is None:
+				print "[ERROR] no frontend, type change failed"
+				return False
+			if slot.isMultiType():
+				eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, "dummy", False) #to force a clear of m_delsys_whitelist
+				types = slot.getMultiTypeList()
+				#print"[adenin]",types
+				for FeType in types.itervalues():
+					if FeType in ("DVB-S", "DVB-S2", "DVB-S2X") and config.Nims[slot.slot].dvbs.configMode.value == "nothing":
+						continue
+					elif FeType in ("DVB-T", "DVB-T2") and config.Nims[slot.slot].dvbt.configMode.value == "nothing":
+						continue
+					elif FeType in ("DVB-C", "DVB-C2") and config.Nims[slot.slot].dvbc.configMode.value == "nothing":
+						continue
+					elif FeType in ("ATSC") and config.Nims[slot.slot].atsc.configMode.value == "nothing":
+						continue
+					eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, FeType, True)
+			else:
+				eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, slot.getType())
+			system = configElement.getText()
+			if path.exists("/proc/stb/frontend/%d/mode" % feid):
+				cur_type = int(open("/proc/stb/frontend/%d/mode" % feid, "r").read())
+				if cur_type != int(configElement.value):
+					print "tunerTypeChanged feid %d to mode %d" % (feid, int(configElement.value))
 
-						try:
-							oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
-							f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-							f.write("0")
-							f.close()
-						except:
-							print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-
-						for x in iDVBFrontendDict.iteritems():
-							if x[1] == system:
-								frontend.overrideType(x[0])
-								break
-						frontend.closeFrontend()
-						f = open("/proc/stb/frontend/%d/mode" % feid, "w")
-						f.write(configElement.value)
+					try:
+						oldvalue = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "r").readline()
+						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+						f.write("0")
 						f.close()
-						frontend.reopenFrontend()
-						try:
-							f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
-							f.write(oldvalue)
-							f.close()
-						except:
-							print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
-						nimmgr.enumerateNIMs()
-					else:
-						print "tuner type is already %d" %cur_type
+					except:
+						print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+
+					for x in iDVBFrontendDict.iteritems():
+						if x[1] == system:
+							frontend.overrideType(x[0])
+							break
+					frontend.closeFrontend()
+					f = open("/proc/stb/frontend/%d/mode" % feid, "w")
+					f.write(configElement.value)
+					f.close()
+					frontend.reopenFrontend()
+					try:
+						f = open("/sys/module/dvb_core/parameters/dvb_shutdown_timeout", "w")
+						f.write(oldvalue)
+						f.close()
+					except:
+						print "[info] no /sys/module/dvb_core/parameters/dvb_shutdown_timeout available"
+
+
+					nimmgr.enumerateNIMs()
 				else:
-					print"[ERROR] path not found: /proc/stb/frontend/%d/mode" % feid
-			except Exception as e:
-				print "[InitNimManager] tunerTypeChanged error: ", e
+					print "tuner type is already %d" %cur_type
+			else:
+				print"[ERROR] path not found: /proc/stb/frontend/%d/mode" % feid
 
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
-
-		if update_slots and (x not in update_slots):
-			continue
-
 		nim = config.Nims[x]
 		addMultiType = False
 		try:
@@ -2320,12 +2316,10 @@ def InitNimManager(nimmgr, update_slots = []):
 	empty_slots = 0
 	for slot in nimmgr.nim_slots:
 		x = slot.slot
+		empty = True
 
 		if update_slots and (x not in update_slots):
 			continue
-
-		nim = config.Nims[x]
-		empty = True
 
 		if slot.canBeCompatible("DVB-S"):
 			nim = config.Nims[x].dvbs
