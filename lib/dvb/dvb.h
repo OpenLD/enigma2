@@ -6,13 +6,13 @@
 #include <lib/base/ebase.h>
 #include <lib/base/elock.h>
 #include <lib/dvb/idvb.h>
-#include <lib/dvb/fbc.h>
 #include <lib/dvb/demux.h>
 #include <lib/dvb/frontend.h>
 #include <lib/dvb/tstools.h>
 #include <lib/dvb/esection.h>
 #include "filepush.h"
 #include <connection.h>
+#include <lib/dvb/fbc.h>
 
 #include <dvbsi++/service_description_section.h>
 
@@ -27,7 +27,11 @@ class eDVBRegisteredFrontend: public iObject, public sigc::trackable
 {
 	DECLARE_REF(eDVBRegisteredFrontend);
 	ePtr<eTimer> disable;
-	void closeFrontend();
+	void closeFrontend()
+	{
+		if (!m_inuse && m_frontend->closeFrontend()) // frontend busy
+			disable->start(60000, true);  // retry close in 60secs
+	}
 public:
 	sigc::signal0<void> stateChanged;
 	eDVBRegisteredFrontend(eDVBFrontend *fe, iDVBAdapter *adap)
@@ -71,7 +75,7 @@ class eDVBAllocatedFrontend
 	DECLARE_REF(eDVBAllocatedFrontend);
 public:
 
-	eDVBAllocatedFrontend(eDVBRegisteredFrontend *fe, eFBCTunerManager *fbcmng);
+	eDVBAllocatedFrontend(eDVBRegisteredFrontend *fe);
 	~eDVBAllocatedFrontend();
 	eDVBFrontend &get() { return *m_fe->m_frontend; }
 	operator eDVBRegisteredFrontend*() { return m_fe; }
@@ -79,7 +83,6 @@ public:
 
 private:
 	eDVBRegisteredFrontend *m_fe;
-	eFBCTunerManager *m_fbcmng;
 };
 
 class eDVBAllocatedDemux
@@ -142,7 +145,7 @@ private:
 	std::string virtualFrontendName;
 	bool running;
 	unsigned short int pidList[30];
-	unsigned char buffer[(188 / 4) * 4096];
+	unsigned char buffer[4 * 1024 * 188];
 	pthread_t pumpThread;
 	static void *threadproc(void *arg);
 	void *vtunerPump();
@@ -158,6 +161,10 @@ class eDVBResourceManager: public iObject, public sigc::trackable
 {
 	DECLARE_REF(eDVBResourceManager);
 	int avail, busy;
+
+	enum { DM7025, DM800, DM500HD, DM800SE, DM8000, DM7020HD, DM7080, DM820, DM520, DM525, DM900, DM920, GIGABLUE, DM500HDV2, DM800SEV2, WETEKPLAY, WETEKPLAY2, WETEKHUB};
+
+	int m_boxtype;
 
 	eSmartPtrList<iDVBAdapter> m_adapter;
 	eSmartPtrList<eDVBRegisteredDemux> m_demux;
@@ -180,10 +187,10 @@ private:
 	ePtr<iDVBChannelList> m_list;
 	ePtr<iDVBSatelliteEquipmentControl> m_sec;
 	static eDVBResourceManager *instance;
+	ePtr<eFBCTunerManager> m_fbc_mng;
 
 	friend class eDVBChannel;
 	friend class eFBCTunerManager;
-	ePtr<eFBCTunerManager> m_fbcmng;
 	RESULT addChannel(const eDVBChannelID &chid, eDVBChannel *ch);
 	RESULT removeChannel(eDVBChannel *ch);
 
@@ -227,7 +234,6 @@ public:
 			   the frontend must be tuned lateron. there is no guarante
 			   that tuning will succeed - it just means that if this frontend
 			   can't tune, no other frontend could do it.
-
 			   there might be a priority given to certain frontend/chid
 			   combinations. this will be evaluated here. */
 	RESULT allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, ePtr<iDVBFrontendParameters> &feparm, bool simulate=false);
@@ -247,7 +253,8 @@ public:
 	bool frontendIsMultistream(int index);
 	std::string getFrontendCapabilities(int index);
 	std::string getFrontendDeliverySystem(int index);
-	void setFrontendType(int index, const char *type);
+	void setFrontendType(int index, const char *type, bool append=false);
+	int getFrontendType(int index);
 };
 SWIG_TEMPLATE_TYPEDEF(ePtr<eDVBResourceManager>, eDVBResourceManager);
 SWIG_EXTEND(ePtr<eDVBResourceManager>,
@@ -273,6 +280,8 @@ public:
 
 		/* only for managed channels - effectively tunes to the channelid. should not be used... */
 		/* cannot be used for PVR channels. */
+		/* RESULT == 0: succeeded */
+		/* RESULT != 0: failed */
 	RESULT setChannel(const eDVBChannelID &id, ePtr<iDVBFrontendParameters> &feparam);
 	eDVBChannelID getChannelID() { return m_channel_id; }
 #if defined(__sh__) //see filepush.h

@@ -54,11 +54,15 @@ struct eDVBFrontendParametersSatellite
 	};
 
 	enum {
+		Band_Unknown, Band_C, Band_Ka, Band_Ku
+	};
+
+	enum {
 		PLS_Root, PLS_Gold, PLS_Combo, PLS_Unknown
 	};
 
 	bool no_rotor_command_on_tune;
-	unsigned int frequency, symbol_rate;
+	int frequency, symbol_rate;
 	int polarisation, fec, inversion, orbital_position, system, modulation, rolloff, pilot, is_id, pls_mode, pls_code;
 	int plp_id;
 };
@@ -212,6 +216,7 @@ public:
 	int getRolloff() const;
 	int getPilot() const;
 	int getSystem() const;
+	int getSystems() const;
 	int getIsId() const;
 	int getPLSMode() const;
 	int getPLSCode() const;
@@ -247,6 +252,7 @@ public:
 	int getRolloff() const;
 	int getPilot() const;
 	int getSystem() const;
+	int getSystems() const;
 	int getIsId() const;
 	int getPLSMode() const;
 	int getPLSCode() const;
@@ -268,6 +274,7 @@ public:
 	int getFecInner() const;
 	int getModulation() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBTerrestrialTransponderData : public eDVBTransponderData
@@ -291,6 +298,7 @@ public:
 	int getHierarchyInformation() const;
 	int getPlpId() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBATSCTransponderData : public eDVBTransponderData
@@ -307,6 +315,7 @@ public:
 	int getFrequency() const;
 	int getModulation() const;
 	int getSystem() const;
+	int getSystems() const;
 };
 
 class eDVBFrontendData : public iDVBFrontendData
