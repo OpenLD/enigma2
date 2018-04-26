@@ -197,7 +197,7 @@ void eFBCTunerManager::updateFBCID(eDVBRegisteredFrontend *next_fe, eDVBRegister
 
 bool eFBCTunerManager::isLinked(eDVBRegisteredFrontend *fe) const
 {
- 
+
 	long linked_prev_ptr = -1;
 	fe->m_frontend->getData(eDVBFrontend::LINKED_PREV_PTR, linked_prev_ptr);
 	return (linked_prev_ptr != -1);
