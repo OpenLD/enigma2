@@ -54,21 +54,15 @@ class ConfigElement(object):
 
 	notifiers_final = property(getNotifiersFinal, setNotifiersFinal)
 
-	def getValue(self):
-		try:
-			return int(self.text)
-		except ValueError:
-			if self.text == "true":
-				self.text = "1"
-			else:
-				self.text = str(default)
-			return int(self.text)
+	# you need to override this to do input validation
+	def setValue(self, value):
+		self._value = value
+		self.changed()
 
-	def setValue(self, val):
-		self.text = str(val)
+	def getValue(self):
+		return self._value
 
 	value = property(getValue, setValue)
-	_value = property(getValue, setValue)
 
 	# you need to override this if self.value is not a string
 	def fromstring(self, value):
@@ -1949,8 +1943,6 @@ class Config(ConfigSubsection):
 					tmp[3] = "dvbc"
 				elif tmp[3].startswith ("cable"):
 					tmp[3] = "dvbc." + tmp[3]
-				elif tmp[3] == "terrestrial":
-					tmp[3] = "dvbt"
 				elif tmp[3].startswith("terrestrial"):
 					tmp[3] = "dvbt." + tmp[3]
 				else:
@@ -1996,7 +1988,6 @@ class Config(ConfigSubsection):
 
 	def loadFromFile(self, filename, base_file=True):
 		self.unpickle(open(filename, "r"), base_file)
-		print"loadFromFile",filename
 
 config = Config()
 config.misc = ConfigSubsection()
@@ -2161,3 +2152,15 @@ class ConfigCECAddress(ConfigSequence):
 	def getHTML(self, id):
 		# we definitely don't want leading zeros
 		return '.'.join(["%d" % d for d in self.value])
+
+class ConfigAction(ConfigElement):
+	def __init__(self, action, *args):
+		ConfigElement.__init__(self)
+		self.value = "(OK)"
+		self.action = action
+		self.actionargs = args
+	def handleKey(self, key):
+		if (key == KEY_OK):
+			self.action(*self.actionargs)
+	def getMulti(self, dummy):
+		pass
