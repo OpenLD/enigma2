@@ -227,7 +227,7 @@ eDVBAdapterLinux::eDVBAdapterLinux(int nr): m_nr(nr)
 
 void eDVBAdapterLinux::scanDevices()
 {
-		// scan frontends
+	// scan frontends
 	int num_fe = 0;
 
 	eDebug("[eDVBResourceManager] scanning for frontends..");
@@ -264,7 +264,7 @@ void eDVBAdapterLinux::scanDevices()
 		++num_fe;
 	}
 
-		// scan demux
+	// scan demux
 	int num_demux = 0;
 	while (1)
 	{
@@ -414,22 +414,21 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 		file = -1;
 	}
 
-/* Some USB devices (well AstroMeta at least - shows as "dvbt2") have >1
- * frontend device. For the AstroMeta frontend0 is a DVB-T one,
- * while frontend1 is DVB-T2. we want to find the "best" one.
- * This code assumes consecutive numbering starting at 0.
- */
+	/* Some USB devices (well AstroMeta at least - shows as "dvbt2") have >1
+	 * frontend device. For the AstroMeta frontend0 is a DVB-T one,
+	 * while frontend1 is DVB-T2. we want to find the "best" one.
+	 * This code assumes consecutive numbering starting at 0.
+	 */
 	int best_fei = -1;
 	for (int test_fei = 0; ; test_fei++) {
-
 		snprintf(filename, sizeof(filename), "/dev/dvb/adapter%d/frontend%d", nr, test_fei);
 		eDebug("[eDVBUsbAdapter] checking %s", filename);
 		frontend = open(filename, O_RDWR);
 		if (frontend < 0)
 		{
-/* This is an error on the first pass, but not afterwards.
- * On later passes it just means we can stop looking.
- */
+		/* This is an error on the first pass, but not afterwards.
+		 * On later passes it just means we can stop looking.
+		 */
 			if (best_fei == -1) goto error;
 			break;
 		}
@@ -439,9 +438,9 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 			frontend = -1;
 			goto error;
 		}
-/* We stop as soon as we find a DVB-S2/DVB-T2 capable frontend
- * But we remember the first frontend in case we don't find one....
- */
+		/* We stop as soon as we find a DVB-S2/DVB-T2 capable frontend
+		 * But we remember the first frontend in case we don't find one....
+		 */
 		::close(frontend);
 		if (fe_info.caps & FE_CAN_2G_MODULATION) {
 			eDebug("[eDVBUsbAdapter] 2G modulation found: %s", filename);
@@ -453,13 +452,13 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 			best_fei = test_fei;
 		}
 	}
-/* We now re-open the best one.
- * We could just have saved the best_fe_info as we went, but the
- * DTV_ENUM_DELSYS ioctl() call below needs the file handle anyway (but
- * see the comment there).
- * We have to close as we go, as there appears to be some interaction
- * between fes which means you can't open one while another is open.
- */
+	/* We now re-open the best one.
+	 * We could just have saved the best_fe_info as we went, but the
+	 * DTV_ENUM_DELSYS ioctl() call below needs the file handle anyway (but
+	 * see the comment there).
+	 * We have to close as we go, as there appears to be some interaction
+	 * between fes which means you can't open one while another is open.
+	 */
 	snprintf(filename, sizeof(filename), "/dev/dvb/adapter%d/frontend%d", nr, best_fei);
 	frontend = open(filename, O_RDWR);
 	if (::ioctl(frontend, FE_GET_INFO, &fe_info) < 0)
@@ -478,12 +477,12 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 	props.num = 1;
 	props.props = prop;
 
-/* Note that this ioctl call just tests whether DTV_ENUM_DELSYS is
- * available. It doesn't fail if it isn't, nor do anything with the result.
- * Not sure why this is here, as eDVBFrontend::openFrontend() makes the
- * same call and could report there. But since I don't know I'm not
- * changing it.
- */
+	/* Note that this ioctl call just tests whether DTV_ENUM_DELSYS is
+	 * available. It doesn't fail if it isn't, nor do anything with the result.
+	 * Not sure why this is here, as eDVBFrontend::openFrontend() makes the
+	 * same call and could report there. But since I don't know I'm not
+	 * changing it.
+	 */
 	if (ioctl(frontend, FE_GET_PROPERTY, &props) < 0)
 		eDebug("[eDVBUsbAdapter] FE_GET_PROPERTY DTV_ENUM_DELSYS failed %m");
 #endif
