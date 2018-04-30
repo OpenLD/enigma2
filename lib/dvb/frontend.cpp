@@ -1142,23 +1142,13 @@ int eDVBFrontend::calculateSignalPercentage(int signalqualitydb)
 
 void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &signalqualitydb)
 {
-	int eDVBAdapter_snr;
-	int eDVBFrontend_snr;
-	sscanf(m_filename.c_str(),"/dev/dvb/adapter%d/frontend%d",&eDVBAdapter_snr, &eDVBFrontend_snr);
 	int ret = 0x12345678;
 	int sat_max = 1600; // we assume a max of 16db here
 	int ter_max = 2900; // we assume a max of 29db here
 	int cab_max = 4200; // we assume a max of 42db here
 	int atsc_max = 4200; // we assume a max of 42db here
 
-	if (strstr(eDVBAdapterLinux::isusb(eDVBAdapter_snr)))
-	{
-		if ( snr > 300 )
-			ret = 0; //error condition
-		else
-			ret = (int)(snr * 10);
-	}
-	else if (!strcmp(m_description, "AVL2108")) // ET9000
+	if (!strcmp(m_description, "AVL2108")) // ET9000
 	{
 		ret = (int)(snr / 40.5);
 		sat_max = 1618;
