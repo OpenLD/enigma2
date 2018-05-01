@@ -1054,6 +1054,35 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 	ePtr<eDVBRegisteredDemux> unused;
 	uint8_t d, a;
 
+#ifdef HAVE_AMLOGIC
+	// find first unused demux which is on same adapter as frontend
+	while (i != m_demux.end())
+	{
+		i->m_demux->getCADemuxID(d);
+		if (fe) {
+			if (!i->m_inuse && d == fesource) {
+				unused = i;
+				break;
+			}
+			else if (i->m_adapter == adapter && i->m_demux->getSource() == fesource) {
+				// demux is in use, but can be shared
+				demux = new eDVBAllocatedDemux(i);
+				i->m_demux->getCAAdapterID(a);
+				eDebug("[eDVBResourceManager] allocating shared demux adapter=%d, demux=%d, source=%d fesource=%d", a, d, i->m_demux->getSource(), fesource);
+				return 0;
+			}
+		}
+		else if (d == (m_demux.size() - 1)) { // always use last demux for PVR
+			if (i->m_inuse) {
+				demux = new eDVBAllocatedDemux(i);
+				return 0;
+			}
+			unused = i;
+			break;
+		}
+		i++;
+	}
+#else
 	/*
 	 * For pvr playback, start with the last demux.
 	 * On some hardware, there are less ca devices than demuxes, so try to leave
@@ -1067,7 +1096,6 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 		--i;
 	}
 
-#if not defined(__sh__)
 	while (i != m_demux.end())
 	{
 		if (i->m_adapter == adapter)
@@ -1103,7 +1131,8 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 		}
 	}
 
-#else // we use our own algo for demux detection
+#endif
+#if defined(__sh__)
 	int n=0;
 	for (; i != m_demux.end(); ++i, ++n)
 	{
@@ -1203,12 +1232,14 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 	if (!simulate && m_cached_channel)
 	{
 		eDVBChannel *cache_chan = (eDVBChannel*)&(*m_cached_channel);
-		if((m_boxtype != WETEKPLAY && m_boxtype != WETEKPLAY2 && m_boxtype != WETEKHUB) && (channelid==cache_chan->getChannelID()))
+#ifndef HAVE_AMLOGIC
+		if(channelid==cache_chan->getChannelID())
 		{
 			eDebug("use cached_channel");
 			channel = m_cached_channel;
 			return 0;
 		}
+#endif
 		m_cached_channel_state_changed_conn.disconnect();
 		m_cached_channel=0;
 		m_releaseCachedChannelTimer->stop();
