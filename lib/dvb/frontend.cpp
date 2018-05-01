@@ -1148,7 +1148,17 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	int cab_max = 4200; // we assume a max of 42db here
 	int atsc_max = 4200; // we assume a max of 42db here
 
-	if (!strcmp(m_description, "AVL2108")) // ET9000
+	int adapter_nr;
+	int frontend_nr;
+	sscanf(m_filename.c_str(),"/dev/dvb/adapter%d/frontend%d",&adapter_nr, &frontend_nr);
+	if (strstr(eDVBAdapterLinux::isusb(adapter_nr)))
+	{
+		if ( snr > 300 )
+			ret = 0; //error condition
+		else
+			ret = (int)(snr * 10);
+	}
+	else if (!strcmp(m_description, "AVL2108")) // ET9000
 	{
 		ret = (int)(snr / 40.5);
 		sat_max = 1618;
