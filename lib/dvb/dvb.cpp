@@ -1091,18 +1091,18 @@ RESULT eDVBResourceManager::allocateDemux(eDVBRegisteredFrontend *fe, ePtr<eDVBA
 				}
 			}
 		}
+		if (fe || (cap & iDVBChannel::capDecode))
+		{
+			++i;
+		}
+		else
+		{
+			if (i == m_demux.begin())
+				break;
+			--i;
+		}
 	}
-	if (fe || (cap & iDVBChannel::capDecode))
-	{
-		++i;
-	}
-	else
-	{
-		if (i == m_demux.begin())
-			break;
-		--i;
-	}
-}
+
 #else // we use our own algo for demux detection
 	int n=0;
 	for (; i != m_demux.end(); ++i, ++n)
