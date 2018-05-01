@@ -1151,7 +1151,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	int adapter_nr;
 	int frontend_nr;
 	sscanf(m_filename.c_str(),"/dev/dvb/adapter%d/frontend%d",&adapter_nr, &frontend_nr);
-	if (strstr(eDVBAdapterLinux::isusb(adapter_nr)))
+	if (eDVBAdapterLinux::isusb(adapter_nr))
 	{
 		if ( snr > 300 )
 			ret = 0; //error condition
