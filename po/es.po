@@ -17653,3 +17653,6 @@ msgstr "En la mayoría de los casos, esto debe establecerse en No. Solo active s
 
 msgid "The aspect ratio of the recording."
 msgstr "La relación de aspecto de la grabación."
+
+msgid "No data received yet"
+msgstr "No se recibieron datos aún"
