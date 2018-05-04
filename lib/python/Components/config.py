@@ -2,6 +2,7 @@ from enigma import getPrevAsciiCode
 from Tools.NumericalTextInput import NumericalTextInput
 from Tools.Directories import resolveFilename, SCOPE_CONFIG, fileExists
 from Components.Harddisk import harddiskmanager
+from Tools.LoadPixmap import LoadPixmap
 from copy import copy as copy_copy
 from os import path as os_path
 from time import localtime, strftime
@@ -420,11 +421,13 @@ class ConfigSelection(ConfigElement):
 # several customized versions exist for different
 # descriptions.
 #
+boolean_descriptions = {False: _("false"), True: _("true")}
 class ConfigBoolean(ConfigElement):
-	def __init__(self, default = False, descriptions = {False: _("false"), True: _("true")}):
+	def __init__(self, default=False, descriptions=boolean_descriptions, graphic=True):
 		ConfigElement.__init__(self)
 		self.descriptions = descriptions
 		self.value = self.last_value = self.default = default
+		self.graphic = graphic
 
 	def handleKey(self, key):
 		if key in (KEY_LEFT, KEY_RIGHT):
@@ -435,10 +438,21 @@ class ConfigBoolean(ConfigElement):
 			self.value = True
 
 	def getText(self):
-		return self.descriptions[self.value]
+		descr = self.descriptions[self.value]
+		if descr:
+			return _(descr)
+		return descr
 
 	def getMulti(self, selected):
-		return ("text", self.descriptions[self.value])
+		from config import config
+		from skin import switchPixmap
+		if self.graphic and config.usage.boolean_graphic.value and switchPixmap.get("menu_on", False) and switchPixmap.get("menu_off", False):
+			return ('pixmap', self.value and switchPixmap["menu_on"] or switchPixmap["menu_off"])
+		else:
+			descr = self.descriptions[self.value]
+			if descr:
+				return "text", _(descr)
+			return "text", descr
 
 	def tostring(self, value):
 		if not value or str(value).lower() == 'false':
@@ -471,17 +485,20 @@ class ConfigBoolean(ConfigElement):
 			self.changedFinal()
 			self.last_value = self.value
 
+yes_no_descriptions = {False: _("no"), True: _("yes")}
 class ConfigYesNo(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("no"), True: _("yes")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = yes_no_descriptions, graphic = graphic)
 
+on_off_descriptions = {False: _("off"), True: _("on")}
 class ConfigOnOff(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("off"), True: _("on")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = on_off_descriptions, graphic = graphic)
 
+enable_disable_descriptions = {False: _("disable"), True: _("enable")}
 class ConfigEnableDisable(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("disable"), True: _("enable")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = enable_disable_descriptions, graphic = graphic)
 
 class ConfigDateTime(ConfigElement):
 	def __init__(self, default, formatstring, increment = 86400):
@@ -738,11 +755,12 @@ class ConfigIP(ConfigSequence):
 	def genText(self):
 		value = ""
 		block_strlen = []
-		for i in self._value:
-			block_strlen.append(len(str(i)))
-			if value:
-				value += self.seperator
-			value += str(i)
+		if self._value:
+			for i in self._value:
+				block_strlen.append(len(str(i)))
+				if value:
+					value += self.seperator
+				value += str(i)
 		leftPos = sum(block_strlen[:self.marked_block])+self.marked_block
 		rightPos = sum(block_strlen[:(self.marked_block+1)])+self.marked_block
 		mBlock = range(leftPos, rightPos)
@@ -905,8 +923,8 @@ class ConfigPosition(ConfigSequence):
 clock_limits = [(0,23),(0,59)]
 class ConfigClock(ConfigSequence):
 	def __init__(self, default):
-		t = localtime(default)
-		ConfigSequence.__init__(self, seperator = ":", limits = clock_limits, default = [t.tm_hour, t.tm_min])
+		self.t = localtime(default)
+		ConfigSequence.__init__(self, seperator=":", limits=clock_limits, default=[self.t.tm_hour, self.t.tm_min])
 
 	def increment(self):
 		# Check if Minutes maxed out
@@ -937,6 +955,83 @@ class ConfigClock(ConfigSequence):
 			self._value[1] -= 1
 		# Trigger change
 		self.changed()
+
+	def handleKey(self, key):
+		if key == KEY_DELETE and config.usage.time.wide.value:
+			if self._value[0] < 12:
+				self._value[0] += 12
+				self.validate()
+				self.changed()
+
+		elif key == KEY_BACKSPACE and config.usage.time.wide.value:
+			if self._value[0] >= 12:
+				self._value[0] -= 12
+				self.validate()
+				self.changed()
+
+		elif key in KEY_NUMBERS or key == KEY_ASCII:
+			if key == KEY_ASCII:
+				code = getPrevAsciiCode()
+				if code < 48 or code > 57:
+					return
+				digit = code - 48
+			else:
+				digit = getKeyNumber(key)
+
+			hour = self._value[0]
+			pmadjust = 0
+			if config.usage.time.wide.value:
+				if hour > 11:  # All the PM times
+					hour -= 12
+					pmadjust = 12
+				if hour == 0:  # 12AM & 12PM map to 12
+					hour = 12
+				if self.marked_pos == 0 and digit >= 2:  # Only 0, 1 allowed (12 hour clock)
+					return
+				if self.marked_pos == 1 and hour > 9 and digit >= 3:  # Only 10, 11, 12 allowed
+					return
+				if self.marked_pos == 1 and hour < 10 and digit == 0:  # Only 01, 02, ..., 09 allowed
+					return
+			else:
+				if self.marked_pos == 0 and digit >= 3:  # Only 0, 1, 2 allowed (24 hour clock)
+					return
+				if self.marked_pos == 1 and hour > 19 and digit >= 4:  # Only 20, 21, 22, 23 allowed
+					return
+			if self.marked_pos == 2 and digit >= 6:  # Only 0, 1, ..., 5 allowed (tens digit of minutes)
+				return
+
+			value = list("%02d%02d" % (hour, self._value[1]))
+			value[self.marked_pos] = str(digit)
+			value = "".join(value)
+			hour = int(value[:2])
+			minute = int(value[2:])
+
+			if config.usage.time.wide.value:
+				if hour == 12:  # 12AM & 12PM map to back to 00
+					hour = 0
+				elif hour > 12:
+					hour = 10
+				hour += pmadjust
+			elif hour > 23:
+				hour = 20
+
+			self._value[0] = hour
+			self._value[1] = minute
+			self.marked_pos += 1
+			self.validate()
+			self.changed()
+		else:
+			ConfigSequence.handleKey(self, key)
+
+	def genText(self):
+		mPos = self.marked_pos
+		if mPos >= 2:
+			mPos += 1  # Skip over the separator
+		newtime = list(self.t)
+		newtime[3] = self._value[0]
+		newtime[4] = self._value[1]
+		value = strftime(config.usage.time.short.value.replace("%-I", "%_I").replace("%-H", "%_H"), newtime)
+		return value, mPos
 
 integer_limits = (0, 9999999999)
 class ConfigInteger(ConfigSequence):

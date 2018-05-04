@@ -181,10 +181,7 @@ void eListboxPythonStringContent::paint(gPainter &painter, eWindowStyle &style, 
 		}
 	}
 
-	if (!fnt)
-		fnt = new gFont("Regular", 20);
-	/*if (!fnt2)
-		fnt2 = new gFont(fnt->family, fnt->pointSize - fnt->pointSize/5); */
+	if (!fnt) fnt = new gFont("Regular", 20);
 
 	/* if we have no transparent background */
 	if (!local_style || !local_style->m_transparent_background)
@@ -494,7 +491,6 @@ void eListboxPythonConfigContent::paint(gPainter &painter, eWindowStyle &style, 
 						{
 							painter.fill(eRect(offset.x() + m_seperation, offset.y() + slider_y_offset, width, m_slider_height));
 						}
-
 
 							/* pvalue is borrowed */
 					} else if (!strcmp(atype, "mtext"))

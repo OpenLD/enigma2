@@ -23,6 +23,7 @@ if not os.path.exists("/usr/share/enigma2/skin_text.xml"):
 
 colorNames = {}
 colorNamesHuman = {}
+switchPixmap = {}  # dict()
 # Predefined fonts, typically used in built-in screens and for components like
 # the movie list and so.
 fonts = {
@@ -99,6 +100,10 @@ def skin_user_skinname():
 	name = "skin_user_" + config.skin.primary_skin.value[:config.skin.primary_skin.value.rfind('/')] + ".xml"
 	filename = resolveFilename(SCOPE_CONFIG, name)
 	if fileExists(filename):
+		skin_path = resolveFilename(SCOPE_SKIN, skin_name)
+		if not os.path.isfile(skin_path):
+			print "[skin::skin_user_skinname] ignoring user entry for not-found skin:", skin_path
+			return None
 		return name
 	return None
 
@@ -323,11 +328,14 @@ def parseSize(s, scale, object = None, desktop = None):
 	(x, y) = parseValuePair(s, scale, object, desktop)
 	return eSize(x, y)
 
-def parseFont(s, scale):
+def parseFont(s, scale=((1, 1), (1, 1))):
 	try:
-		f = fonts[s]
+		font_name = s.split(';')[0]
+		f = fonts[font_name]
 		name = f[0]
 		size = f[1]
+		if ";" in s:
+			size = s.split(';')[1]
 	except:
 		name, size = s.split(';')
 	return gFont(name, int(size) * scale[0][0] / scale[0][1])
@@ -455,8 +463,6 @@ class AttributeParser:
 	def conditional(self, value):
 		pass
 	def objectTypes(self, value):
-		pass
-	def objectTypesDepends(self, value):
 		pass
 	def position(self, value):
 		if isinstance(value, tuple):
@@ -719,6 +725,9 @@ def applySingleAttribute(guiObject, desktop, attrib, value, scale = ((1,1),(1,1)
 def applyAllAttributes(guiObject, desktop, attributes, scale):
 	AttributeParser(guiObject, desktop, scale).applyAll(attributes)
 
+def paramConvert(val):
+	return float(val) if '.' in val else int(val)
+
 def loadSingleSkinData(desktop, skin, path_prefix):
 	"""loads skin data like colors, windowstyle etc."""
 	assert skin.tag == "skin", "root element in skin must be 'skin'!"
@@ -753,6 +762,59 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 				if bpp != 32:
 					# load palette (not yet implemented)
 					pass
+				if yres >= 1080:
+					parameters["AutotimerEnabledIcon"] = (2,1,38,36)
+					parameters["AutotimerRecordIcon"] = (42,5,30,30)
+					parameters["ChoicelistDash"] = (0,3,1000,30)
+					parameters["ChoicelistName"] = (68,3,1000,30)
+					parameters["ChoicelistIcon"] = (7,0,52,38)
+					parameters["ConfigListSeperator"] = 300
+					parameters["DreamexplorerName"] = (62,0,1200,38)
+					parameters["DreamexplorerIcon"] = (15,4,30,30)
+					parameters["FileListName"] = (68,4,1000,34)
+					parameters["FileListIcon"] = (7,4,52,37)
+					parameters["FileListMultiName"] = (90,3,1000,32)
+					parameters["FileListMultiIcon"] = (45, 4, 30, 30)
+					parameters["FileListMultiLock"] = (2,0,36,36)
+					parameters["HelpMenuListHlp"] = (0,0,900,42)
+					parameters["HelpMenuListExtHlp0"] = (0,0,900,39)
+					parameters["HelpMenuListExtHlp1"] = (0,42,900,30)
+					parameters["PartnerBoxEntryListName"] = (8,2,225,38)
+					parameters["PartnerBoxEntryListIP"] = (180,2,225,38)
+					parameters["PartnerBoxEntryListPort"] = (405,2,150,38)
+					parameters["PartnerBoxEntryListType"] = (615,2,150,38)
+					parameters["PartnerBoxTimerServicename"] = (0,0,45)
+					parameters["PartnerBoxTimerName"] = (0,42,30)
+					parameters["PartnerBoxE1TimerTime"] = (0,78,255,30)
+					parameters["PartnerBoxE1TimerState"] = (255,78,255,30)
+					parameters["PartnerBoxE2TimerTime"] = (0,78,225,30)
+					parameters["PartnerBoxE2TimerState"] = (225,78,225,30)
+					parameters["PartnerBoxE2TimerIcon"] = (1050,8,20,20)
+					parameters["PartnerBoxE2TimerIconRepeat"] = (1050,38,20,20)
+					parameters["PartnerBoxBouquetListName"] = (0,0,45)
+					parameters["PartnerBoxChannelListName"] = (0,0,45)
+					parameters["PartnerBoxChannelListTitle"] = (0,42,30)
+					parameters["PartnerBoxChannelListTime"] = (0,78,225,30)
+					parameters["PicturePlayerThumb"] = (30,285,45,300,30,25)
+					parameters["PlayListName"] = (38,2,1000,34)
+					parameters["PlayListIcon"] = (7,7,24,24)
+					parameters["PluginBrowserName"] = (180,8,38)
+					parameters["PluginBrowserDescr"] = (180,42,25)
+					parameters["PluginBrowserIcon"] = (15,8,150,60)
+					parameters["PluginBrowserDownloadName"] = (120,8,38)
+					parameters["PluginBrowserDownloadDescr"] = (120,42,25)
+					parameters["PluginBrowserDownloadIcon"] = (15,0,90,76)
+					parameters["ServiceInfo"] = (0,0,450,50)
+					parameters["ServiceInfoLeft"] = (0,0,450,45)
+					parameters["ServiceInfoRight"] = (450,0,1000,45)
+					parameters["SelectionListDescr"] = (45,3,1000,32)
+					parameters["SelectionListLock"] = (0,2,36,36)
+					parameters["SelectionListLockOff"] = (0,2,36,36)
+					parameters["VirtualKeyboard"] = (68,68)
+					parameters["SHOUTcastListItem"] = (30,27,35,96,35,33,60,32)
+					parameters["EPGImportFilterListDescr"] = (30,3,500,30)
+					parameters["EPGImportFilterListLockOff"] = (0,0,30,30)
+					parameters["EPGImportFilterListLockOn"] = (0,0,30,30)
 
 	for skininclude in skin.findall("include"):
 		filename = skininclude.attrib.get("filename")
@@ -763,6 +825,21 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 			if fileExists(skinfile):
 				print "[SKIN] loading include:", skinfile
 				loadSkin(skinfile)
+
+	for c in skin.findall('switchpixmap'):
+		for pixmap in c.findall('pixmap'):
+			get_attr = pixmap.attrib.get
+			name = get_attr('name')
+			if not name:
+				raise SkinError('[Skin] pixmap needs name attribute')
+			filename = get_attr('filename')
+			if not filename:
+				raise SkinError('[Skin] pixmap needs filename attribute')
+			resolved_png = resolveFilename(SCOPE_ACTIVE_SKIN, filename, path_prefix=path_prefix)
+			if fileExists(resolved_png):
+				switchPixmap[name] = LoadPixmap(resolved_png, cached=True)
+			else:
+				raise SkinError('[Skin] switchpixmap pixmap filename="%s" (%s) not found' % (filename, resolved_png))
 
 	for c in skin.findall("colors"):
 		for color in c.findall("color"):
@@ -832,7 +909,7 @@ def loadSingleSkinData(desktop, skin, path_prefix):
 					if isinstance(font, list) and len(font) == 2:
 						parameters[name] = (str(font[0]), int(font[1]))
 				else:
-					parameters[name] = "," in value and map(int, value.split(",")) or int(value)
+					parameters[name] = "," in value and map(paramConvert, value.split(",")) or paramConvert(value)
 			except Exception, ex:
 				print "[SKIN] bad parameter", ex
 
@@ -1410,10 +1487,8 @@ def readSkin(screen, skin, names, desktop):
 			conditional = w.attrib.get('conditional')
 			if conditional and not [i for i in conditional.split(",") if i in screen.keys()]:
 				continue
-			objecttypes = w.attrib.get('objectTypes')
-			if objecttypes:
-				key = w.attrib.get('objectTypesDepends') or w.attrib.get('name') or w.attrib.get('source')
-				if key and key in screen and not [i for i in objecttypes.split(",") if i == screen[key].__class__.__name__]:
+			objecttypes = w.attrib.get('objectTypes', '').split(",")
+			if len(objecttypes) > 1 and (objecttypes[0] not in screen.keys() or not [i for i in objecttypes[1:] if i == screen[objecttypes[0]].__class__.__name__]):
 					continue
 			p = processors.get(w.tag, process_none)
 			try:

@@ -3250,6 +3250,9 @@ msgstr "Activar temporizador"
 msgid "Enable timer conflict detection"
 msgstr "Habilitar detección de conflictos"
 
+msgid "Enable to display all true/false, yes/no, on/off and enable/disable set up options as a graphical switch."
+msgstr "Activar para mostrar las opciones de configuración (verdadero/falso, sí/no, encendido/apagado y activar/desactivar ) como un interruptor gráfico."
+
 msgid "Enabled"
 msgstr "Habilitado"
 
@@ -13079,6 +13082,9 @@ msgstr "Recordar último servicio en PiP"
 # /data/setup.xml
 msgid "Configure if and how long the latest service in the PiP will be remembered."
 msgstr "Configurar si y en cuánto tiempo el último servicio en PiP será recordado."
+
+msgid "Show True/False as graphical switch"
+msgstr "Mostrar Verdadero/Falso como interruptor gráfico"
 
 msgid "Show VCR scart on main menu"
 msgstr "Mostrar euroconector VCR en el menú principal"
