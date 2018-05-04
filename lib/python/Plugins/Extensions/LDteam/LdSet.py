@@ -151,6 +151,9 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		elif self.sel == 14:
 			from Screens.CCcamInfo import CCcamInfoMain
 			self.session.open(CCcamInfoMain)
+		elif self.sel == 15:
+			from Plugins.Extensions.LDteam.Ldsundtek import SundtekControlCenter
+			self.session.open(SundtekControlCenter)
 		else:
 			self.noYet()
 
@@ -182,7 +185,6 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		mypixmap = mypath + 'Harddisk.png'
 		png = LoadPixmap(mypixmap)
 		name = _('eParted')
-
 		idx = 1
 		res = (name, png, idx)
 		self.list.append(res)
@@ -193,6 +195,15 @@ MultiContentEntryPixmapAlphaTest(pos = (4, 2), size = (40, 40), png = 1),
 		else:
 			name = _('Swap File settings')
 		idx = 2
+		res = (name, png, idx)
+		self.list.append(res)
+		mypixmap = mypath + "SundtekControlCenter.png"
+		png = LoadPixmap(mypixmap)
+		if config.osd.language.value == "es_ES":
+			name = _("Sundtek Control Center")
+		else:
+			name = _("Soundtek Center")
+		idx = 15
 		res = (name, png, idx)
 		self.list.append(res)
 		mypixmap = mypath + 'Epg_setup.png'

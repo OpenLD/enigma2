@@ -73,7 +73,7 @@ class HardwareInfo(Screen):
 	<widget source="session.CurrentService" render="Label" zPosition="6" position="90,293" size="515,26" halign="left" valign="center" font="Regular; 23" transparent="0">
 		<convert type="SpaceInfo">HddInfo,Full</convert>
 	</widget>
-	<ePixmap position="20,350" zPosition="1" size="50,50" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/usb.png" alphatest="blend" />
+	<ePixmap position="20,350" zPosition="1" size="50,50" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/pen.png" alphatest="blend" />
 	<widget source="session.Event_Now" render="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/LDteam/images/icons/bar.png" position="90,350" size="515,20" transparent="1" zPosition="6">
 		<convert type="SpaceInfo">UsbInfo</convert>
 	</widget>
