@@ -184,7 +184,7 @@ class LdsysInfo(Screen):
 		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 		self.text += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 		self.text += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
-		self.text += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
+		self.text += _("GStreamer:\t %s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
 		if path.exists('/usr/bin/ffmpeg'):
 			try:
 				self.text += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"

@@ -147,7 +147,7 @@ def getAboutText():
 	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
-	AboutText += _("GStreamer:\t%s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
+	AboutText += _("GStreamer:\t %s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
 	if path.exists('/usr/bin/ffmpeg'):
 		try:
 			AboutText += _("FFmpeg:\t %s") % str(about.getFFmpegVersionString()) + "\n"
