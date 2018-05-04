@@ -2,6 +2,7 @@ from enigma import getPrevAsciiCode
 from Tools.NumericalTextInput import NumericalTextInput
 from Tools.Directories import resolveFilename, SCOPE_CONFIG, fileExists
 from Components.Harddisk import harddiskmanager
+from Tools.LoadPixmap import LoadPixmap
 from copy import copy as copy_copy
 from os import path as os_path
 from time import localtime, strftime
@@ -420,11 +421,24 @@ class ConfigSelection(ConfigElement):
 # several customized versions exist for different
 # descriptions.
 #
+boolean_descriptions = {False: _("false"), True: _("true")}
 class ConfigBoolean(ConfigElement):
-	def __init__(self, default = False, descriptions = {False: _("false"), True: _("true")}):
+	def __init__(self, default=False, descriptions=boolean_descriptions, graphic=True):
 		ConfigElement.__init__(self)
 		self.descriptions = descriptions
 		self.value = self.last_value = self.default = default
+		self.graphic = False
+		if graphic:
+			from skin import switchPixmap
+			offPath = switchPixmap.get('menu_off')
+			onPath = switchPixmap.get('menu_on')
+			if offPath and onPath:
+				falseIcon = LoadPixmap(offPath, cached=True)
+				trueIcon = LoadPixmap(onPath, cached=True)
+				if falseIcon and trueIcon:
+					self.falseIcon = falseIcon
+					self.trueIcon = trueIcon
+					self.graphic = True
 
 	def handleKey(self, key):
 		if key in (KEY_LEFT, KEY_RIGHT):
@@ -435,10 +449,23 @@ class ConfigBoolean(ConfigElement):
 			self.value = True
 
 	def getText(self):
-		return self.descriptions[self.value]
+		descr = self.descriptions[self.value]
+		if descr:
+			return _(descr)
+		return descr
 
 	def getMulti(self, selected):
-		return ("text", self.descriptions[self.value])
+		from config import config
+		if self.graphic and config.usage.boolean_graphic.value:
+			if self.value:
+				return ('pixmap', self.trueIcon)
+			else:
+				return ('pixmap', self.falseIcon)
+		else:
+			descr = self.descriptions[self.value]
+			if descr:
+				return "text", _(descr)
+			return "text", descr
 
 	def tostring(self, value):
 		if not value or str(value).lower() == 'false':
@@ -471,17 +498,20 @@ class ConfigBoolean(ConfigElement):
 			self.changedFinal()
 			self.last_value = self.value
 
+yes_no_descriptions = {False: _("no"), True: _("yes")}
 class ConfigYesNo(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("no"), True: _("yes")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = yes_no_descriptions, graphic = graphic)
 
+on_off_descriptions = {False: _("off"), True: _("on")}
 class ConfigOnOff(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("off"), True: _("on")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = on_off_descriptions, graphic = graphic)
 
+enable_disable_descriptions = {False: _("disable"), True: _("enable")}
 class ConfigEnableDisable(ConfigBoolean):
-	def __init__(self, default = False):
-		ConfigBoolean.__init__(self, default = default, descriptions = {False: _("disable"), True: _("enable")})
+	def __init__(self, default = False, graphic = True):
+		ConfigBoolean.__init__(self, default = default, descriptions = enable_disable_descriptions, graphic = graphic)
 
 class ConfigDateTime(ConfigElement):
 	def __init__(self, default, formatstring, increment = 86400):
@@ -738,11 +768,12 @@ class ConfigIP(ConfigSequence):
 	def genText(self):
 		value = ""
 		block_strlen = []
-		for i in self._value:
-			block_strlen.append(len(str(i)))
-			if value:
-				value += self.seperator
-			value += str(i)
+		if self._value:
+			for i in self._value:
+				block_strlen.append(len(str(i)))
+				if value:
+					value += self.seperator
+				value += str(i)
 		leftPos = sum(block_strlen[:self.marked_block])+self.marked_block
 		rightPos = sum(block_strlen[:(self.marked_block+1)])+self.marked_block
 		mBlock = range(leftPos, rightPos)
