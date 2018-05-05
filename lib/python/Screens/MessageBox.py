@@ -13,8 +13,11 @@ class MessageBox(Screen):
 	TYPE_INFO = 1
 	TYPE_WARNING = 2
 	TYPE_ERROR = 3
+	TYPE_MESSAGE = 4
 
-	def __init__(self, session, text, type=TYPE_YESNO, timeout=-1, close_on_any_key=False, default=True, enable_input=True, msgBoxID=None, picon=True, simple=False, wizard=False, list=None, skin_name=None, timeout_default=None):
+	def __init__(self, session, text, type=TYPE_YESNO, timeout=-1, close_on_any_key=False, default=True, enable_input=True, msgBoxID=None, picon=True, simple=False, wizard=False, list=None, skin_name=None, timeout_default=None, windowTitle = None, title = "Message"):
+		if not windowTitle:
+			windowTitle = title
 		if not list: list = []
 		if not skin_name: skin_name = []
 		self.type = type
@@ -28,8 +31,10 @@ class MessageBox(Screen):
 			self.setTitle(_("Warning"))
 		elif self.type == self.TYPE_ERROR:
 			self.setTitle(_("Error"))
-		else:
+		elif self.type == TYPE_MESSAGE:
 			self.setTitle(_("Message"))
+		else:
+			self.setTitle(_(windowTitle))
 		if wizard:
 			from Components.config import config
 			from Components.Pixmap import MultiPixmap
@@ -115,11 +120,10 @@ class MessageBox(Screen):
 			listsize = (520, 25*count)
 			if self["ErrorPixmap"].visible or self["QuestionPixmap"].visible or self["InfoPixmap"].visible:
 				self["list"].instance.move(enigma.ePoint(65, 0))
-				wsizex = textsize[0]+65
 			else:
 				self["list"].instance.move(enigma.ePoint(0, 0))
-				wsizex = textsize[0]
 			self["list"].instance.resize(enigma.eSize(*listsize))
+
 		else:
 			textsize = self["text"].getSize()
 			if textsize[0] < textsize[1]:
@@ -211,7 +215,8 @@ class MessageBox(Screen):
 					else:
 						self.close(False)
 					break
-		self.close(False)
+		else:
+			self.close(False)
 
 	def ok(self):
 		if self["list"].getCurrent():
