@@ -62,6 +62,7 @@ BACKUPFILES = ['/etc/enigma2/', '/etc/CCcam.cfg', '/usr/keys/', '/usr/lib/enigma
 	+eEnv_resolve_multi("${datadir}/enigma2/*/mySkin_off/*.xml")\
 	+eEnv_resolve_multi("${datadir}/enigma2/*/mySkin/*.xml")\
 	+eEnv_resolve_multi('/usr/bin/*cam*')\
+	+eEnv_resolve_multi('/usr/bin/*box*')\
 	+eEnv_resolve_multi('/etc/*.emu')\
 	+eEnv_resolve_multi('/etc/cron*')\
 	+eEnv_resolve_multi('/etc/init.d/softcam*')\
