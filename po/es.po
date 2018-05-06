@@ -417,7 +417,7 @@ msgstr "16:10"
 
 #
 msgid "16:10 Letterbox"
-msgstr "16:10 Buzón"
+msgstr "16:10 Letterbox"
 
 #
 msgid "16:10 PanScan"
@@ -429,7 +429,7 @@ msgstr "16:9"
 
 #
 msgid "16:9 Letterbox"
-msgstr "16:9 Buzón"
+msgstr "16:9 Letterbox"
 
 #
 msgid "16:9 always"
@@ -512,7 +512,7 @@ msgstr "4:3"
 
 #
 msgid "4:3 Letterbox"
-msgstr "4:3 Buzón"
+msgstr "4:3 Letterbox"
 
 #
 msgid "4:3 PanScan"
@@ -2767,6 +2767,14 @@ msgstr "Siguiente resolución superior"
 msgid "highest Resolution"
 msgstr "Mayor Resolución"
 
+#: AVSwitch.py
+msgid "Stretch linear"
+msgstr "Estiramiento lineal"
+
+#: AVSwitch.py
+msgid "Stretch nonlinear"
+msgstr "Estiramiento no lineal"
+
 #
 msgid "Display 16:9 content as"
 msgstr "Visualizar los contenidos 16:9 como"
@@ -4540,7 +4548,7 @@ msgid "Show subtitle selection"
 msgstr "Mostrar selección de subtítulos"
 
 msgid "Letterbox zoom"
-msgstr "Zoom Buzón"
+msgstr "Zoom Letterbox"
 
 msgid "Show PIP"
 msgstr "Mostrar PiP"
@@ -4625,7 +4633,7 @@ msgstr "Ancho texto izquierdo"
 #
 #. TRANSLATORS: (aspect ratio policy: black bars on top/bottom) in doubt, keep english term.
 msgid "Letterbox"
-msgstr "Buzón"
+msgstr "Letterbox"
 
 msgid "Limit debug log size (MB)"
 msgstr "Limitar el tamaño del historial de depuración (MB)"
@@ -5995,13 +6003,35 @@ msgstr "Configura el sintonizador A"
 msgid "Please set up tuner B"
 msgstr "Configura el sintonizador B"
 
-#
 msgid "Please set up tuner C"
 msgstr "Configura el sintonizador C"
 
-#
 msgid "Please set up tuner D"
 msgstr "Configura el sintonizador D"
+
+msgid "Please set up tuner E"
+msgstr "Configura el sintonizador E"
+
+msgid "Please set up tuner F"
+msgstr "Configura el sintonizador F"
+
+msgid "Please set up tuner G"
+msgstr "Configura el sintonizador G"
+
+msgid "Please set up tuner H"
+msgstr "Configura el sintonizador H"
+
+msgid "Please set up tuner I"
+msgstr "Configura el sintonizador I"
+
+msgid "Please set up tuner J"
+msgstr "Configura el sintonizador J"
+
+msgid "Please set up tuner Q"
+msgstr "Configura el sintonizador Q"
+
+msgid "Please set up tuner R"
+msgstr "Configura el sintonizador R"
 
 msgid "Please setup your tuner configuration."
 msgstr "Configura el sintonizador."
@@ -10406,6 +10436,16 @@ msgstr ""
 "\n"
 "Pulsa ‘OK’ para continuar."
 
+#
+msgid ""
+"Your internet connection is working now.\n"
+"\n"
+"Please press OK to continue."
+msgstr ""
+"La conexión a internet funciona.\n"
+"\n"
+"Pulsa ‘OK’ para continuar."
+
 msgid "Your %s %s is rebooting"
 msgstr "Reiniciando %s %s."
 
@@ -11219,6 +11259,15 @@ msgstr "Saltar a la siguiente posición marcada"
 #
 msgid "Jump to previous marked position"
 msgstr "Saltar a la anterior posición marcada"
+
+msgid "Jump to prime time"
+msgstr "Saltar a hora de audiencia (Prime Time)"
+
+msgid "Just change Bouquet"
+msgstr "Sólo cambiar grupo"
+
+msgid "Just change channels"
+msgstr "Sólo cambiar canales"
 
 #
 msgid "leave movie player..."
@@ -17101,6 +17150,34 @@ msgstr "Seleccionar imagen: STARTUP_1"
 #, python-format
 msgid "Select Image: %s"
 msgstr "Seleccionar imagen: %s"
+
+#: InfoBarGenerics.py:4204
+msgid "4_3_letterbox"
+msgstr "4:3 Letterbox"
+
+#: InfoBarGenerics.py:4204
+msgid "4_3_panscan"
+msgstr "4:3 PanScan"
+
+#: InfoBarGenerics.py:4204
+msgid "16_9"
+msgstr "16:9"
+
+#: InfoBarGenerics.py:4204
+msgid "16_9_always"
+msgstr "Siempre 16:9"
+
+#: InfoBarGenerics.py:4204
+msgid "16_10_letterbox"
+msgstr "16:10 Letterbox"
+
+#: InfoBarGenerics.py:4204
+msgid "16_10_panscan"
+msgstr "16:10 PanScan"
+
+#: InfoBarGenerics.py:4204
+msgid "16_9_letterbox"
+msgstr "16:9 Letterbox"
 
 #: TimerEntry.py
 msgid "After Recording"
