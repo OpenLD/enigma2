@@ -3,6 +3,7 @@ from Screens.WizardLanguage import WizardLanguage
 from Screens.VideoWizard import VideoWizard
 from Screens.Rc import Rc
 from Screens.Screen import Screen
+
 from boxbranding import getBoxType
 try:
 	from Plugins.SystemPlugins.OSDPositionSetup.overscanwizard import OverscanWizard
@@ -25,6 +26,8 @@ class StartWizard(WizardLanguage, Rc):
 		WizardLanguage.__init__(self, session, showSteps = False)
 		Rc.__init__(self)
 		self["wizard"] = Pixmap()
+		self["HelpWindow"] = Pixmap()
+		self["HelpWindow"].hide()
 		#Screen.setTitle(self, _("Welcome..."))
 		Screen.setTitle(self, _("StartWizard"))
 
@@ -50,4 +53,4 @@ if OverscanWizard is not None:
 # FrontprocessorUpgrade SystemMessage priority = 9
 wizardManager.registerWizard(StartWizard, config.misc.firstrun.value, priority = 20)
 # StartWizard calls InstallWizard
-# NetworkWizard priority = 25
+# NetworkWizard priority = 19
