@@ -6027,6 +6027,9 @@ msgstr "Configura el sintonizador I"
 msgid "Please set up tuner J"
 msgstr "Configura el sintonizador J"
 
+msgid "Please set up tuner K"
+msgstr "Configura el sintonizador K"
+
 msgid "Please set up tuner Q"
 msgstr "Configura el sintonizador Q"
 
