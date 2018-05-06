@@ -4393,12 +4393,6 @@ msgstr "Junio"
 msgid "Just scale"
 msgstr "Sólo escalar"
 
-msgid "Just change channels"
-msgstr "Sólo cambiar canales"
-
-msgid "Just change Bouquet"
-msgstr "Sólo cambiar grupo"
-
 msgid "Keep"
 msgstr "Conservar"
 
