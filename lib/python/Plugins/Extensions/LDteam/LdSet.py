@@ -64,7 +64,7 @@ import NavigationInstance
 import Components.UsageConfig
 
 config.plugins.ldteam = ConfigSubsection()
-config.plugins.ldteam.dropmode = ConfigSelection(default = '1', choices = [
+config.plugins.ldteam.dropmode = ConfigSelection(default = '3', choices = [
 		('1', _("free pagecache")),
 		('2', _("free dentries and inodes")),
 		('3', _("free pagecache, dentries and inodes")),
