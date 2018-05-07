@@ -162,13 +162,12 @@ class SkinSelector(Screen, SkinSelectorBase):
 	skinlist = []
 	root = os.path.join(eEnv.resolve("${datadir}"),"enigma2")
 
-	def __init__(self, session, args = None, skin_name=None):
+	def __init__(self, session, args = None, skin_name = None):
 		Screen.__init__(self, session)
 		SkinSelectorBase.__init__(self, args)
 		Screen.setTitle(self, _("Skin setup"))
 		if isinstance(skin_name, str):
 			skin_name = [skin_name]
-		self.skinName = skin_name + ["SkinSelector"]
 		self.config = config.skin.primary_skin
 
 class LcdSkinSelector(Screen, SkinSelectorBase):
