@@ -83,6 +83,7 @@ self.selectKey("RIGHT")
 		<step id="nimb">
 			<condition>
 from Components.NimManager import nimmanager
+from enigma import isFBCLink
 self.condition = len(nimmanager.nim_slots) > 1 and not nimmanager.nim_slots[1].empty and not isFBCLink(nimmanager.nim_slots[1].slot)
 			</condition>
 			<text value="Please set up tuner B" />
