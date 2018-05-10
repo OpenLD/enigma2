@@ -798,31 +798,54 @@ int eDVBFrontend::openFrontend()
 					case FE_QPSK:
 					{
 						m_delsys[SYS_DVBS] = true;
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBS]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
 #if DVB_API_VERSION >= 5
 						if (m_dvbversion >= DVB_VERSION(5, 0))
 						{
-							if (fe_info.caps & FE_CAN_2G_MODULATION) m_delsys[SYS_DVBS2] = true;
+							if (fe_info.caps & FE_CAN_2G_MODULATION)
+							{
+								m_delsys[SYS_DVBS2] = true;
+								if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBS2]) < 0)
+									eWarning("ioctl FE_GET_INFO failed: %m");
+							}
 						}
 #endif
 						break;
 					}
 					case FE_QAM:
 					{
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBC_ANNEX_B]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
+
 #if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
 						/* no need for a m_dvbversion check, SYS_DVBC_ANNEX_A replaced SYS_DVBC_ANNEX_AC (same value) */
 						m_delsys[SYS_DVBC_ANNEX_A] = true;
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBC_ANNEX_A]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBC_ANNEX_C]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
 #else
 						m_delsys[SYS_DVBC_ANNEX_AC] = true;
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBC_ANNEX_AC]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
 #endif
 						break;
 					}
 					case FE_OFDM:
 					{
 						m_delsys[SYS_DVBT] = true;
+						if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBT]) < 0)
+							eWarning("ioctl FE_GET_INFO failed: %m");
 #if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 3
 						if (m_dvbversion >= DVB_VERSION(5, 3))
 						{
-							if (fe_info.caps & FE_CAN_2G_MODULATION) m_delsys[SYS_DVBT2] = true;
+							if (fe_info.caps & FE_CAN_2G_MODULATION)
+							{
+								m_delsys[SYS_DVBT2] = true;
+								if (::ioctl(m_fd, FE_GET_INFO, &m_fe_info[SYS_DVBT2]) < 0)
+									eWarning("ioctl FE_GET_INFO failed: %m");
+							}
 						}
 #endif
 						break;
@@ -845,8 +868,8 @@ int eDVBFrontend::openFrontend()
 	}
 	else
 	{
-		fe_info.frequency_min = 900000;
-		fe_info.frequency_max = 2200000;
+		m_fe_info[SYS_DVBS].frequency_min = m_fe_info[SYS_DVBS2].frequency_min = 900000;
+		m_fe_info[SYS_DVBS].frequency_max = m_fe_info[SYS_DVBS2].frequency_max = 2200000;
 
 		eDebug("[eDVBFrontend] opening frontend %d", m_dvbid);
 		int tmp_fd = ::open(m_filename.c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC);
@@ -2498,7 +2521,9 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			}
 			p[cmdseq.num].cmd = DTV_DELIVERY_SYSTEM, p[cmdseq.num].u.data = system, cmdseq.num++;
 
+#if defined DTV_LNA
 			p[cmdseq.num].cmd = DTV_LNA, p[cmdseq.num].u.data = 0, cmdseq.num++;
+#endif
 			p[cmdseq.num].cmd = DTV_INVERSION;
 			switch (parm.inversion)
 			{
@@ -2593,7 +2618,9 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 #endif
 			cmdseq.num++;
 
+#if defined DTV_LNA
 			p[cmdseq.num].cmd = DTV_LNA, p[cmdseq.num].u.data = 0, cmdseq.num++;
+#endif
 			p[cmdseq.num].cmd = DTV_FREQUENCY, p[cmdseq.num].u.data = parm.frequency * 1000, cmdseq.num++;
 
 			p[cmdseq.num].cmd = DTV_INVERSION;
@@ -2653,10 +2680,12 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 
 			char configStr[256];
 			snprintf(configStr, sizeof(configStr), "config.Nims.%d.dvbt.terrestrial_5V", m_slotid);
+#if defined DTV_LNA
 			if (eConfigManager::getConfigBoolValue(configStr))
 				p[cmdseq.num].cmd = DTV_LNA, p[cmdseq.num].u.data = 1, cmdseq.num++;
 			else
 				p[cmdseq.num].cmd = DTV_LNA, p[cmdseq.num].u.data = 0, cmdseq.num++;
+#endif
 
 			p[cmdseq.num].cmd = DTV_DELIVERY_SYSTEM, p[cmdseq.num].u.data = system, cmdseq.num++;
 			p[cmdseq.num].cmd = DTV_FREQUENCY, p[cmdseq.num].u.data = parm.frequency, cmdseq.num++;
@@ -2775,7 +2804,9 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 		{
 			eDVBFrontendParametersATSC parm;
 			oparm.getATSC(parm);
+#if defined DTV_LNA
 			p[cmdseq.num].cmd = DTV_LNA, p[cmdseq.num].u.data = 0, cmdseq.num++;
+#endif
 			p[cmdseq.num].cmd = DTV_DELIVERY_SYSTEM;
 			switch (parm.system)
 			{
@@ -2926,7 +2957,7 @@ RESULT eDVBFrontend::prepare_sat(const eDVBFrontendParametersSatellite &feparm, 
 			feparm.pls_code);
 		if ((unsigned int)satfrequency < m_fe_info[SYS_DVBS].frequency_min || (unsigned int)satfrequency > m_fe_info[SYS_DVBS].frequency_max)
 		{
-			eDebugNoSimulate("%d MHz out of tuner range.. dont tune (min: %d MHz max: d% MHz)", satfrequency / 1000, m_fe_info[SYS_DVBS].frequency_min/1000, m_fe_info[SYS_DVBS].frequency_max/1000);
+			eDebugNoSimulate("%d MHz out of tuner range.. dont tune (min: %d MHz max: %d MHz)", satfrequency / 1000, m_fe_info[SYS_DVBS].frequency_min/1000, m_fe_info[SYS_DVBS].frequency_max/1000);
 			return -EINVAL;
 		}
 		eDebugNoSimulate("tuning to %d MHz", satfrequency / 1000);
@@ -3034,6 +3065,9 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where, bool blindscan)
 
 	m_sec_sequence.clear();
 
+	if((m_type == feSatellite) && (type != feSatellite))
+		m_sec_sequence.push_back( eSecCommand(eSecCommand::SET_TONE, iDVBFrontend::toneOff) );
+
 	if((m_type == feSatellite) && (type != feSatellite) && (m_data[SATCR] != -1))
 	{
 		eDebug("unicable shutdown");
@@ -3041,7 +3075,7 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where, bool blindscan)
 
 		// check if voltage is disabled
 		eSecCommand::pair compare;
-		compare.steps = +9;	//only close frontend
+		compare.steps = +6;	//only close frontend
 		compare.voltage = iDVBFrontend::voltageOff;
 
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::IF_VOLTAGE_GOTO, compare) );
@@ -3049,7 +3083,6 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where, bool blindscan)
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::SLEEP, 100 ));
 
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::SET_VOLTAGE, iDVBFrontend::voltage18_5) );
-		m_sec_sequence.push_back( eSecCommand(eSecCommand::SET_TONE, iDVBFrontend::toneOff) );
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::SLEEP, 100 ));
 
 		eDVBDiseqcCommand diseqc;
@@ -3098,7 +3131,6 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where, bool blindscan)
 
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::SEND_DISEQC, diseqc) );
 		m_sec_sequence.push_back( eSecCommand(eSecCommand::SLEEP, 100 ));
-		m_sec_sequence.push_back( eSecCommand(eSecCommand::SET_VOLTAGE, iDVBFrontend::voltage13) );
 
 		if(has_prev())
 		{
@@ -3161,8 +3193,10 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where, bool blindscan)
 		}
 		m_rotor_mode = feparm.no_rotor_command_on_tune;
 		if (!m_simulate)
+		{
 			m_sec->setRotorMoving(m_slotid, false);
-		changeType(feSatellite);
+			changeType(feSatellite);
+		}
 		res=prepare_sat(feparm, timeout);
 		if (res)
 			goto tune_error;
@@ -3277,11 +3311,20 @@ RESULT eDVBFrontend::setVoltage(int voltage)
 		case voltageOff:
 			m_data[CSW]=m_data[UCSW]=m_data[TONEBURST]=-1; // reset diseqc
 			vlt = SEC_VOLTAGE_OFF;
+			char filename[256];
+			snprintf(filename, sizeof(filename), "/proc/stb/frontend/%d/active_antenna_power", m_slotid);
+			CFile::writeStr(filename, "off");
 			break;
 		case voltage13_5:
 			increased = true;
 		case voltage13:
 			vlt = SEC_VOLTAGE_13;
+			if(m_type == feTerrestrial)
+			{
+				char filename[256];
+				snprintf(filename, sizeof(filename), "/proc/stb/frontend/%d/active_antenna_power", m_slotid);
+				CFile::writeStr(filename, "on");
+			}
 			break;
 		case voltage18_5:
 			increased = true;
@@ -3704,8 +3747,6 @@ bool eDVBFrontend::changeType(int type)
 bool eDVBFrontend::supportsDeliverySystem(const fe_delivery_system_t &sys, bool obeywhitelist)
 {
 	std::map<fe_delivery_system_t, bool>::iterator it = m_delsys.find(sys);
-	if (it != m_delsys.end() && it->second)
-		return true;
 
 	if (obeywhitelist && !m_delsys_whitelist.empty())
 	{
@@ -3713,6 +3754,9 @@ bool eDVBFrontend::supportsDeliverySystem(const fe_delivery_system_t &sys, bool 
 		if (it != m_delsys_whitelist.end() && it->second)
 			return true;
 	}
+	else
+		if (it != m_delsys.end() && it->second)
+			return true;
 	return false;
 }
 
