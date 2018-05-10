@@ -53,7 +53,7 @@ def CreateFeedConfig():
 	f = open(fileconf, "w")
 	f.write(feedurl)
 	f.close()
-	os.system("ipkg update")
+	os.system("opkg update")
 
 config.misc.pluginbrowser = ConfigSubsection()
 config.misc.pluginbrowser.plugin_order = ConfigText(default="")
@@ -314,8 +314,8 @@ class PluginDownloadBrowser(Screen):
 			self.ipkg_install = self.ipkg + ' install --force-overwrite'
 			self.ipkg_remove =  self.ipkg + ' remove --autoremove --force-depends'
 		else:
-			self.ipkg = 'ipkg'
-			self.ipkg_install = 'ipkg install --force-overwrite -force-defaults'
+			self.ipkg = 'opkg'
+			self.ipkg_install = 'opkg install --force-overwrite -force-defaults'
 			self.ipkg_remove =  self.ipkg + ' remove'
 
 	def createSummary(self):
