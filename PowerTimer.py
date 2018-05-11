@@ -128,7 +128,7 @@ class PowerTimerEntry(timer.TimerEntry, object):
 
 		self.messageBoxAnswerPending = False
 
-		def __repr__(self, getType = False):
+	def __repr__(self, getType = False):
 		timertype = {
 			TIMERTYPE.NONE: "nothing",
 			TIMERTYPE.WAKEUP: "wakeup",
