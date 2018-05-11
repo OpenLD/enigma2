@@ -20,12 +20,12 @@ class Tuner:
 			parm.modulation = transponder[7]
 			parm.rolloff = transponder[8]
 			parm.pilot = transponder[9]
-			if len(transponder) > 12:
+			if len(transponder) > 10:
 				parm.is_id = transponder[10]
 				parm.pls_mode = transponder[11]
 				parm.pls_code = transponder[12]
 			else:
-				parm.is_id = -1
+				parm.is_id = 0 #-1
 				parm.pls_mode = 0
 				parm.pls_code = 1
 			self.tuneSatObj(parm)
@@ -220,7 +220,7 @@ class TuneTest:
 			# check for tsid != -1 and onid != -1
 			print "index:", index
 			print "len(self.transponderlist):", len(self.transponderlist)
-			while (index < len(self.transponderlist) and (self.transponderlist[index][13] == -1 or self.transponderlist[index][14] == -1)):
+			while index < len(self.transponderlist) and (self.transponderlist[index][13] == -1 or self.transponderlist[index][14] == -1):
 				index += 1
 		print "FirstTransponder final index:", index
 		return index
@@ -233,7 +233,7 @@ class TuneTest:
 			# check for tsid != -1 and onid != -1
 			print "index:", index
 			print "len(self.transponderlist):", len(self.transponderlist)
-			while (index < len(self.transponderlist) and (self.transponderlist[index][13] == -1 or self.transponderlist[index][14] == -1)):
+			while index < len(self.transponderlist) and (self.transponderlist[index][13] == -1 or self.transponderlist[index][14] == -1):
 				index += 1
 
 		print "next transponder index:", index

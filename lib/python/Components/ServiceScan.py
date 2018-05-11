@@ -11,10 +11,10 @@ class ServiceScan:
 	DonePartially = 5
 
 	Errors = {
-		0: "error starting scanning",
-		1: "error while scanning",
-		2: "no resource manager",
-		3: "no channel list"
+		0: _("error starting scanning"),
+		1: _("error while scanning"),
+		2: _("no resource manager"),
+		3: _("no channel list")
 		}
 
 	def scanStatusChanged(self):

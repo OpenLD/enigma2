@@ -1096,19 +1096,19 @@ class NimSelection(Screen):
 				elif x.isCompatible("DVB-T"):
 					nimConfig = nimmanager.getNimConfig(x.slot).dvbt
 					if nimConfig.configMode.value == "nothing":
-						text = _("nothing connected")
+						text = _("Disabled")
 					elif nimConfig.configMode.value == "enabled":
 						text = _("Enabled")
 				elif x.isCompatible("DVB-C"):
 					nimConfig = nimmanager.getNimConfig(x.slot).dvbc
 					if nimConfig.configMode.value == "nothing":
-						text = _("nothing connected")
+						text = _("Disabled")
 					elif nimConfig.configMode.value == "enabled":
 						text = _("Enabled")
 				elif x.isCompatible("ATSC"):
 					nimConfig = nimmanager.getNimConfig(x.slot).atsc
 					if nimConfig.configMode.value == "nothing":
-						text = _("nothing connected")
+						text = _("Disabled")
 					elif nimConfig.configMode.value == "enabled":
 						text = _("Enabled")
 				if not x.isSupported():

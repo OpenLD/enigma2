@@ -134,14 +134,16 @@ def GetDeviceId(filter, nim_idx):
 			if socket_id == nim_idx:
 				break
 
-			if device_id:	device_id = 0
-			else:			device_id = 1
+			if device_id:
+				device_id = 0
+			else:
+				device_id = 1
 		socket_id += 1
 	return device_id
 
 def GetTerrestrial5VEnable(nim_idx):
-       nim = nimmanager.nim_slots[nim_idx]
-       return int(nim.config.dvbt.terrestrial_5V.value)
+	nim = nimmanager.nim_slots[nim_idx]
+	return int(nim.config.dvbt.terrestrial_5V.value)
 
 class CableTransponderSearchSupport:
 #	def setCableTransponderSearchResult(self, tlist):
@@ -209,7 +211,7 @@ class CableTransponderSearchSupport:
 		for line in lines:
 			data = line.split()
 			if len(data):
-				if data[0] == 'OK':
+				if data[0] == 'OK' and data[4] != 'NOT_IMPLEMENTED':
 					print str
 					parm = eDVBFrontendParametersCable()
 					qam = { "QAM16" : parm.Modulation_QAM16,
@@ -806,7 +808,6 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 				sat = self.satList[index_to_scan][self.scan_satselection[index_to_scan].index]
 				self.predefinedTranspondersList(sat[0])
 				self.list.append(getConfigListEntry(_('Transponder'), self.preDefTransponders))
-
 			elif self.scan_type.value == "single_satellite":
 				self.updateSatList()
 				print self.scan_satselection[index_to_scan]
@@ -1889,7 +1890,7 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 			for item in networks.iteritems():
 				req_type = item[0]
 				for req_network in item[1]:
-					for nim in nimmanager.nim_slots:
+					for nim in nimmanager.nim_slots or nims_to_scan:
 						tag_dvbc = tag_dvbt = tag_dvbs = tag_atsc = False
 						if not nim.canBeCompatible(req_type):
 							continue
@@ -1903,7 +1904,7 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 								self.nim_enable.append(nimconfig)
 								self.list.append(getConfigListEntry(_("Scan ") + nim.slot_name + " (DVB-S) " + req_network[1], nimconfig))
 								break;
-						elif req_type in ("DVB-C", "DVB-C2") and nim.config.dvbc.configMode.value != "nothing"and not tag_dvbc:
+						elif req_type in ("DVB-C", "DVB-C2") and nim.config.dvbc.configMode.value != "nothing" and not tag_dvbc:
 							if req_network in nimmanager.getCableDescription(nim.slot):
 								tag_dvbc = True
 								nimconfig = ConfigYesNo(default = True)
@@ -1933,6 +1934,15 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 								self.nim_enable.append(nimconfig)
 								self.list.append(getConfigListEntry(_("Scan ") + nim.slot_name + " (ATSC) " + req_network, nimconfig))
 								break;
+						else:
+							for nim in nims_to_scan:
+								nimconfig = ConfigYesNo(default = True)
+								nimconfig.nim_index = nim.slot
+								nimconfig.network = req_network
+								self.nim_enable.append(nimconfig)
+								self.list.append(getConfigListEntry(_("Scan ") + nim.slot_name + " (" + nim.friendly_type + ")" + req_network, nimconfig))
+								break;
+
 		self.list.sort()
 		ConfigListScreen.__init__(self, self.list)
 		self["header"] = Label(_("Automatic scan"))

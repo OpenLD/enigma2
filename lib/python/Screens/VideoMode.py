@@ -157,7 +157,7 @@ class VideoSetup(Screen, ConfigListScreen):
 						self.list.append(getConfigListEntry(_("%sShow 1080i as 1080p") %self.prev_fhd, config.av.autores_1080i_deinterlace, _("Use Deinterlacing for 1080i Videosignal?"), "check_fhd"))
 					elif not '1080p' in iAVSwitch.modes_available and not '1080p50' in iAVSwitch.modes_available:
 						config.av.autores_1080i_deinterlace.setValue(False)
-				if '2160p' in iAVSwitch.modes_available or '2160p30' in iAVSwitch.modes_available:
+				if '2160i' in iAVSwitch.modes_available or '2160p' in iAVSwitch.modes_available or '2160p30' in iAVSwitch.modes_available:
 					self.getVerify_videomode(config.av.autores_mode_uhd, config.av.autores_rate_uhd)
 					self.list.append(getConfigListEntry(pgettext(_("Video output mode for UHD"), _("%sMode for UHD (up to 2160p)") %self.prev_uhd), config.av.autores_mode_uhd[config.av.videoport.value], _("This option configures the video output mode (or resolution)."), "check_uhd"))
 					self.list.append(getConfigListEntry(_("%sRefresh rate for UHD") %self.prev_uhd, config.av.autores_rate_uhd[config.av.autores_mode_uhd[config.av.videoport.value].value], _("Configure the refresh rate of the screen."), "check_uhd"))
@@ -254,7 +254,7 @@ class VideoSetup(Screen, ConfigListScreen):
 		pol = mode.replace('p30','p')[-1:]
 		rate = setrate[mode].value.replace('Hz','')
 
-		if int(res) > int(config_res) or (int(res) == int(config_res) and ((pol == 'p' and config_pol == 'i') or (config_mode == '2160p30' and mode == '2160p'))):
+		if int(res) > int(config_res) or (int(res) == int(config_res) and ((pol == 'p' and config_pol == 'i') or (config_mode == '2160p30' and mode == '2160p' or mode == '2160i'))):
 			setmode[config_port].setValue(config_mode)
 		if config_rate not in ("auto","multi") and (rate in ("auto","multi") or int(config_rate) < int(rate)):
 			setrate[config_mode].setValue(config_rate)
@@ -359,6 +359,8 @@ class VideoSetup(Screen, ConfigListScreen):
 				self.hw.setMode(port, '1080p', '50Hz')
 			elif (smart1080p == '1080p50') or (smart1080p == 'true'): # for compatibility with old ConfigEnableDisable
 				self.hw.setMode(port, '1080p', '50Hz')
+			elif smart1080p == '2160i50':
+				self.hw.setMode(port, '2160i', '50Hz')
 			elif smart1080p == '2160p50':
 				self.hw.setMode(port, '2160p', '50Hz')
 			elif smart1080p == '1080i50':
@@ -805,6 +807,8 @@ class AutoVideoMode(Screen):
 					else:
 						new_rate = config.av.autores_rate_uhd[config.av.autores_mode_uhd[config.av.videoport.value].value].value.replace('Hz','')
 					new_mode = config.av.autores_mode_uhd[config_port].value.replace('p30','p')
+					if new_mode == '2160p' and not config.av.autores_1080i_deinterlace.value and video_height == 2160 and video_pol == 'i':
+						new_mode = '2160i'
 				else:
 					if config_rate not in ("auto","multi"): new_rate = config_rate
 					new_mode = config_mode
@@ -979,6 +983,8 @@ class AutoVideoMode(Screen):
 
 				if (config.av.smart1080p.value == '1080p50') or (config.av.smart1080p.value == 'true'): # for compatibility with old ConfigEnableDisable
 					write_mode = '1080p' + new_rate
+				elif config.av.smart1080p.value == '2160i50':
+					write_mode = '2160i' + new_rate
 				elif config.av.smart1080p.value == '2160p50':
 					write_mode = '2160p' + new_rate
 				elif config.av.smart1080p.value == '1080i50':

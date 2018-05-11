@@ -30,6 +30,7 @@ def InitRecordingConfig():
 		("zap", _("zap")),
 		("record", _("record")),
 		("zap+record", _("zap and record")) ] )
+	config.recording.switchTVon = ConfigYesNo(default = True)
 	if SystemInfo["DeepstandbySupport"]:
 		shutdownString = _("go to deep standby")
 	else:
