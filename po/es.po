@@ -1355,23 +1355,23 @@ msgstr "Hora de inicio"
 
 #
 msgid "Behavior of 'pause' when paused"
-msgstr "Comportamiento de ‘pausa’ en pausa"
+msgstr "Conducta de ‘pausa’ en pausa"
 
 #
 msgid "Behavior of 0 key in PiP-mode"
-msgstr "Comportamiento de la tecla '0' en modo PiP"
+msgstr "Conducta de la tecla '0' en modo PiP"
 
 #
 msgid "Behavior when a movie is started"
-msgstr "Comportamiento con película empezada"
+msgstr "Conducta con película empezada"
 
 #
 msgid "Behavior when a movie is stopped"
-msgstr "Comportamiento con película en pausa"
+msgstr "Conducta con película en pausa"
 
 #
 msgid "Behavior when a movie reaches the end"
-msgstr "Comportamiento con una película terminando"
+msgstr "Conducta con una película terminando"
 
 #
 msgid "Bitrate:"
@@ -1956,6 +1956,10 @@ msgstr "Comunicación"
 
 #
 msgid "Complete"
+msgstr "Completa"
+
+#
+msgid "Completed"
 msgstr "Completado"
 
 #
@@ -3964,10 +3968,10 @@ msgstr "Configuración de disco duro"
 
 #
 msgid "Hard disk standby after"
-msgstr "Disco duro en modo de espera tras"
+msgstr "Disco duro en modo de espera"
 
 msgid "Hard disk standby in box standby after"
-msgstr "Disco duro en modo de espera con el decodificador en modo de espera tras"
+msgstr "Disco duro en modo de espera tras inactividad"
 
 msgid "Configure the hard disk drive to go to standby after the specified idle time when the box is in standby."
 msgstr "Configura el disco duro para que vaya a modo de espera tras el tiempo de inactividad especificado cuando el decodificador está en modo de espera."
@@ -6123,7 +6127,7 @@ msgid "Port:"
 msgstr "Puerto:"
 
 msgid "Position of finished Timers in Timerlist"
-msgstr "Posición de temporizadores terminados en lista de temporizadores"
+msgstr "Posición de temporizadores terminados en Timerlist"
 
 #
 msgid "Positioner"
@@ -10604,6 +10608,14 @@ msgstr "Predeterminado 'Después del evento'"
 #: data/setup.xml
 msgid "Configure default setting for new timers. Need a restart after changing."
 msgstr "Determina la configuración por defecto para los temporizadores nuevos. Necesita un reinicio después del cambio."
+
+#: data/setup.xml
+msgid "Turn on the TV from standby with 'zap and record' timer"
+msgstr "Encienda el televisor desde standby con el temporizador 'zap y grabar'"
+
+#: data/setup.xml
+msgid "If you have activated HDMI-CEC, you can specify here whether a 'zap and record' timer also turns on the TV."
+msgstr "Si ha activado HDMI-CEC, puede especificar aquí si un temporizador de 'zap y grabar' también enciende el televisor."
 
 #: data/setup.xml
 msgid "Long press emulation with button"
@@ -15357,8 +15369,8 @@ msgstr "El valor predeterminado es de 5 minutos antes de despertar desde lo más
 msgid "The default settings are wakeup time - 5 minutes and timer begin time + 5 minutes. This setting changed the time window before the wakeup time. So can be detected a wakeup by a timer even at very early starting receivers."
 msgstr "Los ajustes predeterminados están despertando en - 5 minutos y el temporizador de arranque  en + 5 minutos. Esto establece la ventana de tiempo antes de la hora del despertador. De este modo, se detecta el despertar por un temporizador, incluso en los receptores de partida muy tempranas."
 
-msgid "If enabled, will checks for the time after the start of the receiver is within the time window and optionally switched to standby. If disabled, must additional be available a signal for the successful wakeup detection. (some receiver send a false or none signal)"
-msgstr "Cuando se activa, se comprueba si el tiempo después del inicio del receptor está encendido y, en su caso, en el modo de espera dentro de la ventana de tiempo. Si no se controla, incluso una señal para la detección exitosa también debe estar disponible. (Algunos receptores envían una señal equivocada o no)"
+msgid "If enabled, using a time window to detect a wakeup from deep standby by a timer. Default setting ist disabled and used a special signal from the receiver. But some devices set a wrong or none signal and the wakeup detection can fails."
+msgstr "Si está habilitado, usa una ventana de tiempo para detectar un despertador desde el modo de espera profundo mediante un temporizador. La configuración predeterminada está deshabilitada y se usa una señal especial del receptor. Pero algunos dispositivos configuran una señal incorrecta o nula y la detección de activación puede fallar."
 
 msgid "The standard wakeup time is 5 minutes (or box specific) before a timer starts. Is the real wake up time outside 10 mins (some boxes starts not punctually) to the next timer will not switched to standby. (minus value = wake up to timer is shorter)"
 msgstr "El tiempo de reactivación estándar es 5 minutos (u otro específico) antes que empiece un temporizador. Si el siguiente temporizador empieza en menos de 10 minutos (algunos receptores no encienden puntualmente), el decodificador no irá a modo de espera (menos valor = el tiempo de reactivación antes de temporizador es inferior)"

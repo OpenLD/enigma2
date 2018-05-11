@@ -26,9 +26,12 @@ class ResolutionSelection(Screen):
 		tlist.append(("576p", "576p50"))
 		tlist.append(("720p", "720p50"))
 		tlist.append(("1080i", "1080i50"))
+		tlist.append(("1080p", "1080p50"))
 		tlist.append(("1080p@23.976hz", "1080p23"))
 		tlist.append(("1080p@24hz", "1080p24"))
 		tlist.append(("1080p@25hz", "1080p25"))
+		tlist.append(("2160i", "2160i50"))
+		tlist.append(("2160p", "2160p50"))
 
 		keys = ["green", "yellow", "blue", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 

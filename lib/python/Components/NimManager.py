@@ -914,7 +914,8 @@ class NimManager:
 	def getTranspondersCable(self, nim):
 		nimConfig = config.Nims[nim].dvbc
 		if nimConfig.configMode.value != "nothing" and nimConfig.scan_type.value == "provider":
-			return self.transponderscable[self.cablesList[nimConfig.scan_provider.index][0]]
+			return self.transponderscable[self.cablesList[config.Nims[nim].dvbc.scan_provider.index][0]]
+			#return self.transponderscable[self.cablesList[nimConfig.scan_provider.index][0]]
 		return [ ]
 
 	def getTranspondersTerrestrial(self, region):
@@ -1416,7 +1417,8 @@ class NimManager:
 	def somethingConnected(self, slotid = -1):
 		if slotid == -1:
 			for id in range(self.getSlotCount()):
-				if self.somethingConnected(id) and self.nim_slots[id].internally_connectable != id - 1:
+				from enigma import isFBCLink
+				if self.somethingConnected(id) and not self.nim_slots[id].isFBCLink() and self.nim_slots[id].internally_connectable != id - 1:
 					return True
 			return False
 		else:
@@ -2170,7 +2172,7 @@ def InitNimManager(nimmgr, update_slots = []):
 		if slot.canBeCompatible("DVB-S"):
 			nim = config.Nims[x].dvbs
 			createSatConfig(nim, x, empty_slots)
-			config_mode_choices = [("nothing", _("nothing connected")),
+			config_mode_choices = [("nothing", _("disabled")),
 				("simple", _("simple")), ("advanced", _("advanced"))]
 			if len(nimmgr.getNimListOfType(slot.type, exception = x)) > 0:
 				config_mode_choices.append(("equal", _("equal to")))
@@ -2192,7 +2194,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.configMode = ConfigSelection(
 				choices = {
 					"enabled": _("enabled"),
-					"nothing": _("nothing connected"),
+					"nothing": _("disabled"),
 					},
 				default = "enabled")
 			createCableConfig(nim, x)
@@ -2201,7 +2203,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.configMode = ConfigSelection(
 				choices = {
 					"enabled": _("enabled"),
-					"nothing": _("nothing connected"),
+					"nothing": _("disabled"),
 					},
 				default = "enabled")
 			createTerrestrialConfig(nim, x)
@@ -2210,7 +2212,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.configMode = ConfigSelection(
 				choices = {
 					"enabled": _("enabled"),
-					"nothing": _("nothing connected"),
+					"nothing": _("disabled"),
 					},
 				default = "enabled")
 			createATSCConfig(nim, x)

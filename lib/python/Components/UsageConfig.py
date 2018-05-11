@@ -287,7 +287,7 @@ def InitUsageConfig():
 
 	config.usage.check_timeshift = ConfigYesNo(default = True)
 
-	config.usage.alternatives_priority = ConfigSelection(default = "0", choices = [
+	config.usage.alternatives_priority = ConfigSelection(default = "1", choices = [
 		("0", "DVB-S/-C/-T"),
 		("1", "DVB-S/-T/-C"),
 		("2", "DVB-C/-S/-T"),
