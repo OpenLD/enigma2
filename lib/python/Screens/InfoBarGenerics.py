@@ -687,9 +687,10 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				self.openInfoBarEPG()
 			else:
 				self.hide()
-				if self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
-					self.secondInfoBarScreen.hide()
-					self.secondInfoBarWasShown = False
+				if isStandardInfoBar(self):
+					if self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
+						self.secondInfoBarScreen.hide()
+						self.secondInfoBarWasShown = False
 			if self.session.pipshown and "popup" in config.usage.pip_hideOnExit.value:
 				if config.usage.pip_hideOnExit.value == "popup":
 					self.session.openWithCallback(self.hidePipOnExitCallback, MessageBox, _("Disable Picture in Picture"), simple=True)
@@ -824,14 +825,15 @@ class InfoBarShowHide(InfoBarScreenSaver):
 				self.startHideTimer()
 			else:
 				self.hide()
-				if self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
-					self.secondInfoBarScreen.hide()
-				elif self.EventViewIsShown:
-					try:
-						self.eventView.close()
-					except:
-						pass
-					self.EventViewIsShown = False
+				if isStandardInfoBar(self):
+					if self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
+						self.secondInfoBarScreen.hide()
+					elif self.EventViewIsShown:
+						try:
+							self.eventView.close()
+						except:
+							pass
+						self.EventViewIsShown = False
 
 	def toggleShowLong(self):
 		try:
