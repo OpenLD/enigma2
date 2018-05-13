@@ -511,8 +511,3 @@ void eDBoxLCD::update()
 	dumpLCD2PNG();
 #endif
 }
-
-void eDBoxLCD::setDump(bool onoff)
-{
-	return;
-}
