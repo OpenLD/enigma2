@@ -5,11 +5,13 @@ def orbpos(pos):
 	return pos > 3600 and "N/A" or "%d.%d\xc2\xb0%s" % (pos > 1800 and ((3600 - pos) / 10, (3600 - pos) % 10, "W") or (pos / 10, pos % 10, "E"))
 
 def getTunerDescription(nim):
+	description = ""
 	try:
-		return nimmanager.getTerrestrialDescription(nim)
+		description = nimmanager.getTerrestrialDescription(nim)
 	except:
-		print "[ChannelNumber] nimmanager.getTerrestrialDescription(nim) failed, nim:", nim
-	return ""
+		#print "[ChannelNumber] nimmanager.getTerrestrialDescription(nim) failed, nim:", nim
+		pass
+	return description
 
 def getMHz(frequency):
 	if str(frequency).endswith('MHz'):
@@ -24,35 +26,47 @@ def getChannelNumber(frequency, nim):
 				break
 	f = getMHz(frequency)
 	descr = getTunerDescription(nim)
-	if "DVB-T" in descr:
-		if "Europe" in descr:
+
+	if "Europe" in descr:
+		if "DVB-T" or "DVB-T2" in descr:
 			if 174 < f < 230: 	# III
 				d = (f + 1) % 7
 				return str(int(f - 174)/7 + 5) + (d < 3 and "-" or d > 4 and "+" or "")
 			elif 470 <= f < 863: 	# IV,V
 				d = (f + 2) % 8
 				return str(int(f - 470) / 8 + 21) + (d < 3.5 and "-" or d > 4.5 and "+" or "")
-		elif "Australia" in descr:
-			d = (f + 1) % 7
-			ds = (d < 3 and "-" or d > 4 and "+" or "")
-			if 174 < f < 202: 	# CH6-CH9
-				return str(int(f - 174)/7 + 6) + ds
-			elif 202 <= f < 209: 	# CH9A
-				return "9A" + ds
-			elif 209 <= f < 230: 	# CH10-CH12
-				return str(int(f - 209)/7 + 10) + ds
-			elif 526 < f < 820: 	# CH28-CH69
-				d = (f - 1) % 7
-				return str(int(f - 526)/7 + 28) + (d < 3 and "-" or d > 4 and "+" or "")
+
+	elif "Australia" in descr:
+		d = (f + 1) % 7
+		ds = (d < 3 and "-" or d > 4 and "+" or "")
+		if 174 < f < 202: 	# CH6-CH9
+			return str(int(f - 174)/7 + 6) + ds
+		elif 202 <= f < 209: 	# CH9A
+			return "9A" + ds
+		elif 209 <= f < 230: 	# CH10-CH12
+			return str(int(f - 209)/7 + 10) + ds
+		elif 526 < f < 820: 	# CH28-CH69
+			d = (f - 1) % 7
+			return str(int(f - 526)/7 + 28) + (d < 3 and "-" or d > 4 and "+" or "")
+
 	return ""
 
 def supportedChannels(nim):
 	descr = getTunerDescription(nim)
-	return "Europe" in descr and "DVB-T" in descr
+	if "Europe" in descr and "DVB-T" in descr:
+		return True
+	elif "Europe" in descr and "DVB-T2" in descr:
+		return True
+	return False
 
 def channel2frequency(channel, nim):
 	descr = getTunerDescription(nim)
 	if "Europe" in descr and "DVB-T" in descr:
+		if 5 <= channel <= 12:
+			return (177500 + 7000*(channel- 5))*1000
+		elif 21 <= channel <= 69:
+			return (474000 + 8000*(channel-21))*1000
+	elif "Europe" in descr and "DVB-T2" in descr:
 		if 5 <= channel <= 12:
 			return (177500 + 7000*(channel- 5))*1000
 		elif 21 <= channel <= 69:
@@ -157,14 +171,12 @@ def ConvertToHumanReadable(tp, tunertype = None):
 		ret["symbol_rate"] = (tp.get("symbol_rate") and tp.get("symbol_rate")/1000) or 0
 	elif tunertype == "DVB-T":
 		ret["tuner_type"] = _("Terrestrial")
-		ret["bandwidth"] = {
-			0 : _("Auto"),
-			10000000 : "10 MHz",
-			8000000 : "8 MHz",
-			7000000 : "7 MHz",
-			6000000 : "6 MHz",
-			5000000 : "5 MHz",
-			1712000 : "1.712 MHz"}.get(tp.get("bandwidth"))
+		x = tp.get("bandwidth")
+		if isinstance(x, int):
+			x = str("%.3f" % (float(x) / 1000000.0)).rstrip('0').rstrip('.') + " MHz" if x else "Auto"
+		else:
+			x = ""
+		ret["bandwidth"] = x
 		#print 'bandwidth:',tp.get("bandwidth")
 		ret["code_rate_lp"] = {
 			eDVBFrontendParametersTerrestrial.FEC_Auto : _("Auto"),
