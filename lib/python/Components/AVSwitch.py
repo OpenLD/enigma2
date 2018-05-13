@@ -118,14 +118,14 @@ class AVSwitch:
 		modes["HDMI"] = ["720p", "1080p", "2160i", "2160p", "2160p30", "1080i", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080p", "1080i", "2160i", "2160p", "2160p30"}
 	elif (about.getChipSetString() in ('7111', '7162', '7241', '7346', '7356', '7358', '7362', '73565', '73625', '7424', '7425', '7435', '7552', '7581', '7584', '75845', '7585', 'pnx8493')) or (getBrandOEM() in ('azbox')):
-		modes["HDMI"] = ["720p", "1080p", "2160i", "1080i", "576p", "576i", "480p", "480i"]
-		widescreen_modes = {"720p", "1080p", "1080i", "2160i"}
+		modes["HDMI"] = ["720p", "1080p", "1080i", "576p", "576i", "480p", "480i"]
+		widescreen_modes = {"720p", "1080p", "1080i"}
 	elif about.getChipSetString() in ('meson-6'):
 		modes["HDMI"] = ["720p", "1080p", "1080i"]
 		widescreen_modes = {"720p", "1080p", "1080i"}
 	elif about.getChipSetString() in ('meson-64'):
-		modes["HDMI"] = ["720p", "1080p", "1080i", "2160p", "2160p30", "2160i"]
-		widescreen_modes = {"720p", "1080p", "1080i", "2160p", "2160p30", "2160i"}
+		modes["HDMI"] = ["720p", "1080p", "2160p", "2160p30", "2160i", "1080i"]
+		widescreen_modes = {"720p", "1080p", "2160p", "2160p30", "2160i", "1080i"}
 	else:
 		modes["HDMI"] = ["720p", "1080i", "576p", "576i", "480p", "480i"]
 		widescreen_modes = {"720p", "1080i"}
