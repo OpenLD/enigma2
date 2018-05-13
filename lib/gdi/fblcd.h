@@ -52,7 +52,7 @@ public:
 	int lock();
 	void unlock();
 	int islocked() { return locked; }
-	void setDump(bool);
+	void setDump(bool) {}
 };
 
 #endif
