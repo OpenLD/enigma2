@@ -44,7 +44,8 @@ class ChannelNumbers:
 		try:
 			description = nimmanager.getTerrestrialDescription(nim)
 		except:
-			print "[ChannelNumber] nimmanager.getTerrestrialDescription(nim) failed, nim:", nim
+			#print "[ChannelNumber] nimmanager.getTerrestrialDescription(nim) failed, nim:", nim
+			pass
 		return description
 
 	def supportedChannels(self, nim):

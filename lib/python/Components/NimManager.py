@@ -176,7 +176,7 @@ class SecConfigure:
 		try:
 			for slot in nim_slots:
 				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+					types = [type for type in ["DVB-S", "DVB-S2", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 					if "DVB-T2" in types:
 						# DVB-T2 implies DVB-T support
 						types.remove("DVB-T")
@@ -756,12 +756,12 @@ class NIM(object):
 			print "%s is not suportetd "%(what)
 			return False
 		if self.isMultiType():
-			#print"[adenin] %s is multitype"%(self.slot)
+			#print" %s is multitype"%(self.slot)
 			for type in self.multi_type.values():
 				if what in self.compatible[type]:
 					return True
 		elif  what in self.compatible[self.getType()]:
-			#print"[adenin] %s is NOT multitype"%(self.slot)
+			#print" %s is NOT multitype"%(self.slot)
 			return True
 		return False
 
@@ -914,8 +914,8 @@ class NimManager:
 	def getTranspondersCable(self, nim):
 		nimConfig = config.Nims[nim].dvbc
 		if nimConfig.configMode.value != "nothing" and nimConfig.scan_type.value == "provider":
-			return self.transponderscable[self.cablesList[config.Nims[nim].dvbc.scan_provider.index][0]]
-			#return self.transponderscable[self.cablesList[nimConfig.scan_provider.index][0]]
+			#return self.transponderscable[self.cablesList[config.Nims[nim].dvbc.scan_provider.index][0]]
+			return self.transponderscable[self.cablesList[nimConfig.scan_provider.index][0]]
 		return [ ]
 
 	def getTranspondersTerrestrial(self, region):
@@ -2107,6 +2107,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			if list:
 				possible_scan_types.append(("provider", _("Provider")))
 				nim.scan_provider = ConfigSelection(choices = list)
+			nim.config_scan_details = ConfigYesNo(default = False)
 			nim.scan_type = ConfigSelection(default = "provider", choices = possible_scan_types)
 			nim.scan_band_EU_VHF_I = ConfigYesNo(default = True)
 			nim.scan_band_EU_MID = ConfigYesNo(default = True)
@@ -2149,7 +2150,7 @@ def InitNimManager(nimmgr, update_slots = []):
 	try:
 		for slot in nimmgr.nim_slots:
 			if slot.frontend_id is not None:
-				types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+				types = [type for type in ["DVB-S", "DVB-S2", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 				if "DVB-T2" in types:
 					# DVB-T2 implies DVB-T support
 					types.remove("DVB-T")
