@@ -37,8 +37,9 @@ from sys import maxint
 wasRecTimerWakeup = False
 try:
 	from Screens.InfoBar import InfoBar
-except Exception, e:
-	print "[RecordTimer] import from 'Screens.InfoBar import InfoBar' failed:", e
+except:
+	pass
+	#print "[RecordTimer] import from 'Screens.InfoBar import InfoBar' failed:"
 	InfoBar = False
 #+++
 debug = False

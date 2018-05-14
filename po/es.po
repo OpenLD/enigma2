@@ -233,6 +233,22 @@ msgstr "%a %e/%m"
 msgid "%a %e/%m  %-H:%M"
 msgstr "%a %e/%m  %-H:%M"
 
+# EventView.py#L308
+msgid "\n%d.%d.%d, %2d:%02d  -  %s"
+msgstr "\n%02d.%02d.%d, %02d:%02d  -  %s"
+
+# EpgList.py#L686
+msgid "%e/%m, %-H:%M"
+msgstr "%02e.%02m, %H:%M"
+
+# Date & Time in Timer-Log ( Timer & PowerTimer )
+msgid "%Y-%m-%d %H-%M"
+msgstr "%d.%m.%Y %H:%M"
+
+# about.py date format
+msgid "%Y-%m-%d"
+msgstr "%d.%m.%Y"
+
 #, python-format
 msgid "%d Gb"
 msgstr "%d Gb"
@@ -4508,6 +4524,9 @@ msgstr "Historial anterior"
 
 msgid "History next"
 msgstr "Historial siguiente"
+
+msgid "History zap"
+msgstr "Historial zap"
 
 msgid "Show Audioselection"
 msgstr "Mostrar selección de audio"
@@ -15349,7 +15368,7 @@ msgid "Wakeup time before a timer begins [mins]"
 msgstr "Despertar antes de que un temporizador se inicie [min]"
 
 msgid "Time window for detection of the wakeup by a timer [mins]"
-msgstr "Ventana de tiempo para la detección del despertar por un temporizador [min]"
+msgstr "Tiempo para la detección del despertar por un temporizador [min]"
 
 msgid "Use workaround for wakeup from deep-standby?"
 msgstr "Usar solución para despertar del modo de espera profundo?"
