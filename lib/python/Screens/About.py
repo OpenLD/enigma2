@@ -43,6 +43,15 @@ import re
 
 boxtype = getBoxType()
 
+def MyDateConverter(StringDate):
+	## StringDate must be a string "YYYY-MM-DD"
+	try:
+		StringDate = StringDate.replace("-"," ")
+		StringDate = time.strftime(_("%Y-%m-%d"), time.strptime(StringDate, "%Y %m %d"))
+		return StringDate
+	except:
+		return _("unknown")
+
 def getAboutText():
 	AboutText = ""
 
@@ -143,8 +152,8 @@ def getAboutText():
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
 	AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
-	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
-	AboutText += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
+	AboutText += _("DVB drivers:\t %s") % MyDateConverter(str(about.getDriverInstalledDate())) + "\n"
+	AboutText += _("Last update:\t %s") % MyDateConverter(str(getEnigmaVersionString())) + "\n"
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
 	AboutText += _("GStreamer:\t %s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
