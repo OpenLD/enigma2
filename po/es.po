@@ -17015,13 +17015,6 @@ msgstr "Restablecer PIN"
 msgid "Show CI messages"
 msgstr "Mostrar mensajes CI"
 
-msgid ""
-"\n"
-"%d.%d.%d, %2d:%02d  -  %s"
-msgstr ""
-"\n"
-"%02d/%02d/%02d, %2d:%02d en %s"
-
 msgid "CH%s"
 msgstr "CANAL %s"
 
