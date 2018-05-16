@@ -76,17 +76,14 @@ void eActionMap::unbindAction(eWidget *widget, int id)
 void eActionMap::unbindAction(const std::string &context, ePyObject function)
 {
 	for (std::multimap<int, eActionBinding>::iterator i(m_bindings.begin()); i != m_bindings.end(); ++i)
-	{
 		if (i->second.m_fnc && (PyObject_Compare(i->second.m_fnc, function) == 0))
 		{
 			Py_DECREF(i->second.m_fnc);
 			m_bindings.erase(i);
 			return;
 		}
-	}
 	eFatal("unbindAction with illegal python reference");
 }
-
 
 void eActionMap::bindKey(const std::string &domain, const std::string &device, int key, int flags, const std::string &context, const std::string &action)
 {
