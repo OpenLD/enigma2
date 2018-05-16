@@ -16,18 +16,19 @@
 //#define SHOW_WRITE_TIME
 
 DEFINE_REF(eFilePushThread);
-eFilePushThread::eFilePushThread(int io_prio_class, int io_prio_level, int blocksize, size_t buffersize)
-	: prio_class(io_prio_class),
-	  prio(io_prio_level),
-	  m_sg(NULL),
-	  m_stop(1),
-	  m_send_pvr_commit(0),
-	  m_stream_mode(0),
-	  m_blocksize(blocksize),
-	  m_buffersize(buffersize),
-	  m_buffer((unsigned char *)malloc(buffersize)),
-	  m_messagepump(eApp, 0),
-	  m_run_state(0)
+
+eFilePushThread::eFilePushThread(int io_prio_class, int io_prio_level, int blocksize, size_t buffersize):
+	 prio_class(io_prio_class),
+	 prio(io_prio_level),
+	 m_sg(NULL),
+	 m_stop(1),
+	 m_send_pvr_commit(0),
+	 m_stream_mode(0),
+	 m_blocksize(blocksize),
+	 m_buffersize(buffersize),
+	 m_buffer((unsigned char *)malloc(buffersize)),
+	 m_messagepump(eApp, 0),
+	 m_run_state(0)
 {
 	if (m_buffer == NULL)
 		eFatal("[eFilePushThread] Failed to allocate %d bytes", buffersize);
@@ -140,6 +141,9 @@ void eFilePushThread::thread()
 					continue;
 				}
 				eDebug("[eFilePushThread] read error: %m");
+				sleep(1);
+				sendEvent(evtReadError);
+				break;
 			}
 
 			/* a read might be mis-aligned in case of a short read. */
@@ -157,30 +161,30 @@ void eFilePushThread::thread()
 					pfd.events = POLLIN;
 					switch (poll(&pfd, 1, 250)) // wait for 250ms
 					{
-					case 0:
-						eDebug("[eFilePushThread] wait for driver eof timeout");
+						case 0:
+							eDebug("[eFilePushThread] wait for driver eof timeout");
 #if defined(__sh__) // Fix to ensure that event evtEOF is called at end of playbackl part 2/3
-						if (already_empty)
-						{
-							break;
-						}
-						else
-						{
-							already_empty = true;
-							continue;
-						}
+							if (already_empty)
+							{
+								break;
+							}
+							else
+							{
+								already_empty = true;
+								continue;
+							}
 #else
-						continue;
+							continue;
 #endif
-					case 1:
-						eDebug("[eFilePushThread] wait for driver eof ok");
-						break;
-					default:
-						eDebug("[eFilePushThread] wait for driver eof aborted by signal");
-						/* Check m_stop after interrupted syscall. */
-						if (m_stop)
+						case 1:
+							eDebug("[eFilePushThread] wait for driver eof ok");
 							break;
-						continue;
+						default:
+							eDebug("[eFilePushThread] wait for driver eof aborted by signal");
+							/* Check m_stop after interrupted syscall. */
+							if (m_stop)
+								break;
+							continue;
 					}
 				}
 
@@ -192,7 +196,7 @@ void eFilePushThread::thread()
 				   in stream_mode, think of evtEOF as "buffer underrun occurred". */
 				sendEvent(evtEOF);
 
-				if (m_stream_mode)
+				if (m_stream_mode && ++eofcount < 5)
 				{
 					eDebug("[eFilePushThread] reached EOF, but we are in stream mode. delaying 1 second.");
 					sleep(1);
@@ -204,6 +208,7 @@ void eFilePushThread::thread()
 					sleep(1);
 					continue;
 				}
+				sendEvent(evtReadError);
 				break;
 			}
 			else
@@ -217,6 +222,14 @@ void eFilePushThread::thread()
 
 					if (w <= 0)
 					{
+						/* HACK: we can't control it (for now) inside the drivers
+						   because we need it only for streaming (not for recordings)
+						   so we let flush the decoder to enigma2 */
+						if (w < 0 && m_stream_mode) {
+							eDebug("[eFilePushThread] error writing on demuxer. Flush the decoder!");
+							sendEvent(evtFlush);
+						}
+
 						/* Check m_stop after interrupted syscall. */
 						if (m_stop)
 						{
@@ -558,7 +571,7 @@ void eFilePushThreadRecorder::thread()
 #if HAVE_HISILICON
 				usleep(100000);
 #endif
-			continue;
+				continue;
 			if (errno == EOVERFLOW)
 			{
 				eWarning("[eFilePushThreadRecorder] OVERFLOW while recording");
