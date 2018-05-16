@@ -23,7 +23,7 @@ class eFilePushThread: public eThread, public sigc::trackable
 {
 	DECLARE_REF(eFilePushThread);
 public:
-	eFilePushThread(int blocksize, size_t buffersize);
+	eFilePushThread(int prio_class=IOPRIO_CLASS_BE, int prio_level=0, int blocksize=188, size_t buffersize=188*1024);
 	~eFilePushThread();
 	void thread();
 	void stop();
@@ -45,6 +45,8 @@ public:
 protected:
 	virtual void filterRecordData(const unsigned char *data, int len);
 private:
+	int prio_class;
+	int prio;
 	iFilePushScatterGather *m_sg;
 	int m_stop;
 	int m_fd_dest;
@@ -71,7 +73,7 @@ public:
 #if HAVE_AMLOGIC
 	eFilePushThreadRecorder(unsigned char* buffer, size_t buffersize=10*188*1024);
 #else
-	eFilePushThreadRecorder(unsigned char* buffer, size_t buffersize);
+	eFilePushThreadRecorder(unsigned char* buffer, size_t buffersize=188*1024);
 #endif
 	void thread();
 	void stop();
