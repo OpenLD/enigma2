@@ -170,6 +170,11 @@ case $ret in
 		/sbin/modprobe fp
 		/sbin/reboot
 		;;
+	5)
+		if ! grep -q config.misc.RestartUI /etc/enigma2/settings; then
+			echo "config.misc.RestartUI=true" >>/etc/enigma2/settings
+		fi
+		;;
 	16)
 		echo "rescue" > /proc/stb/fp/boot_mode
 		/sbin/reboot

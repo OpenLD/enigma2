@@ -98,16 +98,13 @@ class Standby2(Screen):
 			pass # no HdmiCec
 
 	def setMute(self):
-		if eDVBVolumecontrol.getInstance().isMuted():
-			self.wasMuted = 1
-			print "[Standby] mute already active"
-		else:
-			self.wasMuted = 0
-			eDVBVolumecontrol.getInstance().volumeToggleMute()
+		self.wasMuted = eDVBVolumecontrol.getInstance().isMuted()
+		if not self.wasMuted:
+			eDVBVolumecontrol.getInstance().volumeMute()
 
 	def leaveMute(self):
-		if self.wasMuted == 0:
-			eDVBVolumecontrol.getInstance().volumeToggleMute()
+		if not self.wasMuted:
+			eDVBVolumecontrol.getInstance().volumeUnMute()
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -140,7 +137,7 @@ class Standby2(Screen):
 			# set LCDminiTV off
 			setLCDModeMinitTV("0")
 
-		self.paused_service = None
+		self.paused_service = self.paused_action = False
 		self.prev_running_service = None
 
 		if config.servicelist.startupservice_standby.value:
@@ -150,8 +147,9 @@ class Standby2(Screen):
 			service = self.prev_running_service and self.prev_running_service.toString()
 			if service:
 				if service.startswith("1:") and service.rsplit(":", 1)[1].startswith("/"):
-					self.paused_service = self.session.current_dialog
-					self.paused_service.pauseService()
+					self.paused_service = hasattr(self.session.current_dialog, "pauseService") and hasattr(self.session.current_dialog, "unPauseService") and self.session.current_dialog or self.infoBarInstance
+					self.paused_action = hasattr(self.paused_service, "seekstate") and hasattr(self.paused_service, "SEEK_STATE_PLAY") and self.paused_service.seekstate == self.paused_service.SEEK_STATE_PLAY
+					self.paused_action and self.paused_service.pauseService()
 			if not self.paused_service:
 				self.timeHandler =  eDVBLocalTimeHandler.getInstance()
 				if self.timeHandler.ready():
@@ -195,7 +193,7 @@ class Standby2(Screen):
 			except:
 				pass
 		if self.paused_service:
-			self.paused_service.unPauseService()
+			self.paused_action and self.paused_service.unPauseService()
 		elif self.prev_running_service:
 			service = self.prev_running_service.toString()
 			self.session.nav.playService(self.prev_running_service)
@@ -372,9 +370,18 @@ class TryQuitMainloop(MessageBox):
 				setLCDModeMinitTV("0")
 			if SystemInfo["OffLCDbrightness"]:
 				open(SystemInfo["OffLCDbrightness"], "w").write("0")
-			quitMainloop(self.retval)
+			if not inStandby:
+				config.misc.RestartUI.value = True
+				config.misc.RestartUI.save()
+			self.quitMainloop()
 		else:
 			MessageBox.close(self, True)
+
+	def quitMainloop(self):
+		self.session.nav.stopService()
+		self.quitScreen = self.session.instantiateDialog(QuitMainloopScreen, retvalue=self.retval)
+		self.quitScreen.show()
+		quitMainloop(self.retval)
 
 	def __onShow(self):
 		global inTryQuitMainloop

@@ -4,7 +4,7 @@ from time import time, ctime
 from enigma import eServiceCenter, eServiceReference, eTimer, pNavigation, getBestPlayableServiceReference, iPlayableService, eStreamServer, eActionMap, setPreferredTuner
 
 from Components.ParentalControl import parentalControl
-from Components.config import config
+from Components.config import config, configfile
 from Components.SystemInfo import SystemInfo
 from Components.PluginComponent import plugins
 from Plugins.Plugin import PluginDescriptor
@@ -56,6 +56,11 @@ class Navigation:
 		self.__wasTimerWakeup = False
 		self.__wasRecTimerWakeup = False
 		self.__wasPowerTimerWakeup = False
+		self.__isRestartUI = config.misc.RestartUI.value
+		if config.misc.RestartUI.value:
+			config.misc.RestartUI.value = False
+			config.misc.RestartUI.save()
+			configfile.save()
 
 		#wakeup data
 		now = time()
@@ -128,6 +133,9 @@ class Navigation:
 			print "~"*100
 		else:
 			self.wakeupCheck(False)
+
+	def isRestartUI(self):
+		return self.__isRestartUI
 
 	def wakeupCheck(self, runCheck = True):
 		now = time()
