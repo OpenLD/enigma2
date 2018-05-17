@@ -44,7 +44,7 @@ class inputDevices:
 					self.name = 'keyboard'
 				os.close(self.fd)
 			except (IOError,OSError), err:
-				print '[iInputDevices] getInputDevices  <ERROR: ioctl(EVIOCGNAME): ' + str(err) + ' >'
+				print '[iInputDevices] getInputDevices ' + evdev + ' <ERROR: ioctl(EVIOCGNAME): ' + str(err) + ' >'
 				self.name = None
 
 			if self.name:
@@ -217,7 +217,6 @@ class RcTypeControl():
 	def __init__(self):
 		if os.path.exists('/proc/stb/ir/rc/type') and os.path.exists('/proc/stb/info/boxtype') and getBrandOEM() not in ('gigablue', 'odin', 'ini', 'entwopia', 'tripledot'):
 			self.isSupported = True
-
 			self.boxType = open('/proc/stb/info/boxtype', 'r').read().strip()
 			if config.plugins.remotecontroltype.rctype.value != 0:
 				self.writeRcType(config.plugins.remotecontroltype.rctype.value)
