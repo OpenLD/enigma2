@@ -1,14 +1,19 @@
-from Screens.Screen import Screen
+import os
+from time import localtime, time
+
+import RecordTimer
+from Screen import Screen
 from Components.ActionMap import ActionMap
 from Components.config import config
 from Components.AVSwitch import AVSwitch
-from Components.SystemInfo import SystemInfo
+from Components.Console import Console
 from Components.Harddisk import harddiskmanager
+from Components.SystemInfo import SystemInfo
 from GlobalActions import globalActionMap
 from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, pNavigation
 from boxbranding import getMachineBrand, getMachineName, getBoxType, getBrandOEM
+from Tools.HardwareInfo import HardwareInfo
 from Tools import Notifications
-from time import localtime, time
 import Screens.InfoBar
 from gettext import dgettext
 import Components.RecordingConfig
@@ -56,6 +61,10 @@ def setLCDModeMinitTV(value):
 class Standby2(Screen):
 	def Power(self):
 		print "[Standby] leave standby"
+
+		if os.path.exists("/usr/script/StandbyLeave.sh"):
+			Console().ePopen("/usr/script/StandbyLeave.sh &")
+
 		if (getBrandOEM() in ('fulan')):
 			open("/proc/stb/hdmi/output", "w").write("on")
 		#set input to encoder
@@ -112,6 +121,9 @@ class Standby2(Screen):
 		self.avswitch = AVSwitch()
 
 		print "[Standby] enter standby"
+
+		if os.path.exists("/usr/script/StandbyEnter.sh"):
+			Console().ePopen("/usr/script/StandbyEnter.sh &")
 
 		self["actions"] = ActionMap( [ "StandbyActions" ],
 		{
@@ -196,7 +208,12 @@ class Standby2(Screen):
 			self.paused_action and self.paused_service.unPauseService()
 		elif self.prev_running_service:
 			service = self.prev_running_service.toString()
-			self.session.nav.playService(self.prev_running_service)
+			if config.servicelist.startupservice_onstandby.value:
+				self.session.nav.playService(eServiceReference(config.servicelist.startupservice.value))
+				from Screens.InfoBar import InfoBar
+				InfoBar.instance and InfoBar.instance.servicelist.correctChannelNumber()
+			else:
+				self.session.nav.playService(self.prev_running_service)
 		self.session.screen["Standby"].boolean = False
 		globalActionMap.setEnabled(True)
 		for hdd in harddiskmanager.HDDList():
@@ -351,7 +368,6 @@ class TryQuitMainloop(MessageBox):
 				self.stopTimer()
 
 	def close(self, value):
-		global quitMainloopCode
 		if self.connected:
 			self.connected=False
 			self.session.nav.record_event.remove(self.getRecordEvent)
@@ -359,18 +375,17 @@ class TryQuitMainloop(MessageBox):
 			self.hide()
 			if self.retval == 1:
 				config.misc.DeepStandby.value = True
-			self.session.nav.stopService()
-			self.quitScreen = self.session.instantiateDialog(QuitMainloopScreen,retvalue=self.retval)
-			self.quitScreen.show()
-			print "[Standby] quitMainloop #1"
-			quitMainloopCode = self.retval
-			if SystemInfo["Display"] and SystemInfo["LCDMiniTV"]:
-				# set LCDminiTV off / fix a deep-standby-crash on some boxes / gb4k 
-				print "[Standby] LCDminiTV off"
-				setLCDModeMinitTV("0")
-			if SystemInfo["OffLCDbrightness"]:
-				open(SystemInfo["OffLCDbrightness"], "w").write("0")
-			if not inStandby:
+				if not inStandby:
+					if os.path.exists("/usr/script/StandbyEnter.sh"):
+						Console().ePopen("/usr/script/StandbyEnter.sh")
+					if SystemInfo["HDMICEC"] and config.hdmicec.enabled.value and config.hdmicec.control_tv_standby.value and config.hdmicec.next_boxes_detect.value:
+						import Components.HdmiCec
+						Components.HdmiCec.hdmi_cec.secondBoxActive()
+						self.delay = eTimer()
+						self.delay.timeout.callback.append(self.quitMainloop)
+						self.delay.start(1500, True)
+						return
+			elif not inStandby:
 				config.misc.RestartUI.value = True
 				config.misc.RestartUI.save()
 			self.quitMainloop()
@@ -378,9 +393,18 @@ class TryQuitMainloop(MessageBox):
 			MessageBox.close(self, True)
 
 	def quitMainloop(self):
+		global quitMainloopCode
 		self.session.nav.stopService()
 		self.quitScreen = self.session.instantiateDialog(QuitMainloopScreen, retvalue=self.retval)
 		self.quitScreen.show()
+		print "[Standby] quitMainloop #1"
+		quitMainloopCode = self.retval
+		if SystemInfo["Display"] and SystemInfo["LCDMiniTV"]:
+			# set LCDminiTV off / fix a deep-standby-crash on some boxes / gb4k 
+			print "[Standby] LCDminiTV off"
+			setLCDModeMinitTV("0")
+		if SystemInfo["OffLCDbrightness"]:
+			open(SystemInfo["OffLCDbrightness"], "w").write("0")
 		quitMainloop(self.retval)
 
 	def __onShow(self):
