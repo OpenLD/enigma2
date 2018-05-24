@@ -129,6 +129,8 @@ eServiceFactoryMP3::eServiceFactoryMP3()
 		extensions.push_back("ogg");
 		extensions.push_back("flac");
 		extensions.push_back("m4a");
+		extensions.push_back("mts");
+		extensions.push_back("m2ts");
 		extensions.push_back("mp2");
 		extensions.push_back("m2a");
 		extensions.push_back("wma");
