@@ -25,13 +25,17 @@ class NetlinkReader():
 				elif subsystem == 'net':
 					from Network import iNetwork
 					iNetwork.hotplug(event)
-			except KeyError:
+			except:
 				# Ignore "not found"
 				pass
 	def connectionLost(self, failure):
 		# Ignore...
-		print "connectionLost?", failure
-		self.nls.close()
+		if self.nls:
+			try:
+				print "connectionLost?", failure
+				self.nls.close()
+			except:
+				pass
 	def logPrefix(self):
 		return 'NetlinkReader'
 
