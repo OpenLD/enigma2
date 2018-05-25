@@ -18,7 +18,7 @@ if VUUNO4K
 SUBDIRS += QuadPip
 endif
 
-if HAVE_WETEK_XBMC
+if HAVE_KODI
 SUBDIRS +=  StartKodi
 endif
 
