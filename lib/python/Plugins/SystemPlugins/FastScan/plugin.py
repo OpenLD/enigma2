@@ -19,6 +19,7 @@ from enigma import eFastScan, eDVBFrontendParametersSatellite, eTimer
 config.misc.fastscan = ConfigSubsection()
 config.misc.fastscan.last_configuration = ConfigText(default = "()")
 config.misc.fastscan.auto = ConfigYesNo(default = False)
+config.misc.fastscan.drop = ConfigYesNo(default = True)
 
 class FastScanStatus(Screen):
 	skin = """
@@ -123,12 +124,15 @@ class FastScanScreen(ConfigListScreen, Screen):
 		('TV Vlaanderen', (1, 910, True)),
 		('TéléSAT', (0, 920, True)),
 		('HD Austria', (0, 950, False)),
+		('Diveo', (0, 960, False)),
 		('Skylink Czech Republic', (1, 30, False)),
 		('Skylink Slovak Republic', (1, 31, False)),
+		('KabelKiosk', (0, 970, False)),
 		('AustriaSat Magyarország Eutelsat 9E', (2, 951, False)),
 		('AustriaSat Magyarország Astra 3', (1, 951, False)),
 		('TéléSAT Astra3', (1, 920, True)),
 		('HD Austria Astra3', (1, 950, False)),
+		('Diveo Astra3', (1, 960, False)),
 		('Canal Digitaal Astra 1', (0, 900, True)),
 		('TV Vlaanderen  Astra 1', (0, 910, True))]
 
@@ -343,7 +347,7 @@ def FastScanStart(menuid, **kwargs):
 
 def Plugins(**kwargs):
 	if nimmanager.hasNimType("DVB-S"):
-		return [PluginDescriptor(name=_("Fast Scan"), description="Scan Dutch/Belgian sat provider", where = PluginDescriptor.WHERE_MENU, fnc=FastScanStart),
+		return [PluginDescriptor(name=_("Fast Scan"), description="Scan M7 Brands, BE/NL/DE/AT/CZ", where = PluginDescriptor.WHERE_MENU, fnc=FastScanStart),
 			PluginDescriptor(where=[PluginDescriptor.WHERE_SESSIONSTART], fnc=startSession)]
 	else:
 		return []

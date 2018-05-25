@@ -267,9 +267,9 @@ public:
 public:
 #define MAX_SATCR 32
 
-#define MAX_EN50607_POSITIONS 		64
-#define MAX_FIXED_LNB_POSITIONS		64
-#define MAX_MOVABLE_LNBS 		6
+#define MAX_EN50607_POSITIONS 64
+#define MAX_FIXED_LNB_POSITIONS 64
+#define MAX_MOVABLE_LNBS 6
 
 #define MAX_LNBNUM (MAX_FIXED_LNB_POSITIONS + MAX_MOVABLE_LNBS)
 
@@ -395,6 +395,7 @@ public:
 	void setRotorMoving(int, bool); // called from the frontend's
 	bool isRotorMoving();
 	bool canMeasureInputPower() { return m_canMeasureInputPower; }
+	bool isOrbitalPositionConfigured(int orbital_position);
 
 	PyObject *getBandCutOffFrequency(int slot_no, int orbital_position);
 	PyObject *getFrequencyRangeList(int slot_no, int orbital_position);

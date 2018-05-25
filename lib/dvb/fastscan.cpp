@@ -4,6 +4,7 @@
 
 #include <lib/dvb/db.h>
 #include <lib/dvb/dvb.h>
+#include <lib/dvb/sec.h>
 #include <lib/dvb/frontend.h>
 #include <lib/dvb/fastscan.h>
 #include <lib/base/cfile.h>
@@ -491,6 +492,8 @@ void eFastScan::parseResult()
 
 	if (!networksections.empty()) versionNumber = networksections[0]->getVersion();
 
+	bool drop = eConfigManager::getConfigBoolValue("config.misc.fastscan.drop");
+
 	for (unsigned int i = 0; i < networksections.size(); i++)
 	{
 		const FastScanTransportStreamList *transportstreams = networksections[i]->getTransportStreams();
@@ -499,6 +502,14 @@ void eFastScan::parseResult()
 			eDVBChannelID chid;
 			int orbitalposbcd = (*it)->getOrbitalPosition();
 			int orbitalpos = (orbitalposbcd & 0x0f) + ((orbitalposbcd >> 4) & 0x0f) * 10 + ((orbitalposbcd >> 8) & 0x0f) * 100;
+
+			if (drop && transponderParameters.orbital_position != orbitalpos &&
+				!eDVBSatelliteEquipmentControl::getInstance()->isOrbitalPositionConfigured(orbitalpos))
+			{
+				eDebug("[eFastScan] dropping this transponder, it's on another satellite %d not configured.", orbitalpos);
+				continue;
+			}
+
 			chid.dvbnamespace = eDVBNamespace(orbitalpos<<16);
 			chid.transport_stream_id = eTransportStreamID((*it)->getTransportStreamId());
 			chid.original_network_id = eOriginalNetworkID((*it)->getOriginalNetworkId());
