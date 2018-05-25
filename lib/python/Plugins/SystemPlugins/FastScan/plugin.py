@@ -336,7 +336,7 @@ def startSession(session, **kwargs):
 	config.misc.standbyCounter.addNotifier(standbyCountChanged, initial_call=False)
 
 def FastScanStart(menuid, **kwargs):
-	if menuid == "scan":
+	if menuid == "scan" and nimmanager.somethingConnected():
 		return [(_("Fast Scan"), FastScanMain, "fastscan", None)]
 	else:
 		return []
