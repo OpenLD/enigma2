@@ -20,7 +20,7 @@ import commands
 import datetime
 from boxbranding import getBoxType, getMachineBrand, getMachineName, getDriverDate, getImageVersion, getImageBuild, getBrandOEM, getMachineBuild, getImageFolder, getMachineUBINIZE, getMachineMKUBIFS, getMachineMtdKernel, getMachineMtdRoot, getMachineKernelFile, getMachineRootFile, getImageFileSystem
 
-VERSION = "Version 3.2 OpenLD"
+VERSION = "Version 3.3 OpenLD"
 
 HaveGZkernel = True
 if getMachineBuild() in ('sf5008','et13000','et1x000',"vuuno4k", "vuultimo4k", "vusolo4k", "spark", "spark7162", "hd51", "hd52", "sf4008", "dags7252", "gb7252", "vs1500","h7",'xc7439','8100s'):
@@ -544,7 +544,6 @@ class ImageBackup(Screen):
 
 	def imageInfo(self):
 		AboutText = _("Full Image Backup \n")
-		AboutText += _("Developer: Javilonas (Javier Sayago)") + "\n"
 		AboutText += _("Support at") + " www.lonasdigital.com\n\n"
 		AboutText += _("[Image Info]\n")
 		AboutText += _("Model: %s %s\n") % (getMachineBrand(), getMachineName())

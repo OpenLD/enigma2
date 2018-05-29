@@ -1,4 +1,4 @@
-AC_INIT([enigma2],[3.2],[https://www.odisealinux.com])
+AC_INIT([enigma2],[3.3],[https://www.odisealinux.com])
 AM_INIT_AUTOMAKE([dist-bzip2 no-define tar-pax -Wno-portability])
 AC_CONFIG_HEADERS([enigma2_config.h])
 
