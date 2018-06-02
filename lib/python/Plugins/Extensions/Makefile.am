@@ -15,7 +15,7 @@ SUBDIRS += MiniTV QuadPip
 endif
 
 if VUUNO4K
-SUBDIRS += QuadPip
+SUBDIRS += MiniTV QuadPip
 endif
 
 if HAVE_KODI
