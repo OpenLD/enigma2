@@ -319,7 +319,7 @@ class EventViewBase:
 			ret.sort(self.sort_func)
 			for x in ret:
 				t = localtime(x[1])
-				text += _('\n%d.%d.%d, %2d:%02d  -  %s')%(t[2], t[1], t[0], t[3], t[4], x[0])
+				text += '\n%02d.%02d.%d, %02d:%02d  -  %s' % (t[2], t[1], t[0], t[3], t[4], x[0])
 			descr = self["epg_description"]
 			descr.setText(descr.getText()+text)
 			descr = self["FullDescription"]
@@ -358,6 +358,8 @@ class EventViewEPGSelect(Screen, EventViewBase):
 	def __init__(self, session, event, ref, callback=None, singleEPGCB=None, multiEPGCB=None, similarEPGCB=None):
 		Screen.__init__(self, session)
 		self.skinName = "EventView"
+		self.singleEPGCB = singleEPGCB
+		self.multiEPGCB = multiEPGCB
 		EventViewBase.__init__(self, event, ref, callback, similarEPGCB)
 		self.key_green_choice = self.ADD_TIMER
 
@@ -383,7 +385,7 @@ class EventViewEPGSelect(Screen, EventViewBase):
 			self["key_yellow"] = Button(_("Single EPG"))
 			self["epgactions2"] = ActionMap(["EventViewEPGActions"],
 				{
-					"openSingleServiceEPG": singleEPGCB,
+					"openSingleServiceEPG": self.openSingleEPG,
 				})
 		else:
 			self["key_yellow"] = Button("")
@@ -394,11 +396,21 @@ class EventViewEPGSelect(Screen, EventViewBase):
 			self["epgactions3"] = ActionMap(["EventViewEPGActions"],
 				{
 
-					"openMultiServiceEPG": multiEPGCB,
+					"openMultiServiceEPG": self.openMultiEPG,
 				})
 		else:
 			self["key_blue"] = Button("")
 			self["blue"].hide()
+
+	def openSingleEPG(self):
+		self.hide()
+		self.singleEPGCB()
+		self.close()
+
+	def openMultiEPG(self):
+		self.hide()
+		self.multiEPGCB()
+		self.close()
 
 class EventViewMovieEvent(Screen):
 	def __init__(self, session, name = None, ext_desc = None, dur = None):
