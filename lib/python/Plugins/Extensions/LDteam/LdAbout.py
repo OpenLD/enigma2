@@ -21,6 +21,7 @@
 ##########################################################################
 from enigma import *
 from Screens.Screen import Screen
+from Screens.About import MyDateConverter
 from Screens.Console import Console
 from twisted.internet import threads
 from Components.config import config
@@ -98,15 +99,6 @@ class LdsysInfo(Screen):
 	def infoteam(self):
 		from Plugins.Extensions.LDteam.LdTeam import LdAboutTeam
 		self.session.open(LdAboutTeam)
-
-def MyDateConverter(StringDate):
-	## StringDate must be a string "YYYY-MM-DD"
-	try:
-		StringDate = StringDate.replace("-"," ")
-		StringDate = time.strftime(_("%Y-%m-%d"), time.strptime(StringDate, "%Y %m %d"))
-		return StringDate
-	except:
-		return _("unknown")
 
 	def updateInfo(self):
 		#self.DynamicTimer.start(6000)
