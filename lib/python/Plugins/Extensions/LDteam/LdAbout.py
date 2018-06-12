@@ -99,6 +99,15 @@ class LdsysInfo(Screen):
 		from Plugins.Extensions.LDteam.LdTeam import LdAboutTeam
 		self.session.open(LdAboutTeam)
 
+def MyDateConverter(StringDate):
+	## StringDate must be a string "YYYY-MM-DD"
+	try:
+		StringDate = StringDate.replace("-"," ")
+		StringDate = time.strftime(_("%Y-%m-%d"), time.strptime(StringDate, "%Y %m %d"))
+		return StringDate
+	except:
+		return _("unknown")
+
 	def updateInfo(self):
 		#self.DynamicTimer.start(6000)
 		rc = system("df -h > /tmp/syinfo.tmp")
@@ -181,7 +190,7 @@ class LdsysInfo(Screen):
 		self.text += _("CodeName:\t %s") % str(getImageCodeName()) + "\n"
 		self.text += "Kernel: \t " + about.getKernelVersionString() + "\n"
 		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
-		self.text += _("Last update:\t %s") % str(getEnigmaVersionString()) + "\n"
+		self.text += _("Last update:\t %s") % MyDateConverter(str(getEnigmaVersionString())) + "\n"
 		self.text += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 		self.text += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
 		self.text += _("GStreamer:\t %s") % str(about.getGStreamerVersionString().replace('GStreamer','')) + "\n"
