@@ -396,7 +396,6 @@ private:
 	std::string m_useragent;
 	std::string m_extra_headers;
 	RESULT trickSeek(gdouble ratio);
-	ePtr<iTSMPEGDecoder> m_decoder; // for showSinglePic when radio
 };
 
 #endif
