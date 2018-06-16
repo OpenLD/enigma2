@@ -341,6 +341,7 @@ private:
 	int m_state;
 	GstElement *m_gst_playbin;
 	GstTagList *m_stream_tags;
+	bool m_coverart;
 
 	eFixedMessagePump<ePtr<GstMessageContainer> > m_pump;
 
@@ -395,6 +396,7 @@ private:
 	std::string m_useragent;
 	std::string m_extra_headers;
 	RESULT trickSeek(gdouble ratio);
+	ePtr<iTSMPEGDecoder> m_decoder; // for showSinglePic when radio
 };
 
 #endif

@@ -28,7 +28,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define HTTP_TIMEOUT 10
+#define HTTP_TIMEOUT 30
 
 /*
  * UNUSED variable from service reference is now used as buffer flag for gstreamer
@@ -486,7 +486,7 @@ void eServiceMP3InfoContainer::setBuffer(GstBuffer *buffer)
 
 // eServiceMP3
 int eServiceMP3::ac3_delay = 0,
-				eServiceMP3::pcm_delay = 0;
+	eServiceMP3::pcm_delay = 0;
 
 eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_nownext_timer(eTimer::create(eApp)),
@@ -502,7 +502,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_cachedSubtitleStream = -2; /* report subtitle stream to be 'cached'. TODO: use an actual cache. */
 	m_subtitle_widget = 0;
 	m_currentTrickRatio = 1.0;
-	m_buffer_size = 5LL * 1024LL * 1024LL;
+	m_buffer_size = 8LL * 1024LL * 1024LL;
 	m_ignore_buffering_messages = 0;
 	m_is_live = false;
 	m_use_prefillbuffer = false;
@@ -526,6 +526,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_prev_decoder_time = -1;
 	m_decoder_time_valid_state = 0;
 	m_errorInfo.missing_codec = "";
+	m_decoder = NULL;
 	m_subs_to_pull_handler_id = m_notify_source_handler_id = m_notify_element_added_handler_id = 0;
 
 	CONNECT(m_subtitle_sync_timer->timeout, eServiceMP3::pushSubtitles);
@@ -534,6 +535,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_aspect = m_width = m_height = m_framerate = m_progressive = -1;
 
 	m_state = stIdle;
+	m_coverart = false;
 	m_subtitles_paused = false;
 	// eDebug("[eServiceMP3] construct!");
 
@@ -759,7 +761,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 				flags |= GST_PLAY_FLAG_DOWNLOAD;
 				m_notify_element_added_handler_id = g_signal_connect(m_gst_playbin, "element-added", G_CALLBACK(handleElementAdded), this);
 				/* limit file size */
-				g_object_set(m_gst_playbin, "ring-buffer-max-size", (guint64)(20LL * 1024LL * 1024LL), NULL);
+				g_object_set(m_gst_playbin, "ring-buffer-max-size", (guint64)(40LL * 1024LL * 1024LL), NULL);
 			}
 			/*
 			 * regardless whether or not we configured a progressive download file, use a buffer as well
@@ -767,7 +769,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 			 */
 			flags |= GST_PLAY_FLAG_BUFFERING;
 			/* increase the default 2 second / 2 MB buffer limitations to 10s / 10MB */
-			g_object_set(m_gst_playbin, "buffer-duration", (gint64)(5LL * GST_SECOND), NULL);
+			g_object_set(m_gst_playbin, "buffer-duration", (gint64)(8LL * GST_SECOND), NULL);
 			g_object_set(m_gst_playbin, "buffer-size", m_buffer_size, NULL);
 			if (m_sourceinfo.is_hls)
 				g_object_set(m_gst_playbin, "connection-speed", (guint64)(4495000LL), NULL);
@@ -876,6 +878,11 @@ eServiceMP3::~eServiceMP3()
 	}
 
 	stop();
+
+	if (m_decoder)
+	{
+		m_decoder = NULL;
+	}
 
 	if (m_stream_tags)
 		gst_tag_list_free(m_stream_tags);
@@ -2201,12 +2208,11 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 	switch (GST_MESSAGE_TYPE (msg))
 	{
 		case GST_MESSAGE_EOS:
-			eDebug("[eServiceMP3] ** EOS RECEIVED **");
+			//eDebug("[eServiceMP3] ** EOS RECEIVED **");
 			m_event((iPlayableService*)this, evEOF);
 			break;
 		case GST_MESSAGE_STATE_CHANGED:
 		{
-
 			if(GST_MESSAGE_SRC(msg) != GST_OBJECT(m_gst_playbin))
 				break;
 
@@ -2214,7 +2220,8 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 
 			if(old_state == new_state)
 				break;
-			eDebug("[eServiceMP3] ****STATE TRANSITION %s -> %s ****", gst_element_state_get_name(old_state), gst_element_state_get_name(new_state));
+
+			eDebug("[eServiceMP3] state transition %s -> %s", gst_element_state_get_name(old_state), gst_element_state_get_name(new_state));
 
 			transition = (GstStateChange)GST_STATE_TRANSITION(old_state, new_state);
 
@@ -2226,7 +2233,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 					m_event(this, evStart);
 					if(!m_is_live)
 						gst_element_set_state (m_gst_playbin, GST_STATE_PAUSED);
-					ret = gst_element_get_state(m_gst_playbin, &state, &pending, 5LL * GST_SECOND);
+					ret = gst_element_get_state(m_gst_playbin, &state, &pending, 8LL * GST_SECOND);
 					eDebug("[eServiceMP3] PLAYBIN WITH BLOCK READY TO PAUSED state:%s pending:%s ret:%s",
 						gst_element_state_get_name(state),
 						gst_element_state_get_name(pending),
@@ -2288,6 +2295,15 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 						m_is_live = true;
 					m_event((iPlayableService*)this, evGstreamerPlayStarted);
 					updateEpgCacheNowNext();
+
+					if (!videoSink || m_ref.getData(0) == 2) // show radio pic
+					{
+						bool showRadioBackground = eConfigManager::getConfigBoolValue("config.misc.showradiopic", true);
+						std::string radio_pic = eConfigManager::getConfigValue(showRadioBackground ? "config.misc.radiopic" : "config.misc.blackradiopic");
+						m_decoder = new eTSMPEGDecoder(NULL, 0);
+						m_decoder->showSinglePic(radio_pic.c_str());
+					}
+
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
@@ -2435,39 +2451,44 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 				m_stream_tags = result;
 			}
 
-			const GValue *gv_image = gst_tag_list_get_value_index(tags, GST_TAG_IMAGE, 0);
-			if ( gv_image )
+			if (!m_coverart)
 			{
-				GstBuffer *buf_image;
-#if GST_VERSION_MAJOR < 1
-				buf_image = gst_value_get_buffer(gv_image);
-#else
-				GstSample *sample;
-				sample = (GstSample *)g_value_get_boxed(gv_image);
-				buf_image = gst_sample_get_buffer(sample);
-#endif
-				int fd = open("/tmp/.id3coverart", O_CREAT|O_WRONLY|O_TRUNC, 0644);
-				if (fd >= 0)
+				const GValue *gv_image = gst_tag_list_get_value_index(tags, GST_TAG_IMAGE, 0);
+				if ( gv_image )
 				{
-					guint8 *data;
-					gsize size;
+					GstBuffer *buf_image;
+
 #if GST_VERSION_MAJOR < 1
-					data = GST_BUFFER_DATA(buf_image);
-					size = GST_BUFFER_SIZE(buf_image);
+					buf_image = gst_value_get_buffer(gv_image);
 #else
-					GstMapInfo map;
-					gst_buffer_map(buf_image, &map, GST_MAP_READ);
-					data = map.data;
-					size = map.size;
+					GstSample *sample;
+					sample = (GstSample *)g_value_get_boxed(gv_image);
+					buf_image = gst_sample_get_buffer(sample);
 #endif
-					int ret = write(fd, data, size);
+					int fd = open("/tmp/.id3coverart", O_CREAT|O_WRONLY|O_TRUNC, 0644);
+					if (fd >= 0)
+					{
+						guint8 *data;
+						gsize size;
+#if GST_VERSION_MAJOR < 1
+						data = GST_BUFFER_DATA(buf_image);
+						size = GST_BUFFER_SIZE(buf_image);
+#else
+						GstMapInfo map;
+						gst_buffer_map(buf_image, &map, GST_MAP_READ);
+						data = map.data;
+						size = map.size;
+#endif
+						int ret = write(fd, data, size);
 #if GST_VERSION_MAJOR >= 1
-					gst_buffer_unmap(buf_image, &map);
+						gst_buffer_unmap(buf_image, &map);
 #endif
-					close(fd);
-					// eDebug("[eServiceMP3] /tmp/.id3coverart %d bytes written ", ret);
+						close(fd);
+						m_coverart = true;
+						m_event((iPlayableService*)this, evUser+13);
+						eDebug("[eServiceMP3] /tmp/.id3coverart %d bytes written ", ret);
+					}
 				}
-				m_event((iPlayableService*)this, evUser+13);
 			}
 			gst_tag_list_free(tags);
 			m_event((iPlayableService*)this, evUpdatedInfo);
