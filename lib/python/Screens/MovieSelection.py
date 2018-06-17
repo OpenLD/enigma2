@@ -164,9 +164,12 @@ def createMoveList(serviceref, dest):
 			moveList.append((eitName, os.path.join(dest, baseName+'.eit')))
 		baseName = os.path.split(src)[1]
 		for ext in ('.ap', '.cuts', '.meta', '.sc'):
-			candidate = src + ext
-			if os.path.exists(candidate):
-				moveList.append((candidate, os.path.join(dest, baseName+ext)))
+			try:
+				candidate = src + ext
+				if os.path.exists(candidate):
+					moveList.append((candidate, os.path.join(dest, baseName+ext)))
+			except:
+				pass
 	return moveList
 
 def moveServiceFiles(serviceref, dest, name=None, allowCopy=True):
@@ -1827,10 +1830,13 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		if info is None:
 			return
 		else:
-			service = info and info.getName(current)
-			print "service:", service
-			from Components.SearchCovers import *
-			self.session.openWithCallback(self.reloadList, FindMovieList, service)
+			try:
+				from Components.SearchCovers import FindMovieList
+				service = info and info.getName(current)
+				print "service:", service
+				self.session.openWithCallback(self.reloadList, FindMovieList, service)
+			except:
+				pass
 
 	def createDirCallback(self, name):
 		if not name:

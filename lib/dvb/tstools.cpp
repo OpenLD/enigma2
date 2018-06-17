@@ -546,7 +546,7 @@ void eDVBTSTools::calcEnd()
 		m_last_filelength = end;
 		m_end_valid = 0;
 		m_futile = 0;
-//		eDebug("file size changed, recalc length");
+//		eDebug("[eDVBTSTools] calcEnd file size changed, recalc length");
 	}
 
 	int maxiter = 10;
@@ -569,7 +569,7 @@ void eDVBTSTools::calcEnd()
 		}
 		else
 		{
-			eDebug("[@ML] m_streaminfo.getLastFrame failed, fallback");
+			eDebug("[eDVBTSTools] calcEnd [@ML] m_streaminfo.getLastFrame failed, fallback");
 			while (!(m_end_valid || m_futile))
 			{
 				if (!--maxiter)
@@ -713,7 +713,7 @@ int eDVBTSTools::findPMT(eDVBPMTParser::program &program)
 		/* FIXME: this will be factored out soon! */
 	if (!m_source || !m_source->valid())
 	{
-		eDebug(" file not valid");
+		eDebug("[eDVBTSTools] findPMT file not valid");
 		return -1;
 	}
 
@@ -727,7 +727,7 @@ int eDVBTSTools::findPMT(eDVBPMTParser::program &program)
 		int ret = m_source->read(position, buffer, m_packet_size);
 		if (ret != m_packet_size)
 		{
-			eDebug("read error");
+			eDebug("[eDVBTSTools] findPMT read error");
 			break;
 		}
 		position += m_packet_size;
@@ -820,7 +820,7 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 // Prime the getStructureEntryXXX cache setting
 	if (m_streaminfo.getStructureEntryFirst(offset, longdata) != 0)
 	{
-		eDebug("findFrame: getStructureEntryFirst failed");
+		eDebug("[eDVBTSTools] findFramee getStructureEntryFirst failed");
 		return -1;
 	}
 // Make sure that we are actually positioned not-before where we were
@@ -897,7 +897,7 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 	{
 		if (m_streaminfo.getStructureEntryNext(offset, longdata, 1))
 		{
-			eDebug("get next failed");
+			eDebug("[eDVBTSTools] findFrame get next failed");
 			return -1;
 		}
 		data = ((unsigned int)longdata);
@@ -919,7 +919,7 @@ int eDVBTSTools::findFrame(off_t &_offset, size_t &len, int &direction, int fram
 		{
 			if (m_streaminfo.getStructureEntryNext(start, longdata, -1))
 			{
-				eDebug("Failed to find MPEG2 start frame");
+				eDebug("[eDVBTSTools] findFrame Failed to find MPEG2 start frame");
 				break;
 			}
 			if ((((unsigned int)longdata) & 0xFF) == 0xB3) /* sequence start or previous frame */
