@@ -50,19 +50,19 @@ static int determineBufferCount()
 	unsigned int megabytes = si.totalram >> 20;
 	int result;
 	if (megabytes > 600)
-		result = 60; // Test...
+		result = 64; // Use 15MB IO buffers
 	else if (megabytes > 500)
-		result = 50; // Test...
+		result = 52; // Use 12MB IO buffers
 	else if (megabytes > 400)
-		result = 40; // 1024MB systems: Use 8MB IO buffers (vusolo2, vuduo2, ...)
+		result = 44; // Use 10MB IO buffers
 	else if (megabytes > 300)
-		result = 30; // Test...
+		result = 32; // Use 7MB IO buffers
 	else if (megabytes > 200)
-		result = 20; // 512MB systems: Use 4MB IO buffers (et9x00, vuultimo, ...)
+		result = 20; // Use 4MB IO buffers
 	else if (megabytes > 100)
-		result = 16; // 256MB systems: Use 3MB demux buffers (dm8000, et5x00, vuduo)
+		result = 16; // Use 3MB demux buffers
 	else
-		result = 8; // Smaller boxes: Use 1.5MB buffer (dm7025)
+		result = 8; // Use 1.5MB buffer
 	return result;
 }
 
@@ -295,7 +295,7 @@ RESULT eDVBSectionReader::start(const eDVBSectionFilterMask &mask)
 	notifier->start();
 
 	dmx_sct_filter_params sct;
-	memset(&sct, 0, sizeof(sct));
+	//memset(&sct, 0, sizeof(sct));
 	sct.pid     = mask.pid;
 	sct.timeout = 0;
 	sct.flags   = DMX_IMMEDIATE_START;
@@ -446,8 +446,8 @@ RESULT eDVBPESReader::connectRead(const sigc::slot2<void,const uint8_t*,int> &r,
 
 eDVBRecordFileThread::eDVBRecordFileThread(int packetsize, int bufferCount):
 	eFilePushThreadRecorder(
-		/* buffer */ (unsigned char*) ::mmap(NULL, bufferCount * packetsize * 1062, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, /*ignored*/-1, 0),
-		/*buffersize*/ packetsize * 1062),
+		/* buffer */ (unsigned char*) ::mmap(NULL, bufferCount * packetsize * 1050, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, /*ignored*/-1, 0),
+		/*buffersize*/ packetsize * 1050),        // the buffer should be higher than the hardware buffer size, accounts for RTSP header
 	 m_ts_parser(packetsize),
 	 m_current_offset(0),
 	 m_fd_dest(-1),
