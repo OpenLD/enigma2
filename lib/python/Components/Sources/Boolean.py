@@ -48,7 +48,6 @@ class Boolean(Source, object):
 			if self.post_destroy is not None:
 				self.fixed = self.post_destroy
 				self.poll()
-				Source.destroy(self)
 		except:
 			pass
 
