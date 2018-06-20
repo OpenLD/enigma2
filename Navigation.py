@@ -1,5 +1,6 @@
 from os import path
-from time import time, ctime
+from time import time, ctime, localtime
+from sys import maxint
 
 from enigma import eServiceCenter, eServiceReference, eTimer, pNavigation, getBestPlayableServiceReference, iPlayableService, eStreamServer, eActionMap, setPreferredTuner
 

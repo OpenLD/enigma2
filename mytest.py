@@ -1,5 +1,11 @@
 import sys, os
-from time import time
+from time import strftime, time, localtime, mktime
+
+try:
+	reload(sys)
+	sys.setdefaultencoding('utf-8')
+except:
+	pass
 
 if os.path.isfile("/usr/lib/enigma2/python/enigma.zip"):
 	sys.path.append("/usr/lib/enigma2/python/enigma.zip")
@@ -39,10 +45,6 @@ if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin
 	import pyo_patcher
 
 from traceback import print_exc
-
-profile("SetupDevices")
-import Components.SetupDevices
-Components.SetupDevices.InitSetupDevices()
 
 profile("SimpleSummary")
 from Screens import InfoBar
@@ -899,6 +901,10 @@ profile("InputDevice")
 import Components.InputDevice
 Components.InputDevice.InitInputDevices()
 import Components.InputHotplug
+
+profile("SetupDevices")
+import Components.SetupDevices
+Components.SetupDevices.InitSetupDevices()
 
 profile("AVSwitch")
 import Components.AVSwitch
