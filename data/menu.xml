@@ -202,12 +202,18 @@ self.session.open(TunerServer)
 			<item weight="0" level="1" text="Basic settings" entryID="ci_setup"><screen module="Ci" screen="CISetup" /></item>
 			<item weight="1" level="1" text="Common Interface" entryID="ci_setup"><screen module="Ci" screen="CiSelection" /></item>
 			<item weight="5" level="1" text="CIHelper Setup" entryID="ci_setup" requires="CIHelper"><screen module="Ci" screen="CIHelper" /></item>
+			<item weight="10" level="1" text="SoftCam" entryID="softcam_setup">
+<code>
+from Plugins.Extensions.LDteam.LdBlue import LDBluePanel
+self.session.open(LDBluePanel)
+</code>
+			</item>
 		</menu>
 
-			<item weight="15" level="0" text="Parental control" entryID="parental_setup"><screen module="ParentalControlSetup" screen="ParentalControlSetup" /></item>
-			<item weight="15" level="0" text="Ipk uninstall" entryID="Ipk_uninstall"><screen module="Ipkuninstall" screen="Ipkuninstall" /></item>
-			<item weight="15" level="0" text="Software update" entryID="software_update"><screen module="SoftwareUpdate" screen="UpdatePlugin"/></item>
-			<item weight="25" level="0" text="Factory reset" entryID="factory_reset">
+			<item weight="20" level="0" text="Parental control" entryID="parental_setup"><screen module="ParentalControlSetup" screen="ParentalControlSetup" /></item>
+			<item weight="35" level="0" text="Software update" entryID="software_update"><screen module="SoftwareUpdate" screen="UpdatePlugin"/></item>
+			<item weight="60" level="0" text="IPK Uninstall Tool" entryID="Ipk_uninstall"><screen module="Ipkuninstall" screen="Ipkuninstall" /></item>
+			<item weight="65" level="0" text="Factory reset" entryID="factory_reset">
 <code>
 from Screens.FactoryReset import FactoryReset
 def msgClosed(ret):
