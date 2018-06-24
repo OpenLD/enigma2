@@ -17042,12 +17042,6 @@ msgstr "seguro"
 msgid "traditional (fast)"
 msgstr "Classic (rápido)"
 
-msgid "reliable, retune"
-msgstr "seguro, retune"
-
-msgid "traditional (fast), retune"
-msgstr "Classic (rápido), retune"
-
 msgid "Volume adjust slow"
 msgstr "Ajustar volumen (lento)"
 

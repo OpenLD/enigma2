@@ -278,7 +278,6 @@ public:
 	int SatCR_idx;
 	int SatCR_format;
 	int SatCR_switch_reliable;
-	int SatCR_RetuneNoPatEntry;
 	int BootUpTime;
 	unsigned int SatCRvco;
 	unsigned int TuningWord;

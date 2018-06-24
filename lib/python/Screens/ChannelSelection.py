@@ -473,7 +473,7 @@ class ChannelContextMenu(Screen):
 			config.servicelist.startupservice_onstandby.value = answer == "standby"
 			config.servicelist.save()
 			configfile.save()
-			self.close()
+		self.close()
 
 	def unsetStartupService(self):
 		config.servicelist.startupservice.value = ''
@@ -530,7 +530,7 @@ class ChannelContextMenu(Screen):
 				if SystemInfo["LCDMiniTV"] and int(config.lcd.modepip.value) >= 1:
 					print '[LCDMiniTV] disable PIP'
 					f = open("/proc/stb/lcd/mode", "w")
-					f.write(config.lcd.minitvmode.value)
+					f.write(config.lcd.modeminitv.value)
 					f.close()
 			self.session.pip = self.session.instantiateDialog(PictureInPicture)
 			self.session.pip.setAnimationMode(0)
@@ -545,7 +545,7 @@ class ChannelContextMenu(Screen):
 					if SystemInfo["LCDMiniTV"] and int(config.lcd.modepip.value) >= 1:
 						print '[LCDMiniTV] enable PIP'
 						f = open("/proc/stb/lcd/mode", "w")
-						f.write(config.lcd.minitvpipmode.value)
+						f.write(config.lcd.modepip.value)
 						f.close()
 						f = open("/proc/stb/vmpeg/1/dst_width", "w")
 						f.write("0")
@@ -563,7 +563,7 @@ class ChannelContextMenu(Screen):
 					if SystemInfo["LCDMiniTV"] and int(config.lcd.modepip.value) >= 1:
 						print '[LCDMiniTV] disable PIP'
 						f = open("/proc/stb/lcd/mode", "w")
-						f.write(config.lcd.minitvmode.value)
+						f.write(config.lcd.modeminitv.value)
 						f.close()
 					self.session.openWithCallback(self.close, MessageBox, _("Could not open Picture in Picture"), MessageBox.TYPE_ERROR)
 		else:
@@ -964,22 +964,25 @@ class ChannelSelectionEPG(InfoBarButtonSetup):
 		epg.setService(ServiceReference(self.getCurrentSelection()))
 
 	def zapToService(self, service, preview=False, zapback=False):
-		if self.startServiceRef is None:
-			self.startServiceRef = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-		if service is not None:
-			if self.servicelist.getRoot() != self.epg_bouquet:
-				self.servicelist.clearPath()
-				if self.servicelist.bouquet_root != self.epg_bouquet:
-					self.servicelist.enterPath(self.servicelist.bouquet_root)
-				self.servicelist.enterPath(self.epg_bouquet)
-			self.servicelist.setCurrent(service)
-		if not zapback or preview:
-			self.zap(enable_pipzap=True)
-		if (self.dopipzap or zapback) and not preview:
-			self.zapBack()
-		if not preview:
-			self.startServiceRef = None
-			self.startRoot = None
+		try:
+			if self.startServiceRef is None:
+				self.startServiceRef = self.session.nav.getCurrentlyPlayingServiceOrGroup()
+			if service is not None:
+				if self.servicelist.getRoot() != self.epg_bouquet:
+					self.servicelist.clearPath()
+					if self.servicelist.bouquet_root != self.epg_bouquet:
+						self.servicelist.enterPath(self.servicelist.bouquet_root)
+					self.servicelist.enterPath(self.epg_bouquet)
+				self.servicelist.setCurrent(service)
+			if not zapback or preview:
+				self.zap(enable_pipzap=True)
+			if (self.dopipzap or zapback) and not preview:
+				self.zapBack()
+			if not preview:
+				self.startServiceRef = None
+				self.startRoot = None
+		except:
+			pass
 
 class ChannelSelectionEdit:
 	def __init__(self):
@@ -1566,6 +1569,8 @@ class ChannelSelectionBase(Screen):
 		str = self.removeModeStr(ServiceReference(ref).getServiceName())
 		if 'bouquets' in str.upper():
 			return _('User - bouquets')
+		elif 'User - bouquets' in str:
+			return _('User - bouquets')
 		if not str:
 			pathstr = ref.getPath()
 			if 'FROM PROVIDERS' in pathstr:
@@ -1595,15 +1600,15 @@ class ChannelSelectionBase(Screen):
 					end_ref = self.servicePath[Len - 1]
 				else:
 					end_ref = None
-				nameStr = self.getServiceName(base_ref)
+# 				nameStr = self.getServiceName(base_ref)
 # 				titleStr += ' - ' + nameStr
 				if end_ref is not None:
 # 					if Len > 2:
 # 						titleStr += '/../'
 # 					else:
 # 						titleStr += '/'
-					nameStr = self.getServiceName(end_ref)
-					titleStr += nameStr
+					self.nameStr = self.getServiceName(end_ref)
+					titleStr += self.nameStr + titleStr
 				self.setTitle(titleStr)
 
 	def moveUp(self):
@@ -2643,10 +2648,10 @@ class PiPZapSelection(ChannelSelection):
 					self.saveRoot()
 					self.saveChannel(ref)
 					self.setCurrentSelection(ref)
-					if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.minitvpipmode.value) >= 1:
+					if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.modepip.value) >= 1:
 						print '[LCDMiniTV] enable PIP'
 						f = open("/proc/stb/lcd/mode", "w")
-						f.write(config.lcd.minitvpipmode.value)
+						f.write(config.lcd.modepip.value)
 						f.close()
 						f = open("/proc/stb/vmpeg/1/dst_width", "w")
 						f.write("0")
@@ -2662,10 +2667,10 @@ class PiPZapSelection(ChannelSelection):
 					self.pipzapfailed = True
 					self.session.pipshown = False
 					del self.session.pip
-					if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.minitvpipmode.value) >= 1:
+					if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.modepip.value) >= 1:
 							print '[LCDMiniTV] disable PIP'
 							f = open("/proc/stb/lcd/mode", "w")
-							f.write(config.lcd.minitvmode.value)
+							f.write(config.lcd.modeminitv.value)
 							f.close()
 					self.close(None)
 
@@ -2675,10 +2680,10 @@ class PiPZapSelection(ChannelSelection):
 		if self.startservice and hasattr(self.session, 'pip') and self.session.pip.getCurrentService() and self.startservice == self.session.pip.getCurrentService():
 			self.session.pipshown = False
 			del self.session.pip
-			if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.minitvpipmode.value) >= 1:
+			if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.modepip.value) >= 1:
 					print '[LCDMiniTV] disable PIP'
 					f = open("/proc/stb/lcd/mode", "w")
-					f.write(config.lcd.minitvmode.value)
+					f.write(config.lcd.modeminitv.value)
 					f.close()
 		self.correctChannelNumber()
 		self.close(None)
@@ -2844,7 +2849,10 @@ class ChannelSelectionRadio(ChannelSelectionBase, ChannelSelectionEdit, ChannelS
 				self.saveRoot()
 
 	def zapBack(self):
-		self.channelSelected()
+		try:
+			self.channelSelected()
+		except:
+			pass
 
 class SimpleChannelSelection(ChannelSelectionBase):
 	def __init__(self, session, title, currentBouquet=False):
@@ -2878,12 +2886,15 @@ class SimpleChannelSelection(ChannelSelectionBase):
 
 	def channelSelected(self): # just return selected service
 		ref = self.getCurrentSelection()
-		if (ref.flags & eServiceReference.flagDirectory) == eServiceReference.flagDirectory:
-			self.enterPath(ref)
-			self.gotoCurrentServiceOrProvider(ref)
-		elif not (ref.flags & eServiceReference.isMarker):
-			ref = self.getCurrentSelection()
-			self.close(ref)
+		try:
+			if (ref.flags & eServiceReference.flagDirectory) == eServiceReference.flagDirectory:
+				self.enterPath(ref)
+				self.gotoCurrentServiceOrProvider(ref)
+			elif not (ref.flags & eServiceReference.isMarker):
+				ref = self.getCurrentSelection()
+				self.close(ref)
+		except:
+			pass
 
 	def setModeTv(self):
 		self.setTvMode()
@@ -2998,19 +3009,19 @@ class HistoryZapSelector(Screen):
 
 	def hour_min(self, mins):
 		if not isinstance(mins, int):
-			return _("0 min")
+			return _("%d min") % (0)
 
 		if mins <= 0:
-			return _("0 min")
+			return _("%d min") % (0)
 
 		vhour, vmins = mins // 60, mins % 60
 
 		if vhour and vmins:
-			return _("{0} hour {1} min").format(vhour, vmins)
+			return _("%d hour %d min") % (vhour, vmins)
 		elif vhour and not vmins:
-			return _("{0} hour").format(vhour)
+			return _("%d hour") % (vhour)
 		else:
-			return _("{0} min").format(vmins)
+			return _("%d min") % (vmins)
 
 	def getOrbitalPos(self, ref):
 		refstr = None
