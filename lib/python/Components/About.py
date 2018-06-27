@@ -287,12 +287,21 @@ def getFFmpegVersionString():
 
 def getCPUTempString():
 	try:
+		temperature = None
 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
-			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
-			return _("%s°C") % temperature
+			if temperature:
+				temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
+				return _("%s°C") % temperature
+		elif os.path.isfile('/sys/devices/virtual/thermal/thermal_zone0/temp'):
+			if temperature:
+				temperature = open("/sys/devices/virtual/thermal/thermal_zone0/temp").readline().replace('\n','')
+				return _("%s°C") % temperature
+		elif os.path.isfile('/proc/stb/power/avs'):
+			if temperature:
+				temperature = open("/proc/stb/power/avs").readline().replace('\n','')
+				return _("%s°C") % celsius
 	except:
-		pass
-	return ""
+		return _("undefined")
 
 def getUptimeString():
 	try:

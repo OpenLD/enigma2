@@ -208,6 +208,10 @@ class PollReactor(posixbase.PosixReactorBase):
 		poller.eApp.interruptPoll()
 		return posixbase.PosixReactorBase.callLater(self, *args, **kwargs)
 
+	# override to not installSignalHandlers by default
+	def run(self, installSignalHandlers=False):
+		return posixbase.PosixReactorBase.run(self, installSignalHandlers)
+
 def install():
 	"""Install the poll() reactor."""
 
