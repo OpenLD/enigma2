@@ -2,6 +2,7 @@ from enigma import eActionMap
 
 from Tools.KeyBindings import queryKeyBinding
 
+
 class ActionMap:
 	def __init__(self, contexts=[], actions={}, prio=0):
 		self.contexts = contexts
@@ -43,21 +44,18 @@ class ActionMap:
 		self.checkBind()
 
 	def action(self, context, action):
-		if self.actions.has_key(action):
-			print "[ActionMap] Keymap '%s' -> Action = '%s'" % (context, action)
-			res = self.actions[action]()
-			if res is not None:
-				return res
-			return 1
-		elif action in self.actions:
-			print "[ActionMap] Keymap '%s' -> Action = '%s'" % (context, action)
-			res = self.actions[action]()
-			if res is not None:
-				return res
-			return 1
-		else:
-			print "[ActionMap] Keymap '%s' -> Unknown action '%s'! (Typo in keymap?)" % (context, action)
-			return 0
+		try:
+			if self.actions.has_key(action) and action in self.actions:
+				print "[ActionMap] Keymap '%s' -> Action = '%s'" % (context, action)
+				res = self.actions[action]()
+				if res is not None:
+					return res
+				return 1
+			else:
+				print "[ActionMap] Keymap '%s' -> Unknown action '%s'! (Typo in keymap?)" % (context, action)
+				return 0
+		except:
+			pass
 
 	def destroy(self):
 		pass
@@ -65,19 +63,22 @@ class ActionMap:
 
 class NumberActionMap(ActionMap):
 	def action(self, contexts, action):
-		numbers = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-		if action in numbers and action in self.actions:
-			res = self.actions[action](int(action))
-			if res is not None:
-				return res
-			return 1
-		elif action in numbers and self.actions.has_key(action):
-			res = self.actions[action](int(action))
-			if res is not None:
-				return res
-			return 1
-		else:
-			return ActionMap.action(self, contexts, action)
+		try:
+			numbers = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+			if action in numbers and action in self.actions:
+				res = self.actions[action](int(action))
+				if res is not None:
+					return res
+				return 1
+			elif action in numbers and self.actions.has_key(action):
+				res = self.actions[action](int(action))
+				if res is not None:
+					return res
+				return 1
+			else:
+				return ActionMap.action(self, contexts, action)
+		except:
+			pass
 
 
 class HelpableActionMap(ActionMap):
