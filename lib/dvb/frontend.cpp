@@ -187,13 +187,13 @@ void eDVBFrontendParametersCable::set(const CableDeliverySystemDescriptor &descr
 		case 1: fec_inner = FEC_1_2; break;
 		case 2: fec_inner = FEC_2_3; break;
 		case 3: fec_inner = FEC_3_4; break;
-		case 4: fec_inner = FEC_5_6; break;
-		case 5: fec_inner = FEC_7_8; break;
-		case 6: fec_inner = FEC_8_9; break;
-		case 7: fec_inner = FEC_3_5; break;
-		case 8: fec_inner = FEC_4_5; break;
-		case 9: fec_inner = FEC_9_10; break;
-		case 10: fec_inner = FEC_6_7; break;
+		case 4: fec_inner = FEC_3_5; break;
+		case 5: fec_inner = FEC_4_5; break;
+		case 6: fec_inner = FEC_5_6; break;
+		case 7: fec_inner = FEC_6_7; break;
+		case 8: fec_inner = FEC_7_8; break;
+		case 9: fec_inner = FEC_8_9; break;
+		case 10: fec_inner = FEC_9_10; break;
 	}
 	modulation = descriptor.getModulation();
 	if (modulation > Modulation_QAM256)
@@ -2840,6 +2840,8 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 				case eDVBFrontendParametersTerrestrial::FEC_1_2: p[cmdseq.num].u.data = FEC_1_2; break;
 				case eDVBFrontendParametersTerrestrial::FEC_2_3: p[cmdseq.num].u.data = FEC_2_3; break;
 				case eDVBFrontendParametersTerrestrial::FEC_3_4: p[cmdseq.num].u.data = FEC_3_4; break;
+				case eDVBFrontendParametersTerrestrial::FEC_3_5: p[cmdseq.num].u.data = FEC_3_5; break;
+				case eDVBFrontendParametersTerrestrial::FEC_4_5: p[cmdseq.num].u.data = FEC_4_5; break;
 				case eDVBFrontendParametersTerrestrial::FEC_5_6: p[cmdseq.num].u.data = FEC_5_6; break;
 				case eDVBFrontendParametersTerrestrial::FEC_6_7: p[cmdseq.num].u.data = FEC_6_7; break;
 				case eDVBFrontendParametersTerrestrial::FEC_7_8: p[cmdseq.num].u.data = FEC_7_8; break;
@@ -2855,6 +2857,8 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 				case eDVBFrontendParametersTerrestrial::FEC_1_2: p[cmdseq.num].u.data = FEC_1_2; break;
 				case eDVBFrontendParametersTerrestrial::FEC_2_3: p[cmdseq.num].u.data = FEC_2_3; break;
 				case eDVBFrontendParametersTerrestrial::FEC_3_4: p[cmdseq.num].u.data = FEC_3_4; break;
+				case eDVBFrontendParametersTerrestrial::FEC_3_5: p[cmdseq.num].u.data = FEC_3_5; break;
+				case eDVBFrontendParametersTerrestrial::FEC_4_5: p[cmdseq.num].u.data = FEC_4_5; break;
 				case eDVBFrontendParametersTerrestrial::FEC_5_6: p[cmdseq.num].u.data = FEC_5_6; break;
 				case eDVBFrontendParametersTerrestrial::FEC_6_7: p[cmdseq.num].u.data = FEC_6_7; break;
 				case eDVBFrontendParametersTerrestrial::FEC_7_8: p[cmdseq.num].u.data = FEC_7_8; break;
