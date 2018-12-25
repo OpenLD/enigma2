@@ -1590,6 +1590,11 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		ret = (int)(snr / 46.8);
 		sat_max = 1620;
 	}
+	else if (!strncmp(m_description, "Si2166D", 7)) // SF8008 S2
+	{
+		ret = snr;
+		sat_max = 1620;
+	}
 	else if (!strcmp(m_description, "Si21682") || !strcmp(m_description, "Si2168")) // SF4008 T/T2/C and Zgemma TC Models
 	{
 		int type = -1;
