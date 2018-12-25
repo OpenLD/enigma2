@@ -21,11 +21,11 @@ public:
 #ifndef SWIG
 	eActionMap();
 	~eActionMap();
-	void bindAction(const std::string &context, long priority, int id, eWidget *widget);
+	void bindAction(const std::string &context, int64_t priority, int id, eWidget *widget);
 	void unbindAction(eWidget *widget, int id);
 #endif
 
-	void bindAction(const std::string &context, long priority, SWIG_PYOBJECT(ePyObject) function);
+	void bindAction(const std::string &context, int64_t priority, SWIG_PYOBJECT(ePyObject) function);
 	void unbindAction(const std::string &context, SWIG_PYOBJECT(ePyObject) function);
 
 	void bindKey(const std::string &domain, const std::string &device, int key, int flags, const std::string &context, const std::string &action);
@@ -56,7 +56,7 @@ private:
 		bool m_long_key_pressed;
 	};
 
-	std::multimap<long, eActionBinding> m_bindings;
+	std::multimap<int64_t, eActionBinding> m_bindings;
 
 	friend struct compare_string_keybind_native;
 	struct eNativeKeyBinding
