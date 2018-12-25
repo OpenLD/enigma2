@@ -646,7 +646,7 @@ class ConfigSequence(ConfigElement):
 			# position in the block
 			posinblock = self.marked_pos - block_len_total[blocknumber]
 
-			oldvalue = self._value[blocknumber]
+			oldvalue = abs(self._value[blocknumber]) # we are using abs in order to allow change negative values like default -1 on mis
 			olddec = oldvalue % 10 ** (number_len - posinblock) - (oldvalue % 10 ** (number_len - posinblock - 1))
 			newvalue = oldvalue - olddec + (10 ** (number_len - posinblock - 1) * number)
 
@@ -2058,8 +2058,8 @@ class ConfigFile:
 		names = key.split('.')
 		if len(names) > 1:
 			if names[0] == "config":
-				ret=self.__resolveValue(names[1:], config.content.items)
-				if ret and len(ret):
+				ret = self.__resolveValue(names[1:], config.content.items)
+				if ret and len(ret) or ret == "":
 					return ret
 		print "[Config] getResolvedKey", key, "failed !! (Typo??)"
 		return ""
