@@ -55,7 +55,9 @@ class TransponderInfo(Converter, object):
 			result = ref.toString().replace("%3a",":")
 		else:
 			result = info.getInfoString(iServiceInformation.sServiceref)
-		if "://" in result:
+		if "@" in result:
+			return _("Stream") + " " + result.rsplit("@", 1)[1].split("/")[0]
+		elif "://" in result:
 			return _("Stream") + " " + result.rsplit("://", 1)[1].split("/")[0]
 		return ""
 
