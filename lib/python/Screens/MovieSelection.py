@@ -10,7 +10,6 @@ from Screen import Screen
 from Components.Button import Button
 from Components.ActionMap import HelpableActionMap, ActionMap, NumberActionMap
 from Components.ChoiceList import ChoiceList, ChoiceEntryComponent
-from Components.Console import Console
 from Components.MenuList import MenuList
 from Components.MovieList import MovieList, resetMoviePlayState, AUDIO_EXTENSIONS, DVD_EXTENSIONS, IMAGE_EXTENSIONS, moviePlayState
 from Components.DiskInfo import DiskInfo
@@ -443,7 +442,7 @@ class MovieContextMenu(Screen):
 					if service.getPath().endswith('.ts'):
 						append_to_menu(menu, (_("Start offline decode"), csel.do_decode))
 					append_to_menu(menu, (_("Search for Covers"), csel.do_covers))
-				elif csel.isBlurayFolderAndFile(service):
+				elif BlurayPlayer is None and csel.isBlurayFolderAndFile(service):
 					append_to_menu(menu, (_("Auto play blu-ray file"), csel.playBlurayFile))
 				# Plugins expect a valid selection, so only include them if we selected a non-dir
 				if not(service.flags & eServiceReference.mustDescent):
@@ -1109,27 +1108,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		# Returns None or (serviceref, info, begin, len)
 		return self["list"].l.getCurrentSelection()
 
-	def mountIsoCallback(self, result, retval, extra_args):
-		remount = extra_args[1]
-		if remount != 0:
-			del self.remountTimer
-		if os.path.isdir(os.path.join(extra_args[0], 'PRIVATE/AVCHD/BDMV/STREAM/')):
-			self.itemSelectedCheckTimeshiftCallback('bluray', extra_args[0], True)
-		elif remount < 5:
-			remount += 1
-			self.remountTimer = eTimer()
-			self.remountTimer.timeout.callback.append(boundFunction(self.mountIsoCallback, None, None, (extra_args[0], remount)))
-			self.remountTimer.start(1000, False)
-		else:
-			Console().ePopen('umount -f %s' % extra_args[0], self.umountIsoCallback, extra_args[0])
-
-	def umountIsoCallback(self, result, retval, extra_args):
-		try:
-			os.rmdir(extra_args)
-		except Exception as e:
-			print '[BlurayPlayer] Cannot remove', extra_args, e
-		self.itemSelectedCheckTimeshiftCallback('.img', extra_args, True)
-
 	def playAsBLURAY(self, path):
 		try:
 			from Plugins.Extensions.BlurayPlayer import BlurayUi
@@ -1145,6 +1123,14 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			return True
 		except Exception, e:
 			print "[MovieSelection] DVD Player not installed:", e
+
+	def playSuburi(self, path):
+		suburi = os.path.splitext(path)[0][:-7]
+		for ext in AUDIO_EXTENSIONS:
+			if os.path.exists("%s%s" % (suburi, ext)):
+				current = eServiceReference(4097, 0, "file://%s&suburi=file://%s%s" % (path, suburi, ext))
+				self.close(current)
+				return True
 
 	def __serviceStarted(self):
 		if not self.list.playInBackground or not self.list.playInForeground:
@@ -1310,7 +1296,7 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		if current is not None:
 			path = current.getPath()
 			if current.flags & eServiceReference.mustDescent:
-				if os.path.isdir(os.path.join(path, 'PRIVATE/AVCHD/BDMV/STREAM/')):
+				if BlurayPlayer is not None and os.path.isdir(os.path.join(path, 'PRIVATE/AVCHD/BDMV/STREAM/')):
 					#force a BLU-RAY extention
 					Screens.InfoBar.InfoBar.instance.checkTimeshiftRunning(boundFunction(self.itemSelectedCheckTimeshiftCallback, 'bluray', path))
 					return
@@ -1351,28 +1337,20 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 	def itemSelectedCheckTimeshiftCallback(self, ext, path, answer):
 		if answer:
 			if ext in (".iso", ".img", ".nrg") and BlurayPlayer is not None:
-				# Mount iso for blu-ray check only if BlurayPlayer installed
 				try:
-					from Plugins.Extensions.BlurayPlayer import BlurayUi
+					from Plugins.Extensions.BlurayPlayer import blurayinfo
+					if blurayinfo.isBluray(path) == 1:
+						ext = 'bluray'
 				except Exception as e:
-					print "[MovieSelection] BlurayPlayer not installed:", e
-				else:
-					iso_path = path.replace(' ', '\ ')
-					mount_path = '/media/Bluray_%s' % os.path.splitext(iso_path)[0].rsplit('/', 1)[1]
-					if os.path.exists(mount_path):
-						Console().ePopen('umount -f %s' % mount_path)
-					else:
-						try:
-							os.mkdir(mount_path)
-						except Exception as e:
-							print '[BlurayPlayer] Cannot create', mount_path, e
-					Console().ePopen('mount -r %s %s' % (iso_path, mount_path), self.mountIsoCallback, (mount_path, 0))
-					return
-			elif ext == 'bluray':
+					print "[ML] Error in blurayinfo:", e
+			if ext == 'bluray':
 				if self.playAsBLURAY(path):
 					return
-			if ext in DVD_EXTENSIONS:
+			elif ext in DVD_EXTENSIONS:
 				if self.playAsDVD(path):
+					return
+			elif "_suburi." in path:
+				if self.playSuburi(path):
 					return
 			self.movieSelected()
 
@@ -1492,11 +1470,6 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 			return
 
 		self.saveconfig()
-		from Screens.InfoBar import InfoBar
-		infobar = InfoBar.instance
-		if self.session.nav.getCurrentlyPlayingServiceReference():
-			if not infobar.timeshiftEnabled() and ':0:/' not in self.session.nav.getCurrentlyPlayingServiceReference().toString():
-				self.session.nav.stopService()
 		self.close(None)
 
 	def saveconfig(self):
@@ -1531,13 +1504,13 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		for x in l_moviesort:
 			if int(x[0]) == int(config.movielist.moviesort.value):
 				used = index
-			menu.append((_(x[1]), x[0], "%d" % index))
+			menu.append((x[1], x[0]))
 			index += 1
 		if MovieList.InTrashFolder:
 			for x in l_trashsort:
 				if x[3] == config.usage.trashsort_deltime.value:
 					used = index
-				menu.append((_(x[1]), x[0], "%d" % index))
+				menu.append((x[1], x[0]))
 				index += 1
 		self.session.openWithCallback(self.sortbyMenuCallback, ChoiceBox, title=_("Sort list:"), list=menu, selection = used, skin_name="SortbyChoiceBox")
 
@@ -2076,7 +2049,12 @@ class MovieSelection(Screen, HelpableScreen, SelectionEventInfo, InfoBarBase, Pr
 		if not os.path.exists(cur_path):
 			# file does not exist.
 			return
-		st = os.stat(cur_path)
+		try:
+			st = os.stat(cur_path)
+		except OSError, e:
+			msg = _("Cannot move to trash can") + "\n" + str(e) + "\n"
+			self.session.open(MessageBox, msg, MessageBox.TYPE_ERROR)
+			return
 		name = info and info.getName(current) or _("this recording")
 		are_you_sure = ""
 		pathtest = info and info.getName(current)
