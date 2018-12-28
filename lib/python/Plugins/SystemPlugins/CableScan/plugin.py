@@ -100,8 +100,8 @@ class CableScanStatus(Screen):
 config.plugins.CableScan = ConfigSubsection()
 config.plugins.CableScan.keepnumbering = ConfigYesNo(default = False)
 config.plugins.CableScan.hdlist = ConfigYesNo(default = False)
-config.plugins.CableScan.frequency = ConfigFloat(default = [323, 0], limits = [(50, 999),(0, 999)])
-config.plugins.CableScan.symbolrate = ConfigInteger(default = 6875, limits = (1, 9999))
+config.plugins.CableScan.frequency = ConfigFloat(default = [330, 0], limits = [(50, 999),(0, 999)])
+config.plugins.CableScan.symbolrate = ConfigInteger(default = 6900, limits = (1, 9999))
 config.plugins.CableScan.networkid = ConfigInteger(default = 0, limits = (0, 99999))
 config.plugins.CableScan.modulation = ConfigSelection(
 	choices =
@@ -111,7 +111,7 @@ config.plugins.CableScan.modulation = ConfigSelection(
 		(str(eDVBFrontendParametersCable.Modulation_QAM128), "128-QAM"),
 		(str(eDVBFrontendParametersCable.Modulation_QAM256), "256-QAM")],
 	default = str(eDVBFrontendParametersCable.Modulation_QAM64))
-config.plugins.CableScan.auto = ConfigYesNo(default = True)
+config.plugins.CableScan.auto = ConfigYesNo(default = False)
 
 class CableScanScreen(ConfigListScreen, Screen):
 	skin = """

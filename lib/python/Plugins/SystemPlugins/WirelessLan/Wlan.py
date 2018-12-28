@@ -412,6 +412,7 @@ class Status:
 		data = { 'essid': False, 'frequency': False, 'accesspoint': False, 'bitrate': False, 'encryption': False, 'quality': False, 'signal': False }
 		for line in result.splitlines():
 			line = line.strip()
+			# print "[Wlan.py] line -->",line
 			if "ESSID" in line:
 				if "off/any" in line:
 					ssid = "off"
@@ -436,6 +437,8 @@ class Status:
 			if "Bit Rate" in line:
 				if "kb" in line:
 					br = line[line.index('Bit Rate')+9 :line.index(' kb/s')]
+				elif "Gb" in line:
+					br = line[line.index('Bit Rate')+9 :line.index(' Gb/s')]
 				else:
 					br = line[line.index('Bit Rate')+9 :line.index(' Mb/s')]
 				if br is not None:
