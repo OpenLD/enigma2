@@ -312,7 +312,7 @@ def InitLcd():
 
 	if fileExists("/proc/stb/lcd/mode"):
 		f = open("/proc/stb/lcd/mode", "r")
-		can_lcdmodechecking = f.read().strip().split(" ")
+		can_lcdmodechecking = f.read()
 		f.close()
 	else:
 		can_lcdmodechecking = False
