@@ -19,7 +19,7 @@ public:
 #endif
 };
 
-class eFilePushThread: public eThread, public sigc::trackable
+class eFilePushThread: public eThread, public sigc::trackable, public iObject
 {
 	DECLARE_REF(eFilePushThread);
 public:
