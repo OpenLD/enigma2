@@ -40,12 +40,28 @@ if [ -x /etc/enigma2/startup.sh ]; then
 fi
 
 # remove annoying WebInterface relicts
-if [ -d /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
-	rm -rf /usr/lib/enigma2/python/Plugins/Extensions/WebInterface/
+if [ -d @libdir@/enigma2/python/Plugins/Extensions/WebInterface/ ]; then
+	rm -rf @libdir@/enigma2/python/Plugins/Extensions/WebInterface/
 fi
 
+if [ -e /proc/stb/info/boxtype ]; then
+	stbcheck=`cat /proc/stb/info/boxtype`
+	if [ $stbcheck == "sf8008" ] || [ $stbcheck == "ustym4kpro" ] || [ $stbcheck == "cc1" ]; then
+		count=`ps -ef |grep libreader |grep -v "grep" |wc -l`
+		if [ 0 == $count ];then
+			libreader 720P_50
+		fi
+	fi
+fi
 if [ -x @bindir@/showiframe ]; then
-	killall -9 showiframe; sleep 1
+	if [ -e /proc/stb/info/boxtype ]; then
+		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
+		if [ ! $stbcheck == "u5" ]; then
+			killall -9 showiframe; sleep 1
+		fi
+	else
+		killall -9 showiframe; sleep 1
+	fi
 	if [ -f @sysconfdir@/enigma2/backdrop.mvi ]; then
 		@bindir@/showiframe @sysconfdir@/enigma2/backdrop.mvi
 	elif [ -f @datadir@/backdrop.mvi ]; then
@@ -100,10 +116,17 @@ if [ ! -e /etc/enigma2/settings ]; then
 	touch /etc/enigma2/settings
 fi
 
-# check for default sat settings
+#check for default sat settings
 stbcheck=00
 if [ -e /proc/stb/info/subtype ]; then
 	stbcheck=`cat /proc/stb/info/subtype`
+fi
+if [ -e /proc/stb/info/boxtype ] && [ -e /proc/stb/info/chipset ]; then
+	boxtype=`cat /proc/stb/info/boxtype`
+	chipset=`cat /proc/stb/info/chipset`
+	if [ $boxtype == "et7000" ] && [ $chipset == "bcm73625" ]; then
+		stbcheck=01
+	fi
 fi
 if [ -e /etc/defaultsat.tar.gz ] && [ ! -e /etc/enigma2/lamedb ] && [ ! $stbcheck == "01" ] && [ ! $stbcheck == "1" ]; then
 	tar -xzf /etc/defaultsat.tar.gz -C /etc/enigma2
@@ -119,6 +142,11 @@ if [ -e /etc/init.d/init_openld.sh ]; then
 fi
 
 sync
+
+VERBOSE=''
+if [ "$(grep config.log.level /etc/enigma2/settings)" == "config.log.level=3" ]; then
+	VERBOSE='--verbose'
+fi
 
 if [ "$(grep config.crash.enabledebug /etc/enigma2/settings)" == "config.crash.enabledebug=True" ]; then
 	RANDOMIZE1970=''
@@ -149,6 +177,20 @@ fi
 # >128 signal
 
 ret=$?
+
+if [ "$ret" -ne "1" ]; then
+	if [ -e /proc/stb/info/boxtype ]; then
+		stbcheck=`cat /proc/stb/info/boxtype | cut -c1-2`
+		if [ $stbcheck == "u5" ]; then
+			killall -9 showiframe; sleep 5
+		fi
+		stbcheck=`cat /proc/stb/info/boxtype`
+		if [ $stbcheck == "sf8008" ] || [ $stbcheck == "ustym4kpro" ] || [ $stbcheck == "cc1" ] ; then
+			killall -9 libreader; sleep 5
+		fi
+	fi
+fi
+
 case $ret in
 	1)
 		/sbin/halt
@@ -160,6 +202,7 @@ case $ret in
 		/sbin/reboot
 		;;
 	3)
+		rm -fR /home/root/.gstreamer-0.10
 		rm -f /tmp/.listen.camd.socket.ignore
 		;;
 	4)
@@ -180,14 +223,20 @@ case $ret in
 		/sbin/reboot
 		;;
 	42)
-		if [ -e /usr/lib/enigma2/python/upgrade.pyo ]; then
-			python /usr/lib/enigma2/python/upgrade.pyo
+		if [ -e @libdir@/enigma2/python/upgrade.pyo ]; then
+			python @libdir@/enigma2/python/upgrade.pyo
 		else
-		# bind the console (when available)
-		[ -f /sys/class/vtconsole/vtcon1/bind ] && echo 1 > /sys/class/vtconsole/vtcon1/bind
-		opkg update 2> /dev/null
-		opkg upgrade 2>&1 | tee /home/root/ipkgupgrade.log
-		/sbin/reboot
+			df -P | grep -v "tmpfs " | awk '{print $6}' | tail -n +3 > /tmp/upgrade_mountpoints.txt
+			while read line; do
+				if [  -f $line/var/lib/opkg/status ]; then
+				DESTS=$DESTS" --add-dest "$line":"$line
+			fi
+			done < /tmp/upgrade_mountpoints.txt
+			# bind the console (when available)
+			[ -f /sys/class/vtconsole/vtcon1/bind ] && echo 1 > /sys/class/vtconsole/vtcon1/bind
+			opkg update 2> /dev/null
+			( opkg upgrade sysvinit && opkg upgrade sysvinit-pidof && opkg upgrade initscripts-functions && opkg upgrade busybox && opkg upgrade kmod && opkg list-upgradable $DESTS | cut -f 1 -d ' ' | xargs opkg upgrade $DESTS ) 2>&1 | tee /home/root/ipkgupgrade.log
+			/sbin/reboot
 		fi
 		;;
 	43)
@@ -195,10 +244,10 @@ case $ret in
 		;;
 	44)
 		# little hack but it will be fixed soon in drivers
-		/usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear
-		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi
+		@libdir@/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/bin/fbclear
+		/usr/bin/showiframe @libdir@/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/wait.mvi
 		echo fpupload >/proc/vfd && sleep 3 && dd bs=256k if=/tmp/micom.bin of=/dev/mcu
-		/usr/bin/showiframe /usr/lib/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi
+		/usr/bin/showiframe @libdir@/enigma2/python/Plugins/SystemPlugins/MICOMUpgrade/reboot.mvi
 		# Wait forever for the user to power off
 		while(true) ; do sleep 60 ; done
 		;;
