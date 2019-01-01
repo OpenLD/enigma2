@@ -309,7 +309,7 @@ int eSubtitleWidget::event(int event, void *data, void *data2)
 					eRect &area = element.m_area;
 					if (showBackground)
 					{
-						eTextPara *para = new eTextPara(area);
+						ePtr<eTextPara> para = new eTextPara(area);
 						para->setFont(subtitleStyles[Subtitle_TTX].font);
 						para->renderString(element.m_text.c_str());
 						eRect bbox = para->getBoundBox();
@@ -391,7 +391,7 @@ int eSubtitleWidget::event(int event, void *data, void *data2)
 				eRect &area = element.m_area;
 				if (showBackground)
 				{
-					eTextPara *para = new eTextPara(area);
+					ePtr<eTextPara> para = new eTextPara(area);
 					para->setFont(subtitleStyles[face].font);
 					para->renderString(text.c_str());
 					eRect bbox = para->getBoundBox();
