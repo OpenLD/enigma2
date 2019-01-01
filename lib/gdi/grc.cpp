@@ -377,7 +377,7 @@ void gPainter::renderText(const eRect &pos, const std::string &string, int flags
 	m_rc->submit(o);
 }
 
-void gPainter::renderPara(eTextPara *para, ePoint offset)
+void gPainter::renderPara(ePtr<eTextPara> para, ePoint offset)
 {
 	if ( m_dc->islocked() )
 		return;

@@ -24,7 +24,7 @@ if [ -e /tmp/enigma2-plugin-settings-defaultsatld-master/ ]; then
 	rm -R /tmp/enigma2-plugin-settings-defaultsatld-master/ 2>/dev/null
 fi
 cd /tmp/
-wget https://github.com/OpenLD/enigma2-plugin-settings-defaultsatld/archive/master.zip
+wget --no-check-certificate https://github.com/OpenLD/enigma2-plugin-settings-defaultsatld/archive/master.zip
 unzip master.zip
 cp enigma2-plugin-settings-defaultsatld-master/etc/enigma2/*.tv /etc/enigma2/
 cp enigma2-plugin-settings-defaultsatld-master/etc/enigma2/*.radio /etc/enigma2/
