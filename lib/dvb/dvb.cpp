@@ -1230,7 +1230,7 @@ RESULT eDVBResourceManager::getActiveChannels(std::list<active_channel> &list)
 
 RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUsePtr<iDVBChannel> &channel, bool simulate)
 {
-		/* first, check if a channel is already existing. */
+	/* first, check if a channel is already existing. */
 	std::list<active_channel> &active_channels = simulate ? m_active_simulate_channels : m_active_channels;
 
 	if (!simulate && m_cached_channel)
@@ -1282,10 +1282,8 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 
 	int err = allocateFrontend(fe, feparm, simulate);
 	if (err)
-	{
-		eDebugNoSimulate("[eDVBResourceManager] can't allocate frontend!");
 		return err;
-	}
+
 	RESULT res;
 	ePtr<eDVBChannel> ch = new eDVBChannel(this, fe);
 
@@ -1293,7 +1291,6 @@ RESULT eDVBResourceManager::allocateChannel(const eDVBChannelID &channelid, eUse
 	if (res)
 	{
 		channel = 0;
-		eDebugNoSimulate("[eDVBResourceManager] channel id not found!");
 		return errChidNotFound;
 	}
 
