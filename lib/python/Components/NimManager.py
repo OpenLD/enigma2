@@ -2085,7 +2085,7 @@ def InitNimManager(nimmgr, update_slots = []):
 			nim.scpcSearchRange.slot_id = x
 			nim.scpcSearchRange.addNotifier(scpcSearchRangeChanged)
 			nim.t2miRawMode = ConfigSelection([("disable", _("disabled")), ("enable", _("enabled"))], "disable")
-			nim.t2miRawMode.fe_id = x - empty_slots
+			nim.t2miRawMode.feid = x - empty_slots
 			nim.t2miRawMode.slot_id = x
 			nim.t2miRawMode.addNotifier(t2miRawModeChanged)
 			nim.diseqc13V = ConfigYesNo(False)

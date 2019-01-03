@@ -660,16 +660,16 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 				self.satList.append(None)
 
 	def TunerTypeChanged(self):
-		fe_id = int(self.scan_nims.value)
-		multiType = config.Nims[fe_id].multiType
-		slot = nimmanager.nim_slots[fe_id]
+		feid = int(self.scan_nims.value)
+		multiType = config.Nims[feid].multiType
+		slot = nimmanager.nim_slots[feid]
 		print "dvb_api_version ",iDVBFrontend.dvb_api_version
-		if eDVBResourceManager.getInstance().allocateRawChannel(fe_id) is None:
+		if eDVBResourceManager.getInstance().allocateRawChannel(feid) is None:
 			self.session.nav.stopService()
-			if eDVBResourceManager.getInstance().allocateRawChannel(fe_id) is None:
+			if eDVBResourceManager.getInstance().allocateRawChannel(feid) is None:
 				print "type change failed"
 				return
-		frontend = eDVBResourceManager.getInstance().allocateRawChannel(fe_id).getFrontend()
+		frontend = eDVBResourceManager.getInstance().allocateRawChannel(feid).getFrontend()
 
 		if slot.isMultiType():
 			eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, "dummy", False) #to force a clear of m_delsys_whitelist
@@ -688,7 +688,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 			eDVBResourceManager.getInstance().setFrontendType(slot.frontend_id, slot.getType())
 
 		system = multiType.getText()
-#			if not path.exists("/proc/stb/frontend/%d/mode" % fe_id) and iDVBFrontend.dvb_api_version >= 5:
+#			if not path.exists("/proc/stb/frontend/%d/mode" % feid) and iDVBFrontend.dvb_api_version >= 5:
 		print "api >=5 and new style tuner driver"
 		if frontend:
 			if system == 'DVB-C':
@@ -702,11 +702,11 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 			else:
 				ret = False
 			if not ret:
-				print "%d: tunerTypeChange to '%s' failed" %(fe_id, system)
+				print "%d: tunerTypeChange to '%s' failed" %(feid, system)
 			else:
 				print "new system ",system
 		else:
-			print "%d: tunerTypeChange to '%s' failed (BUSY)" %(fe_id, multiType.getText())
+			print "%d: tunerTypeChange to '%s' failed (BUSY)" %(feid, multiType.getText())
 #		self.createConfig()
 		self.createSetup()
 
