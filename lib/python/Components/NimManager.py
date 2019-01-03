@@ -176,13 +176,16 @@ class SecConfigure:
 		try:
 			for slot in nim_slots:
 				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-S", "DVB-S2", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+					types = [type for type in ["DVB-S", "DVB-S2", "DVB-S2X", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 					if "DVB-T2" in types:
 						# DVB-T2 implies DVB-T support
 						types.remove("DVB-T")
 					if "DVB-S2" in types:
 						# DVB-S2 implies DVB-S support
 						types.remove("DVB-S")
+					if "DVB-S2X" in types:
+						# DVB-S2X implies DVB-S2 support
+						types.remove("DVB-S2")
 					if len(types) > 1:
 						slot.multi_type = {}
 						for type in types:
@@ -198,8 +201,9 @@ class SecConfigure:
 					(slot.canBeCompatible("ATSC") and (slot.config.atsc.configMode.value != "nothing" and True or False)) or
 					(slot.canBeCompatible("DVB-S") and (slot.config.dvbs.configMode.value != "nothing" and True or False)) or
 					(slot.canBeCompatible("DVB-C") and (slot.config.dvbc.configMode.value != "nothing" and True or False)) or
-					(slot.canBeCompatible("DVB-T") and (slot.config.dvbt.configMode.value != "nothing" and True or False)),
-					slot.canBeCompatible("DVB-S2") and (slot.config.dvbs.configMode.value != "nothing" and True or False),
+					(slot.canBeCompatible("DVB-T") and (slot.config.dvbt.configMode.value != "nothing" and True or False)) or
+					(slot.canBeCompatible("DVB-S2") and (slot.config.dvbs.configMode.value != "nothing" and True or False)),
+					slot.canBeCompatible("DVB-S2X") and (slot.config.dvbs.configMode.value != "nothing" and True or False),
 					slot.frontend_id is None and -1 or slot.frontend_id))
 		eDVBResourceManager.getInstance().setFrontendSlotInformations(used_nim_slots)
 
@@ -720,7 +724,7 @@ class NIM(object):
 		if not multi_type: multi_type = {}
 		self.slot = slot
 
-		if type not in ("DVB-S", "DVB-C", "DVB-T", "DVB-S2", "DVB-T2", "DVB-C2", "ATSC", None):
+		if type not in ("DVB-S", "DVB-C", "DVB-T", "DVB-S2", "DVB-S2X", "DVB-T2", "DVB-C2", "ATSC", None):
 			print "warning: unknown NIM type %s, not using." % type
 			type = None
 
@@ -741,6 +745,7 @@ class NIM(object):
 				"DVB-C": ("DVB-C", None),
 				"DVB-T": ("DVB-T", None),
 				"DVB-S2": ("DVB-S", "DVB-S2", None),
+				"DVB-S2X": ("DVB-S", "DVB-S2", "DVB-S2X", None),
 				"DVB-C2": ("DVB-C", "DVB-C2", None),
 				"DVB-T2": ("DVB-T", "DVB-T2", None),
 				"ATSC": ("ATSC", None),
@@ -780,6 +785,7 @@ class NIM(object):
 				"DVB-C": ("DVB-C", "DVB-C2"),
 				"DVB-T": ("DVB-T","DVB-T2"),
 				"DVB-S2": ("DVB-S", "DVB-S2"),
+				"DVB-S2X": ("DVB-S", "DVB-S2", "DVB-S2X"),
 				"DVB-C2": ("DVB-C", "DVB-C2"),
 				"DVB-T2": ("DVB-T", "DVB-T2"),
 				"ATSC": "ATSC",
@@ -864,6 +870,7 @@ class NIM(object):
 			"DVB-T": "DVB-T",
 			"DVB-C": "DVB-C",
 			"DVB-S2": "DVB-S2",
+			"DVB-S2X": "DVB-S2X",
 			"DVB-T2": "DVB-T2",
 			"DVB-C2": "DVB-C2",
 			"ATSC": "ATSC",
@@ -1002,7 +1009,7 @@ class NimManager:
 		try:
 			for slot in self.nim_slots:
 				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+					types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 					if "DVB-T2" in types:
 						# DVB-T2 implies DVB-T support
 						types.remove("DVB-T")
@@ -1196,7 +1203,7 @@ class NimManager:
 		#          Name: Alps BSBE1 702A
 
 		#
-		# Type will be either "DVB-S", "DVB-S2", "DVB-T", "DVB-C" or None.
+		# Type will be either "DVB-S", "DVB-S2", "DVB-S2X", "DVB-T", "DVB-C" or None.
 
 		# nim_slots is an array which has exactly one entry for each slot, even for empty ones.
 		self.nim_slots = [ ]
@@ -1219,8 +1226,6 @@ class NimManager:
 				entries[current_slot] = {}
 			elif line.startswith("Type:"):
 				entries[current_slot]["type"] = str(line[6:])
-				if entries[current_slot]["type"] == "DVB-S2X":
-					entries[current_slot]["type"] = "DVB-S2"
 				entries[current_slot]["isempty"] = False
 			elif line.strip().startswith("Input_Name:"):
 				entries[current_slot]["input_name"] = str(line.strip()[12:])
@@ -1375,7 +1380,7 @@ class NimManager:
 
 	def canEqualTo(self, slotid):
 		type = self.getNimType(slotid)
-		type = type[:5] # DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
+		type = type[:5] # DVB-S2X --> DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
 		nimList = self.getNimListOfType(type, slotid)
 		for nim in nimList[:]:
 			if self.nim_slots[nim].canBeCompatible('DVB-S'):
@@ -1386,7 +1391,7 @@ class NimManager:
 
 	def canDependOn(self, slotid):
 		type = self.getNimType(slotid)
-		type = type[:5] # DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
+		type = type[:5] # DVB-S2X --> DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
 		nimList = self.getNimListOfType(type, slotid)
 		positionerList = []
 		for nim in nimList[:]:
@@ -2062,6 +2067,14 @@ def InitNimManager(nimmgr, update_slots = []):
 			f.write(configElement.value)
 			f.close()
 
+	def t2miRawModeChanged(configElement):
+		feid = configElement.feid
+		slot_id = configElement.slot_id
+		if path.exists("/proc/stb/frontend/%d/t2mirawmode" % feid):
+			f = open("/proc/stb/frontend/%d/t2mirawmode" % feid, "w")
+			f.write(configElement.value)
+			f.close()
+
 	def connectedToChanged(slot_id, nimmgr, configElement):
 		configMode = nimmgr.getNimConfig(slot_id).dvbs.configMode
 		if configMode.value == 'loopthrough':
@@ -2169,13 +2182,16 @@ def InitNimManager(nimmgr, update_slots = []):
 	try:
 		for slot in nimmgr.nim_slots:
 			if slot.frontend_id is not None:
-				types = [type for type in ["DVB-S", "DVB-S2", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+				types = [type for type in ["DVB-S", "DVB-S2", "DVB-S2X", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 				if "DVB-T2" in types:
 					# DVB-T2 implies DVB-T support
 					types.remove("DVB-T")
 				if "DVB-S2" in types:
 					# DVB-S2 implies DVB-S support
 					types.remove("DVB-S")
+				if "DVB-S2X" in types:
+					# DVB-S2X implies DVB-S2 support
+					types.remove("DVB-S2")
 				if len(types) > 1:
 					slot.multi_type = {}
 					for type in types:
