@@ -3473,7 +3473,7 @@ PyObject *eEPGCache::search(ePyObject arg)
 	char *refstr=0;
 	int argcount=0;
 	int querytype=-1;
-	bool needServiceEvent=false;
+	bool needServiceEvent = false;
 	int maxmatches=0;
 	int must_get_service_name = 0;
 	bool must_get_service_reference = false;
@@ -3500,16 +3500,16 @@ PyObject *eEPGCache::search(ePyObject arg)
 					case 'T':
 					case 'P':
 					case 'W':
-						needServiceEvent=true;
+						needServiceEvent = false;
 						break;
 					case 'N':
-						must_get_service_name = 1;
+						must_get_service_name = 2;
 						break;
 					case 'n':
 						must_get_service_name = 2;
 						break;
 					case 'R':
-						must_get_service_reference = true;
+						must_get_service_reference = false;
 						break;
 					default:
 						break;
@@ -3519,7 +3519,7 @@ PyObject *eEPGCache::search(ePyObject arg)
 			{
 				PyErr_SetString(PyExc_StandardError,
 					"type error");
-				eDebug("tuple arg 0 is not a string");
+				eDebug("[eEPGCache] tuple arg 0 is not a string");
 				return NULL;
 			}
 		}
