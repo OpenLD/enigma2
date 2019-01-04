@@ -985,9 +985,12 @@ class InfoBarTimeshift:
 		self.ptsCleanTimeshiftFolder(justZapped = False)
 
 	def ptsCleanTimeshiftFolder(self, justZapped = True):
-		if self.ptsCheckTimeshiftPath() is False or self.session.screen["Standby"].boolean is True:
-			self.ptsEventCleanTimerSTOP()
-			return
+		try:
+			if self.ptsCheckTimeshiftPath() is False or self.session.screen["Standby"].boolean is True:
+				self.ptsEventCleanTimerSTOP()
+				return
+		except:
+			pass
 
 		freespace = int(config.timeshift.timeshiftCheckFreeSpace.value)
 		timeshiftEnabled = self.timeshiftEnabled()
