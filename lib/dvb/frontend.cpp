@@ -1497,29 +1497,17 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	}
 	else if (!strcmp(m_description, "CXD1981"))
 	{
+		eDVBFrontendParametersCable parm = {0};
 		int mse = (~snr) & 0xFF;
-		int type = -1;
-		oparm.getSystem(type);
-		switch (type)
+		oparm.getDVBC(parm);
+		switch (parm.modulation)
 		{
-		case feCable:
-			eDVBFrontendParametersCable parm = {0};
-			oparm.getDVBC(parm);
-			switch (parm.modulation)
-			{
-			case eDVBFrontendParametersCable::Modulation_Auto:
-			case eDVBFrontendParametersCable::Modulation_QAM16:
-			case eDVBFrontendParametersCable::Modulation_QAM64:
-			case eDVBFrontendParametersCable::Modulation_QAM256: ret = (int)(-950 * log(((double)mse) / 760)); break;
-			case eDVBFrontendParametersCable::Modulation_QAM32:
-			case eDVBFrontendParametersCable::Modulation_QAM128: ret = (int)(-875 * log(((double)mse) / 650)); break;
-			}
-			break;
-		case feTerrestrial:
-			ret = (mse * 25) / 2;
-			break;
-		default:
-			break;
+		case eDVBFrontendParametersCable::Modulation_QAM16:
+		case eDVBFrontendParametersCable::Modulation_QAM64:
+		case eDVBFrontendParametersCable::Modulation_QAM256: ret = (int)(-950 * log(((double)mse) / 760)); break;
+		case eDVBFrontendParametersCable::Modulation_QAM32:
+		case eDVBFrontendParametersCable::Modulation_QAM128: ret = (int)(-875 * log(((double)mse) / 650)); break;
+		default: break;
 		}
 	}
 	else if (!strcmp(m_description, "Broadcom BCM73XX")
