@@ -34,6 +34,33 @@ import os
 import time
 import re
 
+# stream type to codec map
+codec_data = {
+	-1: "N/A",
+	0: "MPEG-2",
+	1: "H.264 (MPEG-4 AVC)",
+	2: "H.263",
+	3: "VC1",
+	4: "MPEG-4 (VC)",
+	5: "VC1-SM",
+	6: "MPEG-1",
+	7: "H.265 (HEVC)",
+	8: "VP8",
+	9: "VP9",
+	10: "XVID",
+	11: "N/A 11",
+	12: "N/A 12",
+	13: "DIVX 3.11",
+	14: "DIVX 4",
+	15: "DIVX 5",
+	16: "AVS",
+	17: "N/A 17",
+	18: "VP6",
+	19: "N/A 19",
+	20: "N/A 20",
+	21: "SPARK",
+}
+
 def addspace(text):
 	if text:
 		text += "  "
@@ -591,7 +618,7 @@ class LdExtraInfo(Poll, Converter, object):
 		return str(xres) + "x" + str(yres) + mode + fps
 
 	def createVideoCodec(self, info):
-		return ("MPEG2", "MPEG4 H.264", "MPEG1", "MPEG4-VC", "VC1", "VC1-SM", "HEVC H.265", "")[info.getInfo(iServiceInformation.sVideoType)]
+		return codec_data.get(info.getInfo(iServiceInformation.sVideoType), "N/A")
 
 	def createServiceRef(self, info):
 		ref = info.getInfoString(iServiceInformation.sServiceref)
