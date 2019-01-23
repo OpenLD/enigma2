@@ -165,7 +165,8 @@ class ServiceInfo(Screen):
 			videomode = "-"
 			resolution = "-"
 			if self.info:
-				videocodec = ("MPEG2", "MPEG4 H.264", "MPEG1", "MPEG4-VC", "VC1", "VC1-SM", "HEVC", "HEVC H.265", "CAVS", "-")[self.info.getInfo(iServiceInformation.sVideoType)]
+				from Components.Converter.LdExtraInfo import codec_data
+				videocodec = codec_data.get(self.info.getInfo(iServiceInformation.sVideoType), "N/A")
 				width = self.info.getInfo(iServiceInformation.sVideoWidth)
 				height = self.info.getInfo(iServiceInformation.sVideoHeight)
 				if width > 0 and height > 0:
@@ -175,9 +176,11 @@ class ServiceInfo(Screen):
 					aspect = self.getServiceInfoValue(iServiceInformation.sAspect)
 					aspect = aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ) and "4:3" or "16:9"
 					resolution += " - ["+aspect+"]"
-					gamma = ("SDR", "HDR", "HDR10", "HLG", "")[self.info.getInfo(iServiceInformation.sGamma)]
-					if gamma:
-						resolution += " - " + gamma
+					gammas = ("SDR", "HDR", "HDR10", "HLG", "")
+					if self.info.getInfo(iServiceInformation.sGamma) < len(gammas):
+						gamma = gammas[self.info.getInfo(iServiceInformation.sGamma)]
+						if gamma:
+							resolution += " - " + gamma
 				f = open("/proc/stb/video/videomode")
 				videomode = f.read()[:-1].replace('\n','')
 				f.close()
