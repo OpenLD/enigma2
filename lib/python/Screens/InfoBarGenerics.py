@@ -991,7 +991,7 @@ class InfoBarShowHide(InfoBarScreenSaver):
 					info = eServiceCenter.getInstance().info(service)
 					service = info and info.getInfoString(service, iServiceInformation.sServiceref)
 					FLAG_HIDE_VBI = 512
-					return service and eDVBDB.getInstance().getFlag(eServiceReference(service)) & self.FLAG_HIDE_VBI and True
+					return service and eDVBDB.getInstance().getFlag(eServiceReference(service)) & FLAG_HIDE_VBI and True
 				else:
 					return ".hidvbi." in servicepath.lower()
 			elif "://" in servicepath:
