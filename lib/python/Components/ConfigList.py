@@ -239,29 +239,32 @@ class ConfigListScreen:
 			x()
 
 	def handleInputHelpers(self):
-		if self["config"].getCurrent() is not None:
-			try:
-				if isinstance(self["config"].getCurrent()[1], ConfigText) or isinstance(self["config"].getCurrent()[1], ConfigPassword):
-					if "VKeyIcon" in self:
-						self["VirtualKB"].setEnabled(True)
-						self["VKeyIcon"].boolean = True
-					if "HelpWindow" in self:
-						if self["config"].getCurrent()[1].help_window.instance is not None:
-							helpwindowpos = self["HelpWindow"].getPosition()
-							from enigma import ePoint
-							self["config"].getCurrent()[1].help_window.instance.move(ePoint(helpwindowpos[0],helpwindowpos[1]))
-				else:
+		try:
+			if self["config"].getCurrent() is not None:
+				try:
+					if isinstance(self["config"].getCurrent()[1], ConfigText) or isinstance(self["config"].getCurrent()[1], ConfigPassword):
+						if "VKeyIcon" in self:
+							self["VirtualKB"].setEnabled(True)
+							self["VKeyIcon"].boolean = True
+						if "HelpWindow" in self:
+							if self["config"].getCurrent()[1].help_window.instance is not None:
+								helpwindowpos = self["HelpWindow"].getPosition()
+								from enigma import ePoint
+								self["config"].getCurrent()[1].help_window.instance.move(ePoint(helpwindowpos[0],helpwindowpos[1]))
+					else:
+						if "VKeyIcon" in self:
+							self["VirtualKB"].setEnabled(False)
+							self["VKeyIcon"].boolean = False
+				except:
 					if "VKeyIcon" in self:
 						self["VirtualKB"].setEnabled(False)
 						self["VKeyIcon"].boolean = False
-			except:
+			else:
 				if "VKeyIcon" in self:
 					self["VirtualKB"].setEnabled(False)
 					self["VKeyIcon"].boolean = False
-		else:
-			if "VKeyIcon" in self:
-				self["VirtualKB"].setEnabled(False)
-				self["VKeyIcon"].boolean = False
+		except:
+			pass
 
 	def KeyText(self):
 		from Screens.VirtualKeyBoard import VirtualKeyBoard
@@ -276,14 +279,20 @@ class ConfigListScreen:
 		self["config"].handleKey(KEY_OK)
 
 	def keyLeft(self):
-		self["config"].handleKey(KEY_LEFT)
-		self.__changed()
-		self["config"].refresh()
+		try:
+			self["config"].handleKey(KEY_LEFT)
+			self.__changed()
+			self["config"].refresh()
+		except:
+			pass
 
 	def keyRight(self):
-		self["config"].handleKey(KEY_RIGHT)
-		self.__changed()
-		self["config"].refresh()
+		try:
+			self["config"].handleKey(KEY_RIGHT)
+			self.__changed()
+			self["config"].refresh()
+		except:
+			pass
 
 	def keyHome(self):
 		self["config"].handleKey(KEY_HOME)
@@ -314,10 +323,16 @@ class ConfigListScreen:
 		self.__changed()
 
 	def keyPageDown(self):
-		self["config"].pageDown()
+		try:
+			self["config"].pageDown()
+		except:
+			pass
 
 	def keyPageUp(self):
-		self["config"].pageUp()
+		try:
+			self["config"].pageUp()
+		except:
+			pass
 
 	def keyFile(self):
 		selection = self["config"].getCurrent()
@@ -382,7 +397,10 @@ class ConfigListScreen:
 				self.session.openWithCallback(self.cancelConfirm, MessageBox, _("Really close without saving settings?"))
 
 	def keyCancel(self):
-		self.closeMenuList()
+		try:
+			self.closeMenuList()
+		except:
+			pass
 
 	def closeRecursive(self):
 		self.closeMenuList(True)
