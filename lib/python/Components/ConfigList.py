@@ -17,7 +17,10 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 		self.l.setSlider(height, space)
 		self.timer = eTimer()
 		self.list = list
-		self.onSelectionChanged = [ ]
+		try:
+			self.onSelectionChanged = []
+		except:
+			pass
 		self.current = None
 		self.session = session
 
@@ -69,35 +72,50 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 	GUI_WIDGET = eListbox
 
 	def selectionChanged(self):
-# Only run onDeselect/onSelect if self.current != self.getCurrent()
-# i.e. if the selection has *actually* changed...
-# This means that Notifiers with immediate_feedback = False actually
-# do only get called once at the end of an item change, not for every
-# step along the way.
-#
-		orig_current = self.current;
-		self.current = self.getCurrent()
-		if (orig_current == self.current):
-			return
-		if isinstance(orig_current,tuple) and len(orig_current) >= 2:
-			orig_current[1].onDeselect(self.session)
-		if isinstance(self.current,tuple) and len(self.current) >= 2:
-			self.current[1].onSelect(self.session)
-		else:
-			return
-		for x in self.onSelectionChanged:
-			x()
+		# Only run onDeselect/onSelect if self.current != self.getCurrent()
+		# i.e. if the selection has *actually* changed...
+		# This means that Notifiers with immediate_feedback = False actually
+		# do only get called once at the end of an item change, not for every
+		# step along the way.
+		#
+		try:
+			orig_current = self.current;
+			self.current = self.getCurrent()
+			if (orig_current == self.current):
+				return
+			if isinstance(orig_current,tuple) and len(orig_current) >= 2:
+				orig_current[1].onDeselect(self.session)
+			if isinstance(self.current,tuple) and len(self.current) >= 2:
+				self.current[1].onSelect(self.session)
+			else:
+				return
+			try:
+				for x in self.onSelectionChanged:
+					x()
+			except:
+				pass
+		except:
+			pass
 
 	def postWidgetCreate(self, instance):
-		instance.selectionChanged.get().append(self.selectionChanged)
-		instance.setContent(self.l)
-		self.instance.setWrapAround(True)
+		try:
+			instance.selectionChanged.get().append(self.selectionChanged)
+			instance.setContent(self.l)
+			self.instance.setWrapAround(True)
+		except:
+			pass
 
 	def preWidgetRemove(self, instance):
-		if isinstance(self.current,tuple) and len(self.current) >= 2:
-			self.current[1].onDeselect(self.session)
-		instance.selectionChanged.get().remove(self.selectionChanged)
-		instance.setContent(None)
+		try:
+			if isinstance(self.current,tuple) and len(self.current) >= 2:
+				try:
+					self.current[1].onDeselect(self.session)
+				except:
+					pass
+			instance.selectionChanged.get().remove(self.selectionChanged)
+			instance.setContent(None)
+		except:
+			pass
 
 	def setList(self, l):
 		self.timer.stop()
@@ -117,10 +135,11 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 		self.handleKey(KEY_TIMEOUT)
 
 	def isChanged(self):
+		is_changed = False
 		for x in self.list:
-			if x[1].isChanged():
-				return True
-		return False
+			is_changed |= x[1].isChanged()
+
+		return is_changed
 
 	def pageUp(self):
 		if self.instance is not None:
@@ -139,12 +158,18 @@ class ConfigList(HTMLComponent, GUIComponent, object):
 			self.instance.moveSelection(self.instance.moveDown)
 
 	def refresh(self):
-		for x in self.onSelectionChanged:
-			if x.__func__.__name__ == "selectionChanged":
-				x()
+		try:
+			for x in self.onSelectionChanged:
+				try:
+					if x.__func__.__name__ == "selectionChanged":
+						x()
+				except:
+					pass
+		except:
+			pass
 
 class ConfigListScreen:
-	def __init__(self, list, session = None, on_change = None):
+	def __init__(self, list, session=None, on_change=None):
 		self["config_actions"] = NumberActionMap(["SetupActions", "InputAsciiActions", "KeyboardInputActions"],
 		{
 			"gotAsciiCode": self.keyGotAscii,
@@ -179,15 +204,21 @@ class ConfigListScreen:
 		}, -2)
 		self["VirtualKB"].setEnabled(False)
 
-		self["config"] = ConfigList(list, session = session)
+		self["config"] = ConfigList(list, session=session)
 
 		if on_change is not None:
 			self.__changed = on_change
 		else:
 			self.__changed = lambda: None
 
-		if not self.handleInputHelpers in self["config"].onSelectionChanged:
-			self["config"].onSelectionChanged.append(self.handleInputHelpers)
+		try:
+			if not self.handleInputHelpers in self["config"].onSelectionChanged:
+				try:
+					self["config"].onSelectionChanged.append(self.handleInputHelpers)
+				except:
+					pass
+		except:
+			pass
 
 	def createSummary(self):
 		self.setup_title = self.getTitle()
@@ -336,7 +367,7 @@ class ConfigListScreen:
 			x[1].cancel()
 		self.close()
 
-	def closeMenuList(self, recursive = False):
+	def closeMenuList(self, recursive=False):
 		self.help_window_was_shown = False
 		try:
 			self.HideHelp()
