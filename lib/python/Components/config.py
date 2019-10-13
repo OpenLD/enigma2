@@ -1665,7 +1665,7 @@ class ConfigLocations(ConfigElement):
 	def isChanged(self):
 		sv = self.saved_value
 		locations = self.locations
-		if val is None and not locations:
+		if sv is None and not locations:
 			return False
 		retval = self.tostring([x[0] for x in locations]) != sv
 		return retval

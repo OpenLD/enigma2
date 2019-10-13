@@ -260,7 +260,7 @@ void eDVBTeletextParser::processPESPacket(uint8_t *pkt, int len)
 {
 	unsigned char *p = pkt;
 
-	pts_t pts;
+	pts_t pts = 0;
 	int have_pts = extractPTS(pts, pkt);
 
 	p += 4; len -= 4; /* start code, already be verified by pes parser */
