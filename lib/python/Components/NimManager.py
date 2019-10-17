@@ -176,10 +176,13 @@ class SecConfigure:
 		try:
 			for slot in nim_slots:
 				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-S", "DVB-S2", "DVB-S2X", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+					types = [type for type in ["DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 					if "DVB-T2" in types:
 						# DVB-T2 implies DVB-T support
 						types.remove("DVB-T")
+					if "DVB-C2" in types:
+						# DVB-C2 implies DVB-C support
+						types.remove("DVB-C")
 					if "DVB-S2" in types:
 						# DVB-S2 implies DVB-S support
 						types.remove("DVB-S")
@@ -667,7 +670,7 @@ class SecConfigure:
 			tmp.positions[PN].append(ConfigInteger(default=positions, limits = (positions, positions)))
 
 			tmp.bootuptime[PN] = ConfigSubList()
-			tmpbootuptime[PN].append(ConfigInteger(default=0, limits = (0, 0)))
+			tmp.bootuptime[PN].append(ConfigInteger(default=0, limits = (0, 0)))
 
 			positionsoffsetlist=[0,]	##adenin_todo
 			positionsoffset = int(positionsoffsetlist[0])
@@ -724,7 +727,7 @@ class NIM(object):
 		if not multi_type: multi_type = {}
 		self.slot = slot
 
-		if type not in ("DVB-S", "DVB-C", "DVB-T", "DVB-S2", "DVB-S2X", "DVB-T2", "DVB-C2", "ATSC", None):
+		if type not in ("DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC", None):
 			print "warning: unknown NIM type %s, not using." % type
 			type = None
 
@@ -1009,13 +1012,19 @@ class NimManager:
 		try:
 			for slot in self.nim_slots:
 				if slot.frontend_id is not None:
-					types = [type for type in ["DVB-C", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+					types = [type for type in ["DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 					if "DVB-T2" in types:
 						# DVB-T2 implies DVB-T support
 						types.remove("DVB-T")
+					if "DVB-C2" in types:
+						# DVB-C2 implies DVB-C support
+						types.remove("DVB-C")
 					if "DVB-S2" in types:
 						# DVB-S2 implies DVB-S support
 						types.remove("DVB-S")
+					if "DVB-S2X" in types:
+						# DVB-S2X implies DVB-S2 support
+						types.remove("DVB-S2")
 					if len(types) > 1:
 						slot.multi_type = {}
 						for type in types:
@@ -1175,9 +1184,11 @@ class NimManager:
 					AddPopup(_("resoring satellites.xml not posibel!"), type = MessageBox.TYPE_ERROR, timeout = 0, id = "SatellitesLoadFailed")
 					return
 
-		if self.hasNimType("DVB-C") or self.hasNimType("DVB-T") or self.hasNimType("DVB-T2"):
+		if self.hasNimType("DVB-C") or self.hasNimType("DVB-C2"):
 			print "Reading cables.xml"
 			db.readCables(self.cablesList, self.transponderscable)
+
+		if self.hasNimType("DVB-T") or self.hasNimType("DVB-T2"):
 			print "Reading terrestrial.xml"
 			db.readTerrestrials(self.terrestrialsList, self.transpondersterrestrial)
 
@@ -2183,10 +2194,13 @@ def InitNimManager(nimmgr, update_slots=None):
 	try:
 		for slot in nimmgr.nim_slots:
 			if slot.frontend_id is not None:
-				types = [type for type in ["DVB-S", "DVB-S2", "DVB-S2X", "DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
+				types = [type for type in ["DVB-C", "DVB-C2", "DVB-T", "DVB-T2", "DVB-S", "DVB-S2", "DVB-S2X", "ATSC"] if eDVBResourceManager.getInstance().frontendIsCompatible(slot.frontend_id, type)]
 				if "DVB-T2" in types:
 					# DVB-T2 implies DVB-T support
 					types.remove("DVB-T")
+				if "DVB-C2" in types:
+					# DVB-C2 implies DVB-C support
+					types.remove("DVB-C")
 				if "DVB-S2" in types:
 					# DVB-S2 implies DVB-S support
 					types.remove("DVB-S")

@@ -4887,7 +4887,7 @@ class NetworkTransmissionAbout(Screen):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Transmission About"))
 		self.skinName = "NetworkSambaLog"
-		abouttxt = 'Name: Transmission\nBuild version: v.2.92 (14714)\nBuild by: Javier Sayago (Javilonas)\n\nA fast and easy BitTorrent client\nCopyright (c) The Transmission Project\n\n'
+		abouttxt = 'Name: Transmission\nBuild version: v.2.94 \nBuild by: Javier Sayago (Javilonas)\n\nA fast and easy BitTorrent client\nCopyright (c) The Transmission Project\n\n'
 		self['infotext'] = Label(abouttxt)
 		self['key_green'] = Label()
 		self['key_red'] = Label()
@@ -5012,6 +5012,11 @@ class NetworkTransmission(Screen):
 				self.Console.ePopen('/etc/init.d/transmission start', self.StartStopCallback)
 			elif self.my_transmission_run:
 				self.Console.ePopen('/etc/init.d/transmission stop', self.StartStopCallback)
+		elif fileExists('/etc/init.d/transmission-daemon'):
+			if not self.my_transmission_run:
+				self.Console.ePopen('/etc/init.d/transmission-daemon start', self.StartStopCallback)
+			elif self.my_transmission_run:
+				self.Console.ePopen('/etc/init.d/transmission-daemon stop', self.StartStopCallback)
 		else:
 			self.session.open(MessageBox, _("Sorry! transmission it was not found"), MessageBox.TYPE_INFO, timeout = 5)
 
@@ -5024,8 +5029,18 @@ class NetworkTransmission(Screen):
 		if fileExists('/etc/init.d/transmission'):
 			if fileExists('/etc/rc3.d/S99transmission'):
 				commands.append('update-rc.d -f transmission remove')
+			elif fileExists('/etc/rc3.d/S60transmission'):
+				commands.append('update-rc.d -f transmission remove')
 			else:
-				commands.append('update-rc.d -f transmission defaults 99')
+				commands.append('update-rc.d transmission defaults 99')
+			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
+		elif fileExists('/etc/init.d/transmission-daemon'):
+			if fileExists('/etc/rc3.d/S99transmission-daemon'):
+				commands.append('update-rc.d -f transmission-daemon remove')
+			elif fileExists('/etc/rc3.d/S60transmission-daemon'):
+				commands.append('update-rc.d -f transmission-daemon remove')
+			else:
+				commands.append('update-rc.d transmission-daemon defaults 99')
 			self.Console.eBatch(commands, self.StartStopCallback, debug=True)
 		else:
 			self.session.open(MessageBox, _("Sorry! transmission it was not found"), MessageBox.TYPE_INFO, timeout = 5)
@@ -5039,10 +5054,24 @@ class NetworkTransmission(Screen):
 		self['labactive'].setText(_("Disabled"))
 		self.my_transmission_active = False
 		self.my_transmission_run = False
-		if fileExists('/etc/rc3.d/S99transmission'):
-			self['labactive'].setText(_("Enabled"))
-			self['labactive'].show()
-			self.my_transmission_active = True
+		if fileExists('/etc/init.d/transmission'):
+			if fileExists('/etc/rc3.d/S99transmission'):
+				self['labactive'].setText(_("Enabled"))
+				self['labactive'].show()
+				self.my_transmission_active = True
+			elif fileExists('/etc/rc3.d/S60transmission'):
+				self['labactive'].setText(_("Enabled"))
+				self['labactive'].show()
+				self.my_transmission_active = True
+		elif fileExists('/etc/init.d/transmission-daemon'):
+			if fileExists('/etc/rc3.d/S99transmission-daemon'):
+				self['labactive'].setText(_("Enabled"))
+				self['labactive'].show()
+				self.my_transmission_active = True
+			elif fileExists('/etc/rc3.d/S60transmission-daemon'):
+				self['labactive'].setText(_("Enabled"))
+				self['labactive'].show()
+				self.my_transmission_active = True
 		if transmission_process:
 			self.my_transmission_run = True
 		if self.my_transmission_run:
