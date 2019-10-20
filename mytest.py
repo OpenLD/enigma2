@@ -41,6 +41,10 @@ print "End Import modules for test"
 
 boxtype = getBoxType()
 
+#write twisted log to /dev/null
+from twisted.python import log
+log.startLogging(open('/dev/null', 'w'))
+
 #if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype in ('dm7080','dm820','dm520','dm525','dm900'):
 #	import pyo_patcher
 

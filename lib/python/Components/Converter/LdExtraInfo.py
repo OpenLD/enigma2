@@ -141,6 +141,7 @@ class LdExtraInfo(Poll, Converter, object):
 			("0x1700", "0x17ff", "Beta",     "B" ),
 			("0x1800", "0x18ff", "Nagra",    "N" ),
 			("0x2600", "0x2600", "Biss",     "BI" ),
+			("0x2700", "0x2710", "Dre3",     "D3" ),
 			("0x4ae0", "0x4ae1", "Dre",      "D" ),
 			("0x4aee", "0x4aee", "BulCrypt", "B1" ),
 			("0x5581", "0x5581", "BulCrypt", "B2" ) }
@@ -1351,6 +1352,9 @@ class LdExtraInfo(Poll, Converter, object):
 		elif self.type == "CryptoCaidBissAvailable":
 			request_caid = "BI"
 			request_selected = False
+		elif self.type == "CryptoCaidDre3Available":
+			request_caid = "D3"
+			request_selected = False
 		elif self.type == "CryptoCaidDreAvailable":
 			request_caid = "D"
 			request_selected = False
@@ -1392,6 +1396,9 @@ class LdExtraInfo(Poll, Converter, object):
 			request_selected = True
 		elif self.type == "CryptoCaidBissSelected":
 			request_caid = "BI"
+			request_selected = True
+		elif self.type == "CryptoCaidDre3Selected":
+			request_caid = "D3"
 			request_selected = True
 		elif self.type == "CryptoCaidDreSelected":
 			request_caid = "D"
