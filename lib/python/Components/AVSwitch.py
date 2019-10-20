@@ -55,19 +55,26 @@ class AVSwitch:
 								"60Hz":		{ 60: "2160p60" },
 								"multi":	{ 50: "2160p50", 60: "2160p60" },
 								"auto":		{ 50: "2160p50", 60: "2160p60", 24: "2160p24" } }
+	elif getBoxType().startswith('sf4008'):
+		rates["2160p"] =	{	"25Hz":		{ 50: "2160p25" },
+								"30Hz":		{ 60: "2160p30"},
+								"50Hz":		{ 50: "2160p50" },
+								"60Hz":		{ 60: "2160p" },
+								"multi":	{ 50: "2160p25", 60: "2160p30", 50: "2160p50", 60: "2160p" },
+								"auto":		{ 50: "2160p25", 60: "2160p30", 50: "2160p50", 60: "2160p", 24: "2160p24" } }
 	else:
-		rates["2160i"] =	{	"50Hz":		{ 50: "2160i50" },
-								"60Hz":		{ 60: "2160i" },
-								"multi":	{ 50: "2160i50", 60: "2160i" },
-								"auto":		{ 50: "2160i50", 60: "2160i", 24: "2160i24" } }
-
 		rates["2160p"] =	{	"50Hz":		{ 50: "2160p50" },
 								"60Hz":		{ 60: "2160p" },
 								"multi":	{ 50: "2160p50", 60: "2160p" },
 								"auto":		{ 50: "2160p50", 60: "2160p", 24: "2160p24" } }
 
+	rates["2160i"] =	{	"50Hz":		{ 50: "2160i50" },
+							"60Hz":		{ 60: "2160i" },
+							"multi":	{ 50: "2160i50", 60: "2160i" },
+							"auto":		{ 50: "2160i50", 60: "2160i", 24: "2160i24" } }
+
 	rates["2160p30"] =	{	"25Hz":		{ 50: "2160p25" },
-							"30Hz":		{ 60: "2160p30"} ,
+							"30Hz":		{ 60: "2160p30"},
 							"multi":	{ 50: "2160p25", 60: "2160p30" },
 							"auto":		{ 50: "2160p25", 60: "2160p30", 24: "2160p24" } }
 
@@ -166,9 +173,9 @@ class AVSwitch:
 			f.close()
 		except IOError:
 			print "[AVSwitch] couldn't read available videomodes."
-			self.modes_available = [ ]
-			return
-		self.modes_available = modes.split(' ')
+			modes = [ ]
+			return modes
+		return modes.split(' ')
 
 	def readPreferredModes(self):
 		if config.av.edid_override.value == False:
@@ -188,14 +195,14 @@ class AVSwitch:
 					print "[AVSwitch] reading _preferred modes: ", self.modes_preferred
 				except IOError:
 					print "[AVSwitch] reading preferred modes failed, using all modes"
-					self.modes_preferred = self.modes_available
+					self.modes_preferred = self.readAvailableModes()
 		else:
-			self.modes_preferred = self.modes_available
+			self.modes_preferred = self.readAvailableModes()
 			print "[AVSwitch] used default modes: ", self.modes_preferred
 			
 		if len(self.modes_preferred) <= 2:
 			print "[AVSwitch] preferend modes not ok, possible driver failer, len=", len(self.modes_preferred)
-			self.modes_preferred = self.modes_available
+			self.modes_preferred = self.readAvailableModes()
 
 		if self.modes_preferred != self.last_modes_preferred:
 			self.last_modes_preferred = self.modes_preferred
@@ -219,7 +226,7 @@ class AVSwitch:
 						print "[AVSwitch] no, not preferred"
 						return False
 			if port != "HDMI":
-				if mode not in self.modes_available:
+				if mode not in self.readAvailableModes():
 					return False
 			elif mode not in self.modes_preferred:
 				return False
@@ -555,6 +562,9 @@ def InitAVSwitch():
 	config.av.autores_1080p24 = ConfigSelection(choices={"1080p24": _("1080p 24Hz"), "1080p25": _("1080p 25Hz"), "1080i50": _("1080p 50Hz"), "1080i": _("1080i 60Hz")}, default="1080p24")
 	config.av.autores_1080p25 = ConfigSelection(choices={"1080p25": _("1080p 25Hz"), "1080p50": _("1080p 50Hz"), "1080i50": _("1080i 50Hz")}, default="1080p25")
 	config.av.autores_1080p30 = ConfigSelection(choices={"1080p30": _("1080p 30Hz"), "1080p60": _("1080p 60Hz"), "1080i": _("1080i 60Hz")}, default="1080p30")
+	config.av.autores_2160p24 = ConfigSelection(choices={"2160p24": _("2160p 24Hz"), "2160p25": _("2160p 25Hz"), "2160p30": _("2160p 30Hz")}, default="2160p24")
+	config.av.autores_2160p25 = ConfigSelection(choices={"2160p25": _("2160p 25Hz"), "2160p50": _("2160p 50Hz")}, default="2160p25")
+	config.av.autores_2160p30 = ConfigSelection(choices={"2160p30": _("2160p 30Hz"), "2160p60": _("2160p 60Hz")}, default="2160p30")
 	config.av.smart1080p = ConfigSelection(choices={"false": _("off"), "true": _("1080p50: 24p/50p/60p"), "2160p50": _("2160p50: 24p/50p/60p"), "2160i50": _("2160i50: 24i/50i/60i"), "1080i50": _("1080i50: 24p/50i/60i"), "720p50": _("720p50: 24p/50p/60p")}, default="false")
 	config.av.colorformat = ConfigSelection(choices=colorformat_choices, default="rgb")
 	config.av.aspectratio = ConfigSelection(choices={
@@ -718,14 +728,14 @@ def InitAVSwitch():
 		def setEDIDBypass(configElement):
 			try:
 				f = open("/proc/stb/hdmi/bypass_edid_checking", "w")
-				f.write(configElement.value)
+				if configElement.value:
+					f.write("00000001")
+				else:
+					f.write("00000000")
 				f.close()
 			except:
 				pass
-		config.av.bypass_edid_checking = ConfigSelection(choices={
-				"00000000": _("off"),
-				"00000001": _("on")},
-				default = "00000001")
+		config.av.bypass_edid_checking = ConfigYesNo(default=True)
 		config.av.bypass_edid_checking.addNotifier(setEDIDBypass)
 	else:
 		config.av.bypass_edid_checking = ConfigNothing()
@@ -1217,6 +1227,45 @@ def InitAVSwitch():
 		config.av.transcodeaac.addNotifier(setAACTranscode)
 	else:
 		config.av.transcodeaac = ConfigNothing()
+
+	if os.path.exists("/proc/stb/audio/btaudio"):
+		f = open("/proc/stb/audio/btaudio", "r")
+		can_btaudio = f.read().strip().split(" ")
+		f.close()
+	else:
+		can_btaudio = False
+
+	SystemInfo["CanBTAudio"] = can_btaudio
+
+	if can_btaudio:
+		def setBTAudio(configElement):
+			f = open("/proc/stb/audio/btaudio", "w")
+			f.write(configElement.value)
+			f.close()
+		choice_list = [("off", _("off")), ("on", _("on"))]
+		config.av.btaudio = ConfigSelection(choices = choice_list, default = "off")
+		config.av.btaudio.addNotifier(setBTAudio)
+	else:
+		config.av.btaudio = ConfigNothing()
+
+	if os.path.exists("/proc/stb/audio/btaudio_delay"):
+		f = open("/proc/stb/audio/btaudio_delay", "r")
+		can_btaudio_delay = f.read().strip().split(" ")
+		f.close()
+	else:
+		can_btaudio_delay = False
+
+	SystemInfo["CanBTAudioDelay"] = can_btaudio_delay
+
+	if can_btaudio_delay:
+		def setBTAudioDelay(configElement):
+			f = open("/proc/stb/audio/btaudio_delay", "w")
+			f.write(format(configElement.value * 90,"x"))
+			f.close()
+		config.av.btaudiodelay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
+		config.av.btaudiodelay.addNotifier(setBTAudioDelay)
+	else:
+		config.av.btaudiodelay = ConfigNothing()
 
 	if os.path.exists("/proc/stb/vmpeg/0/pep_scaler_sharpness"):
 		def setScaler_sharpness(config):

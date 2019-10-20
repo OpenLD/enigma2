@@ -120,12 +120,25 @@ class LdsysInfo(Screen):
 			res2 = ""
 		cpuMHz = ""
 		bogoMIPS = ""
-		if getMachineBuild() in ('vusolo4k', 'vuultimo4k'):
+		if getMachineBuild() in ('vusolo4k','vuultimo4k','vuzero4k'):
 			cpuMHz = "  \t(1,5 GHz)"
-		elif getMachineBuild() in ('vuuno4k', 'gbquad4k'):
-			cpuMHz = "  \t(1,7 GHz)"
-		elif getMachineBuild() in ('formuler1tc', 'formuler1'):
+		elif getMachineBuild() in ('formuler1tc','formuler1','triplex','tiviaraplus'):
 			cpuMHz = "  \t(1,3 GHz)"
+		elif getMachineBuild() in ('u51','u5','u53','u52','u5pvr','h9'):
+			cpuMHz = "  \t(1,6 GHz)"
+		elif getMachineBuild() in ('vuuno4kse','vuuno4k','gbquad4k','dm900','dm920','gb7252','dags7252','xc7439','8100s'):
+			cpuMHz = "  \t(1,7 GHz)"
+		elif getMachineBuild() in ('alien5'):
+			cpuMHz = "  \t(2,0 GHz)"
+		elif getMachineBuild() in ('sf5008','et13000','et1x000','hd52','hd51','sf4008','vs1500','h7'):
+			try:
+				import binascii
+				f = open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb')
+				clockfrequency = f.read()
+				f.close()
+				cpuMHz = "  \t(%s MHz)" % str(round(int(binascii.hexlify(clockfrequency), 16)/1000000,1))
+			except:
+				cpuMHz = "  \t(1,7 GHz)"
 		elif res:
 			cpuMHz = "  \t(" + res.replace("\n", "") + " MHz)"
 		if res2:

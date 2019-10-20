@@ -62,7 +62,7 @@ def getAboutText():
 		f = open('/sys/firmware/devicetree/base/bolt/tag', 'r')
 		bootloader = f.readline().replace('\x00', '').replace('\n', '')
 		f.close()
-		AboutText += _("Bootloader:\t\t%s\n") % (bootloader)
+		AboutText += _("Bootloader:\t %s\n") % (bootloader)
 
 	if about.getChipSetString() != _("unavailable"):
 		if about.getIsBroadcom():
@@ -88,11 +88,11 @@ def getAboutText():
 	cpuMHz = ""
 	if getMachineBuild() in ('vusolo4k','vuultimo4k','vuzero4k'):
 		cpuMHz = "   (1,5 GHz)"
-	elif getMachineBuild() in ('formuler1tc','formuler1', 'triplex', 'tiviaraplus'):
+	elif getMachineBuild() in ('formuler1tc','formuler1','triplex','tiviaraplus'):
 		cpuMHz = "   (1,3 GHz)"
 	elif getMachineBuild() in ('u51','u5','u53','u52','u5pvr','h9'):
 		cpuMHz = "   (1,6 GHz)"
-	elif getMachineBuild() in ('vuuno4kse','vuuno4k','dm900','dm920', 'gb7252', 'dags7252','xc7439','8100s'):
+	elif getMachineBuild() in ('vuuno4kse','vuuno4k','gbquad4k','dm900','dm920','gb7252','dags7252','xc7439','8100s'):
 		cpuMHz = "   (1,7 GHz)"
 	elif getMachineBuild() in ('alien5'):
 		cpuMHz = "   (2,0 GHz)"

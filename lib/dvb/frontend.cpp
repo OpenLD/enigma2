@@ -1415,6 +1415,11 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	{
 		ret = snr*10;
 	}
+	else if (!strcmp(m_description, "ATBM7821 DVB-T2/C"))
+	{
+		ret = snr*10;
+		ter_max = cab_max = 4200;
+	}
 	else if (strstr(m_description, "Si2166B"))
 	{
 		ret = (snr * 240) >> 8;
@@ -1546,6 +1551,11 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 			case eDVBFrontendParametersTerrestrial::System_DVB_T_T2: ret = (int)(snr / 58); ter_max = 1700; break;
 			default: break;
 		}
+	}
+	else if (!strcmp(m_description, "A815"))
+	{
+		ret = (int)(snr / 75);
+		ter_max = 1700;
 	}
 	else if (strstr(m_description, "Sundtek DVB-T (III)")) // Sundtek MediaTV Digital Home III...dvb-t/t2 mode
 	{
