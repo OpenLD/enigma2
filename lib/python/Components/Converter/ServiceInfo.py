@@ -1,12 +1,13 @@
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService
 from Components.Element import cached
+from Poll import Poll
 
 from os import path
 
 WIDESCREEN = [1, 3, 4, 7, 8, 0xB, 0xC, 0xF, 0x10]
 
-class ServiceInfo(Converter, object):
+class ServiceInfo(Poll, Converter, object):
 	HAS_TELETEXT = 1
 	IS_MULTICHANNEL = 2
 	AUDIO_STEREO = 3
@@ -46,7 +47,11 @@ class ServiceInfo(Converter, object):
 	IS_HDHDR = 37
 
 	def __init__(self, type):
+		Poll.__init__(self)
 		Converter.__init__(self, type)
+		self.poll_interval = 10000
+		self.poll_enabled = True
+
 		self.type, self.interesting_events = {
 				"HasTelext": (self.HAS_TELETEXT, (iPlayableService.evUpdatedInfo,)),
 				"IsMultichannel": (self.IS_MULTICHANNEL, (iPlayableService.evUpdatedInfo,)),
@@ -207,7 +212,7 @@ class ServiceInfo(Converter, object):
 			return video_height > 500 and video_height <= 576
 		elif self.type == self.IS_480:
 			return video_height > 0 and video_height <= 480
-		elif self.type == self.IS_4K: 
+		elif self.type == self.IS_4K:
 			if info.getInfo(iServiceInformation.sGamma) > 0:
 				return False
 			else:
@@ -291,7 +296,10 @@ class ServiceInfo(Converter, object):
 					pass
 				f.close()
 			if not video_rate:
-				video_rate = int(self.getServiceInfoString(info, iServiceInformation.sFrameRate))
+				try:
+					video_rate = int(self.getServiceInfoString(info, iServiceInformation.sFrameRate))
+				except:
+					return "N/A fps"
 			return video_rate, lambda x: "%d fps" % ((x+500)/1000)
 		elif self.type == self.TRANSFERBPS:
 			return self.getServiceInfoString(info, iServiceInformation.sTransferBPS, lambda x: "%d kB/s" % (x/1024))
