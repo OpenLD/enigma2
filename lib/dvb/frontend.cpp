@@ -1407,6 +1407,8 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		 || strstr(m_description, "BCM73625 (G3)")
 		 || strstr(m_description, "BCM45208")
 		 || strstr(m_description, "BCM45308")
+		 || strstr(m_description, "BCM3158")
+		 || strstr(m_description, "DVB-S2 NIM (DVB-S2)")
 		)
 	{
 		ret = (snr * 100) >> 8;
@@ -1552,12 +1554,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 			default: break;
 		}
 	}
-	else if (!strcmp(m_description, "A815"))
-	{
-		ret = (int)(snr / 75);
-		ter_max = 1700;
-	}
-	else if (strstr(m_description, "Sundtek DVB-T (III)")) // Sundtek MediaTV Digital Home III...dvb-t/t2 mode
+	else if(!strcmp(m_description, "Sundtek DVB-T (III)") || !strcmp(m_description, "A815") || !strcmp(m_description, "AverMedia A815") || !strcmp(m_description, "AverMedia AVerTV DVB-T Volar X"))
 	{
 		ret = (int)(snr / 75);
 		ter_max = 1700;
