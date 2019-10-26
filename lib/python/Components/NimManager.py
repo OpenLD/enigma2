@@ -858,6 +858,18 @@ class NIM(object):
 			multistream = True
 		return multistream
 
+	def isFBCTuner(self):
+		return (self.frontend_id is not None) and os.access("/proc/stb/frontend/%d/fbc_id" % self.frontend_id, os.F_OK)
+
+	def isFBCRoot(self):
+		return self.isFBCTuner() and (self.slot % 8 < (self.getType() == "DVB-C" and 1 or 2))
+
+	def isFBCLink(self):
+		return self.isFBCTuner() and not (self.slot % 8 < (self.getType() == "DVB-C" and 1 or 2))
+
+	def isNotFirstFBCTuner(self):
+		return self.isFBCTuner() and self.slot % 8 and True
+
 	def supportsBlindScan(self):
 		return self.supports_blind_scan
 
@@ -1525,6 +1537,9 @@ class NimManager:
 							if str(user_sat[0]) in nim.advanced.sat[x].userSatellitesList.value and user_sat not in list:
 								list.append(user_sat)
 		return list
+
+	def getNimListForSat(self, orb_pos):
+		return [nim.slot for nim in self.nim_slots if nim.isCompatible("DVB-S") and not nim.isFBCLink() and orb_pos in [sat[0] for sat in self.getSatListForNim(nim.slot)]]
 
 	def getRotorSatListForNim(self, slotid):
 		list = []
