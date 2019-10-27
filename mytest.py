@@ -41,10 +41,6 @@ print "End Import modules for test"
 
 boxtype = getBoxType()
 
-#write twisted log to /dev/null
-from twisted.python import log
-log.startLogging(open('/dev/null', 'w'))
-
 #if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype in ('dm7080','dm820','dm520','dm525','dm900'):
 #	import pyo_patcher
 
@@ -219,6 +215,13 @@ except ImportError:
 		enigma.runMainloop()
 
 profile("LOAD:Plugin")
+
+from twisted.python import log
+config.misc.enabletwistedlog = ConfigYesNo(default = False)
+if config.misc.enabletwistedlog.value == True:
+	log.startLogging(open('/tmp/twisted.log', 'w'))
+else:
+	log.startLogging(sys.stdout)
 
 # initialize autorun plugins and plugin menu entries
 from Components.PluginComponent import plugins
