@@ -49,6 +49,10 @@ if HAVE_COLORLCD220
 SUBDIRS += display220
 endif
 
+if HAVE_COLORLCD390
+SUBDIRS += display390
+endif
+
 if HAVE_COLORLCD400
 SUBDIRS += display400
 endif
@@ -59,6 +63,10 @@ endif
 
 if HAVE_COLORLCD720
 SUBDIRS += display720
+endif
+
+if HAVE_COLORLCD800
+SUBDIRS += display800
 endif
 
 if HAVE_BWLCD255
