@@ -281,9 +281,9 @@ class CableTransponderSearchSupport:
 				if nim_name is not None and nim_name != "":
 					device_id = ""
 					nim_name = nim_name.split(' ')[-1][4:-1]
-					if nim_name == 'TT3L10':
+					if nim_name in ("TT3L10", "BCM3466"):
 						try:
-							device_id = GetDeviceId('TT3L10', nim_idx)
+							device_id = GetDeviceId(nim_name, nim_idx)
 							device_id = "--device=%s" % (device_id)
 						except Exception, err:
 							print "GetCommand ->", err
@@ -679,7 +679,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 	def updateSatList(self):
 		self.satList = []
 		for slot in nimmanager.nim_slots:
-			if slot.canBeCompatible("DVB-S"):
+			if slot.isCompatible("DVB-S") or slot.canBeCompatible("DVB-S"):
 				self.satList.append(nimmanager.getSatListForNim(slot.slot))
 			else:
 				self.satList.append(None)
@@ -882,7 +882,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 				self.scan_networkScan.value = True
 		elif nim.isCompatible("DVB-T"):
 			if self.scan_typeterrestrial.value == "single_transponder":
-				if nim.isCompatible("DVB-T2"):
+				if nim.isCompatible("DVB-T2") or nim.canBeCompatible("DVB-T2"):
 					self.systemEntry = getConfigListEntry(_('System'), self.scan_ter.system)
 					self.list.append(self.systemEntry)
 				else:
@@ -1335,7 +1335,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 		try:
 			self.scan_satselection = []
 			for slot in nimmanager.nim_slots:
-				if slot.canBeCompatible("DVB-S"):
+				if slot.isCompatible("DVB-S") or slot.canBeCompatible("DVB-S"):
 					self.scan_satselection.append(getConfigSatlist(defaultSat["orbpos"], self.satList[slot.slot]))
 				else:
 					self.scan_satselection.append(None)
@@ -1647,7 +1647,7 @@ class ScanSetup(ConfigListScreen, Screen, CableTransponderSearchSupport, Terrest
 				skip_t2 = False
 				if getMachineBrand() in ('Vu+'):
 					skip_t2 = True
-					if nim.canBeCompatible("DVB-T2"):
+					if nim.isCompatible("DVB-T2") or nim.canBeCompatible("DVB-T2"):
 						scan_util = len(self.terrestrialTransponderGetCmd(nim.slot)) and True or False
 						if scan_util:
 							action = SEARCH_TERRESTRIAL2_TRANSPONDERS
@@ -2151,7 +2151,7 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 					skip_t2 = False
 					if getMachineBrand() in ('Vu+'):
 						skip_t2 = True
-						if nim.canBeCompatible("DVB-T2"):
+						if nim.isCompatible("DVB-T2") or nim.canBeCompatible("DVB-T2"):
 							scan_util = len(self.terrestrialTransponderGetCmd(nim.slot)) and True or False
 							if scan_util:
 								action = SEARCH_TERRESTRIAL2_TRANSPONDERS
