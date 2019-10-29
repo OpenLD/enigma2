@@ -14,12 +14,13 @@ from Tools.Profile import profile, profile_final
 profile("PYTHON_START")
 
 import Tools.RedirectOutput
-from boxbranding import getBoxType, getBrandOEM, getImageCodeName, getImageType, getImageVersion, getImageBuild, getMachineBuild
+from boxbranding import getBoxType, getBrandOEM, getImageCodeName, getImageType, getImageVersion, getImageBuild, getMachineBuild, getImageArch
 print "----------------------------"
 print "[Image Type] %s" % getImageType()
 print "[Image Version] %s" % getImageVersion()
 print "[Image Build] %s" % getImageBuild()
 print "[Image CodeName] %s" % getImageCodeName()
+print "[Image Arch] %s" % getImageArch()
 print "----------------------------"
 
 import enigma
@@ -40,6 +41,11 @@ from Tools.Directories import fileExists
 print "End Import modules for test"
 
 boxtype = getBoxType()
+
+if getImageArch() in ("aarch64"):
+	import usb.core
+	import usb.backend.libusb1
+	usb.backend.libusb1.get_backend(find_library=lambda x: "/lib64/libusb-1.0.so.0")
 
 #if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MediaPortal/plugin.pyo") and boxtype in ('dm7080','dm820','dm520','dm525','dm900'):
 #	import pyo_patcher

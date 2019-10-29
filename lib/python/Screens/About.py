@@ -154,7 +154,7 @@ def getAboutText():
 	#AboutText += _("Image Type:\t%s\n") % getImageType() + "\n"
 	AboutText += _("CodeName:\t %s") % getImageCodeName() + "\n"
 	AboutText += _("Kernel:\t %s") % str(about.getKernelVersionString()) + "\n"
-	AboutText += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
+	AboutText += _("DVB drivers:\t %s") % MyDateConverter(str(about.getDriverInstalledDate())) + "\n"
 	AboutText += _("Last update:\t %s") % MyDateConverter(str(getEnigmaVersionString())) + "\n"
 	AboutText += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 	AboutText += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
@@ -216,6 +216,16 @@ def getAboutText():
 			temp = f.read()
 			tempinfo = temp[:-4]
 			f.close()
+		except:
+			tempinfo = ""
+	elif path.exists('/proc/hisi/msp/pm_cpu'):
+		try:
+			for line in open('/proc/hisi/msp/pm_cpu').readlines():
+				line = [x.strip() for x in line.strip().split(":")]
+				if line[0] in ("Tsensor"):
+					temp = line[1].split("=")
+					temp = line[1].split(" ")
+					tempinfo = temp[2]
 		except:
 			tempinfo = ""
 	if tempinfo and str(round(int(tempinfo.replace('\n', '')))) > 0:
@@ -581,22 +591,6 @@ class SystemNetworkInfo(Screen):
 		self.onLayoutFinish.append(self.updateStatusbar)
 
 	def createscreen(self):
-		def netspeed():
-			netspeed=""
-			for line in popen('ethtool eth0 |grep Speed','r'):
-				line = line.strip().split(":")
-				line =line[1].replace(' ','')
-				netspeed += line
-				return str(netspeed)
-
-		def netspeed_eth1():
-			netspeed=""
-			for line in popen('ethtool eth1 |grep Speed','r'):
-				line = line.strip().split(":")
-				line =line[1].replace(' ','')
-				netspeed += line
-				return str(netspeed)
-
 		self.AboutText = ""
 		self.iface = "eth0"
 		eth0 = about.getIfConfig('eth0')
@@ -610,7 +604,6 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _('Broadcast:\t' + eth0['brdaddr'] + "\n")
 			if eth0.has_key('hwaddr'):
 				self.AboutText += _("MAC:") + "\t" + eth0['hwaddr'] + "\n"
-			self.AboutText += _("Network Speed:") + "\t" + netspeed() + "\n"
 			self.iface = 'eth0'
 
 		eth1 = about.getIfConfig('eth1')
@@ -624,7 +617,6 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _('Broadcast:\t' + eth1['brdaddr'] + "\n")
 			if eth1.has_key('hwaddr'):
 				self.AboutText += _("MAC:") + "\t" + eth1['hwaddr'] + "\n"
-			self.AboutText += _("Network Speed:") + "\t" + netspeed_eth1() + "\n"
 			self.iface = 'eth1'
 
 		eth2 = about.getIfConfig('eth2')
@@ -638,7 +630,6 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _('Broadcast:\t' + eth2['brdaddr'] + "\n")
 			if eth2.has_key('hwaddr'):
 				self.AboutText += _("MAC:") + "\t" + eth2['hwaddr'] + "\n"
-			self.AboutText += _("Network Speed:") + "\t" + netspeed_eth2() + "\n"
 			self.iface = 'eth2'
 
 		eth3 = about.getIfConfig('eth3')
@@ -652,7 +643,6 @@ class SystemNetworkInfo(Screen):
 				self.AboutText += _('Broadcast:\t' + eth3['brdaddr'] + "\n")
 			if eth3.has_key('hwaddr'):
 				self.AboutText += _("MAC:") + "\t" + eth3['hwaddr'] + "\n"
-			self.AboutText += _("Network Speed:") + "\t" + netspeed_eth3() + "\n"
 			self.iface = 'eth3'
 
 		ra0 = about.getIfConfig('ra0')
