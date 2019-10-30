@@ -194,7 +194,7 @@ class LdsysInfo(Screen):
 		self.text += "Firmware:\t %s" % openLD + str(about.getImageVersion()) + "\n"
 		self.text += _("CodeName:\t %s") % str(getImageCodeName()) + "\n"
 		self.text += "Kernel: \t " + about.getKernelVersionString() + "\n"
-		self.text += _("DVB drivers:\t %s") % str(about.getDriverInstalledDate()) + "\n"
+		self.text += _("DVB drivers:\t %s") % MyDateConverter(str(about.getDriverInstalledDate())) + "\n"
 		self.text += _("Last update:\t %s") % MyDateConverter(str(getEnigmaVersionString())) + "\n"
 		self.text += _("Restarts:\t %d ") % config.misc.startCounter.value + "\n"
 		self.text += _("Uptime:\t %s") % str(about.getUptimeString()) + "\n"
