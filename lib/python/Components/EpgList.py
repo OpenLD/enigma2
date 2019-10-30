@@ -332,9 +332,9 @@ class EPGList(HTMLComponent, GUIComponent):
 	def getIndexFromService(self, serviceref):
 		if serviceref is not None:
 			for x in range(len(self.list)):
-				if CompareWithAlternatives(self.list[x][0], serviceref.toString()):
+				if CompareWithAlternatives(self.list[x][0], serviceref):
 					return x
-				if CompareWithAlternatives(self.list[x][1], serviceref.toString()):
+				if CompareWithAlternatives(self.list[x][1], serviceref):
 					return x
 		return 0
 
@@ -799,7 +799,7 @@ class EPGList(HTMLComponent, GUIComponent):
 		serviceForeColor = self.foreColorService
 		serviceBackColor = self.backColorService
 		bgpng = self.othServPix
-		if CompareWithAlternatives(service, self.currentlyPlaying and self.currentlyPlaying.toString()):
+		if CompareWithAlternatives(service, self.currentlyPlaying and self.currentlyPlaying):
 			serviceForeColor = self.foreColorServiceNow
 			serviceBackColor = self.backColorServiceNow
 			bgpng = self.nowServPix
@@ -1698,7 +1698,7 @@ class EPGBouquetList(HTMLComponent, GUIComponent):
 	def getIndexFromService(self, serviceref):
 		if serviceref is not None:
 			for x in range(len(self.bouquetslist)):
-				if CompareWithAlternatives(self.bouquetslist[x][1].toString(), serviceref.toString()):
+				if CompareWithAlternatives(self.bouquetslist[x][1], serviceref):
 					return x
 		return 0
 
