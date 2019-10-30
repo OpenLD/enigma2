@@ -46,4 +46,4 @@ def GetWithAlternative(service):
 		channels = getAlternativeChannels(service)
 		if channels:
 			return channels[0]
-return service.toString()
+	return service.toString()
