@@ -1,5 +1,6 @@
 # shamelessly copied from pliExpertInfo (Vali, Mirakels, Littlesat)
 
+from os import path
 from enigma import iServiceInformation, eServiceCenter, iPlayableService, iPlayableServicePtr
 from Components.Converter.Converter import Converter
 from Components.Element import cached
@@ -260,7 +261,7 @@ class PliExtraInfo(Poll, Converter, object):
 						color="\c00eeee00"
 			except:
 				pass
-		res = color + 'T'
+		res = color + 'TB'
 		res += "\c00??????"
 		return res
 
@@ -355,16 +356,42 @@ class PliExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createResolution(self, info):
-		xres = info.getInfo(iServiceInformation.sVideoWidth)
-		if xres == -1:
-			return ""
-		yres = info.getInfo(iServiceInformation.sVideoHeight)
-		mode = ("i", "p", "", " ")[info.getInfo(iServiceInformation.sProgressive)]
-		fps  = str((info.getInfo(iServiceInformation.sFrameRate) + 500) / 1000)
-		if int(fps) <= 0:
-			fps = ""
+		video_height = 0
+		video_width = 0
+		video_pol = " "
+		video_rate = 0
+		if path.exists("/proc/stb/vmpeg/0/yres"):
+			f = open("/proc/stb/vmpeg/0/yres", "r")
+			try:
+				video_height = int(f.read(),16)
+			except:
+				pass
+			f.close()
+		if path.exists("/proc/stb/vmpeg/0/xres"):
+			f = open("/proc/stb/vmpeg/0/xres", "r")
+			try:
+				video_width = int(f.read(),16)
+			except:
+				pass
+			f.close()
+		if path.exists("/proc/stb/vmpeg/0/progressive"):
+			f = open("/proc/stb/vmpeg/0/progressive", "r")
+			try:
+				video_pol = "p" if int(f.read(),16) else "i"
+			except:
+				pass
+			f.close()
+		if path.exists("/proc/stb/vmpeg/0/framerate"):
+			f = open("/proc/stb/vmpeg/0/framerate", "r")
+			try:
+				video_rate = int(f.read())
+			except:
+				pass
+			f.close()
+
+		fps  = str((video_rate + 500) / 1000)
 		gamma = ("SDR", "HDR", "HDR10", "HLG", "")[info.getInfo(iServiceInformation.sGamma)]
-		return str(xres) + "x" + str(yres) + mode + fps + addspace(gamma)
+		return str(video_width) + "x" + str(video_height) + video_pol + fps + addspace(gamma)
 
 	def createVideoCodec(self, info):
 		return codec_data.get(info.getInfo(iServiceInformation.sVideoType), "N/A")
@@ -387,25 +414,27 @@ class PliExtraInfo(Poll, Converter, object):
 		if onid < 0 : onid = 0
 		return "%d-%d:%05d:%04d:%04d:%04d" % (onid, tsid, sidpid, vpid, apid, pcrpid)
 
-	def createTransponderInfo(self, fedata, feraw):
-		if "DVB-T" in feraw.get("tuner_type"):
-			tmp = addspace(self.createChannelNumber(fedata, feraw)) + self.createFrequency(fedata) + "/" + self.createPolarization(fedata)
+	def createTransponderInfo(self, fedata, feraw, info):
+		if not feraw:
+			refstr = info.getInfoString(iServiceInformation.sServiceref)
+			if "%3a//" in refstr.lower():
+				return refstr.split(":")[10].replace("%3a", ":").replace("%3A", ":")
+			return ""
+		elif "DVB-T" in feraw.get("tuner_type"):
+			tmp = addspace(self.createChannelNumber(fedata, feraw)) + addspace(self.createFrequency(fedata)) + addspace(self.createPolarization(fedata))
 		else:
 			tmp = addspace(self.createFrequency(fedata)) + addspace(self.createPolarization(fedata))
 		return addspace(self.createTunerSystem(fedata)) + tmp + addspace(self.createSymbolRate(fedata, feraw)) + addspace(self.createFEC(fedata, feraw)) \
-			+ addspace(self.createModulation(fedata)) + self.createOrbPos(feraw)
+			+ addspace(self.createModulation(fedata)) + addspace(self.createOrbPos(feraw)) + addspace(self.createMisPls(fedata))
 
-	def createFrequency(self, feraw):
-		frequency = feraw.get("frequency")
+	def createFrequency(self, fedata):
+		frequency = fedata.get("frequency")
 		if frequency:
 			return str(frequency)
 		return ""
 
 	def createChannelNumber(self, fedata, feraw):
-		channel = getChannelNumber(feraw.get("frequency"), feraw.get("tuner_number"))
-		if channel:
-			return _("CH") + "%s" % channel
-		return ""
+		return "DVB-T" in feraw.get("tuner_type") and fedata.get("channel") or ""
 
 	def createSymbolRate(self, fedata, feraw):
 		if "DVB-T" in feraw.get("tuner_type"):
@@ -419,17 +448,15 @@ class PliExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createPolarization(self, fedata):
-		polarization = fedata.get("polarization_abbreviation")
-		if polarization:
-			return polarization
-		return ""
+		return fedata.get("polarization_abbreviation") or ""
 
 	def createFEC(self, fedata, feraw):
 		if "DVB-T" in feraw.get("tuner_type"):
 			code_rate_lp = fedata.get("code_rate_lp")
 			code_rate_hp = fedata.get("code_rate_hp")
-			if code_rate_lp and code_rate_hp:
-				return code_rate_lp + "-" + code_rate_hp
+			guard_interval = fedata.get('guard_interval')
+			if code_rate_lp and code_rate_hp and guard_interval:
+				return code_rate_lp + "-" + code_rate_hp + "-" + guard_interval
 		else:
 			fec = fedata.get("fec_inner")
 			if fec:
@@ -448,16 +475,10 @@ class PliExtraInfo(Poll, Converter, object):
 		return ""
 
 	def createTunerType(self, feraw):
-		tunertype = feraw.get("tuner_type")
-		if tunertype:
-			return tunertype
-		return ""
+		return feraw.get("tuner_type") or ""
 
 	def createTunerSystem(self, fedata):
-		tunersystem = fedata.get("system")
-		if tunersystem:
-			return tunersystem
-		return ""
+		return fedata.get("system") or ""
 
 	def createOrbPos(self, feraw):
 		orbpos = feraw.get("orbital_position")
@@ -585,6 +606,16 @@ class PliExtraInfo(Poll, Converter, object):
 
 	def createProviderName(self,info):
 		return info.getInfoString(iServiceInformation.sProvider)
+
+	def createMisPls(self, fedata):
+		tmp = ""
+		if fedata.get("is_id") > -1:
+			tmp = "MIS %d" % fedata.get("is_id")
+		if fedata.get("pls_code") > 0:
+			tmp = addspace(tmp) + "%s %d" % (fedata.get("pls_mode"), fedata.get("pls_code"))
+		if fedata.get("t2mi_plp_id") > -1:
+			tmp = addspace(tmp) + "T2MI %d PID %d" % (fedata.get("t2mi_plp_id"), fedata.get("t2mi_pid"))
+		return tmp
 
 	@cached
 	def getText(self):
@@ -725,11 +756,11 @@ class PliExtraInfo(Poll, Converter, object):
 		if self.type == "All":
 			self.getCryptoInfo(info)
 			if int(config.usage.show_cryptoinfo.value) > 0:
-				return addspace(self.createProviderName(info)) + self.createTransponderInfo(fedata,feraw) + addspace(self.createTransponderName(feraw)) + "\n"\
+				return addspace(self.createProviderName(info)) + self.createTransponderInfo(fedata, feraw, info) + addspace(self.createTransponderName(feraw)) + "\n"\
 				+ addspace(self.createCryptoBar(info)) + addspace(self.createCryptoSpecial(info)) + "\n"\
 				+ addspace(self.createPIDInfo(info)) + addspace(self.createVideoCodec(info)) + self.createResolution(info)
 			else:
-				return addspace(self.createProviderName(info)) + self.createTransponderInfo(fedata,feraw) + addspace(self.createTransponderName(feraw)) + "\n" \
+				return addspace(self.createProviderName(info)) + self.createTransponderInfo(fedata, feraw, info) + addspace(self.createTransponderName(feraw)) + "\n" \
 				+ addspace(self.createCryptoBar(info)) + self.current_source + "\n" \
 				+ addspace(self.createCryptoSpecial(info)) + addspace(self.createVideoCodec(info)) + self.createResolution(info)
 
@@ -753,7 +784,7 @@ class PliExtraInfo(Poll, Converter, object):
 			return ""
 
 		if self.type == "TransponderInfo":
-			return self.createTransponderInfo(fedata,feraw)
+			return self.createTransponderInfo(fedata, feraw, info)
 
 		if self.type == "TransponderFrequency":
 			return self.createFrequency(feraw)
