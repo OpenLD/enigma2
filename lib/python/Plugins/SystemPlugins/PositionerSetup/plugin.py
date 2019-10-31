@@ -1268,13 +1268,12 @@ class TunerScreen(ConfigListScreen, Screen):
 		Screen.__init__(self, session)
 		self.setTitle(_("Tune"))
 		ConfigListScreen.__init__(self, None)
-		self.createConfig()
+		self.createConfig(fe_data)
 		self.initialSetup()
 		self.createSetup()
 		self.tuning.sat.addNotifier(self.tuningSatChanged)
 		self.tuning.type.addNotifier(self.tuningTypeChanged)
 		self.scan_sat.system.addNotifier(self.systemChanged)
-		#self.scan_sat.t2mi.addNotifier(self.t2miChanged)
 
 		self["actions"] = NumberActionMap(["SetupActions"],
 		{
@@ -1283,7 +1282,7 @@ class TunerScreen(ConfigListScreen, Screen):
 		}, -2)
 		self["introduction"] = Label(_("Press OK, save and exit..."))
 
-	def createConfig(self):
+	def createConfig(self, frontendData):
 		satlist = nimmanager.getRotorSatListForNim(self.feid)
 		orb_pos = self.fe_data.get("orbital_position", None)
 		self.tuning = ConfigSubsection()
