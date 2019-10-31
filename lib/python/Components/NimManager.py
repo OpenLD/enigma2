@@ -1,3 +1,4 @@
+import os
 from boxbranding import getBoxType, getBrandOEM
 from time import localtime, mktime
 from datetime import datetime
@@ -869,6 +870,9 @@ class NIM(object):
 
 	def isNotFirstFBCTuner(self):
 		return self.isFBCTuner() and self.slot % 8 and True
+
+	def isT2MI(self):
+		return os.path.exists("/proc/stb/frontend/%d/t2mi" % self.frontend_id)
 
 	def supportsBlindScan(self):
 		return self.supports_blind_scan
