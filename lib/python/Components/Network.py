@@ -320,6 +320,8 @@ class Network:
 				name = 'Broadcom'
 			elif os.path.exists("/tmp/bcm/%s"%iface):
 				name = 'Broadcom'
+			elif name  == 'wlan':
+				name = name.upper()
 		else:
 			name = _('Unknown')
 
