@@ -130,21 +130,22 @@ class LdExtraInfo(Poll, Converter, object):
 		self.poll_interval = 9500
 		self.poll_enabled = True
 		self.caid_data = {
-			( "0x100",  "0x1ff", "Seca",     "S" ),
-			( "0x500",  "0x5ff", "Via",      "V" ),
-			( "0x600",  "0x6ff", "Irdeto",   "I" ),
-			( "0x900",  "0x9ff", "NDS",      "ND" ),
-			( "0xb00",  "0xbff", "Conax",    "CO" ),
-			( "0xd00",  "0xdff", "CryptoW",  "CW" ),
-			( "0xe00",  "0xeff", "PowerVU",  "P" ),
-			("0x1000", "0x10FF", "Tandberg", "TB" ),
-			("0x1700", "0x17ff", "Beta",     "B" ),
-			("0x1800", "0x18ff", "Nagra",    "N" ),
-			("0x2600", "0x2600", "Biss",     "BI" ),
-			("0x2700", "0x2710", "Dre3",     "D3" ),
-			("0x4ae0", "0x4ae1", "Dre",      "D" ),
-			("0x4aee", "0x4aee", "BulCrypt", "B1" ),
-			("0x5581", "0x5581", "BulCrypt", "B2" ) }
+			( "0x100",  "0x1ff", "Seca",       "S" ),
+			( "0x500",  "0x5ff", "Via",        "V" ),
+			( "0x600",  "0x6ff", "Irdeto",     "I" ),
+			( "0x900",  "0x9ff", "NDS",        "ND"),
+			( "0xb00",  "0xbff", "Conax",      "CO"),
+			( "0xd00",  "0xdff", "CryptoW",    "CW"),
+			( "0xe00",  "0xeff", "PowerVU",    "P" ),
+			("0x1000", "0x10FF", "Tandberg",   "TB"),
+			("0x1700", "0x17ff", "Beta",       "B" ),
+			("0x1800", "0x18ff", "Nagra",      "N" ),
+			("0x2600", "0x2600", "Biss",       "BI"),
+			("0x2700", "0x2710", "Dre3",       "D3"),
+			("0x4ae0", "0x4ae1", "Dre",        "D" ),
+			("0x4aee", "0x4aee", "BulCrypt",   "B1"),
+			("0x5581", "0x5581", "BulCrypt",   "B2"),
+			("0x5601", "0x5604", "Verimatrix", "VM") }
 		self.ecmdata = GetEcmInfo()
 		self.feraw = self.fedata = self.updateFEdata = None
 		self.DynamicTimer = eTimer()
@@ -1364,6 +1365,9 @@ class LdExtraInfo(Poll, Converter, object):
 		elif self.type == "CryptoCaidBulCrypt2Available":
 			request_caid = "B2"
 			request_selected = False
+		elif self.type == "CryptoCaidVerimatrixAvailable":
+			request_caid = "VM"
+			request_selected = False
 		elif self.type == "CryptoCaidTandbergAvailable":
 			request_caid = "TB"
 			request_selected = False
@@ -1408,6 +1412,9 @@ class LdExtraInfo(Poll, Converter, object):
 			request_selected = True
 		elif self.type == "CryptoCaidBulCrypt2Selected":
 			request_caid = "B2"
+			request_selected = True
+		elif self.type == "CryptoCaidVerimatrixSelected":
+			request_caid = "VM"
 			request_selected = True
 		elif self.type == "CryptoCaidTandbergSelected":
 			request_caid = "TB"
