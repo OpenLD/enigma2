@@ -33,15 +33,22 @@ class pliExpertInfo(Poll, Converter, object):
 		self.poll_interval = 1000
 		self.poll_enabled = True
 		self.idnames = (
-			( "0x100", "0x1FF","Seca"   ,"S" ),
-			( "0x500", "0x5FF","Via"    ,"V" ),
-			( "0x600", "0x6FF","Irdeto" ,"I" ),
-			( "0x900", "0x9FF","NDS"    ,"Nd"),
-			( "0xB00", "0xBFF","Conax"  ,"Co"),
-			( "0xD00", "0xDFF","CryptoW","Cw"),
-			("0x1700","0x17FF","Beta"   ,"B" ),
-			("0x1800","0x18FF","Nagra"  ,"N" ),
-			("0x2600","0x26FF","BISS"   ,"Bi"))
+			( "0x100", "0x1FF","Seca"       ,"S" ),
+			( "0x500", "0x5FF","Via"        ,"V" ),
+			( "0x600", "0x6FF","Irdeto"     ,"I" ),
+			( "0x900", "0x9FF","NDS"        ,"Nd"),
+			( "0xB00", "0xBFF","Conax"      ,"Co"),
+			( "0xD00", "0xDFF","CryptoW"    ,"Cw"),
+			( "0xE00", "0xEFF","PowerVU"    ,"P" ),
+			("0x1000","0x10FF","Tandberg"   ,"TB"),
+			("0x1700","0x17FF","Beta"       ,"B" ),
+			("0x1800","0x18FF","Nagra"      ,"N" ),
+			("0x2600","0x2600","Biss"       ,"Bi"),
+			("0x2700","0x2710","Dre3"       ,"D3"),
+			("0x4AE0","0x4AE1","Dre"        ,"D" ),
+			("0x4AEE","0x4AEE","BulCrypt"   ,"B1"),
+			("0x5581","0x5581","BulCrypt"   ,"B2"),
+			("0x5601","0x5604","Verimatrix" ,"Vm"))
 		self.ecmdata = GetEcmInfo()
 
 	@cached
