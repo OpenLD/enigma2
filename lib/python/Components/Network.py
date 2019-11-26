@@ -42,7 +42,7 @@ class Network:
 		return self.remoteRootFS
 
 	def isBlacklisted(self, iface):
-		return iface in ('lo', 'wifi0', 'wmaster0', 'sit0', 'tun0', 'tap0', 'sys0', 'p2p0', 'tunl0')
+		return iface in ('lo', 'wifi0', 'wmaster0', 'sit0', 'tun0', 'tap0', 'sys0', 'p2p0', 'tunl0', 'ip6tnl0')
 
 	def getInterfaces(self, callback = None):
 		self.configuredInterfaces = []
@@ -63,7 +63,7 @@ class Network:
 		return [ int(n) for n in ip.split('.') ]
 
 	def getAddrInet(self, iface, callback):
-		cmd = "busybox ip -o addr show dev " + iface + " | grep -v inet6"
+		cmd = "busybox ip addr show dev " + iface + " | grep -v inet6"
 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
 
 	def IPaddrFinished(self, result, retval, extra_args):
@@ -73,7 +73,7 @@ class Network:
 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
 		netRegexp = '[0-9]{1,2}'
 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
-		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
+		ipLinePattern = re.compile(ipRegexp + '/')
 		ipPattern = re.compile(ipRegexp)
 		netmaskLinePattern = re.compile('/' + netRegexp)
 		netmaskPattern = re.compile(netRegexp)
@@ -86,24 +86,24 @@ class Network:
 			split = line.strip().split(' ',2)
 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
 				up = self.regExpMatch(upPattern, split[2])
-				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
 				if up is not None:
 					data['up'] = True
 					if iface is not 'lo':
 						self.configuredInterfaces.append(iface)
+			if split[0] == "link/ether":
+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[0]))
+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
 				if mac is not None:
 					data['mac'] = mac
-			if split[1] == iface:
-				if re.search(globalIPpattern, split[2]):
-					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
-					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
-					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
-					if ip is not None:
-						data['ip'] = self.convertIP(ip)
-					if netmask is not None:
-						data['netmask'] = self.convertIP(netmask)
-					if bcast is not None:
-						data['bcast'] = self.convertIP(bcast)
+				if bcast is not None:
+					data['bcast'] = self.convertIP(bcast)
+			if split[0] == "inet":
+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
+				if ip is not None:
+					data['ip'] = self.convertIP(ip)
+				if netmask is not None:
+					data['netmask'] = self.convertIP(netmask)
 
 		if 'ip' not in data:
 			data['dhcp'] = True
@@ -155,6 +155,7 @@ class Network:
 				fp.write("#only WakeOnWiFi " + ifacename + "\n")
 			if iface['dhcp']:
 				fp.write("iface "+ ifacename +" inet dhcp\n")
+				fp.write("udhcpc_opts -T1 -t9\n")
 				fp.write("  hostname $(hostname)\n")
 			if not iface['dhcp']:
 				fp.write("iface "+ ifacename +" inet static\n")
@@ -296,7 +297,7 @@ class Network:
 					name = _("VLAN connection")
 				else:
 					name = _("LAN connection")
-				if len(self.lan_interfaces) and not getBoxType() == "et10000" and not iface == "eth1":
+				if len(self.lan_interfaces) and not iface == "eth1":
 					name += " " + str(len(self.lan_interfaces)+1)
 				self.lan_interfaces.append(iface)
 		return name
@@ -308,20 +309,40 @@ class Network:
 		moduledir = self.getWlanModuleDir(iface)
 		if moduledir:
 			name = os.path.basename(os.path.realpath(moduledir))
-			if name in ('ath_pci','ath5k','ar6k_wlan'):
+			if name in ('ath_pci','ath5k','ar6k_wlan') or name.startswith('ath') or name.startswith('carl'):
 				name = 'Atheros'
-			elif name in ('rt73','rt73usb','rt3070sta'):
+			elif name in ('rt73','rt73usb','rt3070sta') or name.startswith('rt2') or name.startswith('rt3') or name.startswith('rt5') or name.startswith('rt6') or name.startswith('rt7'):
 				name = 'Ralink'
-			elif name == 'zd1211b':
+			elif name == 'zd1211b' or name.startswith('zd'):
 				name = 'Zydas'
-			elif name == 'r871x_usb_drv':
+			elif name == 'r871x_usb_drv' or name.startswith('rtl') or name.startswith('r8'):
 				name = 'Realtek'
-			elif name  == 'brcm-systemport':
-				name = 'Broadcom'
-			elif os.path.exists("/tmp/bcm/%s"%iface):
+			elif name.startswith('smsc'):
+				name = 'SMSC'
+			elif name.startswith('peg'):
+				name = 'Pegasus'
+			elif name.startswith('rn'):
+				name = 'RNDIS'
+			elif name.startswith('mw') or name.startswith('libertas'):
+				name = 'Marvel'
+			elif name.startswith('p5'):
+				name = 'Prism'
+			elif name.startswith('as') or name.startswith('ax'):
+				name = 'ASIX'
+			elif name.startswith('dm'):
+				name = 'Davicom'
+			elif name.startswith('mcs'):
+				name = 'MosChip'
+			elif name.startswith('at'):
+				name = 'Atmel'
+			elif name.startswith('iwm'):
+				name = 'Intel'
+			elif name  == 'brcm-systemport' or name.startswith('brcm') or name.startswith('bcm') or os.path.exists("/tmp/bcm/%s"%iface):
 				name = 'Broadcom'
 			elif name  == 'wlan':
 				name = name.upper()
+		elif os.path.isdir('/tmp/bcm/' + iface):
+			name = 'Broadcom'
 		else:
 			name = _('Unknown')
 
@@ -644,14 +665,14 @@ class Network:
 		moduledir = self.getWlanModuleDir(iface)
 		if moduledir:
 			module = os.path.basename(os.path.realpath(moduledir))
-			if module in ('brcm-systemport',):
-				return 'brcm-wl'
 			if module in ('ath_pci','ath5k'):
 				return 'madwifi'
-			if module in ('rt73','rt73'):
+			if module == 'rt73':
 				return 'ralink'
 			if module == 'zd1211b':
 				return 'zydas'
+			if module == 'brcm-systemport':
+				return 'brcm-wl'
 		return 'wext'
 
 	def calc_netmask(self,nmask):
