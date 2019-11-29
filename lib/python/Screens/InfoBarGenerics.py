@@ -3998,14 +3998,34 @@ class InfoBarRedButton:
 			pass
 
 	def activateRedButton(self):
-		service = self.session.nav.getCurrentService()
-		info = service and service.info()
-		if info and info.getInfoString(iServiceInformation.sHBBTVUrl) != "":
-			for x in self.onHBBTVActivation:
-				x()
-		elif False: # TODO: other red button services
-			for x in self.onRedButtonActivation:
-				x()
+		isWEBBROWSER = None
+		isHBBTV = None
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/WebBrowser/browser.pyo'):
+			isWEBBROWSER = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/HbbTV/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/E3Opera/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/NXHbbTV/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/OpenOpera/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/WebkitHbbTV/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile('/usr/lib/enigma2/python/Plugins/Extensions/QtHbbtv/plugin.pyo'):
+			isHBBTV = True
+		if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Hbbtv/plugin.pyo"):
+			isHBBTV = True
+
+		if isWEBBROWSER or isHBBTV:
+			service = self.session.nav.getCurrentService()
+			info = service and service.info()
+			if info and info.getInfoString(iServiceInformation.sHBBTVUrl) != "":
+				for x in self.onHBBTVActivation:
+					x()
+			elif False: # TODO: other red button services
+				for x in self.onRedButtonActivation:
+					x()
 
 class InfoBarTimerButton:
 	def __init__(self):
