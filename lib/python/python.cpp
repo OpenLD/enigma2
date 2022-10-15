@@ -194,7 +194,7 @@ int ePython::call(ePyObject pFunc, ePyObject pArgs)
 	if (pFunc && PyCallable_Check(pFunc))
 	{
 		pValue = PyObject_CallObject(pFunc, pArgs);
- 		if (pValue)
+		if (pValue)
 		{
 			if (PyInt_Check(pValue))
 				res = PyInt_AsLong(pValue);
@@ -203,14 +203,14 @@ int ePython::call(ePyObject pFunc, ePyObject pArgs)
 			Py_DECREF(pValue);
 		} else
 		{
-		 	PyErr_Print();
+			PyErr_Print();
 			ePyObject FuncStr = PyObject_Str(pFunc);
 			ePyObject ArgStr = PyObject_Str(pArgs);
-		 	eDebug("(PyObject_CallObject(%s,%s) failed)", PyString_AS_STRING(FuncStr), PyString_AS_STRING(ArgStr));
+			eLog(lvlFatal, "[ePyObject] (PyObject_CallObject(%s,%s) failed)", PyString_AS_STRING(FuncStr), PyString_AS_STRING(ArgStr));
 			Py_DECREF(FuncStr);
 			Py_DECREF(ArgStr);
 			/* immediately show BSOD, so we have the actual error at the bottom */
-		 	bsodFatal(0);
+			bsodFatal(0);
 			/* and make sure we quit (which would also eventually cause a bsod, but with useless termination messages) */
 			quitMainloop(5);
 		}

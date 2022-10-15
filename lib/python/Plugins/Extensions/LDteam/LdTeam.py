@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 ##
+## Blue Panel OpenLD
 ##
-## Copyright (c) 2012-2017 OpenLD
+## Copyright (c) 2012-2022 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
-## Contact: javilonas@esp-desarrolladores.com
+## 
+## Git:      https://github.com/OpenLD
+## Support:  https://lonasdigital.com
+## Download: https://odisealinux.com
+##
+## Donate: https://www.lonasdigital.com/donaciones/
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -38,7 +44,7 @@ class LdAboutTeam(Screen):
 				<eLabel text="Contact:" position="10,125" size="84,20" font="Regular; 18" halign="left" />
 				<eLabel text="Github: https://github.com/javilonas" position="85,153" size="342,24" font="Regular;20" halign="left" />
 				<eLabel text="Donations:" position="10,200" size="100,20" font="Regular; 18" halign="left" />
-				<eLabel text="Paypal: https://www.paypal.me/Javilonas" position="86,229" size="383,24" font="Regular;20" halign="left" />
+				<eLabel text="Donate: https://www.lonasdigital.com/donaciones" position="86,229" size="383,24" font="Regular;20" halign="left" />
 				<eLabel text="Support:" position="10,286" size="87,20" font="Regular; 18" halign="left" />
 				<eLabel text="https://www.lonasdigital.com" position="85,313" size="342,24" font="Regular;20" halign="left" />
 				<eLabel text="Thank you for trust in OpenLD ;)" position="24,375" size="554,42" font="Regular; 17" halign="center" zPosition="1" transparent="1" />
