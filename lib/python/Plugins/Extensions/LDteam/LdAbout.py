@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 ##
+## Blue Panel OpenLD
 ##
-## Copyright (c) 2012-2017 OpenLD
+## Copyright (c) 2012-2022 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
-## Contact: javilonas@esp-desarrolladores.com
+## 
+## Git:      https://github.com/OpenLD
+## Support:  https://lonasdigital.com
+## Download: https://odisealinux.com
+##
+## Donate: https://www.lonasdigital.com/donaciones/
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -79,8 +85,6 @@ class LdsysInfo(Screen):
 		self['key_green'] = Label(_("HW Info"))
 		self['key_red'] = Label(_("Info Team"))
 		self["lab1"] =  ScrollLabel()
-		#self.DynamicTimer = eTimer()
-		#self.DynamicTimer.callback.append(self.updateInfo)
 		self.onShow.append(self.updateInfo)
 		self["myactions"] = ActionMap(["OkCancelActions", "WizardActions", "ColorActions", "DirectionActions"],
 		{
@@ -101,15 +105,11 @@ class LdsysInfo(Screen):
 		self.session.open(LdAboutTeam)
 
 	def updateInfo(self):
-		#self.DynamicTimer.start(6000)
 		rc = system("df -h > /tmp/syinfo.tmp")
 		self.text = _("BOX\n")
 		f = open("/proc/stb/info/model",'r')
 		self.text += _("Model:\t%s") % str(getMachineBrand()) + " " + str(getMachineName()) + "\n"
 		f.close()
-		#f = open("/proc/stb/info/chipset",'r')
-		#self.text += "Chipset:\t" + about.getChipSetString() + "\n"
-		#f.close()
 		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
 		cmd2 = 'cat /proc/cpuinfo | grep "BogoMIPS" -m 1 | awk -F ": " ' + "'{print $2}'"
 		try:
@@ -147,47 +147,8 @@ class LdsysInfo(Screen):
 		self.text += "CPU: \t" + str(about.getCPUString()) + cpuMHz + "  " + str(about.getCpuCoresString2()) + "\n"
 		self.text += _("Cores:\t %s") % str(about.getCpuCoresString()) + "\n"
 		self.text += _("Architecture:\t %s") % str(about.getCPUArch()) + "\n"
-		#self.text += _("CPU Load:\t %s") % str(about.getLoadCPUString()) + "\n"
 		self.text += "BogoMIPS: \t" + bogoMIPS + "\n"
 		f.close()
-		#self.text += _("\nMEMORY\n")
-		#self.text += _("Total:\t%s") % str(about.getRAMTotalString()) + " MB\n"
-		#self.text += _("Free:\t%s ") % str(about.getRAMFreeString()) + " MB  (" + str(about.getRAMFreePorcString()) + ")\n"
-		#self.text += _("Usage:\t%s") % str(about.getRAMUsedString()) + " MB  (" + str(about.getRAMusageString()) + ")\n"
-		#self.text += _("Shared:\t%s") % str(about.getRAMSharingString()) + " MB" +  "\n"
-		#self.text += _("Stored:\t%s") % str(about.getRAMStoredString()) + " MB" +  "\n"
-		#self.text += _("Cached:\t%s") % str(about.getRAMCachedString()) + " MB" +  "\n"
-		#out_lines = file("/proc/meminfo").readlines()
-		#for lidx in range(len(out_lines) - 1):
-		#	tstLine = out_lines[lidx].split()
-		#	if "Buffers:" in tstLine:
-		#		Buffers = out_lines[lidx].split()
-		#		self.text += _("Buffers:") + "\t" + Buffers[1] + ' kB'"\n"
-		#	if "Cached:" in tstLine:
-		#		Cached = out_lines[lidx].split()
-		#		self.text += _("Cached:") + "\t" + Cached[1] + ' kB'"\n"
-		#self.text += _("Swap total:\t%s") % str(about.getRAMSwapTotalString()) + " MB\n"
-		#self.text += _("Swap free:\t%s") % str(about.getRAMSwapFreeString()) + " MB\n"
-		#self.text += _("\nSTORAGE\n")
-		#if os.path.exists('/tmp/syinfo.tmp'):
-		#	try:
-		#		f = open("/tmp/syinfo.tmp",'r')
-		#		line = f.readline()
-		#		parts = line.split()
-		#		self.text += parts[0] + "\t" + parts[1].strip() + "      " + parts[2].strip() + "    " + parts[3].strip() + "    " + parts[4] + "\n"
-		#		line = f.readline()
-		#		parts = line.split()
-		#		self.text += "Flash" + "\t" + parts[1].strip() + "  " + parts[2].strip()  + "  " +  parts[3].strip()  + "  " +  parts[4] + "\n"
-		#		for line in f.readlines():
-		#			if line.find('/media/') != -1:
-		#				line = line.replace('/media/', '   ')
-		#				parts = line.split()
-		#				if len(parts) == 6:
-		#					self.text += parts[5] + "\t" + parts[1].strip() + "  " + parts[2].strip() + "  " + parts[3].strip() + "  " + parts[4] + "\n"
-		#		f.close()
-		#		os_remove("/tmp/syinfo.tmp")
-		#	except:
-		#		return
 
 		self.text += "\nSOFTWARE\n"
 		openLD = "OpenLD "
@@ -209,8 +170,4 @@ class LdsysInfo(Screen):
 		self["lab1"].setText(self.text)
 
 	def end(self):
-		#if self.updateInfo in self.DynamicTimer.callback:
-		#	self.DynamicTimer.callback.remove(self.updateInfo)
-		#self.DynamicTimer.stop()
-		#del self.DynamicTimer
 		self.close()

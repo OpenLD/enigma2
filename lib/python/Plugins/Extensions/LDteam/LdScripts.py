@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 ##
+## Blue Panel OpenLD
 ##
-## Copyright (c) 2012-2017 OpenLD
+## Copyright (c) 2012-2022 OpenLD
 ##          Javier Sayago <admin@lonasdigital.com>
-## Contact: javilonas@esp-desarrolladores.com
+## 
+## Git:      https://github.com/OpenLD
+## Support:  https://lonasdigital.com
+## Download: https://odisealinux.com
+##
+## Donate: https://www.lonasdigital.com/donaciones/
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
