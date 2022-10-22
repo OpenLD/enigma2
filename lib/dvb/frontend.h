@@ -160,7 +160,7 @@ private:
 	uint64_t m_DebugOptions;
 
 public:
-	eDVBFrontend(const char *devidenodename, int fe, int &ok, bool simulate=false, eDVBFrontend *simulate_fe=NULL);
+	eDVBFrontend(const char* devicenodename, int fe, int& ok, bool simulate = false, eDVBFrontend* simulate_fe = NULL);
 	virtual ~eDVBFrontend();
 
 	int initModeList();
