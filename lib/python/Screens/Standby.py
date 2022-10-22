@@ -66,7 +66,10 @@ class Standby2(Screen):
 			Console().ePopen("/usr/script/StandbyLeave.sh &")
 
 		if (getBrandOEM() in ('fulan')):
-			open("/proc/stb/hdmi/output", "w").write("on")
+			try:
+				open("/proc/stb/hdmi/output", "w").write("on")
+			except:
+				pass
 		#set input to encoder
 		self.avswitch.setInput("ENCODER")
 		#restart last played service
@@ -186,7 +189,10 @@ class Standby2(Screen):
 		else:
 			self.avswitch.setInput("AUX")
 		if (getBrandOEM() in ('fulan')):
-			open("/proc/stb/hdmi/output", "w").write("off")
+			try:
+				open("/proc/stb/hdmi/output", "w").write("off")
+			except:
+				pass
 
 		if int(config.usage.hdd_standby_in_standby.value) != -1: # HDD standby timer value (box in standby) / -1 = same as when box is active
 			for hdd in harddiskmanager.HDDList():
@@ -360,12 +366,11 @@ class TryQuitMainloop(MessageBox):
 				if not recordings: # no more recordings exist
 					rec_time = self.session.nav.RecordTimer.getNextRecordingTime()
 					if rec_time > 0 and (rec_time - time()) < 360:
-						self.initTimeout(360) # wait for next starting timer
-						self.startTimer()
+						self.timer.start(360) # wait for next starting timer
 					else:
 						self.close(True) # immediate shutdown
 			elif event == iRecordableService.evStart:
-				self.stopTimer()
+				self.stopTimer("getRecordEvent")
 
 	def close(self, value):
 		if self.connected:
@@ -403,6 +408,16 @@ class TryQuitMainloop(MessageBox):
 			# set LCDminiTV off / fix a deep-standby-crash on some boxes / gb4k 
 			print "[Standby] LCDminiTV off"
 			setLCDModeMinitTV("0")
+		if getBoxType() == "vusolo4k":  #workaround for white display flash
+			try:
+				open("/proc/stb/fp/oled_brightness", "w").write("0")
+			except:
+				pass
+		if getBoxType() == "pulse4k" or getBoxType().startswith('sf4008'):
+			try:
+				open("/proc/stb/lcd/oled_brightness", "w").write("0")
+			except:
+				pass
 		if SystemInfo["OffLCDbrightness"]:
 			open(SystemInfo["OffLCDbrightness"], "w").write("0")
 		quitMainloop(self.retval)
