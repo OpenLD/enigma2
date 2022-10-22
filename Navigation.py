@@ -310,6 +310,11 @@ class Navigation:
 							print "Failed to start", alternativeref
 							self.currentlyPlayingServiceReference = None
 							self.currentlyPlayingServiceOrGroup = None
+							if oldref and "://" in oldref.getPath():
+								print "[Navigation] Streaming was active -> try again" # use timer to give the streamserver the time to deallocate the tuner
+								self.retryServicePlayTimer = eTimer()
+								self.retryServicePlayTimer.callback.append(boundFunction(self.playService, ref, checkParentalControl, forceRestart, adjust))
+								self.retryServicePlayTimer.start(500, True)
 					return 0
 				elif checkParentalControl and not parentalControl.isServicePlayable(playref, boundFunction(self.playService, checkParentalControl = False)):
 					if self.currentlyPlayingServiceOrGroup and InfoBarInstance and InfoBarInstance.servicelist.servicelist.setCurrent(self.currentlyPlayingServiceOrGroup, adjust):
@@ -352,9 +357,14 @@ class Navigation:
 									setPreferredTuner(int(config.usage.frontend_priority_dvbs.value))
 									setPriorityFrontend = True
 				if self.pnav.playService(playref):
-					print "Failed to start", playref
+					print "[Navigation] Failed to start", playref.toString()
 					self.currentlyPlayingServiceReference = None
 					self.currentlyPlayingServiceOrGroup = None
+					if oldref and "://" in oldref.getPath():
+						print "[Navigation] Streaming was active -> try again" # use timer to give the streamserver the time to deallocate the tuner
+						self.retryServicePlayTimer = eTimer()
+						self.retryServicePlayTimer.callback.append(boundFunction(self.playService, ref, checkParentalControl, forceRestart, adjust))
+						self.retryServicePlayTimer.start(500, True)
 				if setPriorityFrontend:
 					setPreferredTuner(int(config.usage.frontend_priority.value))
 				return 0
