@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 from Components.HTMLComponent import HTMLComponent
 from Components.GUIComponent import GUIComponent
 from Screens.Screen import Screen
@@ -160,12 +163,14 @@ class ServiceInfo(Screen):
 			else:
 				name = _("N/A")
 				refstr = _("N/A")
+			is_crypted = None
 			aspect = "-"
 			videocodec = "-"
 			videomode = "-"
 			resolution = "-"
 			if self.info:
 				from Components.Converter.LdExtraInfo import codec_data
+				is_crypted = self.info.getInfo(iServiceInformation.sIsCrypted)
 				videocodec = codec_data.get(self.info.getInfo(iServiceInformation.sVideoType), "N/A")
 				width = self.info.getInfo(iServiceInformation.sVideoWidth)
 				height = self.info.getInfo(iServiceInformation.sVideoHeight)
@@ -194,16 +199,35 @@ class ServiceInfo(Screen):
 				caidssyst = subprocess.check_output(["timeout -t 2 -s kill dvbsnoop -n 1 -nph 1 | grep CA_system_ID | awk -F '(' '{print $2}' | awk -F ')' '{print $1}'"], shell=True)
 			except:
 				pass
-			Labels = ( (_("Name"), name, TYPE_TEXT),
-					(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
-					(_("Videoformat"), aspect, TYPE_TEXT),
-					(_("Videomode"), videomode, TYPE_TEXT),
-					(_("Videosize"), resolution, TYPE_TEXT),
-					(_("Videocodec"), videocodec, TYPE_TEXT),
-					(_("Namespace"), self.getServiceInfoValue(iServiceInformation.sNamespace), TYPE_VALUE_HEX, 8),
-					(_("Service reference"), refstr, TYPE_TEXT),
-					(_("Coding Systems"), codenumbers, TYPE_TEXT))
-			if codenumbers > 0:
+			urliptv = "%3a//"
+
+			if urliptv in refstr:
+				Labels = ( (_("Name"), name, TYPE_TEXT),
+						(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
+						(_("Videoformat"), aspect, TYPE_TEXT),
+						(_("Videomode"), videomode, TYPE_TEXT),
+						(_("Videosize"), resolution, TYPE_TEXT),
+						(_("Videocodec"), videocodec, TYPE_TEXT),
+						(_("Namespace"), self.getServiceInfoValue(iServiceInformation.sNamespace), TYPE_VALUE_HEX, 8),
+						(_("Encrypted"), is_crypted, TYPE_TEXT),
+						(_("Coding Systems"), codenumbers, TYPE_TEXT),
+						(_("Service reference"), ":".join(refstr.split(":")[:10]), TYPE_TEXT),
+						(_("Stream"), refstr.split(":")[10].replace("%3a", ":"), TYPE_TEXT)
+						)
+			else:
+				Labels = ( (_("Name"), name, TYPE_TEXT),
+						(_("Provider"), self.getServiceInfoValue(iServiceInformation.sProvider), TYPE_TEXT),
+						(_("Videoformat"), aspect, TYPE_TEXT),
+						(_("Videomode"), videomode, TYPE_TEXT),
+						(_("Videosize"), resolution, TYPE_TEXT),
+						(_("Videocodec"), videocodec, TYPE_TEXT),
+						(_("Namespace"), self.getServiceInfoValue(iServiceInformation.sNamespace), TYPE_VALUE_HEX, 8),
+						(_("Encrypted"), is_crypted, TYPE_TEXT),
+						(_("Coding Systems"), codenumbers, TYPE_TEXT),
+						(_("Service reference"), ":".join(refstr.split(":")[:10]), TYPE_TEXT)
+						)
+
+			if is_crypted >= 0:
 				try:
 					i = 0
 					caidssyst1 = caidssyst.splitlines()
@@ -274,7 +298,7 @@ class ServiceInfo(Screen):
 	def getFEData(self, frontendDataOrg):
 		if frontendDataOrg and len(frontendDataOrg):
 			frontendData = ConvertToHumanReadable(frontendDataOrg)
-			if frontendDataOrg["tuner_type"] == "DVB-S":
+			if frontendDataOrg["tuner_type"] == "DVB-S" or frontendDataOrg["tuner_type"] == "DVB-S2":
 				if frontendData["frequency"] > 11699999 :
 					band = "High"
 				else:
@@ -301,16 +325,17 @@ class ServiceInfo(Screen):
 			elif frontendDataOrg["tuner_type"] == "DVB-C":
 				return ((_("NIM"), chr(ord('A') + frontendData["tuner_number"]), TYPE_TEXT),
 						(_("Type"), frontendData["tuner_type"], TYPE_TEXT),
+						(_("System"), frontendData["system"], TYPE_TEXT),
 						(_("Modulation"), frontendData["modulation"], TYPE_TEXT),
 						(_("Frequency"), frontendData["frequency"], TYPE_VALUE_FREQ_FLOAT),
 						(_("Symbol rate"), frontendData["symbol_rate"], TYPE_VALUE_BITRATE),
 						(_("Inversion"), frontendData["inversion"], TYPE_TEXT),
 						(_("FEC"), frontendData["fec_inner"], TYPE_TEXT))
-			elif frontendDataOrg["tuner_type"] == "DVB-T":
+			elif frontendDataOrg["tuner_type"] == "DVB-T" or frontendDataOrg["tuner_type"] == "DVB-T2":
 				return ((_("NIM"), chr(ord('A') + frontendData["tuner_number"]), TYPE_TEXT),
 						(_("Type"), frontendData["tuner_type"], TYPE_TEXT),
+						(_("System"), frontendData["system"], TYPE_TEXT),
 						(_("Frequency"), frontendData["frequency"], TYPE_VALUE_FREQ_FLOAT),
-						(_("Channel"), getChannelNumber(frontendData["frequency"], frontendData["tuner_number"]), TYPE_VALUE_DEC),
 						(_("Inversion"), frontendData["inversion"], TYPE_TEXT),
 						(_("Bandwidth"), frontendData["bandwidth"], TYPE_VALUE_DEC),
 						(_("Code rate LP"), frontendData["code_rate_lp"], TYPE_TEXT),

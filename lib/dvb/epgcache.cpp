@@ -483,7 +483,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 #endif
 #ifdef ENABLE_MHW_EPG
 		data->m_mhw2_channel_pid = 0x231; // defaults for astra 19.2 Movistar+
-		if (maxdays < 4){
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
@@ -3273,7 +3273,7 @@ void eEPGCache::submitEventData(const std::vector<int>& sids, const std::vector<
 	for (int descrIndex = 0; descrIndex <= lastDescriptorNumber; ++descrIndex)
 	{
 		eit_extended_descriptor_struct *ext_evt = (eit_extended_descriptor_struct*) x;
-		ext_evt->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+		ext_evt->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 		//descriptor header length is 6, including the 2 tag and length bytes
 		//so the length field must be: stringlength + 1 (2 4-bits numbers) + 3 (lang code) + 2 bytes for item info length field and text length field
 		int currentTextLength = descrIndex < lastDescriptorNumber ? MAX_LEN : remainingTextLength;
@@ -4507,7 +4507,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 				packet_length += 8 + sum_length;
 				descr_ll += 8 + sum_length;
 
-				ext_event_descriptor->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+				ext_event_descriptor->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 				ext_event_descriptor->descriptor_length = sum_length + 6;
 				ext_event_descriptor->descriptor_number = i;
 				ext_event_descriptor->last_descriptor_number = nbr_descr - 1;
@@ -4609,7 +4609,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 				case 0x40: content_id = 0x30; break; // Entretenimiento
 				case 0x50: content_id = 0x40; break; // Deportes
 				case 0x60: content_id = 0x50; break; // infantiles
-				case 0x78: content_id = 0x60; break; // Musica
+				case 0x70: content_id = 0x60; break; // Musica
 				case 0x80: content_id = 0x91; break; // Documentales / Educacion
 				case 0x90: content_id = 0x70; break; // Cultura
 				case 0xA0: content_id = 0xA0; break; // Ocio
@@ -6000,7 +6000,7 @@ void eEPGCache::crossepgImportEPGv21(std::string dbroot)
 			for (int descr_index = 0; descr_index <= last_descriptor_number; ++descr_index)
 			{
 				eit_extended_descriptor_struct *data_eit_short_event = (eit_extended_descriptor_struct*)data_tmp;
-				data_eit_short_event->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+				data_eit_short_event->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 				int current_text_length = descr_index < last_descriptor_number ? MAX_LEN : remaining_text_length;
 				if (IS_UTF8(title.flags))
 					current_text_length++;
