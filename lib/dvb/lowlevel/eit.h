@@ -121,7 +121,7 @@ struct eit_short_event_descriptor_struct {
 	u_char event_name_length : 8;
 };
 
-#define EIT_EXTENDED_EVENT_DESCRIPOR 0x4e
+#define EIT_EXTENDED_EVENT_DESCRIPTOR 0x4e
 #define EIT_EXTENDED_EVENT_DESCRIPTOR_SIZE 6
 
 typedef struct eit_event_struct {
@@ -158,7 +158,7 @@ typedef struct eit_event_struct {
 } eit_event_t;
 #define EIT_LOOP_SIZE 12
 
-#define EIT_EXTENDED_EVENT_DESCRIPOR 0x4e
+#define EIT_EXTENDED_EVENT_DESCRIPTOR 0x4e
 
 struct eit_extended_descriptor_struct {
 	u_char descriptor_tag : 8;

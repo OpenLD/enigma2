@@ -3273,7 +3273,7 @@ void eEPGCache::submitEventData(const std::vector<int>& sids, const std::vector<
 	for (int descrIndex = 0; descrIndex <= lastDescriptorNumber; ++descrIndex)
 	{
 		eit_extended_descriptor_struct *ext_evt = (eit_extended_descriptor_struct*) x;
-		ext_evt->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+		ext_evt->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 		//descriptor header length is 6, including the 2 tag and length bytes
 		//so the length field must be: stringlength + 1 (2 4-bits numbers) + 3 (lang code) + 2 bytes for item info length field and text length field
 		int currentTextLength = descrIndex < lastDescriptorNumber ? MAX_LEN : remainingTextLength;
@@ -4507,7 +4507,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 				packet_length += 8 + sum_length;
 				descr_ll += 8 + sum_length;
 
-				ext_event_descriptor->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+				ext_event_descriptor->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 				ext_event_descriptor->descriptor_length = sum_length + 6;
 				ext_event_descriptor->descriptor_number = i;
 				ext_event_descriptor->last_descriptor_number = nbr_descr - 1;
@@ -6000,7 +6000,7 @@ void eEPGCache::crossepgImportEPGv21(std::string dbroot)
 			for (int descr_index = 0; descr_index <= last_descriptor_number; ++descr_index)
 			{
 				eit_extended_descriptor_struct *data_eit_short_event = (eit_extended_descriptor_struct*)data_tmp;
-				data_eit_short_event->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPOR;
+				data_eit_short_event->descriptor_tag = EIT_EXTENDED_EVENT_DESCRIPTOR;
 				int current_text_length = descr_index < last_descriptor_number ? MAX_LEN : remaining_text_length;
 				if (IS_UTF8(title.flags))
 					current_text_length++;
