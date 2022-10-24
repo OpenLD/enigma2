@@ -10,6 +10,7 @@
 #include <dvbsi++/component_descriptor.h>
 #include <dvbsi++/content_descriptor.h>
 #include <dvbsi++/parental_rating_descriptor.h>
+#include <dvbsi++/content_identifier_descriptor.h>
 #include <dvbsi++/descriptor_tag.h>
 #include <dvbsi++/pdc_descriptor.h>
 
@@ -94,18 +95,16 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 					{
 						m_extended_description += convertDVBUTF8(eed->getText(), table, tsidonid);
 					}
+					const ExtendedEventList *itemlist = eed->getItems();
+					for (ExtendedEventConstIterator it = itemlist->begin(); it != itemlist->end(); ++it)
+					{
+						m_extended_description_items += '\n';
+						m_extended_description_items += convertDVBUTF8((*it)->getItemDescription(), table, tsidonid);
+						m_extended_description_items += ": ";
+						m_extended_description_items += convertDVBUTF8((*it)->getItem(), table, tsidonid);
+					}
 					retval=1;
 				}
-#if 0
-				const ExtendedEventList *itemlist = eed->getItems();
-				for (ExtendedEventConstIterator it = itemlist->begin(); it != itemlist->end(); ++it)
-				{
-					m_extended_description += '\n';
-					m_extended_description += convertDVBUTF8((*it)->getItemDescription());
-					m_extended_description += ' ';
-					m_extended_description += convertDVBUTF8((*it)->getItem());
-				}
-#endif
 				break;
 			}
 			default:
@@ -156,11 +155,37 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 					for (ContentClassificationConstIterator it = con->begin(); it != con->end(); ++it)
 					{
 						eGenreData data;
-				                data.m_level1 = (*it)->getContentNibbleLevel1();
+						data.m_level1 = (*it)->getContentNibbleLevel1();
 						data.m_level2 = (*it)->getContentNibbleLevel2();
 						data.m_user1  = (*it)->getUserNibble1();
 						data.m_user2  = (*it)->getUserNibble2();
 						m_genres.push_back(data);
+					}
+					break;
+				}
+				case CONTENT_IDENTIFIER_DESCRIPTOR:
+				{
+					auto cid = (ContentIdentifierDescriptor *)*desc;
+					auto cril = cid->getIdentifier();
+					for (auto it = cril->begin(); it != cril->end(); ++it)
+					{
+						auto crid = std::string((const char*)(*it)->getBytes()->data(), (*it)->getLength());
+						switch ((*it)->getType())
+						{
+							case 0x01:
+							case 0x31:
+								m_episode_crid = crid;
+								break;
+							case 0x02:
+							case 0x32:
+								m_series_crid = crid;
+								break;
+							case 0x03:
+								break;
+							default:
+								eDebug("[Event] Unrecognised crid type %d %s", (*it)->getType(), crid.c_str());
+								break;
+						}
 					}
 					break;
 				}
@@ -174,6 +199,21 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 
 						data.m_country_code = (*it)->getCountryCode();
 						data.m_rating = (*it)->getRating();
+						if ( data.m_rating == 0)
+						{
+							std::string description = m_short_description + m_extended_description;
+							std::size_t found1 = description.find("(+");
+							if (found1!=std::string::npos)
+							{
+								std::size_t found2 = description.find(")",found1+1);
+								if (found2!=std::string::npos)
+								{
+									std::string newstr = description.substr(found1+2,found2-found1+2);
+									int r = std::stoi(newstr);
+									data.m_rating = r-3;
+								}
+							}
+						}
 						m_ratings.push_back(data);
 					}
 					break;
@@ -188,7 +228,15 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 		}
 	}
 	if ( m_extended_description.find(m_short_description) == 0 )
-		m_short_description="";
+		m_short_description = "";
+
+	if ( ! m_extended_description_items.empty() )
+	{
+		m_extended_description += '\n';
+		m_extended_description += m_extended_description_items;
+		m_extended_description_items = "";
+	}
+
 	return retval;
 }
 

@@ -483,7 +483,7 @@ void eEPGCache::DVBChannelAdded(eDVBChannel *chan)
 #endif
 #ifdef ENABLE_MHW_EPG
 		data->m_mhw2_channel_pid = 0x231; // defaults for astra 19.2 Movistar+
-		if (maxdays < 4){
+		if (eEPGCache::getInstance()->getEpgmaxdays() < 4)
 			data->m_mhw2_title_pid = 0x234; // defaults for astra 19.2 Movistar+
 			data->m_mhw2_summary_pid = 0x236; // defaults for astra 19.2 Movistar+
 		} else {
@@ -4609,7 +4609,7 @@ void eEPGCache::channel_data::storeMHWTitle(std::map<uint32_t, mhw_title_t>::ite
 				case 0x40: content_id = 0x30; break; // Entretenimiento
 				case 0x50: content_id = 0x40; break; // Deportes
 				case 0x60: content_id = 0x50; break; // infantiles
-				case 0x78: content_id = 0x60; break; // Musica
+				case 0x70: content_id = 0x60; break; // Musica
 				case 0x80: content_id = 0x91; break; // Documentales / Educacion
 				case 0x90: content_id = 0x70; break; // Cultura
 				case 0xA0: content_id = 0xA0; break; // Ocio
